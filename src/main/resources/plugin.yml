@@ -1,0 +1,11 @@
+name: RoseLoot
+main: dev.rosewood.roseloot.RoseLoot
+version: '@version@'
+api-version: '1.13'
+description: Manipulate mob and block loot
+author: Esophose
+softdepend: [PlaceholderAPI]
+commands:
+  rl:
+    description: The base RoseLoot command
+    aliases: [loot]
