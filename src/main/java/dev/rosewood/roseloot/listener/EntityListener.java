@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,15 +24,13 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class EntityListener implements Listener {
 
-    private final RosePlugin rosePlugin;
     private final LootTableManager lootTableManager;
 
     public EntityListener(RosePlugin rosePlugin) {
-        this.rosePlugin = rosePlugin;
         this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
@@ -40,8 +39,13 @@ public class EntityListener implements Listener {
         LivingEntity looter = null;
         if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
             Entity damager = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
-            if (damager instanceof LivingEntity)
+            if (damager instanceof LivingEntity) {
                 looter = (LivingEntity) damager;
+            } else if (damager instanceof Projectile) {
+                Projectile projectile = (Projectile) damager;
+                if (projectile.getShooter() instanceof LivingEntity)
+                    looter = (LivingEntity) projectile.getShooter();
+            }
         }
 
         LootContext lootContext = new LootContext(looter, entity);

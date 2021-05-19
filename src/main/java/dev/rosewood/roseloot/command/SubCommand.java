@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.command;
 
-public abstract class
-SubCommand {
+public abstract class SubCommand {
 
 }

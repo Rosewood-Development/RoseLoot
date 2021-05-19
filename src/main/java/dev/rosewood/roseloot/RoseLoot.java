@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -49,6 +51,16 @@ public class RoseLoot extends RosePlugin {
     @Override
     public void disable() {
 
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!command.getName().equalsIgnoreCase("rl"))
+            return true;
+
+        this.reload();
+        this.getManager(LocaleManager.class).sendCustomMessage(sender, "&aReloaded plugin.");
+        return true;
     }
 
     @Override

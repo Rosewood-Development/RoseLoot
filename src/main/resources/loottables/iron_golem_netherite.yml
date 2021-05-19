@@ -36,15 +36,3 @@ pools:
           0:
             type: netherite_ingot
             amount: 1
-
-type: ENTITY
-overwrite-existing: false
-conditions:
-  - 'entity-type:iron_golem'
-  - 'world:world_nether'
-  - 'spawn-reason:spawner'
-  - 'chance:1%'
-items:
-  0:
-    type: netherite_ingot
-    amount: 1
