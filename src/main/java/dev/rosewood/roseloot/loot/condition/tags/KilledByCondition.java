@@ -19,7 +19,7 @@ public class KilledByCondition extends LootCondition {
     }
 
     @Override
-    public boolean check(LootContext context) {
+    public boolean checkInternal(LootContext context) {
         LivingEntity entity = context.getLootedEntity();
         if (entity == null)
             return false;

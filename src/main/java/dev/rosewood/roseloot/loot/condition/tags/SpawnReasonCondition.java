@@ -17,7 +17,7 @@ public class SpawnReasonCondition extends LootCondition {
     }
 
     @Override
-    public boolean check(LootContext context) {
+    public boolean checkInternal(LootContext context) {
         LivingEntity looted = context.getLootedEntity();
         if (looted == null)
             return false;

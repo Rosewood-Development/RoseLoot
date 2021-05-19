@@ -19,7 +19,7 @@ public class EnchantmentCondition extends LootCondition {
     }
 
     @Override
-    public boolean check(LootContext context) {
+    public boolean checkInternal(LootContext context) {
         LivingEntity looter = context.getLooter();
         if (looter == null)
             return false;

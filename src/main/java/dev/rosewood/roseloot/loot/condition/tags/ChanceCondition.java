@@ -13,7 +13,7 @@ public class ChanceCondition extends LootCondition {
     }
 
     @Override
-    public boolean check(LootContext context) {
+    public boolean checkInternal(LootContext context) {
         return LootUtils.checkChance(this.chance);
     }
 

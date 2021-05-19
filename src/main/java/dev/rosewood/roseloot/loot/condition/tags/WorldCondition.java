@@ -16,7 +16,7 @@ public class WorldCondition extends LootCondition {
     }
 
     @Override
-    public boolean check(LootContext context) {
+    public boolean checkInternal(LootContext context) {
         World world = context.getLocation().getWorld();
         if (world == null)
             return false;

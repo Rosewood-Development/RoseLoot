@@ -16,7 +16,7 @@ public class BlockTypeCondition extends LootCondition {
     }
 
     @Override
-    public boolean check(LootContext context) {
+    public boolean checkInternal(LootContext context) {
         Block block = context.getLootedBlock();
         if (block == null)
             return false;

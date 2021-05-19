@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.LootContext;
 public abstract class LootCondition {
 
     private final String tag;
+    private final boolean inverted;
 
     /**
      * @param tag The tag, including both prefix and values
@@ -12,6 +13,13 @@ public abstract class LootCondition {
     public LootCondition(String tag) {
         if (tag == null || tag.trim().isEmpty())
             throw new IllegalArgumentException("Empty or null tag");
+
+        if (tag.startsWith("!")) {
+            tag = tag.substring(1);
+            this.inverted = true;
+        } else {
+            this.inverted = false;
+        }
 
         this.tag = tag;
 
@@ -39,7 +47,17 @@ public abstract class LootCondition {
      * @param context The LootContext
      * @return true if the condition is met, otherwise false
      */
-    public abstract boolean check(LootContext context);
+    public boolean check(LootContext context) {
+        return this.checkInternal(context) ^ this.inverted;
+    }
+
+    /**
+     * Checks if the LootContext meets this tag's condition
+     *
+     * @param context The LootContext
+     * @return true if the condition is met, otherwise false
+     */
+    protected abstract boolean checkInternal(LootContext context);
 
     /**
      * Parses the value portion of the tag

@@ -46,11 +46,12 @@ public class LootConditions {
 
     public static LootCondition parse(String tag) {
         try {
-            int index = tag.indexOf(":");
+            String parsed = tag.startsWith("!") ? tag.substring(1) : tag;
+            int index = parsed.indexOf(":");
             if (index == -1) {
-                return tagPrefixMap.get(tag).newInstance(tag);
+                return tagPrefixMap.get(parsed).newInstance(tag);
             } else {
-                return tagPrefixMap.get(tag.substring(0, index)).newInstance(tag);
+                return tagPrefixMap.get(parsed.substring(0, index)).newInstance(tag);
             }
         } catch (Exception e) {
             return null;
