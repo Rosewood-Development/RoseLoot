@@ -2,7 +2,10 @@ package dev.rosewood.roseloot.loot.condition;
 
 import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
+import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
+import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import java.lang.reflect.Constructor;
@@ -19,7 +22,10 @@ public class LootConditions {
     static {
         registerTag("block-type", BlockTypeCondition.class, "Type the looted block must be");
         registerTag("chance", ChanceCondition.class, "A random chance");
+        registerTag("death-cause", DeathCauseCondition.class, "Type of damage cause that caused the death");
+        registerTag("enchantment", EnchantmentCondition.class, "Type and level of enchantment required");
         registerTag("entity-type", EntityTypeCondition.class, "Type the looted entity must be");
+        registerTag("killed-by", KilledByCondition.class, "Type of entity that killed the entity");
         registerTag("spawn-reason", SpawnReasonCondition.class, "Spawn reason the entity must have");
         registerTag("world", WorldCondition.class, "Loot must be generated in a specific world");
     }
