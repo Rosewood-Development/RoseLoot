@@ -8,7 +8,10 @@ import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.FullyGrownCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
+import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
+import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import java.lang.reflect.Constructor;
@@ -31,7 +34,10 @@ public class LootConditions {
         registerTag("enchantment-chance", EnchantmentChanceCondition.class, "A random chance with additional chance based on enchantment level");
         registerTag("enchantment", EnchantmentCondition.class, "Type and level of enchantment required");
         registerTag("entity-type", EntityTypeCondition.class, "Type the looted entity must be");
+        registerTag("fully-grown", FullyGrownCondition.class, "The animal or crop must be fully grown");
         registerTag("killed-by", KilledByCondition.class, "Type of entity that killed the entity");
+        registerTag("required-tool", RequiredToolCondition.class, "Type and quality of tool required");
+        registerTag("required-tool-type", RequiredToolTypeCondition.class, "Exact type of tool required");
         registerTag("spawn-reason", SpawnReasonCondition.class, "Spawn reason the entity must have");
         registerTag("world", WorldCondition.class, "Loot must be generated in a specific world");
     }
