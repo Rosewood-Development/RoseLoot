@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.manager;
 
-import dev.rosewood.roseloot.locale.EnglishLocale;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.locale.Locale;
 import dev.rosewood.rosegarden.manager.AbstractLocaleManager;
+import dev.rosewood.roseloot.locale.EnglishLocale;
 import java.util.Collections;
 import java.util.List;
 

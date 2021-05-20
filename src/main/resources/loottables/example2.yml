@@ -14,6 +14,9 @@ pools:
             type: item
             item: blaze_powder
             amount: 1
+            enchantment-bonus:
+              enchantment: looting
+              bonus-per-level: 1
           1:
             type: command
             value: 'w %player% You feel the power of fire coursing through your veins.'
