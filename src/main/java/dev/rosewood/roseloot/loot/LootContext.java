@@ -6,6 +6,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class LootContext {
@@ -68,6 +70,20 @@ public class LootContext {
             return 0;
         AttributeInstance attribute = this.looter.getAttribute(Attribute.GENERIC_LUCK);
         return attribute != null ? (int) attribute.getValue() : 0;
+    }
+
+    /**
+     * @return the ItemStack used for this context
+     */
+    public ItemStack getItemUsed() {
+        if (this.looter == null)
+            return null;
+
+        EntityEquipment equipment = this.looter.getEquipment();
+        if (equipment == null)
+            return null;
+
+        return equipment.getItemInMainHand();
     }
 
 }

@@ -4,11 +4,14 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * enchantment:sharpness,3
+ * value 1: The enchantment
+ * value 2: The minimum level of the enchantment
+ */
 public class EnchantmentCondition extends LootCondition {
 
     private Enchantment enchantment;
@@ -20,15 +23,7 @@ public class EnchantmentCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        LivingEntity looter = context.getLooter();
-        if (looter == null)
-            return false;
-
-        EntityEquipment equipment = looter.getEquipment();
-        if (equipment == null)
-            return false;
-
-        ItemStack item = equipment.getItemInMainHand();
+        ItemStack item = context.getItemUsed();
         ItemMeta meta = item.getItemMeta();
         if (meta == null)
             return false;
