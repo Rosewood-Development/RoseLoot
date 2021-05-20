@@ -8,6 +8,9 @@ import java.util.Random;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -49,6 +52,21 @@ public final class LootUtils {
             max = temp;
         }
         return RANDOM.nextInt(max - min + 1) + min;
+    }
+
+    /**
+     * Reduces a tool's durability by 1 if applicable
+     *
+     * @param itemStack The tool
+     */
+    public static void damageTool(ItemStack itemStack) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (!(itemMeta instanceof Damageable))
+            return;
+
+        Damageable damageable = (Damageable) itemMeta;
+        damageable.setDamage(damageable.getDamage() + 1);
+        itemStack.setItemMeta((ItemMeta) damageable);
     }
 
     /**

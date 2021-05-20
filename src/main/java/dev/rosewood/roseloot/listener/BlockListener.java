@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -47,6 +48,9 @@ public class BlockListener implements Listener {
         if (lootResult.shouldOverwriteExisting()) {
             // Prevent the break
             event.setCancelled(true);
+
+            // Damage tool
+            LootUtils.damageTool(event.getPlayer().getInventory().getItemInMainHand());
 
             // Play block breaking effects
             block.getWorld().getNearbyEntities(block.getLocation(), 32, 32, 32, x -> x.getType() == EntityType.PLAYER)

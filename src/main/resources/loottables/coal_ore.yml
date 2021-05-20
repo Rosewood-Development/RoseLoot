@@ -1,0 +1,33 @@
+type: BLOCK
+overwrite-existing: true
+conditions:
+  - 'block-type:coal_ore'
+pools:
+  0:
+    conditions:
+      - 'block-type:coal_ore'
+      - 'required-tool:pickaxe,wood'
+    entries:
+      0:
+        conditions:
+          - '!enchantment:silk_touch'
+        items:
+          0:
+            type: item
+            item: coal
+            amount: 1
+            enchantment-bonus:
+              enchantment: fortune
+              bonus-per-level: 1
+          1:
+            type: experience
+            min: 0
+            max: 2
+      1:
+        conditions:
+          - 'enchantment:silk_touch'
+        items:
+          0:
+            type: item
+            item: coal_ore
+            amount: 1
