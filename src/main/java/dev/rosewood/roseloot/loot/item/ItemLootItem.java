@@ -33,9 +33,9 @@ public class ItemLootItem extends LootItem {
         List<ItemStack> generatedItems = new ArrayList<>();
 
         int max = this.max;
-        if (this.enchantmentBonus != null) {
-            ItemStack itemStack = context.getItemUsed();
-            ItemMeta itemMeta = itemStack.getItemMeta();
+        ItemStack itemUsed = context.getItemUsed();
+        if (this.enchantmentBonus != null && itemUsed != null) {
+            ItemMeta itemMeta = itemUsed.getItemMeta();
             if (itemMeta != null)
                 max += itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment()) * this.enchantmentBonus.getBonusPerLevel();
         }

@@ -38,6 +38,9 @@ public class RequiredToolCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         ItemStack item = context.getItemUsed();
+        if (item == null)
+            return false;
+
         String toolName = item.getType().name().toLowerCase();
 
         if (TOOL_TYPES.contains(toolName))

@@ -27,6 +27,9 @@ public class EnchantmentChanceCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         ItemStack item = context.getItemUsed();
+        if (item == null)
+            return false;
+
         ItemMeta meta = item.getItemMeta();
         if (meta == null)
             return false;
