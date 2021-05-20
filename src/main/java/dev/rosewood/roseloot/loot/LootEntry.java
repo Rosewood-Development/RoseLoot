@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.item.LootItem;
 import java.util.List;
 import java.util.stream.Collectors;
 

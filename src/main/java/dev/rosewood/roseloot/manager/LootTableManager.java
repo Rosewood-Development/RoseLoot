@@ -6,22 +6,19 @@ import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootEntry;
-import dev.rosewood.roseloot.loot.LootItem;
 import dev.rosewood.roseloot.loot.LootPool;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.LootConditions;
-import dev.rosewood.roseloot.util.ItemSerializer;
+import dev.rosewood.roseloot.loot.item.LootItem;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 
 public class LootTableManager extends Manager {
 
@@ -141,21 +138,13 @@ public class LootTableManager extends Manager {
                                 continue;
                             }
 
-                            String command = itemSection.getString("command");
-                            int experience = itemSection.getInt("experience", 0);
-                            int min, max;
-                            if (itemSection.contains("amount")) {
-                                min = max = itemSection.getInt("amount");
-                            } else {
-                                min = itemSection.getInt("min", 1);
-                                max = itemSection.getInt("max", 1);
+                            LootItem lootItem = LootItem.fromSection(itemSection);
+                            if (lootItem == null) {
+                                this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                                continue;
                             }
 
-                            ItemStack itemStack = ItemSerializer.deserialize(itemSection);
-                            if (itemStack.getType() == Material.AIR)
-                                itemStack = null;
-
-                            lootItems.add(new LootItem(itemStack, min, max, command, experience));
+                            lootItems.add(lootItem);
                         }
 
                         lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems));

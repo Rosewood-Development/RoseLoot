@@ -6,6 +6,7 @@ import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
+import dev.rosewood.roseloot.listener.FishingListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
@@ -46,6 +47,7 @@ public class RoseLoot extends RosePlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new BlockListener(this), this);
         pluginManager.registerEvents(new EntityListener(this), this);
+        pluginManager.registerEvents(new FishingListener(this), this);
     }
 
     @Override
