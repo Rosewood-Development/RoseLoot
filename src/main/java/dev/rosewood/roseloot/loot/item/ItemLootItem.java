@@ -43,7 +43,7 @@ public class ItemLootItem extends LootItem {
         int amount = LootUtils.randomInRange(this.min, max);
         if (amount > 0) {
             int maxStackSize = this.item.getMaxStackSize();
-            ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(this.item));
+            ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(this.item), context);
             while (amount > maxStackSize) {
                 amount -= maxStackSize;
                 ItemStack clone = itemStack.clone();

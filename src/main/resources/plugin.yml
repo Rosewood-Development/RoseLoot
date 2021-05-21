@@ -1,8 +1,8 @@
 name: RoseLoot
 main: dev.rosewood.roseloot.RoseLoot
 version: '@version@'
-api-version: '1.13'
-description: Manipulate mob and block loot
+api-version: '1.14'
+description: Manipulate loot of mobs, blocks, fishing, and chests
 author: Esophose
 softdepend: [PlaceholderAPI]
 commands:

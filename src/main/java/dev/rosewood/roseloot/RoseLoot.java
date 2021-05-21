@@ -43,7 +43,7 @@ public class RoseLoot extends RosePlugin {
     @Override
     public void enable() {
         if (NMSUtil.getVersionNumber() < 13)
-            this.getLogger().severe(this.getDescription().getName() + " only supports 1.13.2 and newer. You will get no support for running an unsupported version.");
+            this.getLogger().severe(this.getDescription().getName() + " only supports 1.14.4 and newer. You will get no support for running an unsupported version.");
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new BlockListener(this), this);
