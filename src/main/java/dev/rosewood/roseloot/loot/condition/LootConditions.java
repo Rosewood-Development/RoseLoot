@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.FullyGrownCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
+import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
@@ -36,6 +37,7 @@ public class LootConditions {
         registerTag("entity-type", EntityTypeCondition.class, "Type the looted entity must be");
         registerTag("fully-grown", FullyGrownCondition.class, "The animal or crop must be fully grown");
         registerTag("killed-by", KilledByCondition.class, "Type of entity that killed the entity");
+        registerTag("permission", PermissionCondition.class, "Require the looter to have a permission");
         registerTag("required-tool", RequiredToolCondition.class, "Type and quality of tool required");
         registerTag("required-tool-type", RequiredToolTypeCondition.class, "Exact type of tool required");
         registerTag("spawn-reason", SpawnReasonCondition.class, "Spawn reason the entity must have");
