@@ -4,7 +4,8 @@ public enum LootTableType {
 
     ENTITY,
     BLOCK,
-    FISHING;
+    FISHING,
+    CONTAINER;
 
     public static LootTableType fromString(String name) {
         for (LootTableType value : values())

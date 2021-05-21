@@ -21,6 +21,18 @@ public class EnglishLocale implements Locale {
         return new LinkedHashMap<String, Object>() {{
             this.put("#0", "Plugin Message Prefix");
             this.put("prefix", "&7[<g:#8A2387:#E94057:#F27121>RoseLoot&7] ");
+
+            this.put("#1", "Base Command Message");
+            this.put("base-command-color", "&e");
+            this.put("base-command-help", "&eUse &b/rl help &efor command information.");
+
+            this.put("#2", "Help Command");
+            this.put("command-help-description", "&8 - &d/rl help &7- Displays the help menu... You have arrived");
+            this.put("command-help-title", "&eAvailable Commands:");
+
+            this.put("#3", "Reload Command");
+            this.put("command-reload-description", "&8 - &d/rl reload &7- Reloads the plugin");
+            this.put("command-reload-reloaded", "&eConfiguration and locale files were reloaded.");
         }};
     }
 
