@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.utils.HexUtils;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.LootContext;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +17,14 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockDataMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemLootMeta {
@@ -32,6 +36,9 @@ public class ItemLootMeta {
     private List<ItemFlag> hideFlags;
     private Map<Enchantment, Integer> enchantments;
     private Multimap<Attribute, AttributeModifier> attributes;
+
+    protected boolean copyBlockState;
+    protected boolean copyBlockData;
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -61,6 +68,14 @@ public class ItemLootMeta {
         this.attributes = attributes;
     }
 
+    public void setCopyBlockState(boolean copyBlockState) {
+        this.copyBlockState = copyBlockState;
+    }
+
+    public void setCopyBlockData(boolean copyBlockData) {
+        this.copyBlockData = copyBlockData;
+    }
+
     /**
      * Applies stored ItemMeta information to the given ItemStack
      *
@@ -75,11 +90,20 @@ public class ItemLootMeta {
 
         if (this.displayName != null) itemMeta.setDisplayName(HexUtils.colorify(this.displayName));
         if (this.lore != null) itemMeta.setLore(this.lore.stream().map(HexUtils::colorify).collect(Collectors.toList()));
-        if (this.customModelData != null) itemMeta.setCustomModelData(this.customModelData);
+        if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
         if (this.enchantments != null) this.enchantments.forEach((x, y) -> itemMeta.addEnchant(x, y, true));
         if (this.attributes != null) itemMeta.setAttributeModifiers(this.attributes);
+
+        Block block = context.getLootedBlock();
+        if (block != null && block.getType() == itemStack.getType()) {
+            if (this.copyBlockState && itemMeta instanceof BlockStateMeta)
+                ((BlockStateMeta) itemMeta).setBlockState(block.getState());
+
+            if (this.copyBlockData && itemMeta instanceof BlockDataMeta)
+                ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
+        }
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;
@@ -195,6 +219,12 @@ public class ItemLootMeta {
 
             meta.setAttributes(attributeModifiers);
         }
+
+        if (section.getBoolean("copy-block-state", false))
+            meta.setCopyBlockState(true);
+
+        if (section.getBoolean("copy-block-data", false))
+            meta.setCopyBlockData(true);
 
         return meta;
     }

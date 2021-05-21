@@ -15,6 +15,9 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Campfire;
+import org.bukkit.block.Container;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
@@ -58,6 +61,20 @@ public class BlockListener implements Listener {
                     .map(x -> (Player) x)
                     .filter(x -> x != event.getPlayer())
                     .forEach(x -> x.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType()));
+
+            // If the block has items in it, remove them
+            BlockState blockState = block.getState();
+            if (blockState instanceof Container) {
+                ((Container) blockState).getSnapshotInventory().clear();
+                blockState.update();
+            }
+
+            if (block.getType().name().contains("CAMPFIRE")) {
+                Campfire campfire = (Campfire) blockState;
+                for (int i = 0; i < 4; i++)
+                    campfire.setItem(i, null);
+                blockState.update();
+            }
 
             // Remove the block from the world
             if (block.getBlockData() instanceof Waterlogged && ((Waterlogged) block.getBlockData()).isWaterlogged()) {

@@ -1,7 +1,10 @@
 package dev.rosewood.roseloot.loot.condition;
 
 import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
+import dev.rosewood.roseloot.loot.condition.tags.BlockTagCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.BurningCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChargedExplosionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
@@ -28,7 +31,10 @@ public class LootConditions {
 
     static {
         registerTag("biome", BiomeCondition.class, "Biome the loot must be generated in");
+        registerTag("block-data", BlockDataCondition.class, "Block must have a block data value");
+        registerTag("block-tag", BlockTagCondition.class, "Tag the block must have");
         registerTag("block-type", BlockTypeCondition.class, "Type the looted block must be");
+        registerTag("burning", BurningCondition.class, "Looted entity must be on fire");
         registerTag("chance", ChanceCondition.class, "A random chance");
         registerTag("charged-explosion", ChargedExplosionCondition.class, "Must be caused by a charged creeper");
         registerTag("death-cause", DeathCauseCondition.class, "Type of damage cause that caused the death");

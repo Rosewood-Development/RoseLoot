@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.loot;
 
-import javax.annotation.Nullable;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -9,6 +8,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LootContext {
 
@@ -55,6 +55,7 @@ public class LootContext {
     /**
      * @return the Location for this context
      */
+    @NotNull
     public Location getLocation() {
         if (this.lootedEntity != null) return this.lootedEntity.getLocation();
         if (this.lootedBlock != null) return this.lootedBlock.getLocation();
@@ -75,6 +76,7 @@ public class LootContext {
     /**
      * @return the ItemStack used for this context
      */
+    @Nullable
     public ItemStack getItemUsed() {
         if (this.looter == null)
             return null;

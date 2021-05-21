@@ -1,0 +1,302 @@
+type: BLOCK
+overwrite-existing: true
+conditions:
+  - 'block-type:chest,trapped_chest,daylight_detector,cake,cauldron,bee_nest,beehive,composter,note_block,jukebox,spawner,brewing_stand,barrel,hopper,dispenser,dropper,furnace,blast_furnace,smoker,campfire,soul_campfire'
+  - 'enchantment:silk_touch'
+pools:
+  0:
+    conditions: 
+      - 'block-type:chest'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: chest
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  1:
+    conditions: 
+      - 'block-type:trapped_chest'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: trapped_chest
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  2:
+    conditions: 
+      - 'block-type:daylight_detector'
+    entries:
+      0:
+        conditions:
+          - 'block-data:inverted=false'
+        items:
+          0:
+            type: item
+            item: daylight_detector
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+      1:
+        conditions:
+          - 'block-data:inverted=true'
+        items:
+          0:
+            type: item
+            item: daylight_detector
+            display-name: '&fMoonlight Detector'
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+  3:
+    conditions: 
+      - 'block-type:cake'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: cake
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+  4:
+    conditions: 
+      - 'block-type:cauldron'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: cauldron
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+  5:
+    conditions: 
+      - 'block-type:bee_nest'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: bee_nest
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+            copy-block-state: true
+  6:
+    conditions: 
+      - 'block-type:beehive'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: beehive
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+            copy-block-state: true
+  7:
+    conditions: 
+      - 'block-type:composter'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: composter
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+  8:
+    conditions: 
+      - 'block-type:note_block'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: note_block
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+  9:
+    conditions: 
+      - 'block-type:spawner'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: spawner
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  10:
+    conditions: 
+      - 'block-type:brewing_stand'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: brewing_stand
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true
+            copy-block-state: true
+  11:
+    conditions: 
+      - 'block-type:barrel'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: barrel
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  12:
+    conditions: 
+      - 'block-type:hopper'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: hopper
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  13:
+    conditions: 
+      - 'block-type:dispenser'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: dispenser
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  14:
+    conditions: 
+      - 'block-type:dropper'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: dropper
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  15:
+    conditions: 
+      - 'block-type:furnace'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: furnace
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  16:
+    conditions: 
+      - 'block-type:blast_furnace'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: blast_furnace
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  17:
+    conditions: 
+      - 'block-type:smoker'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: smoker
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  18:
+    conditions: 
+      - 'block-type:campfire'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: campfire
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true
+  19:
+    conditions: 
+      - 'block-type:soul_campfire'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: soul_campfire
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-state: true

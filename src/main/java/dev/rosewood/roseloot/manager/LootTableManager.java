@@ -138,7 +138,7 @@ public class LootTableManager extends Manager {
                                 continue;
                             }
 
-                            LootItem lootItem = LootItem.fromSection(itemSection);
+                            LootItem lootItem = LootItem.fromSection(type, itemSection);
                             if (lootItem == null) {
                                 this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
                                 continue;

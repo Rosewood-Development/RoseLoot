@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootGenerator;
+import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -9,7 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 
 public abstract class LootItem implements LootGenerator {
 
-    public static LootItem fromSection(ConfigurationSection section) {
+    public static LootItem fromSection(LootTableType lootTableType, ConfigurationSection section) {
         LootItemType type = LootItemType.fromString(section.getString("type"));
         if (type == null)
             return null;
@@ -17,11 +18,11 @@ public abstract class LootItem implements LootGenerator {
         switch (type) {
             case ITEM:
                 String itemString = section.getString("item");
-                if (itemString == null)
+                if (itemString == null && lootTableType != LootTableType.BLOCK)
                     return null;
 
-                Material item = Material.matchMaterial(itemString);
-                if (item == null)
+                Material item = itemString == null ? null : Material.matchMaterial(itemString);
+                if (item == null && lootTableType != LootTableType.BLOCK)
                     return null;
 
                 int min, max;
