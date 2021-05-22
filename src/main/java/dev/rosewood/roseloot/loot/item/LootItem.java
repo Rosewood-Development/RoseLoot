@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootGenerator;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
@@ -9,6 +10,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 
 public abstract class LootItem implements LootGenerator {
+
+    @Override
+    public boolean check(LootContext context) {
+        return true;
+    }
 
     public static LootItem fromSection(LootTableType lootTableType, ConfigurationSection section) {
         LootItemType type = LootItemType.fromString(section.getString("type"));
@@ -22,7 +28,7 @@ public abstract class LootItem implements LootGenerator {
                     return null;
 
                 Material item = itemString == null ? null : Material.matchMaterial(itemString);
-                if (item == null && lootTableType != LootTableType.BLOCK)
+                if (item == null)
                     return null;
 
                 int min, max;
@@ -63,6 +69,11 @@ public abstract class LootItem implements LootGenerator {
                 if (!section.contains("value"))
                     return null;
                 return new CommandLootItem(section.getString("value"));
+
+            case LOOT_TABLE:
+                if (!section.contains("value"))
+                    return null;
+                return new LootTableLootItem(section.getString("value"));
 
             default:
                 throw new IllegalStateException("Invalid LootItemType specified!");

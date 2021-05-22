@@ -26,6 +26,11 @@ public class LootEntry implements LootGenerator {
         return new LootContents(this.lootItems.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
     }
 
+    @Override
+    public boolean check(LootContext context) {
+        return false;
+    }
+
     /**
      * Gets the weight of this entry taking the quality into account
      *
@@ -34,6 +39,13 @@ public class LootEntry implements LootGenerator {
      */
     public int getWeight(LootContext context) {
         return (int) Math.floor(this.weight + this.quality * context.getLuckLevel());
+    }
+
+    /**
+     * @return true if this entry is weighted
+     */
+    public boolean isWeighted() {
+        return this.weight > 0;
     }
 
 }

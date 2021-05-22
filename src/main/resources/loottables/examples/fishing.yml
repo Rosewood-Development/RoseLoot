@@ -7,12 +7,36 @@ pools:
     entries:
       0:
         conditions: []
-        weight: 1
+        weight: 10
+        quality: -2
         items:
           0:
-            type: item
-            item: book
-            amount: 1
-            enchant-randomly:
-              level: 30
-              treasure: true
+            type: loot_table
+            value: fishing/junk
+      1:
+        conditions:
+          - 'open-water'
+        weight: 5
+        quality: 2
+        items:
+          0:
+            type: loot_table
+            value: fishing/treasure
+      2:
+        conditions: []
+        weight: 85
+        quality: -1
+        items:
+          0:
+            type: loot_table
+            value: fishing/fish
+  1:
+    conditions: []
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: experience
+            min: 1
+            max: 6

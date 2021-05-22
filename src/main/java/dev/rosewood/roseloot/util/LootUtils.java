@@ -3,6 +3,8 @@ package dev.rosewood.roseloot.util;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.bukkit.NamespacedKey;
@@ -121,6 +123,29 @@ public final class LootUtils {
             }
             return spawnReason != null ? spawnReason : SpawnReason.CUSTOM;
         }
+    }
+
+    public static List<File> listFiles(File current, List<String> excludedDirectories, List<String> extensions) {
+        List<File> listedFiles = new ArrayList<>();
+        File[] files = current.listFiles();
+        if (files == null)
+            return listedFiles;
+
+        for (File file : files) {
+            if (file.isDirectory() && !excludedDirectories.contains(file.getName())) {
+                listedFiles.addAll(listFiles(file, excludedDirectories, extensions));
+            } else if (file.isFile() && extensions.stream().anyMatch(x -> file.getName().endsWith(x))) {
+                listedFiles.add(file);
+            }
+        }
+
+        return listedFiles;
+    }
+
+    public static String getFileName(File file) {
+        String name = file.getName();
+        int index = name.lastIndexOf('.');
+        return index == -1 ? name : name.substring(0, index);
     }
 
 }

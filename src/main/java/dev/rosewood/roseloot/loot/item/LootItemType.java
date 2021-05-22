@@ -4,7 +4,8 @@ public enum LootItemType {
 
     ITEM,
     EXPERIENCE,
-    COMMAND;
+    COMMAND,
+    LOOT_TABLE;
 
     public static LootItemType fromString(String name) {
         for (LootItemType value : values())

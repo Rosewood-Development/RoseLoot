@@ -1,0 +1,28 @@
+type: LOOT_TABLE
+pools:
+  0:
+    entries:
+      0:
+        weight: 60
+        items:
+          0:
+            type: item
+            item: cod
+      1:
+        weight: 25
+        items:
+          0:
+            type: item
+            item: salmon
+      2:
+        weight: 2
+        items:
+          0:
+            type: item
+            item: tropical_fish
+      3:
+        weight: 13
+        items:
+          0:
+            type: item
+            item: pufferfish

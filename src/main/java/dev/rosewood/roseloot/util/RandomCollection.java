@@ -16,7 +16,8 @@ public class RandomCollection<T> {
     }
 
     public void add(double weight, T element) {
-        this.elementToWeight.put(element, weight);
+        if (weight > 0)
+            this.elementToWeight.put(element, weight);
     }
 
     public T next() {

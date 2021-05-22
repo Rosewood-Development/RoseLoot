@@ -88,8 +88,8 @@ public class LootContext {
     /**
      * @return the luck level for this context, used for bonus rolls
      */
-    public int getLuckLevel() {
-        int luck = 0;
+    public double getLuckLevel() {
+        double luck = 0;
         if (this.looter != null) {
             AttributeInstance attribute = this.looter.getAttribute(Attribute.GENERIC_LUCK);
             if (attribute != null)
@@ -101,7 +101,7 @@ public class LootContext {
             if (item != null && item.getType() == Material.FISHING_ROD && item.getItemMeta() != null)
                 luck += item.getItemMeta().getEnchantLevel(Enchantment.LUCK);
         }
-
+        
         return luck;
     }
 

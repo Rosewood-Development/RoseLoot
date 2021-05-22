@@ -10,4 +10,12 @@ public interface LootGenerator {
      */
     LootContents generate(LootContext context);
 
+    /**
+     * Checks if this generator passes conditions
+     *
+     * @param context The LootContext
+     * @return true if conditions pass, false otherwise
+     */
+    boolean check(LootContext context);
+
 }

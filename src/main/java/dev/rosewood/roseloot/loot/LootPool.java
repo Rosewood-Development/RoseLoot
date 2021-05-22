@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
 
 public class LootPool implements LootGenerator {
 
@@ -22,7 +23,7 @@ public class LootPool implements LootGenerator {
 
     @Override
     public LootContents generate(LootContext context) {
-        if (!this.conditions.stream().allMatch(x -> x.check(context)))
+        if (!this.check(context))
             return LootContents.empty();
 
         if (this.entries.size() == 1)
@@ -32,17 +33,17 @@ public class LootPool implements LootGenerator {
         List<LootEntry> unweightedEntries = new ArrayList<>();
         RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
         for (LootEntry entry : this.entries) {
-            int weight = entry.getWeight(context);
-            if (weight > 0) {
-                // If weighted, add to the random entries
-                randomEntries.add(weight, entry);
+            if (entry.isWeighted()) {
+                // If weighted, add to the random entries if it passes conditions
+                randomEntries.add(entry.getWeight(context), entry);
             } else {
-                // Otherwise generate it right away
-                unweightedEntries.add(entry);
+                // Otherwise generate it right away if it passes conditions
+                if (entry.check(context))
+                    unweightedEntries.add(entry);
             }
         }
 
-        int numRolls = this.rolls + this.bonusRolls * context.getLuckLevel();
+        int numRolls = this.rolls + (int) Math.round(this.bonusRolls * context.getLuckLevel());
         for (int i = 0; i < numRolls; i++) {
             if (!randomEntries.isEmpty())
                 lootContents.add(randomEntries.next().generate(context));
@@ -50,6 +51,11 @@ public class LootPool implements LootGenerator {
         }
 
         return new LootContents(lootContents);
+    }
+
+    @Override
+    public boolean check(LootContext context) {
+        return this.conditions.stream().allMatch(x -> x.check(context));
     }
 
 }

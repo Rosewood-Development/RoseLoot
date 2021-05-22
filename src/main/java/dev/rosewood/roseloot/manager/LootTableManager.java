@@ -13,8 +13,10 @@ import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.LootConditions;
 import dev.rosewood.roseloot.loot.item.LootItem;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,10 +44,7 @@ public class LootTableManager extends Manager {
         for (LootTableType type : LootTableType.values())
             this.lootTables.put(type, new ArrayList<>());
 
-        File[] files = directory.listFiles((dir, name) -> name.endsWith(".yml"));
-        if (files == null)
-            return;
-
+        List<File> files = LootUtils.listFiles(directory, Collections.singletonList("examples"), Collections.singletonList("yml"));
         for (File file : files) {
             try {
                 ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);
@@ -153,7 +152,22 @@ public class LootTableManager extends Manager {
                     lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, lootEntries));
                 }
 
-                this.lootTables.get(type).add(new LootTable(type, conditions, lootPools, overwriteExisting));
+                File path = file;
+                List<String> pieces = new ArrayList<>();
+                do {
+                    pieces.add(LootUtils.getFileName(path));
+                    path = path.getParentFile();
+                } while (path != null && !path.equals(directory));
+
+                Collections.reverse(pieces);
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String piece : pieces) {
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('/');
+                    stringBuilder.append(piece);
+                }
+
+                this.lootTables.get(type).add(new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting));
             } catch (Exception e) {
                 this.failToLoad(file, null);
             }
@@ -173,6 +187,13 @@ public class LootTableManager extends Manager {
             overwriteExisting |= lootTable.shouldOverwriteExisting(lootContext);
         }
         return new LootResult(lootContext, new LootContents(lootContents), overwriteExisting);
+    }
+
+    public LootTable getLootTable(LootTableType lootTableType, String name) {
+        return this.lootTables.get(lootTableType).stream()
+                .filter(x -> x.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     private void issueLoading(File file, String reason) {

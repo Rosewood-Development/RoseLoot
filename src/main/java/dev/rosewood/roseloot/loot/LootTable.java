@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 
 public class LootTable implements LootGenerator {
 
+    private final String name;
     private final LootTableType type;
     private final List<LootCondition> conditions;
     private final List<LootPool> pools;
     private final boolean overwriteExisting;
 
-    public LootTable(LootTableType type, List<LootCondition> conditions, List<LootPool> pools, boolean overwriteExisting) {
+    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, boolean overwriteExisting) {
+        this.name = name;
         this.type = type;
         this.conditions = conditions;
         this.pools = pools;
@@ -20,9 +22,21 @@ public class LootTable implements LootGenerator {
 
     @Override
     public LootContents generate(LootContext context) {
-        if (!this.conditions.stream().allMatch(x -> x.check(context)))
+        if (!this.check(context))
             return LootContents.empty();
         return new LootContents(this.pools.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public boolean check(LootContext context) {
+        return this.conditions.stream().allMatch(x -> x.check(context));
+    }
+
+    /**
+     * @return the name of this LootTable
+     */
+    public String getName() {
+        return this.name;
     }
 
     /**
