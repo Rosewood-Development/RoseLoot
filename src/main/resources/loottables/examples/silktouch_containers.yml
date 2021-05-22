@@ -1,7 +1,7 @@
 type: BLOCK
 overwrite-existing: true
 conditions:
-  - 'block-type:chest,trapped_chest,daylight_detector,cake,cauldron,bee_nest,beehive,composter,note_block,jukebox,spawner,brewing_stand,barrel,hopper,dispenser,dropper,furnace,blast_furnace,smoker,campfire,soul_campfire'
+  - 'block-type:chest,trapped_chest,daylight_detector,cake,cauldron,bee_nest,beehive,composter,note_block,jukebox,spawner,brewing_stand,barrel,hopper,dispenser,dropper,furnace,blast_furnace,smoker,campfire,soul_campfire,respawn_anchor'
   - 'enchantment:silk_touch'
 pools:
   0:
@@ -300,3 +300,17 @@ pools:
               - '&7Picked up using Silk Touch'
             amount: 1
             copy-block-state: true
+  20:
+    conditions:
+      - 'block-type:respawn_anchor'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: respawn_anchor
+            lore:
+              - '&7Picked up using Silk Touch'
+            amount: 1
+            copy-block-data: true

@@ -42,7 +42,7 @@ public class LootTableManager extends Manager {
         for (LootTableType type : LootTableType.values())
             this.lootTables.put(type, new ArrayList<>());
 
-        File[] files = directory.listFiles();
+        File[] files = directory.listFiles((dir, name) -> name.endsWith(".yml"));
         if (files == null)
             return;
 
