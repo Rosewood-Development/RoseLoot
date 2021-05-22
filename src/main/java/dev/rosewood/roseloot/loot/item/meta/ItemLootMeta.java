@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public class ItemLootMeta {
     private Boolean unbreakable;
     private Integer repairCost;
     private OptionalPercentageValue minDurability, maxDurability;
+    private Integer enchantmentLevel;
+    private boolean includeTreasureEnchantments;
+    private boolean uncappedRandomEnchants;
     private List<ItemFlag> hideFlags;
     private Map<Enchantment, Integer> enchantments;
     private Multimap<Attribute, AttributeModifier> attributes;
@@ -69,6 +73,12 @@ public class ItemLootMeta {
     public void setDurability(OptionalPercentageValue minDurability, OptionalPercentageValue maxDurability) {
         this.minDurability = minDurability;
         this.maxDurability = maxDurability;
+    }
+
+    public void setRandomEnchantments(int level, boolean treasure, boolean uncapped) {
+        this.enchantmentLevel = level;
+        this.includeTreasureEnchantments = treasure;
+        this.uncappedRandomEnchants = uncapped;
     }
 
     public void setHideFlags(List<ItemFlag> hideFlags) {
@@ -139,6 +149,10 @@ public class ItemLootMeta {
         }
 
         itemStack.setItemMeta(itemMeta);
+
+        if (this.enchantmentLevel != null)
+            EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel, this.includeTreasureEnchantments, this.uncappedRandomEnchants);
+
         return itemStack;
     }
 
@@ -177,6 +191,15 @@ public class ItemLootMeta {
                         meta.setDurability(minDurability, maxDurability);
                 }
             }
+        }
+
+        ConfigurationSection enchantRandomlySection = section.getConfigurationSection("enchant-randomly");
+        if (enchantRandomlySection != null) {
+            int level = enchantRandomlySection.getInt("level", -1);
+            boolean treasure = enchantRandomlySection.getBoolean("treasure", false);
+            boolean uncapped = enchantRandomlySection.getBoolean("uncapped", false);
+            if (level > 0)
+                meta.setRandomEnchantments(level, treasure, uncapped);
         }
 
         if (section.isBoolean("hide-flags")) {

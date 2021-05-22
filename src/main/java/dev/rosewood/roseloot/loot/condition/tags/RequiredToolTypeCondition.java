@@ -29,11 +29,9 @@ public class RequiredToolTypeCondition extends LootCondition {
         this.toolTypes = new ArrayList<>();
 
         for (String value : values) {
-            try {
-                Material toolType = Material.matchMaterial(value);
-                if (toolType != null && toolType.isBlock())
-                    this.toolTypes.add(toolType);
-            } catch (Exception ignored) { }
+            Material toolType = Material.matchMaterial(value);
+            if (toolType != null)
+                this.toolTypes.add(toolType);
         }
 
         return !this.toolTypes.isEmpty();
