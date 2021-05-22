@@ -50,55 +50,144 @@ public class ItemLootMeta {
     protected Boolean copyBlockState;
     protected Boolean copyBlockData;
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+    public ItemLootMeta(ConfigurationSection section) {
+        if (section.isString("display-name")) this.displayName = section.getString("display-name");
+        if (section.isInt("custom-model-data")) this.customModelData = section.getInt("custom-model-data");
+        if (section.isBoolean("unbreakable")) this.unbreakable = section.getBoolean("unbreakable");
+        if (section.isInt("repair-cost")) this.repairCost = section.getInt("repair-cost");
 
-    public void setLore(List<String> lore) {
-        this.lore = lore;
-    }
+        if (section.isList("lore")) {
+            this.lore = section.getStringList("lore");
+        } else if (section.isString("lore")) {
+            this.lore = Collections.singletonList(section.getString("lore"));
+        }
 
-    public void setCustomModelData(int customModelData) {
-        this.customModelData = customModelData;
-    }
+        if (section.contains("durability")) {
+            if (!section.isConfigurationSection("durability")) {
+                // Fixed value
+                OptionalPercentageValue durability = OptionalPercentageValue.parse(section.getString("durability"));
+                if (durability != null)
+                    this.minDurability = durability;
+            } else {
+                // Min/max values
+                ConfigurationSection durabilitySection = section.getConfigurationSection("durability");
+                if (durabilitySection != null) {
+                    OptionalPercentageValue minDurability = OptionalPercentageValue.parse(durabilitySection.getString("min"));
+                    OptionalPercentageValue maxDurability = OptionalPercentageValue.parse(durabilitySection.getString("max"));
+                    if (minDurability != null && maxDurability != null) {
+                        this.minDurability = minDurability;
+                        this.maxDurability = maxDurability;
+                    }
+                }
+            }
+        }
 
-    public void setUnbreakable(boolean unbreakable) {
-        this.unbreakable = unbreakable;
-    }
+        ConfigurationSection enchantRandomlySection = section.getConfigurationSection("enchant-randomly");
+        if (enchantRandomlySection != null) {
+            int level = enchantRandomlySection.getInt("level", -1);
+            boolean treasure = enchantRandomlySection.getBoolean("treasure", false);
+            boolean uncapped = enchantRandomlySection.getBoolean("uncapped", false);
+            if (level > 0) {
+                this.enchantmentLevel = level;
+                this.includeTreasureEnchantments = treasure;
+                this.uncappedRandomEnchants = uncapped;
+            }
+        }
 
-    public void setRepairCost(int repairCost) {
-        this.repairCost = repairCost;
-    }
+        if (section.isBoolean("hide-flags")) {
+            if (section.getBoolean("hide-flags"))
+                this.hideFlags = Arrays.asList(ItemFlag.values());
+        } else if (section.isList("hide-flags")) {
+            List<String> flagNames = section.getStringList("hide-flags");
+            List<ItemFlag> hideFlags = new ArrayList<>();
+            outer:
+            for (ItemFlag value : ItemFlag.values()) {
+                for (String flagName : flagNames) {
+                    if (value.name().toLowerCase().contains(flagName.toLowerCase())) {
+                        hideFlags.add(value);
+                        continue outer;
+                    }
+                }
+            }
 
-    public void setDurability(OptionalPercentageValue minDurability, OptionalPercentageValue maxDurability) {
-        this.minDurability = minDurability;
-        this.maxDurability = maxDurability;
-    }
+            if (!flagNames.isEmpty())
+                this.hideFlags = hideFlags;
+        }
 
-    public void setRandomEnchantments(int level, boolean treasure, boolean uncapped) {
-        this.enchantmentLevel = level;
-        this.includeTreasureEnchantments = treasure;
-        this.uncappedRandomEnchants = uncapped;
-    }
+        ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
+        if (enchantmentsSection != null) {
+            Map<Enchantment, Integer> enchantments = new HashMap<>();
+            for (String enchantmentName : enchantmentsSection.getKeys(false)) {
+                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
+                int level = enchantmentsSection.getInt(enchantmentName, 1);
+                enchantments.put(enchantment, level);
+            }
+            this.enchantments = enchantments;
+        }
 
-    public void setHideFlags(List<ItemFlag> hideFlags) {
-        this.hideFlags = hideFlags;
-    }
+        ConfigurationSection attributesSection = section.getConfigurationSection("attributes");
+        if (attributesSection != null) {
+            Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
+            for (String key : attributesSection.getKeys(false)) {
+                ConfigurationSection attributeSection = attributesSection.getConfigurationSection(key);
+                if (attributeSection == null)
+                    continue;
 
-    public void setEnchantments(Map<Enchantment, Integer> enchantments) {
-        this.enchantments = enchantments;
-    }
+                String name = attributeSection.getString("name");
+                if (name == null || name.isEmpty())
+                    continue;
 
-    public void setAttributes(Multimap<Attribute, AttributeModifier> attributes) {
-        this.attributes = attributes;
-    }
+                NamespacedKey nameKey = NamespacedKey.fromString(name.toLowerCase());
+                Attribute attribute = null;
+                for (Attribute value : Attribute.values()) {
+                    if (value.getKey().equals(nameKey)) {
+                        attribute = value;
+                        break;
+                    }
+                }
 
-    public void setCopyBlockState(boolean copyBlockState) {
-        this.copyBlockState = copyBlockState;
-    }
+                if (attribute == null)
+                    continue;
 
-    public void setCopyBlockData(boolean copyBlockData) {
-        this.copyBlockData = copyBlockData;
+                double amount = attributeSection.getDouble("amount", 0);
+
+                String operationName = attributeSection.getString("operation");
+                if (operationName == null)
+                    continue;
+
+                AttributeModifier.Operation operation = null;
+                for (AttributeModifier.Operation value : AttributeModifier.Operation.values()) {
+                    if (value.name().equalsIgnoreCase(operationName)) {
+                        operation = value;
+                        break;
+                    }
+                }
+
+                if (operation == null)
+                    break;
+
+                String slotName = attributeSection.getString("slot");
+                EquipmentSlot slot = null;
+                if (slotName != null) {
+                    for (EquipmentSlot value : EquipmentSlot.values()) {
+                        if (value.name().equalsIgnoreCase(slotName)) {
+                            slot = value;
+                            break;
+                        }
+                    }
+                }
+
+                attributeModifiers.put(attribute, new AttributeModifier(UUID.randomUUID(), attribute.getKey().getKey(), amount, operation, slot));
+            }
+
+            this.attributes = attributeModifiers;
+        }
+
+        if (section.getBoolean("copy-block-state", false))
+            this.copyBlockState = true;
+
+        if (section.getBoolean("copy-block-data", false))
+            this.copyBlockData = true;
     }
 
     /**
@@ -157,147 +246,10 @@ public class ItemLootMeta {
     }
 
     public static ItemLootMeta fromSection(Material material, ConfigurationSection section) {
-        ItemLootMeta meta;
         switch (material) {
             default:
-                meta = new ItemLootMeta();
-                break;
+                return new ItemLootMeta(section);
         }
-
-        if (section.isString("display-name")) meta.setDisplayName(section.getString("display-name"));
-        if (section.isInt("custom-model-data")) meta.setCustomModelData(section.getInt("custom-model-data"));
-        if (section.isBoolean("unbreakable")) meta.setUnbreakable(section.getBoolean("unbreakable"));
-        if (section.isInt("repair-cost")) meta.setRepairCost(section.getInt("repair-cost"));
-
-        if (section.isList("lore")) {
-            meta.setLore(section.getStringList("lore"));
-        } else if (section.isString("lore")) {
-            meta.setLore(Collections.singletonList(section.getString("lore")));
-        }
-
-        if (section.contains("durability")) {
-            if (!section.isConfigurationSection("durability")) {
-                // Fixed value
-                OptionalPercentageValue durability = OptionalPercentageValue.parse(section.getString("durability"));
-                if (durability != null)
-                    meta.setDurability(durability, null);
-            } else {
-                // Min/max values
-                ConfigurationSection durabilitySection = section.getConfigurationSection("durability");
-                if (durabilitySection != null) {
-                    OptionalPercentageValue minDurability = OptionalPercentageValue.parse(durabilitySection.getString("min"));
-                    OptionalPercentageValue maxDurability = OptionalPercentageValue.parse(durabilitySection.getString("max"));
-                    if (minDurability != null && maxDurability != null)
-                        meta.setDurability(minDurability, maxDurability);
-                }
-            }
-        }
-
-        ConfigurationSection enchantRandomlySection = section.getConfigurationSection("enchant-randomly");
-        if (enchantRandomlySection != null) {
-            int level = enchantRandomlySection.getInt("level", -1);
-            boolean treasure = enchantRandomlySection.getBoolean("treasure", false);
-            boolean uncapped = enchantRandomlySection.getBoolean("uncapped", false);
-            if (level > 0)
-                meta.setRandomEnchantments(level, treasure, uncapped);
-        }
-
-        if (section.isBoolean("hide-flags")) {
-            if (section.getBoolean("hide-flags"))
-                meta.setHideFlags(Arrays.asList(ItemFlag.values()));
-        } else if (section.isList("hide-flags")) {
-            List<String> flagNames = section.getStringList("hide-flags");
-            List<ItemFlag> hideFlags = new ArrayList<>();
-            outer:
-            for (ItemFlag value : ItemFlag.values()) {
-                for (String flagName : flagNames) {
-                    if (value.name().toLowerCase().contains(flagName.toLowerCase())) {
-                        hideFlags.add(value);
-                        continue outer;
-                    }
-                }
-            }
-
-            if (!flagNames.isEmpty())
-                meta.setHideFlags(hideFlags);
-        }
-
-        ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
-        if (enchantmentsSection != null) {
-            Map<Enchantment, Integer> enchantments = new HashMap<>();
-            for (String enchantmentName : enchantmentsSection.getKeys(false)) {
-                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
-                int level = enchantmentsSection.getInt(enchantmentName, 1);
-                enchantments.put(enchantment, level);
-            }
-            meta.setEnchantments(enchantments);
-        }
-
-        ConfigurationSection attributesSection = section.getConfigurationSection("attributes");
-        if (attributesSection != null) {
-            Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
-            for (String key : attributesSection.getKeys(false)) {
-                ConfigurationSection attributeSection = attributesSection.getConfigurationSection(key);
-                if (attributeSection == null)
-                    continue;
-
-                String name = attributeSection.getString("name");
-                if (name == null || name.isEmpty())
-                    continue;
-
-                NamespacedKey nameKey = NamespacedKey.fromString(name.toLowerCase());
-                Attribute attribute = null;
-                for (Attribute value : Attribute.values()) {
-                    if (value.getKey().equals(nameKey)) {
-                        attribute = value;
-                        break;
-                    }
-                }
-
-                if (attribute == null)
-                    continue;
-
-                double amount = attributeSection.getDouble("amount", 0);
-
-                String operationName = attributeSection.getString("operation");
-                if (operationName == null)
-                    continue;
-
-                AttributeModifier.Operation operation = null;
-                for (AttributeModifier.Operation value : AttributeModifier.Operation.values()) {
-                    if (value.name().equalsIgnoreCase(operationName)) {
-                        operation = value;
-                        break;
-                    }
-                }
-
-                if (operation == null)
-                    break;
-
-                String slotName = attributeSection.getString("slot");
-                EquipmentSlot slot = null;
-                if (slotName != null) {
-                    for (EquipmentSlot value : EquipmentSlot.values()) {
-                        if (value.name().equalsIgnoreCase(slotName)) {
-                            slot = value;
-                            break;
-                        }
-                    }
-                }
-
-                attributeModifiers.put(attribute, new AttributeModifier(UUID.randomUUID(), attribute.getKey().getKey(), amount, operation, slot));
-            }
-
-            meta.setAttributes(attributeModifiers);
-        }
-
-        if (section.getBoolean("copy-block-state", false))
-            meta.setCopyBlockState(true);
-
-        if (section.getBoolean("copy-block-data", false))
-            meta.setCopyBlockData(true);
-
-        return meta;
     }
 
 }
