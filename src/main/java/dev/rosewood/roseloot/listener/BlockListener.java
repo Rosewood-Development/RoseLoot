@@ -14,6 +14,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Campfire;
@@ -80,6 +81,9 @@ public class BlockListener implements Listener {
             } else {
                 block.setType(Material.AIR);
             }
+
+            // Increment statistic
+            event.getPlayer().incrementStatistic(Statistic.MINE_BLOCK, block.getType());
         }
 
         // Drop items and experience

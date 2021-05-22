@@ -1,0 +1,18 @@
+type: FISHING
+overwrite-existing: true
+conditions: []
+pools:
+  0:
+    conditions: []
+    entries:
+      0:
+        conditions: []
+        weight: 1
+        items:
+          0:
+            type: item
+            item: book
+            amount: 1
+            enchant-randomly:
+              level: 30
+              treasure: true
