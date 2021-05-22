@@ -2,7 +2,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import org.bukkit.NamespacedKey;
+import dev.rosewood.roseloot.util.EnchantingUtils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,7 +39,7 @@ public class EnchantmentCondition extends LootCondition {
         if (values.length == 0)
             return false;
 
-        this.enchantment = Enchantment.getByKey(NamespacedKey.minecraft(values[0].toLowerCase()));
+        this.enchantment = EnchantingUtils.getEnchantmentByName(values[0]);
 
         if (values.length > 1) {
             try {

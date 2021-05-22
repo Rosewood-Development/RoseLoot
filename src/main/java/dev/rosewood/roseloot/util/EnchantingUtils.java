@@ -22,6 +22,25 @@ public final class EnchantingUtils {
 
     }
 
+    /**
+     * Gets an Enchantment by its vanilla name
+     *
+     * @param name The name of the enchantment
+     * @return The Enchantment, or null if not found
+     */
+    public static Enchantment getEnchantmentByName(String name) {
+        return Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
+    }
+
+    /**
+     * Randomly enchants an item using vanilla logic
+     *
+     * @param itemStack The ItemStack to enchant
+     * @param level The level of the enchant (equivalent to enchanting table levels)
+     * @param treasure Whether or not treasure enchantments will be included (ex. mending)
+     * @param uncapped A for-fun value, removes the max enchantment cost cap to allow for crazy enchantments
+     * @return The same ItemStack
+     */
     public static ItemStack randomlyEnchant(ItemStack itemStack, int level, boolean treasure, boolean uncapped) {
         if (itemStack.getType() == Material.BOOK)
             itemStack.setType(Material.ENCHANTED_BOOK);
@@ -348,7 +367,7 @@ public final class EnchantingUtils {
         private final Rarity rarity;
 
         EnchantmentInfo(Rarity rarity) {
-            this.enchantment = Enchantment.getByKey(NamespacedKey.minecraft(this.name().toLowerCase()));
+            this.enchantment = getEnchantmentByName(this.name());
             this.rarity = rarity;
         }
 

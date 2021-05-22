@@ -226,7 +226,7 @@ public class ItemLootMeta {
         if (enchantmentsSection != null) {
             Map<Enchantment, Integer> enchantments = new HashMap<>();
             for (String enchantmentName : enchantmentsSection.getKeys(false)) {
-                Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantmentName.toLowerCase()));
+                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
                 int level = enchantmentsSection.getInt(enchantmentName, 1);
                 enchantments.put(enchantment, level);
             }

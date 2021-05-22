@@ -3,8 +3,8 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.loot.LootGenerator;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
+import dev.rosewood.roseloot.util.EnchantingUtils;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 
@@ -38,7 +38,7 @@ public abstract class LootItem implements LootGenerator {
                 if (enchantmentBonusSection != null) {
                     String enchantmentString = enchantmentBonusSection.getString("enchantment");
                     if (enchantmentString != null) {
-                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantmentString.toLowerCase()));
+                        Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
                         int bonusPerLevel = enchantmentBonusSection.getInt("bonus-per-level", -1);
                         if (enchantment != null && bonusPerLevel > 0)
                             enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel);

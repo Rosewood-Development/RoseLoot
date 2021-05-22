@@ -2,8 +2,8 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -52,7 +52,7 @@ public class EnchantmentChanceCondition extends LootCondition {
                 value2 = value2.substring(0, value2.length() - 1);
 
             this.chance = Double.parseDouble(value1) / 100;
-            this.enchantment = Enchantment.getByKey(NamespacedKey.minecraft(values[1].toLowerCase()));
+            this.enchantment = EnchantingUtils.getEnchantmentByName(values[1]);
             this.chancePerLevel = Double.parseDouble(value2) / 100;
             return true;
         } catch (NumberFormatException e) {
