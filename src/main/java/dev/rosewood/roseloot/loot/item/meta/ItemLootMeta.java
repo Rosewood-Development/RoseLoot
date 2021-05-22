@@ -5,6 +5,8 @@ import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +27,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 
 public class ItemLootMeta {
 
@@ -33,12 +37,14 @@ public class ItemLootMeta {
     private List<String> lore;
     private Integer customModelData;
     private Boolean unbreakable;
+    private Integer repairCost;
+    private OptionalPercentageValue minDurability, maxDurability;
     private List<ItemFlag> hideFlags;
     private Map<Enchantment, Integer> enchantments;
     private Multimap<Attribute, AttributeModifier> attributes;
 
-    protected boolean copyBlockState;
-    protected boolean copyBlockData;
+    protected Boolean copyBlockState;
+    protected Boolean copyBlockData;
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -54,6 +60,15 @@ public class ItemLootMeta {
 
     public void setUnbreakable(boolean unbreakable) {
         this.unbreakable = unbreakable;
+    }
+
+    public void setRepairCost(int repairCost) {
+        this.repairCost = repairCost;
+    }
+
+    public void setDurability(OptionalPercentageValue minDurability, OptionalPercentageValue maxDurability) {
+        this.minDurability = minDurability;
+        this.maxDurability = maxDurability;
     }
 
     public void setHideFlags(List<ItemFlag> hideFlags) {
@@ -96,12 +111,30 @@ public class ItemLootMeta {
         if (this.enchantments != null) this.enchantments.forEach((x, y) -> itemMeta.addEnchant(x, y, true));
         if (this.attributes != null) itemMeta.setAttributeModifiers(this.attributes);
 
+        if (itemMeta instanceof Damageable && this.minDurability != null) {
+            Damageable damageable = (Damageable) itemMeta;
+            int max = itemStack.getType().getMaxDurability();
+            if (this.maxDurability == null) {
+                // Set fixed durability value
+                int durability = this.minDurability.getAsInt(max);
+                damageable.setDamage(itemStack.getType().getMaxDurability() - durability);
+            } else {
+                // Set random durability in range
+                int minDurability = this.minDurability.getAsInt(max);
+                int maxDurability = this.maxDurability.getAsInt(max);
+                damageable.setDamage(itemStack.getType().getMaxDurability() - LootUtils.randomInRange(minDurability, maxDurability));
+            }
+        }
+
+        if (this.repairCost != null && itemMeta instanceof Repairable)
+            ((Repairable) itemMeta).setRepairCost(this.repairCost);
+
         Block block = context.getLootedBlock();
         if (block != null && block.getType() == itemStack.getType()) {
-            if (this.copyBlockState && itemMeta instanceof BlockStateMeta)
+            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta)
                 ((BlockStateMeta) itemMeta).setBlockState(block.getState());
 
-            if (this.copyBlockData && itemMeta instanceof BlockDataMeta)
+            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta)
                 ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
         }
 
@@ -117,38 +150,53 @@ public class ItemLootMeta {
                 break;
         }
 
-        if (section.contains("display-name")) meta.setDisplayName(section.getString("display-name"));
-        if (section.contains("custom-model-data")) meta.setCustomModelData(section.getInt("custom-model-data"));
-        if (section.contains("unbreakable")) meta.setUnbreakable(section.getBoolean("unbreakable"));
+        if (section.isString("display-name")) meta.setDisplayName(section.getString("display-name"));
+        if (section.isInt("custom-model-data")) meta.setCustomModelData(section.getInt("custom-model-data"));
+        if (section.isBoolean("unbreakable")) meta.setUnbreakable(section.getBoolean("unbreakable"));
+        if (section.isInt("repair-cost")) meta.setRepairCost(section.getInt("repair-cost"));
 
-        if (section.contains("lore")) {
-            if (section.isList("lore")) {
-                meta.setLore(section.getStringList("lore"));
+        if (section.isList("lore")) {
+            meta.setLore(section.getStringList("lore"));
+        } else if (section.isString("lore")) {
+            meta.setLore(Collections.singletonList(section.getString("lore")));
+        }
+
+        if (section.contains("durability")) {
+            if (!section.isConfigurationSection("durability")) {
+                // Fixed value
+                OptionalPercentageValue durability = OptionalPercentageValue.parse(section.getString("durability"));
+                if (durability != null)
+                    meta.setDurability(durability, null);
             } else {
-                meta.setLore(Collections.singletonList(section.getString("lore")));
+                // Min/max values
+                ConfigurationSection durabilitySection = section.getConfigurationSection("durability");
+                if (durabilitySection != null) {
+                    OptionalPercentageValue minDurability = OptionalPercentageValue.parse(durabilitySection.getString("min"));
+                    OptionalPercentageValue maxDurability = OptionalPercentageValue.parse(durabilitySection.getString("max"));
+                    if (minDurability != null && maxDurability != null)
+                        meta.setDurability(minDurability, maxDurability);
+                }
             }
         }
 
-        if (section.contains("hide-flags")) {
-            if (section.isBoolean("hide-flags")) {
-                if (section.getBoolean("hide-flags"))
-                    meta.setHideFlags(Arrays.asList(ItemFlag.values()));
-            } else if (section.isList("hide-flags")) {
-                List<String> flagNames = section.getStringList("hide-flags");
-                List<ItemFlag> hideFlags = new ArrayList<>();
-                outer:
-                for (ItemFlag value : ItemFlag.values()) {
-                    for (String flagName : flagNames) {
-                        if (value.name().toLowerCase().contains(flagName.toLowerCase())) {
-                            hideFlags.add(value);
-                            continue outer;
-                        }
+        if (section.isBoolean("hide-flags")) {
+            if (section.getBoolean("hide-flags"))
+                meta.setHideFlags(Arrays.asList(ItemFlag.values()));
+        } else if (section.isList("hide-flags")) {
+            List<String> flagNames = section.getStringList("hide-flags");
+            List<ItemFlag> hideFlags = new ArrayList<>();
+            outer:
+            for (ItemFlag value : ItemFlag.values()) {
+                for (String flagName : flagNames) {
+                    if (value.name().toLowerCase().contains(flagName.toLowerCase())) {
+                        hideFlags.add(value);
+                        continue outer;
                     }
                 }
-
-                if (!flagNames.isEmpty())
-                    meta.setHideFlags(hideFlags);
             }
+
+            if (!flagNames.isEmpty())
+                meta.setHideFlags(hideFlags);
         }
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");

@@ -67,9 +67,7 @@ public class BlockListener implements Listener {
             if (blockState instanceof Container) {
                 ((Container) blockState).getSnapshotInventory().clear();
                 blockState.update();
-            }
-
-            if (block.getType().name().contains("CAMPFIRE")) {
+            } else if (block.getType().name().contains("CAMPFIRE")) { // No instanceof check here due to legacy version support
                 Campfire campfire = (Campfire) blockState;
                 for (int i = 0; i < 4; i++)
                     campfire.setItem(i, null);
