@@ -45,6 +45,7 @@ public class FishingListener implements Listener {
 
         LootContext lootContext = new LootContext(player, fishHook);
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.FISHING, lootContext);
+        LootContents lootContents = lootResult.getLootContents();
 
         if (lootResult.shouldOverwriteExisting()) {
             // Prevent the reel
@@ -62,14 +63,13 @@ public class FishingListener implements Listener {
             fishHook.remove();
 
             // Increment statistic for each fish we caught
-            lootResult.getLootContents().getItems()
+            lootContents.getItems()
                     .stream()
                     .filter(x -> Tag.ITEMS_FISHES.isTagged(x.getType()))
                     .forEach(x -> player.incrementStatistic(Statistic.FISH_CAUGHT));
         }
 
         // Drop items and experience
-        LootContents lootContents = lootResult.getLootContents();
         for (ItemStack itemStack : lootContents.getItems()) {
             double x = player.getLocation().getX() - fishHook.getLocation().getX();
             double y = player.getLocation().getY() - fishHook.getLocation().getY();

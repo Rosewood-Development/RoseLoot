@@ -92,7 +92,20 @@ public class LootTableManager extends Manager {
                         poolConditions.add(condition);
                     }
 
-                    int rolls = poolSection.getInt("rolls", 1);
+                    int minRolls, maxRolls;
+                    if (poolSection.isConfigurationSection("rolls")) {
+                        ConfigurationSection rollsSection = poolSection.getConfigurationSection("rolls");
+                        if (rollsSection == null) {
+                            this.issueLoading(file, "Invalid pool rolls section");
+                            continue;
+                        }
+
+                        minRolls = rollsSection.getInt("min", 1);
+                        maxRolls = rollsSection.getInt("max", 1);
+                    } else {
+                        minRolls = maxRolls = poolSection.getInt("rolls", 1);
+                    }
+
                     int bonusRolls = poolSection.getInt("bonus-rolls", 0);
 
                     ConfigurationSection entriesSection = poolSection.getConfigurationSection("entries");
@@ -149,7 +162,7 @@ public class LootTableManager extends Manager {
                         lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems));
                     }
 
-                    lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, lootEntries));
+                    lootPools.add(new LootPool(poolConditions, minRolls, maxRolls, bonusRolls, lootEntries));
                 }
 
                 File path = file;

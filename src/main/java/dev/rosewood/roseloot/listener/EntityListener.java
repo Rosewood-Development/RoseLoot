@@ -50,6 +50,7 @@ public class EntityListener implements Listener {
 
         LootContext lootContext = new LootContext(looter, entity);
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY, lootContext);
+        LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
         if (lootResult.shouldOverwriteExisting()) {
@@ -58,7 +59,6 @@ public class EntityListener implements Listener {
         }
 
         // Add items to drops and adjust experience
-        LootContents lootContents = lootResult.getLootContents();
         event.getDrops().addAll(lootContents.getItems());
         event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
 

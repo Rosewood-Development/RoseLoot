@@ -1,0 +1,198 @@
+type: CONTAINER
+overwrite-existing: true
+conditions:
+  - 'vanilla-loot-table:chests/simple_dungeon'
+pools:
+  0:
+    rolls:
+      min: 1
+      max: 3
+    entries:
+      0:
+        weight: 20
+        items:
+          0:
+            type: item
+            item: saddle
+      1:
+        weight: 15
+        items:
+          0:
+            type: item
+            item: golden_apple
+      2:
+        weight: 2
+        items:
+          0:
+            type: item
+            item: enchanted_golden_apple
+      3:
+        weight: 15
+        items:
+          0:
+            type: item
+            item: music_disc_13
+      4:
+        weight: 15
+        items:
+          0:
+            type: item
+            item: music_disc_cat
+      5:
+        weight: 20
+        items:
+          0:
+            type: item
+            item: name_tag
+      6:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: golden_horse_armor
+      7:
+        weight: 15
+        items:
+          0:
+            type: item
+            item: iron_horse_armor
+      8:
+        weight: 5
+        items:
+          0:
+            type: item
+            item: diamond_horse_armor
+      9:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: book
+            enchant-randomly:
+              level: 30
+              treasure: true
+  1:
+    rolls:
+      min: 1
+      max: 4
+    entries:
+      0:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: iron_ingot
+            min: 1
+            max: 4
+      1:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: gold_ingot
+            min: 1
+            max: 4
+      2:
+        weight: 20
+        items:
+          0:
+            type: item
+            item: bread
+      3:
+        weight: 20
+        items:
+          0:
+            type: item
+            item: wheat
+            min: 1
+            max: 4
+      4:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: bucket
+      5:
+        weight: 15
+        items:
+          0:
+            type: item
+            item: redstone
+            min: 1
+            max: 4
+      6:
+        weight: 15
+        items:
+          0:
+            type: item
+            item: coal
+            min: 1
+            max: 4
+      7:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: melon_seeds
+            min: 2
+            max: 4
+      8:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: pumpkin_seeds
+            min: 2
+            max: 4
+      9:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: beetroot_seeds
+            min: 2
+            max: 4
+  2:
+    rolls: 3
+    entries:
+      0:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: bone
+            min: 1
+            max: 8
+      1:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: gunpowder
+            min: 1
+            max: 8
+      2:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: rotten_flesh
+            min: 1
+            max: 8
+      3:
+        weight: 10
+        items:
+          0:
+            type: item
+            item: string
+            min: 1
+            max: 8
+  3:
+    rolls: 1
+    entries:
+      0:
+        weight: 10
+        items:
+          0:
+            type: command
+            value: 'say Running custom dungeon_chest loot table!'

@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
@@ -19,12 +20,14 @@ public class LootContext {
     private final LivingEntity lootedEntity;
     private final Block lootedBlock;
     private final FishHook fishHook;
+    private final NamespacedKey vanillaLootTableKey;
 
     public LootContext(@Nullable LivingEntity looter, @NotNull LivingEntity lootedEntity) {
         this.looter = looter;
         this.lootedEntity = lootedEntity;
         this.lootedBlock = null;
         this.fishHook = null;
+        this.vanillaLootTableKey = null;
     }
 
     public LootContext(@Nullable LivingEntity looter, @NotNull Block lootedBlock) {
@@ -32,6 +35,7 @@ public class LootContext {
         this.lootedBlock = lootedBlock;
         this.lootedEntity = null;
         this.fishHook = null;
+        this.vanillaLootTableKey = null;
     }
 
     public LootContext(@NotNull LivingEntity looter, @NotNull FishHook fishHook) {
@@ -39,6 +43,15 @@ public class LootContext {
         this.fishHook = fishHook;
         this.lootedEntity = null;
         this.lootedBlock = null;
+        this.vanillaLootTableKey = null;
+    }
+
+    public LootContext(@Nullable LivingEntity looter, @NotNull Block lootedBlock, @NotNull NamespacedKey vanillaLootTableKey) {
+        this.looter = looter;
+        this.lootedBlock = lootedBlock;
+        this.vanillaLootTableKey = vanillaLootTableKey;
+        this.lootedEntity = null;
+        this.fishHook = null;
     }
 
     /**
@@ -71,6 +84,11 @@ public class LootContext {
     @Nullable
     public FishHook getFishHook() {
         return this.fishHook;
+    }
+
+    @Nullable
+    public NamespacedKey getVanillaLootTableKey() {
+        return this.vanillaLootTableKey;
     }
 
     /**

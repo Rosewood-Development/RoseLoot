@@ -36,6 +36,7 @@ public class BlockListener implements Listener {
 
         LootContext lootContext = new LootContext(event.getPlayer(), block);
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
+        LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
         if (lootResult.shouldOverwriteExisting()) {
@@ -44,7 +45,6 @@ public class BlockListener implements Listener {
         }
 
         // Drop items and experience
-        LootContents lootContents = lootResult.getLootContents();
         Location dropLocation = block.getLocation();
         lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
 

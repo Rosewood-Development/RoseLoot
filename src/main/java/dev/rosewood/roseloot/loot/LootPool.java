@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +10,14 @@ import java.util.stream.Collectors;
 public class LootPool implements LootGenerator {
 
     private final List<LootCondition> conditions;
-    private final int rolls;
+    private final int minRolls, maxRolls;
     private final int bonusRolls;
     private final List<LootEntry> entries;
 
-    public LootPool(List<LootCondition> conditions, int rolls, int bonusRolls, List<LootEntry> entries) {
+    public LootPool(List<LootCondition> conditions, int minRolls, int maxRolls, int bonusRolls, List<LootEntry> entries) {
         this.conditions = conditions;
-        this.rolls = rolls;
+        this.minRolls = minRolls;
+        this.maxRolls = maxRolls;
         this.bonusRolls = bonusRolls;
         this.entries = entries;
     }
@@ -44,7 +46,7 @@ public class LootPool implements LootGenerator {
             }
         }
 
-        int numRolls = this.rolls + (int) Math.round(this.bonusRolls * context.getLuckLevel());
+        int numRolls = LootUtils.randomInRange(this.minRolls, this.maxRolls) + (int) Math.round(this.bonusRolls * context.getLuckLevel());
         for (int i = 0; i < numRolls; i++) {
             if (!randomEntries.isEmpty())
                 lootContents.add(randomEntries.next().generate(context));

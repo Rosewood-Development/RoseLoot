@@ -18,6 +18,7 @@ import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
+import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
@@ -49,6 +50,7 @@ public class LootConditions {
         registerTag("required-tool", RequiredToolCondition.class, "Type and quality of tool required");
         registerTag("required-tool-type", RequiredToolTypeCondition.class, "Exact type of tool required");
         registerTag("spawn-reason", SpawnReasonCondition.class, "Spawn reason the entity must have");
+        registerTag("vanilla-loot-table", VanillaLootTableCondition.class, "Loot must be for a specific vanilla loot table");
         registerTag("world", WorldCondition.class, "Loot must be generated in a specific world");
     }
 
