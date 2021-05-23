@@ -8,8 +8,10 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.Tag;
 import org.bukkit.entity.ExperienceOrb;
@@ -20,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 public class FishingListener implements Listener {
@@ -46,6 +49,14 @@ public class FishingListener implements Listener {
         if (lootResult.shouldOverwriteExisting()) {
             // Prevent the reel
             event.setCancelled(true);
+
+            // Damage tool
+            PlayerInventory inventory = event.getPlayer().getInventory();
+            if (inventory.getItemInMainHand().getType() == Material.FISHING_ROD) {
+                LootUtils.damageTool(inventory.getItemInMainHand());
+            } else if (inventory.getItemInOffHand().getType() == Material.FISHING_ROD) {
+                LootUtils.damageTool(inventory.getItemInOffHand());
+            }
 
             // Remove hook
             fishHook.remove();
