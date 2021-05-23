@@ -5,7 +5,6 @@ import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
 
 public class LootPool implements LootGenerator {
 
@@ -33,13 +32,15 @@ public class LootPool implements LootGenerator {
         List<LootEntry> unweightedEntries = new ArrayList<>();
         RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
         for (LootEntry entry : this.entries) {
+            if (!entry.check(context))
+                continue;
+
             if (entry.isWeighted()) {
-                // If weighted, add to the random entries if it passes conditions
+                // If weighted, add to the random entries
                 randomEntries.add(entry.getWeight(context), entry);
             } else {
-                // Otherwise generate it right away if it passes conditions
-                if (entry.check(context))
-                    unweightedEntries.add(entry);
+                // Otherwise generate it right away
+                unweightedEntries.add(entry);
             }
         }
 

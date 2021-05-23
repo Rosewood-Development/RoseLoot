@@ -21,14 +21,14 @@ public class LootEntry implements LootGenerator {
 
     @Override
     public LootContents generate(LootContext context) {
-        if (!this.conditions.stream().allMatch(x -> x.check(context)))
+        if (!this.check(context))
             return LootContents.empty();
         return new LootContents(this.lootItems.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
     }
 
     @Override
     public boolean check(LootContext context) {
-        return false;
+        return this.conditions.stream().allMatch(x -> x.check(context));
     }
 
     /**
