@@ -5,8 +5,11 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -26,6 +29,25 @@ public final class LootUtils {
 
     private static final Random RANDOM = new Random();
     private static final String SPAWN_REASON_METADATA_NAME = "spawn_reason";
+    public static final Map<String, Color> FIREWORK_COLORS = new HashMap<String, Color>() {{
+        this.put("WHITE", Color.WHITE);
+        this.put("SILVER", Color.SILVER);
+        this.put("GRAY", Color.GRAY);
+        this.put("BLACK", Color.BLACK);
+        this.put("RED", Color.RED);
+        this.put("MAROON", Color.MAROON);
+        this.put("YELLOW", Color.YELLOW);
+        this.put("OLIVE", Color.OLIVE);
+        this.put("LIME", Color.LIME);
+        this.put("GREEN", Color.GREEN);
+        this.put("AQUA", Color.AQUA);
+        this.put("TEAL", Color.TEAL);
+        this.put("BLUE", Color.BLUE);
+        this.put("NAVY", Color.NAVY);
+        this.put("FUCHSIA", Color.FUCHSIA);
+        this.put("PURPLE", Color.PURPLE);
+        this.put("ORANGE", Color.ORANGE);
+    }};
 
     /**
      * Checks if a chance between 0 and 100 passes
@@ -146,6 +168,10 @@ public final class LootUtils {
         String name = file.getName();
         int index = name.lastIndexOf('.');
         return index == -1 ? name : name.substring(0, index);
+    }
+
+    public static int clamp(int value, int min, int max) {
+        return Math.min(Math.max(value, min), max);
     }
 
 }

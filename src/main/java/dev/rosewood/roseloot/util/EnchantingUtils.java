@@ -77,7 +77,7 @@ public final class EnchantingUtils {
 
         level += 1 + RANDOM.nextInt(enchantmentValue / 4 + 1) + RANDOM.nextInt(enchantmentValue / 4 + 1);
         float offset = (RANDOM.nextFloat() + RANDOM.nextFloat() - 1.0f) * 0.15f;
-        level = clamp(Math.round((float) level + (float) level * offset), 1, Integer.MAX_VALUE);
+        level = LootUtils.clamp(Math.round((float) level + (float) level * offset), 1, Integer.MAX_VALUE);
         RandomCollection<EnchantmentInstance> possibleEnchantments = new RandomCollection<>();
         for (EnchantmentInstance instance : getAvailableEnchantmentResults(itemStack, level, treasure, uncapped))
             possibleEnchantments.add(instance.getEnchantment().getWeight(), instance);
@@ -118,10 +118,6 @@ public final class EnchantingUtils {
 
     private static void filterCompatibleEnchantments(RandomCollection<EnchantmentInstance> enchantments, EnchantmentInstance enchantment) {
         enchantments.removeIf(x -> x.getEnchantment().asSpigot().conflictsWith(enchantment.getEnchantment().asSpigot()));
-    }
-
-    private static int clamp(int value, int min, int max) {
-        return Math.min(Math.max(value, min), max);
     }
 
     private static int getEnchantmentValue(Material material) {

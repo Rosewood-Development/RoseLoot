@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
@@ -44,9 +45,8 @@ public class ItemLootMeta {
     private boolean includeTreasureEnchantments;
     private boolean uncappedRandomEnchants;
     private List<ItemFlag> hideFlags;
-    private Map<Enchantment, Integer> enchantments;
+    protected Map<Enchantment, Integer> enchantments;
     private Multimap<Attribute, AttributeModifier> attributes;
-
     protected Boolean copyBlockState;
     protected Boolean copyBlockData;
 
@@ -207,7 +207,7 @@ public class ItemLootMeta {
         if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
-        if (this.enchantments != null) this.enchantments.forEach((x, y) -> itemMeta.addEnchant(x, y, true));
+        if (this.enchantments != null && itemStack.getType() != Material.ENCHANTED_BOOK) this.enchantments.forEach((x, y) -> itemMeta.addEnchant(x, y, true));
         if (this.attributes != null) itemMeta.setAttributeModifiers(this.attributes);
 
         if (itemMeta instanceof Damageable && this.minDurability != null) {
@@ -246,7 +246,36 @@ public class ItemLootMeta {
     }
 
     public static ItemLootMeta fromSection(Material material, ConfigurationSection section) {
+        if (Tag.ITEMS_BANNERS.isTagged(material))
+            return new BannerItemLootMeta(section);
+
         switch (material) {
+            case WRITABLE_BOOK:
+            case WRITTEN_BOOK:
+                return new BookItemLootMeta(section);
+            case ENCHANTED_BOOK:
+                return new EnchantmentStorageItemLootMeta(section);
+            case FIREWORK_STAR:
+                return new FireworkEffectItemLootMeta(section);
+            case FIREWORK_ROCKET:
+                return new FireworkItemLootMeta(section);
+            case KNOWLEDGE_BOOK:
+                return new KnowledgeBookItemLootMeta(section);
+            case LEATHER_HELMET:
+            case LEATHER_CHESTPLATE:
+            case LEATHER_LEGGINGS:
+            case LEATHER_BOOTS:
+                return new LeatherArmorItemLootMeta(section);
+            case POTION:
+            case SPLASH_POTION:
+            case LINGERING_POTION:
+                return new PotionItemLootMeta(section);
+            case PLAYER_HEAD:
+                return new SkullItemLootMeta(section);
+            case SUSPICIOUS_STEW:
+                return new SuspiciousStewItemLootMeta(section);
+            case TROPICAL_FISH_BUCKET:
+                return new TropicalFishBucketItemLootMeta(section);
             default:
                 return new ItemLootMeta(section);
         }

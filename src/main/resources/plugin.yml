@@ -4,7 +4,7 @@ version: '@version@'
 api-version: '1.13'
 description: Manipulate loot of mobs, blocks, fishing, and chests
 author: Esophose
-softdepend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI, HeadDatabase]
 commands:
   rl:
     description: The base RoseLoot command
