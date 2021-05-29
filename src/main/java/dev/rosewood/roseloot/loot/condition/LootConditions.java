@@ -7,6 +7,7 @@ import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BurningCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChargedExplosionCondition;
+import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
@@ -40,6 +41,7 @@ public class LootConditions {
         registerTag("burning", BurningCondition.class, "Looted entity must be on fire");
         registerTag("chance", ChanceCondition.class, "A random chance");
         registerTag("charged-explosion", ChargedExplosionCondition.class, "Must be caused by a charged creeper");
+        registerTag("custom-model-data", CustomModelDataCondition.class, "Item used must have custom model data");
         registerTag("death-cause", DeathCauseCondition.class, "Type of damage cause that caused the death");
         registerTag("enchantment-chance", EnchantmentChanceCondition.class, "A random chance with additional chance based on enchantment level");
         registerTag("enchantment", EnchantmentCondition.class, "Type and level of enchantment required");
