@@ -2,7 +2,7 @@ name: RoseLoot
 main: dev.rosewood.roseloot.RoseLoot
 version: '@version@'
 api-version: '1.13'
-description: Manipulate loot of mobs, blocks, fishing, and chests
+description: Manipulate loot of mobs, blocks, fishing, chests, and piglin bartering
 author: Esophose
 softdepend: [PlaceholderAPI, HeadDatabase]
 commands:
