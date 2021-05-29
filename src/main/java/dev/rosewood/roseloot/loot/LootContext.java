@@ -20,38 +20,36 @@ public class LootContext {
     private final LivingEntity lootedEntity;
     private final Block lootedBlock;
     private final FishHook fishHook;
+    private final ItemStack inputItem;
     private final NamespacedKey vanillaLootTableKey;
 
-    public LootContext(@Nullable LivingEntity looter, @NotNull LivingEntity lootedEntity) {
+    private LootContext(LivingEntity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey) {
         this.looter = looter;
         this.lootedEntity = lootedEntity;
-        this.lootedBlock = null;
-        this.fishHook = null;
-        this.vanillaLootTableKey = null;
+        this.lootedBlock = lootedBlock;
+        this.fishHook = fishHook;
+        this.inputItem = inputItem;
+        this.vanillaLootTableKey = vanillaLootTableKey;
+    }
+
+    public LootContext(@Nullable LivingEntity looter, @NotNull LivingEntity lootedEntity) {
+        this(looter, lootedEntity, null, null, null, null);
     }
 
     public LootContext(@Nullable LivingEntity looter, @NotNull Block lootedBlock) {
-        this.looter = looter;
-        this.lootedBlock = lootedBlock;
-        this.lootedEntity = null;
-        this.fishHook = null;
-        this.vanillaLootTableKey = null;
+        this(looter, null, lootedBlock, null, null, null);
     }
 
     public LootContext(@NotNull LivingEntity looter, @NotNull FishHook fishHook) {
-        this.looter = looter;
-        this.fishHook = fishHook;
-        this.lootedEntity = null;
-        this.lootedBlock = null;
-        this.vanillaLootTableKey = null;
+        this(looter, null, null, fishHook, null, null);
+    }
+
+    public LootContext(@NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
+        this(null, lootedEntity, null, null, inputItem, null);
     }
 
     public LootContext(@Nullable LivingEntity looter, @NotNull Block lootedBlock, @NotNull NamespacedKey vanillaLootTableKey) {
-        this.looter = looter;
-        this.lootedBlock = lootedBlock;
-        this.vanillaLootTableKey = vanillaLootTableKey;
-        this.lootedEntity = null;
-        this.fishHook = null;
+        this(looter, null, lootedBlock, null, null, vanillaLootTableKey);
     }
 
     /**
@@ -86,6 +84,19 @@ public class LootContext {
         return this.fishHook;
     }
 
+    /**
+     * It is preferrable to use {@link LootContext#getItemUsed}.
+     *
+     * @return the item used for piglin bartering
+     */
+    @Nullable
+    public ItemStack getInputItem() {
+        return this.inputItem;
+    }
+
+    /**
+     * @return the NamespacedKey of the vanilla loot table
+     */
     @Nullable
     public NamespacedKey getVanillaLootTableKey() {
         return this.vanillaLootTableKey;
@@ -128,6 +139,9 @@ public class LootContext {
      */
     @Nullable
     public ItemStack getItemUsed() {
+        if (this.inputItem != null)
+            return this.inputItem;
+
         if (this.looter == null)
             return null;
 

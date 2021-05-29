@@ -5,7 +5,6 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -58,7 +57,7 @@ public class ItemLootItem extends LootItem {
             }
         }
 
-        return new LootContents(generatedItems, Collections.emptyList(), 0);
+        return LootContents.ofItems(generatedItems);
     }
 
     public static class EnchantmentBonus {

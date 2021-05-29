@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FishingListener;
 import dev.rosewood.roseloot.listener.LootGenerateListener;
+import dev.rosewood.roseloot.listener.PiglinBarterListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
@@ -51,6 +52,17 @@ public class RoseLoot extends RosePlugin {
         pluginManager.registerEvents(new FishingListener(this), this);
         if (NMSUtil.getVersionNumber() >= 15)
             pluginManager.registerEvents(new LootGenerateListener(this), this);
+
+        try {
+            // PiglinBarterEvent was added to the 1.16.5 API right before 1.17 was released,
+            // so we need an additional check to make sure the class exists
+            if (NMSUtil.getVersionNumber() >= 16) {
+                Class.forName("org.bukkit.event.entity.PiglinBarterEvent");
+                pluginManager.registerEvents(new PiglinBarterListener(this), this);
+            }
+        } catch (Exception e) {
+            this.getLogger().warning("Your Spigot API version appears to be outdated! Piglin bartering loot tables will be unavailable until you update to the latest API version for your server.");
+        }
     }
 
     @Override

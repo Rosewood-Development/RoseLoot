@@ -23,7 +23,7 @@ public class LootEntry implements LootGenerator {
     public LootContents generate(LootContext context) {
         if (!this.check(context))
             return LootContents.empty();
-        return new LootContents(this.lootItems.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
+        return LootContents.ofExisting(this.lootItems.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
     }
 
     @Override

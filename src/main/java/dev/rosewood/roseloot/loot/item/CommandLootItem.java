@@ -14,7 +14,7 @@ public class CommandLootItem extends LootItem {
 
     @Override
     public LootContents generate(LootContext context) {
-        return new LootContents(Collections.emptyList(), Collections.singletonList(this.command), 0);
+        return LootContents.ofCommands(Collections.singletonList(this.command));
     }
 
 }

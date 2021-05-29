@@ -44,6 +44,10 @@ public class BlockListener implements Listener {
             event.setExpToDrop(0);
         }
 
+        // Trigger explosion if applicable
+        if (lootContents.getExplosionState() != null)
+            lootContents.getExplosionState().trigger(block.getLocation());
+
         // Drop items and experience
         Location dropLocation = block.getLocation();
         lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));

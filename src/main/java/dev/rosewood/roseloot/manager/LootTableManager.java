@@ -199,7 +199,7 @@ public class LootTableManager extends Manager {
             lootContents.add(lootTable.generate(lootContext));
             overwriteExisting |= lootTable.shouldOverwriteExisting(lootContext);
         }
-        return new LootResult(lootContext, new LootContents(lootContents), overwriteExisting);
+        return new LootResult(lootContext, LootContents.ofExisting(lootContents), overwriteExisting);
     }
 
     public LootTable getLootTable(LootTableType lootTableType, String name) {

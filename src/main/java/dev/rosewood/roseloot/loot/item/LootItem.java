@@ -75,6 +75,9 @@ public abstract class LootItem implements LootGenerator {
                     return null;
                 return new LootTableLootItem(section.getString("value"));
 
+            case EXPLOSION:
+                return new ExplosionLootItem(section.getInt("power", 3), section.getBoolean("fire", false), section.getBoolean("break-blocks", true));
+
             default:
                 throw new IllegalStateException("Invalid LootItemType specified!");
         }

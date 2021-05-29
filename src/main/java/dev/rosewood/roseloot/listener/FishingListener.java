@@ -69,6 +69,10 @@ public class FishingListener implements Listener {
                     .forEach(x -> player.incrementStatistic(Statistic.FISH_CAUGHT));
         }
 
+        // Trigger explosion if applicable
+        if (lootContents.getExplosionState() != null)
+            lootContents.getExplosionState().trigger(fishHook.getLocation());
+
         // Drop items and experience
         for (ItemStack itemStack : lootContents.getItems()) {
             double x = player.getLocation().getX() - fishHook.getLocation().getX();

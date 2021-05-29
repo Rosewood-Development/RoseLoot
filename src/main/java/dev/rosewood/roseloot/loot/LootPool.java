@@ -53,7 +53,7 @@ public class LootPool implements LootGenerator {
             lootContents.addAll(unweightedEntries.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
         }
 
-        return new LootContents(lootContents);
+        return LootContents.ofExisting(lootContents);
     }
 
     @Override

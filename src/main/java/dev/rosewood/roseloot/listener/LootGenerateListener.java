@@ -49,6 +49,10 @@ public class LootGenerateListener implements Listener {
         if (lootResult.shouldOverwriteExisting())
             event.getLoot().clear();
 
+        // Trigger explosion if applicable
+        if (lootContents.getExplosionState() != null)
+            lootContents.getExplosionState().trigger(block.getLocation());
+
         // Set items and drop experience
         event.getLoot().addAll(lootResult.getLootContents().getItems());
 

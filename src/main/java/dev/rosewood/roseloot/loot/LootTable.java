@@ -24,7 +24,7 @@ public class LootTable implements LootGenerator {
     public LootContents generate(LootContext context) {
         if (!this.check(context))
             return LootContents.empty();
-        return new LootContents(this.pools.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
+        return LootContents.ofExisting(this.pools.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
     }
 
     @Override

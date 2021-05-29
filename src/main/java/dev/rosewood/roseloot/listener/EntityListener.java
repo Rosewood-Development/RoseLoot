@@ -58,6 +58,10 @@ public class EntityListener implements Listener {
             event.setDroppedExp(0);
         }
 
+        // Trigger explosion if applicable
+        if (lootContents.getExplosionState() != null)
+            lootContents.getExplosionState().trigger(entity.getLocation());
+
         // Add items to drops and adjust experience
         event.getDrops().addAll(lootContents.getItems());
         event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
