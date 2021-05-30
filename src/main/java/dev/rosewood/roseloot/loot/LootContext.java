@@ -7,6 +7,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
@@ -16,47 +18,53 @@ import org.jetbrains.annotations.Nullable;
 
 public class LootContext {
 
-    private final LivingEntity looter;
+    private final Entity looter;
     private final LivingEntity lootedEntity;
     private final Block lootedBlock;
     private final FishHook fishHook;
     private final ItemStack inputItem;
     private final NamespacedKey vanillaLootTableKey;
+    private final ExplosionType explosionType;
 
-    private LootContext(LivingEntity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey) {
+    private LootContext(Entity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey, ExplosionType explosionType) {
         this.looter = looter;
         this.lootedEntity = lootedEntity;
         this.lootedBlock = lootedBlock;
         this.fishHook = fishHook;
         this.inputItem = inputItem;
         this.vanillaLootTableKey = vanillaLootTableKey;
+        this.explosionType = explosionType;
     }
 
-    public LootContext(@Nullable LivingEntity looter, @NotNull LivingEntity lootedEntity) {
-        this(looter, lootedEntity, null, null, null, null);
+    public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity) {
+        this(looter, lootedEntity, null, null, null, null, null);
     }
 
-    public LootContext(@Nullable LivingEntity looter, @NotNull Block lootedBlock) {
-        this(looter, null, lootedBlock, null, null, null);
+    public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock) {
+        this(looter, null, lootedBlock, null, null, null, null);
     }
 
-    public LootContext(@NotNull LivingEntity looter, @NotNull FishHook fishHook) {
-        this(looter, null, null, fishHook, null, null);
+    public LootContext(@NotNull Entity looter, @NotNull FishHook fishHook) {
+        this(looter, null, null, fishHook, null, null, null);
     }
 
     public LootContext(@NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
-        this(null, lootedEntity, null, null, inputItem, null);
+        this(null, lootedEntity, null, null, inputItem, null, null);
     }
 
-    public LootContext(@Nullable LivingEntity looter, @NotNull Block lootedBlock, @NotNull NamespacedKey vanillaLootTableKey) {
-        this(looter, null, lootedBlock, null, null, vanillaLootTableKey);
+    public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock, @NotNull NamespacedKey vanillaLootTableKey) {
+        this(looter, null, lootedBlock, null, null, vanillaLootTableKey, null);
+    }
+
+    public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock, @NotNull ExplosionType explosionType) {
+        this(looter, null, lootedBlock, null, null, null, explosionType);
     }
 
     /**
      * @return the entity that triggered the loot generation
      */
     @Nullable
-    public LivingEntity getLooter() {
+    public Entity getLooter() {
         return this.looter;
     }
 
@@ -103,6 +111,20 @@ public class LootContext {
     }
 
     /**
+     * @return the type of explosion or null if there was none
+     */
+    @Nullable
+    public ExplosionType getExplosionType() {
+        if (this.explosionType != null)
+            return this.explosionType;
+
+        if (this.looter instanceof Creeper && ((Creeper) this.looter).isPowered())
+            return ExplosionType.CHARGED_ENTITY;
+
+        return null;
+    }
+
+    /**
      * @return the Location for this context
      */
     @NotNull
@@ -119,8 +141,8 @@ public class LootContext {
      */
     public double getLuckLevel() {
         double luck = 0;
-        if (this.looter != null) {
-            AttributeInstance attribute = this.looter.getAttribute(Attribute.GENERIC_LUCK);
+        if (this.looter != null && this.looter instanceof LivingEntity) {
+            AttributeInstance attribute = ((LivingEntity) this.looter).getAttribute(Attribute.GENERIC_LUCK);
             if (attribute != null)
                 luck += attribute.getValue();
         }
@@ -142,10 +164,10 @@ public class LootContext {
         if (this.inputItem != null)
             return this.inputItem;
 
-        if (this.looter == null)
+        if (this.looter == null || !(this.looter instanceof LivingEntity))
             return null;
 
-        EntityEquipment equipment = this.looter.getEquipment();
+        EntityEquipment equipment = ((LivingEntity) this.looter).getEquipment();
         if (equipment == null)
             return null;
 

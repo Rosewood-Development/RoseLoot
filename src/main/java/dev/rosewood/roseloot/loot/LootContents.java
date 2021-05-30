@@ -30,8 +30,11 @@ public class LootContents {
             this.items.addAll(result.getItems());
             this.commands.addAll(result.getCommands());
             experience += result.getExperience();
-            if (explosionState == null)
+            if (explosionState == null) {
                 explosionState = result.getExplosionState();
+            } else if (result.getExplosionState() != null) {
+                explosionState = ExplosionLootItem.ExplosionState.combine(explosionState, result.getExplosionState());
+            }
         }
 
         this.experience = experience;

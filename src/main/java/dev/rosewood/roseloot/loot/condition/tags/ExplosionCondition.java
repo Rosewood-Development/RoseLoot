@@ -1,18 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 
-public class ChargedExplosionCondition extends LootCondition {
+public class ExplosionCondition extends LootCondition {
 
-    public ChargedExplosionCondition(String tag) {
+    public ExplosionCondition(String tag) {
         super(tag);
     }
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.getExplosionType() == ExplosionType.CHARGED_ENTITY;
+        return context.getExplosionType() != null;
     }
 
     @Override
