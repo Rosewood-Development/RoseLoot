@@ -276,6 +276,8 @@ public class ItemLootMeta {
                 return new SuspiciousStewItemLootMeta(section);
             case TROPICAL_FISH_BUCKET:
                 return new TropicalFishBucketItemLootMeta(section);
+            case AXOLOTL_BUCKET:
+                return new AxolotlBucketItemLootMeta(section);
             default:
                 return new ItemLootMeta(section);
         }

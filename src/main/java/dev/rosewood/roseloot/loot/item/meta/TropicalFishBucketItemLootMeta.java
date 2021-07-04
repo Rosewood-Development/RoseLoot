@@ -9,12 +9,15 @@ import org.bukkit.inventory.meta.TropicalFishBucketMeta;
 
 public class TropicalFishBucketItemLootMeta extends ItemLootMeta {
 
+    private boolean copyLooted;
     private DyeColor bodyColor;
     private TropicalFish.Pattern pattern;
     private DyeColor patternColor;
 
     public TropicalFishBucketItemLootMeta(ConfigurationSection section) {
         super(section);
+
+        if (section.isBoolean("copy-looted")) this.copyLooted = section.getBoolean("copy-looted");
 
         String bodyColorString = section.getString("body-color");
         if (bodyColorString != null) {
@@ -54,6 +57,13 @@ public class TropicalFishBucketItemLootMeta extends ItemLootMeta {
         TropicalFishBucketMeta itemMeta = (TropicalFishBucketMeta) itemStack.getItemMeta();
         if (itemMeta == null)
             return itemStack;
+
+        if (this.copyLooted && context.getLootedEntity() instanceof TropicalFish) {
+            TropicalFish fish = (TropicalFish) context.getLootedEntity();
+            itemMeta.setBodyColor(fish.getBodyColor());
+            itemMeta.setPattern(fish.getPattern());
+            itemMeta.setPatternColor(fish.getPatternColor());
+        }
 
         if (this.bodyColor != null) itemMeta.setBodyColor(this.bodyColor);
         if (this.pattern != null) itemMeta.setPattern(this.pattern);
