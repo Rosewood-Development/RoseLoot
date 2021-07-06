@@ -32,14 +32,21 @@ public class ItemLootItem extends LootItem {
         List<ItemStack> generatedItems = new ArrayList<>();
 
         int max = this.max;
+        int amount = 0;
         ItemStack itemUsed = context.getItemUsed();
         if (this.enchantmentBonus != null && itemUsed != null) {
             ItemMeta itemMeta = itemUsed.getItemMeta();
-            if (itemMeta != null)
-                max += itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment()) * this.enchantmentBonus.getBonusPerLevel();
+            if (itemMeta != null) {
+                int level = itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment());
+                if (this.enchantmentBonus.addToMax()) {
+                    max += level * this.enchantmentBonus.getBonusPerLevel();
+                } else {
+                    amount += level * this.enchantmentBonus.getBonusPerLevel();
+                }
+            }
         }
 
-        int amount = LootUtils.randomInRange(this.min, max);
+        amount += LootUtils.randomInRange(this.min, max);
         if (amount > 0) {
             int maxStackSize = this.item.getMaxStackSize();
             ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(this.item), context);
@@ -64,10 +71,12 @@ public class ItemLootItem extends LootItem {
 
         private final Enchantment enchantment;
         private final int bonusPerLevel;
+        private final boolean addToMax;
 
-        public EnchantmentBonus(Enchantment enchantment, int bonusPerLevel) {
+        public EnchantmentBonus(Enchantment enchantment, int bonusPerLevel, boolean addToMax) {
             this.enchantment = enchantment;
             this.bonusPerLevel = bonusPerLevel;
+            this.addToMax = addToMax;
         }
 
         public Enchantment getEnchantment() {
@@ -76,6 +85,10 @@ public class ItemLootItem extends LootItem {
 
         public int getBonusPerLevel() {
             return this.bonusPerLevel;
+        }
+
+        public boolean addToMax() {
+            return this.addToMax;
         }
 
     }

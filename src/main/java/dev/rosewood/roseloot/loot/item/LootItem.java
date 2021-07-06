@@ -45,9 +45,10 @@ public abstract class LootItem implements LootGenerator {
                     String enchantmentString = enchantmentBonusSection.getString("enchantment");
                     if (enchantmentString != null) {
                         Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
-                        int bonusPerLevel = enchantmentBonusSection.getInt("bonus-per-level", -1);
+                        int bonusPerLevel = enchantmentBonusSection.getInt("bonus-per-level", 0);
+                        boolean addToMax = enchantmentBonusSection.getBoolean("add-to-max", true);
                         if (enchantment != null && bonusPerLevel > 0)
-                            enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel);
+                            enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel, addToMax);
                     }
                 }
 
