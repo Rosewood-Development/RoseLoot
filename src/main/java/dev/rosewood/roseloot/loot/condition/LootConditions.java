@@ -22,6 +22,7 @@ import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnerTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.TamedCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import java.lang.reflect.Constructor;
@@ -58,6 +59,7 @@ public class LootConditions {
         registerTag("required-tool-type", RequiredToolTypeCondition.class, "Exact type of tool required");
         registerTag("spawner-type", SpawnerTypeCondition.class, "Broken spawner must be of type");
         registerTag("spawn-reason", SpawnReasonCondition.class, "Spawn reason the entity must have");
+        registerTag("tamed", TamedCondition.class, "Animal must be tamed by a player");
         registerTag("vanilla-loot-table", VanillaLootTableCondition.class, "Loot must be for a specific vanilla loot table");
         registerTag("world", WorldCondition.class, "Loot must be generated in a specific world");
     }

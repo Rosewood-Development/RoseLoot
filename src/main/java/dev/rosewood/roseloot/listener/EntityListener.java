@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,17 +35,9 @@ public class EntityListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
             return;
 
-        LivingEntity looter = null;
-        if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-            Entity damager = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
-            if (damager instanceof LivingEntity) {
-                looter = (LivingEntity) damager;
-            } else if (damager instanceof Projectile) {
-                Projectile projectile = (Projectile) damager;
-                if (projectile.getShooter() instanceof LivingEntity)
-                    looter = (LivingEntity) projectile.getShooter();
-            }
-        }
+        Entity looter = null;
+        if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent)
+            looter = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
 
         LootContext lootContext = new LootContext(looter, entity);
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY, lootContext);
