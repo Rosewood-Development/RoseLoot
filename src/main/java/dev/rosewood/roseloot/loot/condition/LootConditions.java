@@ -1,95 +1,131 @@
 package dev.rosewood.roseloot.loot.condition;
 
+import dev.rosewood.rosegarden.utils.ClassUtils;
+import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.loot.ExplosionType;
+import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTagCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
-import dev.rosewood.roseloot.loot.condition.tags.BurningCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
-import dev.rosewood.roseloot.loot.condition.tags.ChargedExplosionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
-import dev.rosewood.roseloot.loot.condition.tags.ExplosionCondition;
-import dev.rosewood.roseloot.loot.condition.tags.FullyGrownCondition;
+import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
-import dev.rosewood.roseloot.loot.condition.tags.OpenWaterCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnerTypeCondition;
-import dev.rosewood.roseloot.loot.condition.tags.TamedCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import java.lang.reflect.Constructor;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Breedable;
+import org.bukkit.entity.ChestedHorse;
+import org.bukkit.entity.Raider;
+import org.bukkit.entity.Sittable;
+import org.bukkit.entity.Tameable;
+import org.bukkit.inventory.Merchant;
 
 public class LootConditions {
 
-    private static final Map<String, Constructor<? extends LootCondition>> tagPrefixMap = new HashMap<>();
-    private static final Map<String, String> tagDescriptionMap = new LinkedHashMap<>();
+    private static final String PACKAGE_PATH = "dev.rosewood.roseloot.loot.condition.tags.entity";
+    private static final Map<String, Constructor<? extends LootCondition>> tagConstructorMap = new HashMap<>();
+    private static final Map<String, Predicate<LootContext>> tagPredicateMap = new HashMap<>();
 
     static {
-        registerTag("biome", BiomeCondition.class, "Biome the loot must be generated in");
-        registerTag("block-data", BlockDataCondition.class, "Block must have a block data value");
-        registerTag("block-tag", BlockTagCondition.class, "Tag the block must have");
-        registerTag("block-type", BlockTypeCondition.class, "Type the looted block must be");
-        registerTag("burning", BurningCondition.class, "Looted entity must be on fire");
-        registerTag("chance", ChanceCondition.class, "A random chance");
-        registerTag("charged-explosion", ChargedExplosionCondition.class, "Must be caused by a charged creeper");
-        registerTag("custom-model-data", CustomModelDataCondition.class, "Item used must have custom model data");
-        registerTag("death-cause", DeathCauseCondition.class, "Type of damage cause that caused the death");
-        registerTag("enchantment-chance", EnchantmentChanceCondition.class, "A random chance with additional chance based on enchantment level");
-        registerTag("enchantment", EnchantmentCondition.class, "Type and level of enchantment required");
-        registerTag("entity-type", EntityTypeCondition.class, "Type the looted entity must be");
-        registerTag("explosion", ExplosionCondition.class, "Must be caused by an explosion");
-        registerTag("fully-grown", FullyGrownCondition.class, "The animal or crop must be fully grown");
-        registerTag("killed-by", KilledByCondition.class, "Type of entity that killed the entity");
-        registerTag("looter-entity-type", LooterEntityTypeCondition.class, "Type of entity that triggered the loot generation");
-        registerTag("open-water", OpenWaterCondition.class, "Fish hook must be in open water");
-        registerTag("permission", PermissionCondition.class, "Require the looter to have a permission");
-        registerTag("required-tool", RequiredToolCondition.class, "Type and quality of tool required");
-        registerTag("required-tool-type", RequiredToolTypeCondition.class, "Exact type of tool required");
-        registerTag("spawner-type", SpawnerTypeCondition.class, "Broken spawner must be of type");
-        registerTag("spawn-reason", SpawnReasonCondition.class, "Spawn reason the entity must have");
-        registerTag("tamed", TamedCondition.class, "Animal must be tamed by a player");
-        registerTag("vanilla-loot-table", VanillaLootTableCondition.class, "Loot must be for a specific vanilla loot table");
-        registerTag("world", WorldCondition.class, "Loot must be generated in a specific world");
+        registerTag("baby", context -> context.getLootedEntity() instanceof org.bukkit.entity.Ageable && !((org.bukkit.entity.Ageable) context.getLootedEntity()).isAdult());
+        registerTag("biome", BiomeCondition.class);
+        registerTag("block-data", BlockDataCondition.class);
+        registerTag("block-tag", BlockTagCondition.class);
+        registerTag("block-type", BlockTypeCondition.class);
+        registerTag("burning", context -> context.getLootedEntity() != null && context.getLootedEntity().getFireTicks() > 0);
+        registerTag("can-breed", context -> context.getLootedEntity() instanceof Breedable && ((Breedable) context.getLootedEntity()).canBreed());
+        registerTag("can-join-raid", context -> context.getLootedEntity() instanceof Raider && ((Raider) context.getLootedEntity()).isCanJoinRaid());
+        registerTag("chance", ChanceCondition.class);
+        registerTag("charged-explosion", context -> context.getExplosionType() == ExplosionType.CHARGED_ENTITY);
+        registerTag("chested", context -> context.getLootedEntity() instanceof ChestedHorse && ((ChestedHorse) context.getLootedEntity()).isCarryingChest());
+        registerTag("custom-model-data", CustomModelDataCondition.class);
+        registerTag("death-cause", DeathCauseCondition.class);
+        registerTag("enchantment-chance", EnchantmentChanceCondition.class);
+        registerTag("enchantment", EnchantmentCondition.class);
+        registerTag("entity-type", EntityTypeCondition.class);
+        registerTag("explosion", context -> context.getExplosionType() != null);
+        registerTag("grown-crop", context -> context.getLootedBlock() instanceof Ageable && ((Ageable) context.getLootedBlock()).getAge() == ((Ageable) context.getLootedBlock()).getMaximumAge());
+        registerTag("has-saddle", HasSaddleCondition.class);
+        registerTag("killed-by", KilledByCondition.class);
+        registerTag("looter-entity-type", LooterEntityTypeCondition.class);
+        registerTag("open-water", context -> context.getFishHook() != null && context.getFishHook().isInOpenWater());
+        registerTag("patrol-leader", context -> context.getLootedEntity() instanceof Raider && !((Raider) context.getLootedEntity()).isPatrolLeader());
+        registerTag("permission", PermissionCondition.class);
+        registerTag("required-tool", RequiredToolCondition.class);
+        registerTag("required-tool-type", RequiredToolTypeCondition.class);
+        registerTag("sitting", context -> context.getLootedEntity() instanceof Sittable && ((Sittable) context.getLootedEntity()).isSitting());
+        registerTag("spawner-type", SpawnerTypeCondition.class);
+        registerTag("spawn-reason", SpawnReasonCondition.class);
+        registerTag("tamed", context -> context.getLootedEntity() instanceof Tameable && ((Tameable) context.getLootedEntity()).isTamed());
+        registerTag("trading", context -> context.getLootedEntity() instanceof Merchant && ((Merchant) context.getLootedEntity()).isTrading());
+        registerTag("vanilla-loot-table", VanillaLootTableCondition.class);
+        registerTag("world", WorldCondition.class);
+
+        List<Class<EntityConditions>> classes = ClassUtils.getClassesOf(RoseLoot.getInstance(), PACKAGE_PATH, EntityConditions.class);
+        List<String> ignoredLoading = new ArrayList<>();
+        for (Class<EntityConditions> clazz : classes) {
+            try {
+                clazz.getConstructor().newInstance();
+            } catch (Exception e) {
+                // Log conditions that failed to load
+                // This should only be caused by version incompatibilities
+                String className = clazz.getSimpleName();
+                ignoredLoading.add(className.substring(0, className.length() - 10));
+            }
+        }
+        if (!ignoredLoading.isEmpty())
+            RoseLoot.getInstance().getLogger().warning("Ignored loading conditions for: " + ignoredLoading);
+
+        RoseLoot.getInstance().getLogger().info("Registered " + (tagConstructorMap.size() + tagPredicateMap.size()) + " loot table conditions.");
     }
 
-    public static Map<String, String> getTagDescriptionMap() {
-        return Collections.unmodifiableMap(tagDescriptionMap);
-    }
-
-    private static <T extends LootCondition> void registerTag(String prefix, Class<T> tagClass, String description) {
+    public static <T extends LootCondition> void registerTag(String prefix, Class<T> tagClass) {
         try {
-            tagPrefixMap.put(prefix, tagClass.getConstructor(String.class));
-            if (description != null)
-                tagDescriptionMap.put(prefix, description);
+            tagConstructorMap.put(prefix, tagClass.getConstructor(String.class));
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static void registerTag(String prefix, Predicate<LootContext> predicate) {
+        tagPredicateMap.put(prefix, predicate);
     }
 
     public static LootCondition parse(String tag) {
         try {
             String parsed = (tag.startsWith("!") ? tag.substring(1) : tag).toLowerCase();
             int index = parsed.indexOf(":");
-            if (index == -1) {
-                return tagPrefixMap.get(parsed).newInstance(tag);
-            } else {
-                return tagPrefixMap.get(parsed.substring(0, index)).newInstance(tag);
-            }
-        } catch (Exception e) {
-            return null;
+            String tagPrefix = index == -1 ? parsed : parsed.substring(0, index);
+
+            Constructor<? extends LootCondition> constructor = tagConstructorMap.get(tagPrefix);
+            if (constructor != null)
+                return constructor.newInstance(tag);
+
+            Predicate<LootContext> predicate = tagPredicateMap.get(tagPrefix);
+            if (predicate != null)
+                return new BooleanLootCondition(tag, predicate);
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
+        return null;
     }
 
 }

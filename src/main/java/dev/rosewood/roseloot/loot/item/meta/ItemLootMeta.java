@@ -265,6 +265,7 @@ public class ItemLootMeta {
             case LEATHER_CHESTPLATE:
             case LEATHER_LEGGINGS:
             case LEATHER_BOOTS:
+            case LEATHER_HORSE_ARMOR:
                 return new LeatherArmorItemLootMeta(section);
             case POTION:
             case SPLASH_POTION:
