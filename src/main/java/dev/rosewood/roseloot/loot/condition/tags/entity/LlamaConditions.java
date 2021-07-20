@@ -9,6 +9,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Llama;
+import org.bukkit.inventory.ItemStack;
 
 public class LlamaConditions extends EntityConditions {
 
@@ -30,7 +31,10 @@ public class LlamaConditions extends EntityConditions {
             LivingEntity looted = context.getLootedEntity();
             if (!(looted instanceof Llama))
                 return false;
-            return this.decorMaterials.contains(((Llama) looted).getInventory().getDecor().getType());
+            ItemStack decor = ((Llama) looted).getInventory().getDecor();
+            if (decor == null)
+                return false;
+            return this.decorMaterials.contains(decor.getType());
         }
 
         @Override
