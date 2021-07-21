@@ -31,6 +31,7 @@ public class KilledByCondition extends LootCondition {
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) entity.getLastDamageCause();
         Entity damager = event.getDamager();
         if (damager instanceof TNTPrimed) {
+            // Propagate the igniter of the tnt up the stack
             TNTPrimed tntPrimed = (TNTPrimed) damager;
             Entity tntSource = tntPrimed.getSource();
             if (tntSource == null) {

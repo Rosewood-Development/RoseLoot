@@ -7,7 +7,7 @@ import org.bukkit.entity.IronGolem;
 public class IronGolemConditions extends EntityConditions {
 
     public IronGolemConditions() {
-        LootConditions.registerTag("iron-golem-player-created", context -> context.getLootedEntity() instanceof IronGolem && !((IronGolem) context.getLootedEntity()).isPlayerCreated());
+        LootConditions.registerTag("iron-golem-player-created", context -> context.getLootedEntity() instanceof IronGolem && ((IronGolem) context.getLootedEntity()).isPlayerCreated());
     }
 
 }

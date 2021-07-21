@@ -13,7 +13,7 @@ import org.bukkit.entity.Sheep;
 public class SheepConditions extends EntityConditions {
 
     public SheepConditions() {
-        LootConditions.registerTag("sheep-sheared", context -> context.getLootedEntity() instanceof Sheep && !((Sheep) context.getLootedEntity()).isSheared());
+        LootConditions.registerTag("sheep-sheared", context -> context.getLootedEntity() instanceof Sheep && ((Sheep) context.getLootedEntity()).isSheared());
         LootConditions.registerTag("sheep-color", SheepColorCondition.class);
     }
 
