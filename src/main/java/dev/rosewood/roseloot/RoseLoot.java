@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.database.DataMigration;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.command.CommandHandler;
 import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FishingListener;
@@ -17,8 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -46,6 +46,10 @@ public class RoseLoot extends RosePlugin {
         if (NMSUtil.getVersionNumber() < 13)
             this.getLogger().severe(this.getDescription().getName() + " only supports 1.13.2 and newer. You will get no support for running an unsupported version.");
 
+        PluginCommand command = this.getCommand("rl");
+        if (command != null)
+            command.setExecutor(new CommandHandler(this));
+
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new BlockListener(this), this);
         pluginManager.registerEvents(new EntityListener(this), this);
@@ -68,16 +72,6 @@ public class RoseLoot extends RosePlugin {
     @Override
     public void disable() {
 
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!command.getName().equalsIgnoreCase("rl"))
-            return true;
-
-        this.reload();
-        this.getManager(LocaleManager.class).sendMessage(sender, "command-reload-reloaded");
-        return true;
     }
 
     @Override

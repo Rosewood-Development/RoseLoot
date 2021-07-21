@@ -9,3 +9,7 @@ commands:
   rl:
     description: The base RoseLoot command
     aliases: [loot]
+permissions:
+  roseloot.reload:
+    description: Allows running the reload command
+    default: op
