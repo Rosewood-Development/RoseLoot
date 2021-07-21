@@ -73,6 +73,7 @@ public class LootConditions {
         registerTag("required-tool", RequiredToolCondition.class);
         registerTag("required-tool-type", RequiredToolTypeCondition.class);
         registerTag("sitting", context -> context.getLootedEntity() instanceof Sittable && ((Sittable) context.getLootedEntity()).isSitting());
+        registerTag("sleeping", context -> context.getLootedEntity() != null && context.getLootedEntity().isSleeping());
         registerTag("spawner-type", SpawnerTypeCondition.class);
         registerTag("spawn-reason", SpawnReasonCondition.class);
         registerTag("tamed", context -> context.getLootedEntity() instanceof Tameable && ((Tameable) context.getLootedEntity()).isTamed());

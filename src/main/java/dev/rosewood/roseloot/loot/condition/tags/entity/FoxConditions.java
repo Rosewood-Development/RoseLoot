@@ -12,14 +12,15 @@ import org.bukkit.entity.LivingEntity;
 public class FoxConditions extends EntityConditions {
 
     public FoxConditions() {
-        LootConditions.registerTag("fox-type", CatTypeCondition.class);
+        LootConditions.registerTag("fox-type", FoxTypeCondition.class);
+        LootConditions.registerTag("fox-crouching", context -> context.getLootedEntity() instanceof Fox && ((Fox) context.getLootedEntity()).isCrouching());
     }
 
-    public static class CatTypeCondition extends LootCondition {
+    public static class FoxTypeCondition extends LootCondition {
 
         private List<Fox.Type> types;
 
-        public CatTypeCondition(String tag) {
+        public FoxTypeCondition(String tag) {
             super(tag);
         }
 
