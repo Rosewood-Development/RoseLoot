@@ -62,6 +62,7 @@ public class LootConditions {
         registerTag("enchantment", EnchantmentCondition.class);
         registerTag("entity-type", EntityTypeCondition.class);
         registerTag("explosion", context -> context.getExplosionType() != null);
+        registerTag("freezing", context -> context.getLootedEntity() != null && context.getLootedEntity().getFreezeTicks() > 0);
         registerTag("grown-crop", context -> context.getLootedBlock() instanceof Ageable && ((Ageable) context.getLootedBlock()).getAge() == ((Ageable) context.getLootedBlock()).getMaximumAge());
         registerTag("has-saddle", HasSaddleCondition.class);
         registerTag("killed-by", KilledByCondition.class);
