@@ -85,7 +85,7 @@ public class VillagerConditions extends EntityConditions {
 
     public static class VillagerLevelCondition extends LootCondition {
 
-        private List<Integer> levels;
+        private int level;
 
         public VillagerLevelCondition(String tag) {
             super(tag);
@@ -93,20 +93,18 @@ public class VillagerConditions extends EntityConditions {
 
         @Override
         protected boolean checkInternal(LootContext context) {
-            return context.getLootedEntity() instanceof Villager && this.levels.contains(((Villager) context.getLootedEntity()).getVillagerLevel());
+            return context.getLootedEntity() instanceof Villager && ((Villager) context.getLootedEntity()).getVillagerLevel() >= this.level;
         }
 
         @Override
         public boolean parseValues(String[] values) {
-            this.levels = new ArrayList<>();
+            this.level = -1;
 
-            for (String value : values) {
-                try {
-                    this.levels.add(Integer.parseInt(value));
-                } catch (Exception ignored) { }
-            }
+            try {
+                this.level = Integer.parseInt(values[0]);
+            } catch (Exception ignored) { }
 
-            return !this.levels.isEmpty();
+            return this.level >= 0;
         }
 
     }
