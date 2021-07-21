@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class KilledByCondition extends LootCondition {
@@ -28,7 +29,17 @@ public class KilledByCondition extends LootCondition {
             return false;
 
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) entity.getLastDamageCause();
-        Entity damager = event.getEntity();
+        Entity damager = event.getDamager();
+        if (damager instanceof TNTPrimed) {
+            TNTPrimed tntPrimed = (TNTPrimed) damager;
+            Entity tntSource = tntPrimed.getSource();
+            if (tntSource == null) {
+                return this.entityTypes.contains(EntityType.PRIMED_TNT);
+            } else {
+                damager = tntSource;
+            }
+        }
+
         if (damager instanceof Projectile) {
             // Check for the projectile type first, if not fall back to the shooter
             Projectile projectile = (Projectile) damager;
