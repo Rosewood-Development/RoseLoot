@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -11,7 +10,6 @@ import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
@@ -57,31 +55,11 @@ public class EntityListener implements Listener {
             event.setDroppedExp(0);
         }
 
-        // Trigger explosion if applicable
-        if (lootContents.getExplosionState() != null)
-            lootContents.getExplosionState().trigger(entity.getLocation());
-
         // Add items to drops and adjust experience
         event.getDrops().addAll(lootContents.getItems());
         event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
 
-        // Run commands
-        if (!lootContents.getCommands().isEmpty()) {
-            Location location = entity.getLocation();
-            StringPlaceholders.Builder stringPlaceholdersBuilder = StringPlaceholders.builder("world", entity.getWorld().getName())
-                    .addPlaceholder("x", location.getX())
-                    .addPlaceholder("y", location.getY())
-                    .addPlaceholder("z", location.getZ());
-
-            boolean isPlayer = looter instanceof Player;
-            if (isPlayer)
-                stringPlaceholdersBuilder.addPlaceholder("player", looter.getName());
-
-            StringPlaceholders stringPlaceholders = stringPlaceholdersBuilder.build();
-            for (String command : lootContents.getCommands())
-                if (!command.contains("%player%") || isPlayer)
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-        }
+        lootContents.triggerExtras(looter instanceof Player ? (Player) looter : null, entity.getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -129,34 +107,14 @@ public class EntityListener implements Listener {
         if (lootResult.shouldOverwriteExisting())
             event.setCancelled(true);
 
-        // Trigger explosion if applicable
-        if (lootContents.getExplosionState() != null)
-            lootContents.getExplosionState().trigger(entity.getLocation());
-
-        // Add items to drops and adjust experience
+        // Add items to drops and spawn experience
         lootContents.getItems().forEach(x -> entity.getWorld().dropItemNaturally(dropLocation, x));
 
         int experience = lootContents.getExperience();
         if (experience > 0)
             entity.getWorld().spawn(entity.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-        // Run commands
-        if (!lootContents.getCommands().isEmpty()) {
-            Location location = entity.getLocation();
-            StringPlaceholders.Builder stringPlaceholdersBuilder = StringPlaceholders.builder("world", entity.getWorld().getName())
-                    .addPlaceholder("x", location.getX())
-                    .addPlaceholder("y", location.getY())
-                    .addPlaceholder("z", location.getZ());
-
-            boolean isPlayer = shearer != null;
-            if (isPlayer)
-                stringPlaceholdersBuilder.addPlaceholder("player", shearer.getName());
-
-            StringPlaceholders stringPlaceholders = stringPlaceholdersBuilder.build();
-            for (String command : lootContents.getCommands())
-                if (!command.contains("%player%") || isPlayer)
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-        }
+        lootContents.triggerExtras(shearer, dropLocation);
     }
 
 }

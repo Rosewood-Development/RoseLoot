@@ -55,29 +55,13 @@ public class BlockListener implements Listener {
             event.setExpToDrop(0);
         }
 
-        // Trigger explosion if applicable
-        if (lootContents.getExplosionState() != null)
-            lootContents.getExplosionState().trigger(block.getLocation());
-
         // Drop items and experience
         Location dropLocation = block.getLocation();
         lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
 
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
 
-        // Run commands
-        if (!lootContents.getCommands().isEmpty()) {
-            Location location = block.getLocation();
-            StringPlaceholders stringPlaceholders = StringPlaceholders.builder("world", block.getWorld().getName())
-                    .addPlaceholder("x", location.getX())
-                    .addPlaceholder("y", location.getY())
-                    .addPlaceholder("z", location.getZ())
-                    .addPlaceholder("player", event.getPlayer().getName())
-                    .build();
-
-            for (String command : lootContents.getCommands())
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-        }
+        lootContents.triggerExtras(event.getPlayer(), dropLocation);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -1,9 +1,14 @@
 package dev.rosewood.roseloot.loot;
 
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -67,6 +72,39 @@ public class LootContents {
      */
     public ExplosionLootItem.ExplosionState getExplosionState() {
         return this.explosionState;
+    }
+
+    /**
+     * Triggers the execution for anything that isn't an item or experience drop
+     *
+     * @param player The Player to use for running commands
+     * @param location The Location to execute the rest of the drops at
+     */
+    public void triggerExtras(Player player, Location location) {
+        World world = location.getWorld();
+        if (world == null)
+            return;
+
+        // Trigger explosion if applicable
+        if (this.explosionState != null)
+            this.explosionState.trigger(location);
+
+        // Run commands
+        if (!this.commands.isEmpty()) {
+            StringPlaceholders.Builder stringPlaceholdersBuilder = StringPlaceholders.builder("world", world.getName())
+                    .addPlaceholder("x", location.getX())
+                    .addPlaceholder("y", location.getY())
+                    .addPlaceholder("z", location.getZ());
+
+            boolean isPlayer = player != null;
+            if (isPlayer)
+                stringPlaceholdersBuilder.addPlaceholder("player", player.getName());
+
+            StringPlaceholders stringPlaceholders = stringPlaceholdersBuilder.build();
+            for (String command : this.commands)
+                if (!command.contains("%player%") || isPlayer)
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
+        }
     }
 
     /**

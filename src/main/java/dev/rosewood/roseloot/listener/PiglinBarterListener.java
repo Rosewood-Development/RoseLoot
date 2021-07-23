@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -9,8 +8,6 @@ import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Piglin;
 import org.bukkit.event.EventHandler;
@@ -42,10 +39,6 @@ public class PiglinBarterListener implements Listener {
         if (lootResult.shouldOverwriteExisting())
             outputItems.clear();
 
-        // Trigger explosion if applicable
-        if (lootContents.getExplosionState() != null)
-            lootContents.getExplosionState().trigger(piglin.getLocation());
-
         // Set items and drop experience
         outputItems.addAll(lootResult.getLootContents().getItems());
 
@@ -53,19 +46,7 @@ public class PiglinBarterListener implements Listener {
         if (experience > 0)
             piglin.getWorld().spawn(piglin.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-        // Run commands
-        if (!lootContents.getCommands().isEmpty()) {
-            Location location = piglin.getLocation();
-            StringPlaceholders.Builder stringPlaceholdersBuilder = StringPlaceholders.builder("world", piglin.getWorld().getName())
-                    .addPlaceholder("x", location.getX())
-                    .addPlaceholder("y", location.getY())
-                    .addPlaceholder("z", location.getZ());
-
-            StringPlaceholders stringPlaceholders = stringPlaceholdersBuilder.build();
-            for (String command : lootContents.getCommands())
-                if (!command.contains("%player%"))
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-        }
+        lootContents.triggerExtras(null, piglin.getLocation());
     }
 
 }

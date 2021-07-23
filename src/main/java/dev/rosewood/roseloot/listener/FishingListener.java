@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -9,8 +8,6 @@ import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.Tag;
@@ -69,10 +66,6 @@ public class FishingListener implements Listener {
                     .forEach(x -> player.incrementStatistic(Statistic.FISH_CAUGHT));
         }
 
-        // Trigger explosion if applicable
-        if (lootContents.getExplosionState() != null)
-            lootContents.getExplosionState().trigger(fishHook.getLocation());
-
         // Drop items and experience
         for (ItemStack itemStack : lootContents.getItems()) {
             double x = player.getLocation().getX() - fishHook.getLocation().getX();
@@ -86,19 +79,7 @@ public class FishingListener implements Listener {
         if (experience > 0)
             player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-        // Run commands
-        if (!lootContents.getCommands().isEmpty()) {
-            Location location = fishHook.getLocation();
-            StringPlaceholders stringPlaceholders = StringPlaceholders.builder("world", fishHook.getWorld().getName())
-                    .addPlaceholder("x", location.getX())
-                    .addPlaceholder("y", location.getY())
-                    .addPlaceholder("z", location.getZ())
-                    .addPlaceholder("player", player.getName())
-                    .build();
-
-            for (String command : lootContents.getCommands())
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-        }
+        lootContents.triggerExtras(player, fishHook.getLocation());
     }
 
 }
