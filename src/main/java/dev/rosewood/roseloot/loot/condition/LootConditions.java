@@ -11,6 +11,7 @@ import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
+import dev.rosewood.roseloot.loot.condition.tags.DroppedItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
@@ -58,6 +59,7 @@ public class LootConditions {
         registerTag("chested", context -> context.getLootedEntity() instanceof ChestedHorse && ((ChestedHorse) context.getLootedEntity()).isCarryingChest());
         registerTag("custom-model-data", CustomModelDataCondition.class);
         registerTag("death-cause", DeathCauseCondition.class);
+        registerTag("dropped-item", DroppedItemCondition.class);
         registerTag("enchantment-chance", EnchantmentChanceCondition.class);
         registerTag("enchantment", EnchantmentCondition.class);
         registerTag("entity-type", EntityTypeCondition.class);

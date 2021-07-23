@@ -60,6 +60,10 @@ public class LootContext {
         this(looter, null, lootedBlock, null, null, null, explosionType);
     }
 
+    public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
+        this(looter, lootedEntity, null, null, inputItem, null, null);
+    }
+
     /**
      * @return the entity that triggered the loot generation
      */
@@ -93,9 +97,11 @@ public class LootContext {
     }
 
     /**
-     * It is preferrable to use {@link LootContext#getItemUsed}.
+     * Gets the item primarily used for the loot generation.
+     * For piglin bartering, it will be the bartered item.
+     * For entity item drops, it will be the dropped item.
      *
-     * @return the item used for piglin bartering
+     * @return the item primarily used for the loot generation
      */
     @Nullable
     public ItemStack getInputItem() {
@@ -157,13 +163,10 @@ public class LootContext {
     }
 
     /**
-     * @return the ItemStack used for this context
+     * @return the ItemStack used by the looter
      */
     @Nullable
     public ItemStack getItemUsed() {
-        if (this.inputItem != null)
-            return this.inputItem;
-
         if (this.looter == null || !(this.looter instanceof LivingEntity))
             return null;
 
@@ -171,7 +174,13 @@ public class LootContext {
         if (equipment == null)
             return null;
 
-        return equipment.getItemInMainHand();
+        if (equipment.getItemInMainHand().getType() != Material.AIR) {
+            return equipment.getItemInMainHand();
+        } else if (equipment.getItemInOffHand().getType() != Material.AIR) {
+            return equipment.getItemInOffHand();
+        } else {
+            return null;
+        }
     }
 
 }
