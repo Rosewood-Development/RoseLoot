@@ -19,6 +19,7 @@ import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
+import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
@@ -72,6 +73,7 @@ public class LootConditions {
         registerTag("open-water", context -> context.getFishHook() != null && context.getFishHook().isInOpenWater());
         registerTag("patrol-leader", context -> context.getLootedEntity() instanceof Raider && !((Raider) context.getLootedEntity()).isPatrolLeader());
         registerTag("permission", PermissionCondition.class);
+        registerTag("placeholder", PlaceholderCondition.class);
         registerTag("required-tool", RequiredToolCondition.class);
         registerTag("required-tool-type", RequiredToolTypeCondition.class);
         registerTag("sitting", context -> context.getLootedEntity() instanceof Sittable && ((Sittable) context.getLootedEntity()).isSitting());
