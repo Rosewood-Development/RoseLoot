@@ -8,7 +8,7 @@ softdepend: [PlaceholderAPI, HeadDatabase]
 commands:
   rl:
     description: The base RoseLoot command
-    aliases: [loot]
+    aliases: [roseloot, loot]
 permissions:
   roseloot.reload:
     description: Allows running the reload command
