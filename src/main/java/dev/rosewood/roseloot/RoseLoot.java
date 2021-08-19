@@ -4,7 +4,6 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.database.DataMigration;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
-import dev.rosewood.roseloot.command.CommandHandler;
 import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FishingListener;
@@ -48,7 +47,7 @@ public class RoseLoot extends RosePlugin {
 
         PluginCommand command = this.getCommand("rl");
         if (command != null)
-            command.setExecutor(new CommandHandler(this));
+            command.setExecutor(this.getManager(CommandManager.class));
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new BlockListener(this), this);
