@@ -15,6 +15,7 @@ import dev.rosewood.roseloot.loot.condition.tags.DroppedItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.GrownCropCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
@@ -32,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Breedable;
 import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Raider;
@@ -66,7 +66,7 @@ public class LootConditions {
         registerTag("entity-type", EntityTypeCondition.class);
         registerTag("explosion", context -> context.getExplosionType() != null);
         registerTag("freezing", context -> context.getLootedEntity() != null && context.getLootedEntity().getFreezeTicks() > 0);
-        registerTag("grown-crop", context -> context.getLootedBlock() instanceof Ageable && ((Ageable) context.getLootedBlock()).getAge() == ((Ageable) context.getLootedBlock()).getMaximumAge());
+        registerTag("grown-crop", GrownCropCondition.class);
         registerTag("has-saddle", HasSaddleCondition.class);
         registerTag("killed-by", KilledByCondition.class);
         registerTag("looter-entity-type", LooterEntityTypeCondition.class);
@@ -128,8 +128,8 @@ public class LootConditions {
             Predicate<LootContext> predicate = tagPredicateMap.get(tagPrefix);
             if (predicate != null)
                 return new BooleanLootCondition(tag, predicate);
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
