@@ -16,10 +16,13 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class LootTableManager extends Manager {
@@ -207,6 +210,21 @@ public class LootTableManager extends Manager {
                 .filter(x -> x.getName().equals(name))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public LootTable getLootTable(String name) {
+        return this.lootTables.values().stream()
+                .flatMap(Collection::stream)
+                .filter(x -> x.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<LootTable> getLootTables() {
+        return this.lootTables.values().stream()
+                .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(LootTable::getName))
+                .collect(Collectors.toList());
     }
 
     private void issueLoading(File file, String reason) {

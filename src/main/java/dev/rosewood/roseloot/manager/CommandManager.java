@@ -46,7 +46,7 @@ public class CommandManager extends Manager implements TabExecutor {
 
             // Load arguments
             for (Class<RoseCommandArgumentHandler> argumentHandlerClass : ClassUtils.getClassesOf(this.rosePlugin, "dev.rosewood.roseloot.command.argument", RoseCommandArgumentHandler.class)) {
-                RoseCommandArgumentHandler<?> argumentHandler = argumentHandlerClass.getConstructor().newInstance();
+                RoseCommandArgumentHandler<?> argumentHandler = argumentHandlerClass.getConstructor(RosePlugin.class).newInstance(this.rosePlugin);
                 this.argumentHandlers.put(argumentHandlerClass, argumentHandler);
             }
         } catch (Exception e) {
@@ -169,7 +169,10 @@ public class CommandManager extends Manager implements TabExecutor {
 
         RoseCommandArgumentInfo argumentInfo = command.getArgumentInfo().get(argumentPosition);
         RoseCommandArgumentHandler<?> argumentHandler = this.resolveArgumentHandler(argumentInfo.getType());
-        return argumentHandler.suggest(context, new ArgumentInstance(argumentInfo, argumentHandler, cmdArgs[cmdArgs.length - 1]));
+        return argumentHandler.suggest(context, new ArgumentInstance(argumentInfo, argumentHandler, cmdArgs[cmdArgs.length - 1]))
+                .stream()
+                .filter(x -> StringUtil.startsWithIgnoreCase(x, cmdArgs[cmdArgs.length - 1]))
+                .collect(Collectors.toList());
     }
 
 }

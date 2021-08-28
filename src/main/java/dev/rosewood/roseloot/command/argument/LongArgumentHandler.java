@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.command.argument;
 
+import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.command.framework.ArgumentInstance;
 import dev.rosewood.roseloot.command.framework.CommandContext;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
@@ -8,8 +9,8 @@ import java.util.List;
 
 public class LongArgumentHandler extends RoseCommandArgumentHandler<Long> {
 
-    public LongArgumentHandler() {
-        super(Long.class);
+    public LongArgumentHandler(RosePlugin rosePlugin) {
+        super(rosePlugin, Long.class);
     }
 
     @Override

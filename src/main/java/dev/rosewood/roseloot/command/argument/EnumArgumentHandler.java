@@ -1,17 +1,17 @@
 package dev.rosewood.roseloot.command.argument;
 
+import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
 import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.bukkit.util.StringUtil;
 
 public class EnumArgumentHandler<T extends Enum<T>> extends RoseCommandArgumentHandler<T> {
 
-    public EnumArgumentHandler() {
-        super(null); // This is a special case and will be handled by the preprocessor
+    public EnumArgumentHandler(RosePlugin rosePlugin) {
+        super(rosePlugin, null); // This is a special case and will be handled by the preprocessor
     }
 
     @Override
@@ -26,7 +26,6 @@ public class EnumArgumentHandler<T extends Enum<T>> extends RoseCommandArgumentH
     protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
         return Stream.of(this.getHandledType().getEnumConstants())
                 .map(Enum::name)
-                .filter(x -> StringUtil.startsWithIgnoreCase(x, argumentInstance.getArgument()))
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
     }

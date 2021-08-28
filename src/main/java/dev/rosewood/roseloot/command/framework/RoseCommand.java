@@ -76,6 +76,10 @@ public abstract class RoseCommand implements Comparable<RoseCommand> {
         return this.getRequiredPermission() == null || permissible.hasPermission(this.getRequiredPermission());
     }
 
+    public boolean isPlayerOnly() {
+        return false;
+    }
+
     @Override
     public int compareTo(RoseCommand other) {
         return this.getName().compareTo(other.getName());

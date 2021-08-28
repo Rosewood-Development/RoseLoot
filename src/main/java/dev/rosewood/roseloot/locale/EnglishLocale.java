@@ -25,6 +25,7 @@ public class EnglishLocale implements Locale {
             this.put("#1", "Generic Command Messages");
             this.put("no-permission", "&cYou don't have permission for that!");
             this.put("command-description", "&8 - &d/rl %cmd% %args% &7- %desc%");
+            this.put("only-player", "&cThis command can only be executed by a player.");
 
             this.put("#2", "Base Command Message");
             this.put("base-command-color", "&e");
@@ -37,6 +38,12 @@ public class EnglishLocale implements Locale {
             this.put("#4", "Reload Command");
             this.put("command-reload-description", "Reloads the plugin");
             this.put("command-reload-reloaded", "&eConfiguration and locale files were reloaded.");
+
+            this.put("#5", "Test Command");
+            this.put("command-test-description", "Simulates a loot table");
+
+            this.put("#6", "Generate Command");
+            this.put("command-generate-description", "Runs a loot table");
         }};
     }
 

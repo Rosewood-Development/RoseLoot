@@ -1,12 +1,15 @@
 package dev.rosewood.roseloot.command.framework;
 
+import dev.rosewood.rosegarden.RosePlugin;
 import java.util.List;
 
 public abstract class RoseCommandArgumentHandler<T> {
 
+    protected RosePlugin rosePlugin;
     protected Class<T> handledType;
 
-    public RoseCommandArgumentHandler(Class<T> handledType) {
+    public RoseCommandArgumentHandler(RosePlugin rosePlugin, Class<T> handledType) {
+        this.rosePlugin = rosePlugin;
         this.handledType = handledType;
     }
 
