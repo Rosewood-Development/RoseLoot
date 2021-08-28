@@ -19,6 +19,7 @@ import dev.rosewood.roseloot.loot.item.ExplosionLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
+import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -233,6 +234,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("command", CommandLootItem::fromSection);
         event.registerLootItem("loot_table", LootTableLootItem::fromSection);
         event.registerLootItem("explosion", ExplosionLootItem::fromSection);
+        event.registerLootItem("sound", SoundLootItem::fromSection);
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
