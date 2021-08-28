@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem.ExplosionState;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class ExplosionLootItem implements TriggerableLootItem<ExplosionState> {
@@ -32,6 +33,10 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionState> {
     @Override
     public void trigger(LootContext context, Player player, Location location) {
         this.create(context).trigger(location);
+    }
+
+    public static LootItem<?> fromSection(ConfigurationSection section) {
+        return new ExplosionLootItem(section.getInt("power", 3), section.getBoolean("fire", false), section.getBoolean("break-blocks", true));
     }
 
     public static class ExplosionState {

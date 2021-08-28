@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.LootContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class CommandLootItem implements TriggerableLootItem<String> {
@@ -38,6 +39,12 @@ public class CommandLootItem implements TriggerableLootItem<String> {
         StringPlaceholders stringPlaceholders = stringPlaceholdersBuilder.build();
         if (!this.command.contains("%player%") || isPlayer)
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(this.command));
+    }
+
+    public static LootItem<?> fromSection(ConfigurationSection section) {
+        if (!section.contains("value"))
+            return null;
+        return new CommandLootItem(section.getString("value"));
     }
 
 }

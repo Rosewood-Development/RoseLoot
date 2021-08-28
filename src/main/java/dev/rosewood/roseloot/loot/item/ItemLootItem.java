@@ -2,10 +2,12 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
+import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -64,6 +66,40 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         }
 
         return generatedItems;
+    }
+
+    public static LootItem<?> fromSection(ConfigurationSection section) {
+        String itemString = section.getString("item");
+        if (itemString == null)
+            return null;
+
+        Material item = Material.matchMaterial(itemString);
+        if (item == null)
+            return null;
+
+        int min, max;
+        if (section.contains("amount")) {
+            min = max = section.getInt("amount");
+        } else {
+            min = section.getInt("min", 1);
+            max = section.getInt("max", 1);
+        }
+
+        ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
+        ItemLootItem.EnchantmentBonus enchantmentBonus = null;
+        if (enchantmentBonusSection != null) {
+            String enchantmentString = enchantmentBonusSection.getString("enchantment");
+            if (enchantmentString != null) {
+                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
+                int bonusPerLevel = enchantmentBonusSection.getInt("bonus-per-level", 0);
+                boolean addToMax = enchantmentBonusSection.getBoolean("add-to-max", true);
+                if (enchantment != null && bonusPerLevel > 0)
+                    enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel, addToMax);
+            }
+        }
+
+        ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
+        return new ItemLootItem(item, min, max, itemLootMeta, enchantmentBonus);
     }
 
     public static class EnchantmentBonus {

@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Collections;
 import java.util.List;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
 
@@ -46,6 +47,12 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         List<LootItem<?>> lootItems = this.lootTable.generate(context);
         this.running = false;
         return lootItems;
+    }
+
+    public static LootItem<?> fromSection(ConfigurationSection section) {
+        if (!section.contains("value"))
+            return null;
+        return new LootTableLootItem(section.getString("value"));
     }
 
 }

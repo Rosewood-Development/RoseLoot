@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.manager;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.manager.Manager;
+import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootEntry;
@@ -12,7 +13,12 @@ import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.LootConditions;
+import dev.rosewood.roseloot.loot.item.CommandLootItem;
+import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
+import dev.rosewood.roseloot.loot.item.ExplosionLootItem;
+import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
+import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -22,21 +28,33 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
-public class LootTableManager extends Manager {
+public class LootTableManager extends Manager implements Listener {
 
     private final Map<LootTableType, List<LootTable>> lootTables;
+    private final Map<String, Function<ConfigurationSection, LootItem<?>>> registeredLootItemFunctions;
 
     public LootTableManager(RosePlugin rosePlugin) {
         super(rosePlugin);
 
         this.lootTables = new HashMap<>();
+        this.registeredLootItemFunctions = new HashMap<>();
+        Bukkit.getPluginManager().registerEvents(this, rosePlugin);
     }
 
     @Override
     public void reload() {
+        LootItemTypeRegistrationEvent event = new LootItemTypeRegistrationEvent();
+        Bukkit.getPluginManager().callEvent(event);
+        this.registeredLootItemFunctions.putAll(event.getRegisteredLootItemsTypes());
+
         File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
         if (!directory.exists()) {
             directory.mkdirs();
@@ -153,7 +171,19 @@ public class LootTableManager extends Manager {
                                 continue;
                             }
 
-                            LootItem<?> lootItem = LootItem.fromSection(type, itemSection);
+                            String lootItemType = itemSection.getString("type");
+                            if (lootItemType == null) {
+                                this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                                continue;
+                            }
+
+                            Function<ConfigurationSection, LootItem<?>> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
+                            if (lootItemFunction == null) {
+                                this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                                continue;
+                            }
+
+                            LootItem<?> lootItem = lootItemFunction.apply(itemSection);
                             if (lootItem == null) {
                                 this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
                                 continue;
@@ -193,6 +223,16 @@ public class LootTableManager extends Manager {
     @Override
     public void disable() {
         this.lootTables.clear();
+        this.registeredLootItemFunctions.clear();
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onLootItemTypeRegistration(LootItemTypeRegistrationEvent event) {
+        event.registerLootItem("item", ItemLootItem::fromSection);
+        event.registerLootItem("experience", ExperienceLootItem::fromSection);
+        event.registerLootItem("command", CommandLootItem::fromSection);
+        event.registerLootItem("loot_table", LootTableLootItem::fromSection);
+        event.registerLootItem("explosion", ExplosionLootItem::fromSection);
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {

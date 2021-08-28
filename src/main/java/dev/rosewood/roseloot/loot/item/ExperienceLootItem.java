@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class ExperienceLootItem implements LootItem<Integer> {
 
@@ -27,6 +28,18 @@ public class ExperienceLootItem implements LootItem<Integer> {
         this.min += other.min;
         this.max += other.max;
         return true;
+    }
+
+    public static LootItem<?> fromSection(ConfigurationSection section) {
+        int minExp, maxExp;
+        if (section.contains("amount")) {
+            minExp = maxExp = section.getInt("amount");
+        } else {
+            minExp = section.getInt("min", 1);
+            maxExp = section.getInt("max", 1);
+        }
+
+        return new ExperienceLootItem(minExp, maxExp);
     }
 
 }

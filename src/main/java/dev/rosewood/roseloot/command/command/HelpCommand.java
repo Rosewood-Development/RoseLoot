@@ -2,8 +2,8 @@ package dev.rosewood.roseloot.command.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
-import dev.rosewood.roseloot.command.framework.RoseCommand;
 import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.RoseCommand;
 import dev.rosewood.roseloot.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
