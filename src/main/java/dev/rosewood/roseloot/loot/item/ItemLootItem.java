@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -11,7 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class ItemLootItem extends LootItem {
+public class ItemLootItem implements LootItem<List<ItemStack>> {
 
     private final Material item;
     private final int min;
@@ -28,7 +27,7 @@ public class ItemLootItem extends LootItem {
     }
 
     @Override
-    public LootContents generate(LootContext context) {
+    public List<ItemStack> create(LootContext context) {
         List<ItemStack> generatedItems = new ArrayList<>();
 
         int max = this.max;
@@ -64,7 +63,7 @@ public class ItemLootItem extends LootItem {
             }
         }
 
-        return LootContents.ofItems(generatedItems);
+        return generatedItems;
     }
 
     public static class EnchantmentBonus {

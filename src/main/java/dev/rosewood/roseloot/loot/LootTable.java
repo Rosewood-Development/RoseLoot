@@ -1,10 +1,12 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.item.LootItem;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LootTable implements LootGenerator {
+public class LootTable implements LootItemGenerator {
 
     private final String name;
     private final LootTableType type;
@@ -21,10 +23,10 @@ public class LootTable implements LootGenerator {
     }
 
     @Override
-    public LootContents generate(LootContext context) {
+    public List<LootItem<?>> generate(LootContext context) {
         if (!this.check(context))
-            return LootContents.empty();
-        return LootContents.ofExisting(this.pools.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
+            return Collections.emptyList();
+        return this.pools.stream().flatMap(x -> x.generate(context).stream()).collect(Collectors.toList());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootContext;
-import dev.rosewood.roseloot.loot.LootGenerator;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.util.EnchantingUtils;
@@ -9,14 +8,31 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 
-public abstract class LootItem implements LootGenerator {
+/**
+ * @param <T> The type created by this LootItem
+ */
+public interface LootItem<T> {
 
-    @Override
-    public boolean check(LootContext context) {
-        return true;
+    /**
+     * Creates the contents produced by this LootItem
+     *
+     * @param context The LootContext
+     * @return the created contents
+     */
+    T create(LootContext context);
+
+    /**
+     * Attempts to combine another LootItem into this LootItem.
+     * Should only return {@code true} if a combination has occurred.
+     *
+     * @param lootItem The LootItem to attempt to merge with
+     * @return true if a combination has occurred, otherwise false if nothing happened
+     */
+    default boolean combineWith(LootItem<?> lootItem) {
+        return false;
     }
 
-    public static LootItem fromSection(LootTableType lootTableType, ConfigurationSection section) {
+    static LootItem<?> fromSection(LootTableType lootTableType, ConfigurationSection section) {
         LootItemType type = LootItemType.fromString(section.getString("type"));
         if (type == null)
             return null;

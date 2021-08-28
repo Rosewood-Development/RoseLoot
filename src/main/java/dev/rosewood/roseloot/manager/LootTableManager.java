@@ -145,7 +145,7 @@ public class LootTableManager extends Manager {
                             continue;
                         }
 
-                        List<LootItem> lootItems = new ArrayList<>();
+                        List<LootItem<?>> lootItems = new ArrayList<>();
                         for (String itemKey : itemsSection.getKeys(false)) {
                             ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
                             if (itemSection == null) {
@@ -153,7 +153,7 @@ public class LootTableManager extends Manager {
                                 continue;
                             }
 
-                            LootItem lootItem = LootItem.fromSection(type, itemSection);
+                            LootItem<?> lootItem = LootItem.fromSection(type, itemSection);
                             if (lootItem == null) {
                                 this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
                                 continue;
@@ -196,13 +196,13 @@ public class LootTableManager extends Manager {
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
-        List<LootContents> lootContents = new ArrayList<>();
+        LootContents lootContents = new LootContents(lootContext);
         boolean overwriteExisting = false;
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
             lootContents.add(lootTable.generate(lootContext));
             overwriteExisting |= lootTable.shouldOverwriteExisting(lootContext);
         }
-        return new LootResult(lootContext, LootContents.ofExisting(lootContents), overwriteExisting);
+        return new LootResult(lootContext, lootContents, overwriteExisting);
     }
 
     public LootTable getLootTable(LootTableType lootTableType, String name) {

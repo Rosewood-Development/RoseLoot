@@ -2,17 +2,17 @@ package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.item.LootItem;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class LootEntry implements LootGenerator {
+public class LootEntry implements LootItemGenerator {
 
     private final List<LootCondition> conditions;
     private final int weight;
     private final int quality;
-    private final List<LootItem> lootItems;
+    private final List<LootItem<?>> lootItems;
 
-    public LootEntry(List<LootCondition> conditions, int weight, int quality, List<LootItem> lootItems) {
+    public LootEntry(List<LootCondition> conditions, int weight, int quality, List<LootItem<?>> lootItems) {
         this.conditions = conditions;
         this.weight = weight;
         this.quality = quality;
@@ -20,10 +20,10 @@ public class LootEntry implements LootGenerator {
     }
 
     @Override
-    public LootContents generate(LootContext context) {
+    public List<LootItem<?>> generate(LootContext context) {
         if (!this.check(context))
-            return LootContents.empty();
-        return LootContents.ofExisting(this.lootItems.stream().map(x -> x.generate(context)).collect(Collectors.toList()));
+            return Collections.emptyList();
+        return this.lootItems;
     }
 
     @Override

@@ -1,14 +1,17 @@
 package dev.rosewood.roseloot.loot;
 
-public interface LootGenerator {
+import dev.rosewood.roseloot.loot.item.LootItem;
+import java.util.List;
+
+public interface LootItemGenerator {
 
     /**
-     * Generates loot with the given LootContext
+     * Generates LootItems with the given LootContext
      *
      * @param context The LootContext
-     * @return generated loot
+     * @return generated LootItems
      */
-    LootContents generate(LootContext context);
+    List<LootItem<?>> generate(LootContext context);
 
     /**
      * Checks if this generator passes conditions

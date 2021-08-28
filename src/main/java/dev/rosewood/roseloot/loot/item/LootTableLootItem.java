@@ -2,13 +2,14 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import java.util.Collections;
+import java.util.List;
 
-public class LootTableLootItem extends LootItem {
+public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
 
     private final String lootTableName;
     private boolean invalid;
@@ -20,9 +21,9 @@ public class LootTableLootItem extends LootItem {
     }
 
     @Override
-    public LootContents generate(LootContext context) {
+    public List<LootItem<?>> create(LootContext context) {
         if (this.invalid)
-            return LootContents.empty();
+            return Collections.emptyList();
 
         if (this.lootTable == null) {
             RosePlugin rosePlugin = RoseLoot.getInstance();
@@ -30,7 +31,7 @@ public class LootTableLootItem extends LootItem {
             if (this.lootTable == null) {
                 this.invalid = true;
                 rosePlugin.getLogger().warning("Could not find loot table specified: " + this.lootTableName);
-                return LootContents.empty();
+                return Collections.emptyList();
             }
         }
 
@@ -38,13 +39,13 @@ public class LootTableLootItem extends LootItem {
             RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
                     "This loot table will be empty and log this error message until fixed.");
             this.running = false;
-            return LootContents.empty();
+            return Collections.emptyList();
         }
 
         this.running = true;
-        LootContents contents = this.lootTable.generate(context);
+        List<LootItem<?>> lootItems = this.lootTable.generate(context);
         this.running = false;
-        return contents;
+        return lootItems;
     }
 
 }

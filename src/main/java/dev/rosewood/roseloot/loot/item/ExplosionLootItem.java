@@ -1,21 +1,37 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.item.ExplosionLootItem.ExplosionState;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
-public class ExplosionLootItem extends LootItem {
+public class ExplosionLootItem implements TriggerableLootItem<ExplosionState> {
 
-    private final ExplosionState explosionState;
+    private ExplosionState explosionState;
 
     public ExplosionLootItem(int power, boolean fire, boolean breakBlocks) {
         this.explosionState = new ExplosionState(power, fire, breakBlocks);
     }
 
     @Override
-    public LootContents generate(LootContext context) {
-        return LootContents.ofExplosion(this.explosionState);
+    public ExplosionState create(LootContext context) {
+        return this.explosionState;
+    }
+
+    @Override
+    public boolean combineWith(LootItem<?> lootItem) {
+        if (!(lootItem instanceof ExplosionLootItem))
+            return false;
+
+        ExplosionLootItem other = (ExplosionLootItem) lootItem;
+        this.explosionState = ExplosionState.combine(this.explosionState, other.explosionState);
+        return true;
+    }
+
+    @Override
+    public void trigger(LootContext context, Player player, Location location) {
+        this.create(context).trigger(location);
     }
 
     public static class ExplosionState {

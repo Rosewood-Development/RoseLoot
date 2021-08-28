@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
@@ -10,7 +9,6 @@ import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Iterator;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -84,30 +82,15 @@ public class BlockListener implements Listener {
             if (lootResult.shouldOverwriteExisting())
                 iterator.remove();
 
-            // Trigger explosion if applicable
-            if (lootContents.getExplosionState() != null)
-                lootContents.getExplosionState().trigger(exploded.getLocation());
-
             // Drop items and experience
             Location dropLocation = exploded.getLocation();
             lootContents.getItems().forEach(x -> exploded.getWorld().dropItemNaturally(dropLocation, x));
 
             int experience = lootContents.getExperience();
             if (experience > 0)
-                exploded.getWorld().spawn(exploded.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
+                exploded.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
-            // Run commands
-            if (!lootContents.getCommands().isEmpty()) {
-                Location location = exploded.getLocation();
-                StringPlaceholders stringPlaceholders = StringPlaceholders.builder("world", exploded.getWorld().getName())
-                        .addPlaceholder("x", location.getX())
-                        .addPlaceholder("y", location.getY())
-                        .addPlaceholder("z", location.getZ())
-                        .build();
-
-                for (String command : lootContents.getCommands())
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-            }
+            lootContents.triggerExtras(null, dropLocation);
         }
     }
 
@@ -156,10 +139,6 @@ public class BlockListener implements Listener {
             if (lootResult.shouldOverwriteExisting())
                 iterator.remove();
 
-            // Trigger explosion if applicable
-            if (lootContents.getExplosionState() != null)
-                lootContents.getExplosionState().trigger(exploded.getLocation());
-
             // Drop items and experience
             Location dropLocation = exploded.getLocation();
             lootContents.getItems().forEach(x -> exploded.getWorld().dropItemNaturally(dropLocation, x));
@@ -168,18 +147,7 @@ public class BlockListener implements Listener {
             if (experience > 0)
                 exploded.getWorld().spawn(exploded.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-            // Run commands
-            if (!lootContents.getCommands().isEmpty()) {
-                Location location = exploded.getLocation();
-                StringPlaceholders stringPlaceholders = StringPlaceholders.builder("world", exploded.getWorld().getName())
-                        .addPlaceholder("x", location.getX())
-                        .addPlaceholder("y", location.getY())
-                        .addPlaceholder("z", location.getZ())
-                        .build();
-
-                for (String command : lootContents.getCommands())
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(command));
-            }
+            lootContents.triggerExtras(null, dropLocation);
         }
     }
 
