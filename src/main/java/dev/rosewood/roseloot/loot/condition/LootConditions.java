@@ -25,7 +25,9 @@ import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnerTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
+import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -81,8 +83,10 @@ public class LootConditions {
         registerTag("spawner-type", SpawnerTypeCondition.class);
         registerTag("spawn-reason", SpawnReasonCondition.class);
         registerTag("tamed", context -> context.getLootedEntity() instanceof Tameable && ((Tameable) context.getLootedEntity()).isTamed());
+        registerTag("temperature", TemperatureCondition.class);
         registerTag("trading", context -> context.getLootedEntity() instanceof Merchant && ((Merchant) context.getLootedEntity()).isTrading());
         registerTag("vanilla-loot-table", VanillaLootTableCondition.class);
+        registerTag("weather", WeatherCondition.class);
         registerTag("world", WorldCondition.class);
 
         List<Class<EntityConditions>> classes = ClassUtils.getClassesOf(RoseLoot.getInstance(), PACKAGE_PATH, EntityConditions.class);

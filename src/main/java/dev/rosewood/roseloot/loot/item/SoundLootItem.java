@@ -45,8 +45,8 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
         if (category == null)
             category = SoundCategory.MASTER;
 
-        float volume = (float) section.getDouble("volume");
-        float pitch = (float) section.getDouble("pitch");
+        float volume = (float) section.getDouble("volume", 1);
+        float pitch = (float) section.getDouble("pitch", 1);
         boolean playerOnly = section.getBoolean("player-only", true);
         return new SoundLootItem(sound, category, volume, pitch, playerOnly);
     }
