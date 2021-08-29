@@ -29,9 +29,6 @@ public class LootPool implements LootItemGenerator {
         if (!this.check(context))
             return Collections.emptyList();
 
-        if (this.entries.size() == 1)
-            return this.entries.get(0).generate(context);
-
         List<LootItem<?>> lootItems = new ArrayList<>();
         List<LootEntry> unweightedEntries = new ArrayList<>();
         RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
