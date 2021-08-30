@@ -28,11 +28,11 @@ public class EnchantmentChanceCondition extends LootCondition {
     public boolean checkInternal(LootContext context) {
         ItemStack item = context.getItemUsed();
         if (item == null)
-            return false;
+            return LootUtils.checkChance(this.chance);
 
         ItemMeta meta = item.getItemMeta();
         if (meta == null)
-            return false;
+            return LootUtils.checkChance(this.chance);
 
         return LootUtils.checkChance(this.chance + this.chancePerLevel * meta.getEnchantLevel(this.enchantment));
     }
