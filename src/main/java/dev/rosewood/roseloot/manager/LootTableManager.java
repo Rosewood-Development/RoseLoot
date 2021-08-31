@@ -14,6 +14,7 @@ import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.LootConditions;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
+import dev.rosewood.roseloot.loot.item.EconomyLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
@@ -235,6 +236,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("loot_table", LootTableLootItem::fromSection);
         event.registerLootItem("explosion", ExplosionLootItem::fromSection);
         event.registerLootItem("sound", SoundLootItem::fromSection);
+        event.registerLootItem("economy", EconomyLootItem::fromSection);
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
