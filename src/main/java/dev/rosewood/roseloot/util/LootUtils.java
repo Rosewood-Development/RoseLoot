@@ -9,9 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -20,6 +27,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.projectiles.ProjectileSource;
 
 public final class LootUtils {
 
@@ -76,6 +84,25 @@ public final class LootUtils {
             max = temp;
         }
         return RANDOM.nextInt(max - min + 1) + min;
+    }
+
+    /**
+     * Gets a random value between the given range, inclusively
+     *
+     * @param min The minimum value
+     * @param max The maximum value
+     * @return A value between the min and max, inclusively
+     */
+    public static double randomInRange(double min, double max) {
+        if (min == max)
+            return min;
+
+        if (min > max) {
+            double temp = min;
+            min = max;
+            max = temp;
+        }
+        return RANDOM.nextDouble() * (max - min + 1) + min;
     }
 
     /**
@@ -172,6 +199,46 @@ public final class LootUtils {
 
     public static int clamp(int value, int min, int max) {
         return Math.min(Math.max(value, min), max);
+    }
+
+    /**
+     * Propagates the killer up the stack until we find the ultimate cause of an Entity's death
+     *
+     * @param entity The Entity to propagate up from
+     * @return The Entity that ultimated caused the death
+     */
+    public static Entity propagateKiller(Entity entity) {
+        if (entity instanceof LivingEntity && ((LivingEntity) entity).getKiller() != null)
+            return ((LivingEntity) entity).getKiller();
+
+        if (entity instanceof TNTPrimed) {
+            // Propagate the igniter of the tnt up the stack
+            TNTPrimed tntPrimed = (TNTPrimed) entity;
+            Entity tntSource = tntPrimed.getSource();
+            if (tntSource != null)
+                entity = tntSource;
+        }
+
+        if (entity instanceof Projectile) {
+            // Check for the projectile type first, if not fall back to the shooter
+            Projectile projectile = (Projectile) entity;
+            ProjectileSource source = projectile.getShooter();
+            if (source instanceof Entity)
+                entity = (Entity) source;
+        }
+
+        if (entity instanceof Tameable) {
+            // Propagate to the tamed entity's owner (if they're online)
+            Tameable tameable = (Tameable) entity;
+            AnimalTamer tamer = tameable.getOwner();
+            if (tamer != null) {
+                Player player = Bukkit.getPlayer(tamer.getUniqueId());
+                if (player != null)
+                    entity = player;
+            }
+        }
+
+        return entity;
     }
 
 }
