@@ -85,7 +85,7 @@ public class LootContents {
     public void triggerExtras(Player player, Location location) {
         this.contents.stream()
                 .filter(x -> x instanceof TriggerableLootItem)
-                .forEach(x -> ((TriggerableLootItem<?>) x).trigger(this.context, player, location));
+                .forEach(x -> ((TriggerableLootItem<?>) x).trigger(this.context, this.context.getLootingPlayer(), location));
     }
 
 }

@@ -2,13 +2,12 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class KilledByCondition extends LootCondition {
@@ -25,32 +24,14 @@ public class KilledByCondition extends LootCondition {
         if (entity == null)
             return false;
 
+        if (context.getLootingPlayer() != null)
+            return this.entityTypes.contains(EntityType.PLAYER);
+
         if (!(entity.getLastDamageCause() instanceof EntityDamageByEntityEvent))
             return false;
 
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) entity.getLastDamageCause();
-        Entity damager = event.getDamager();
-        if (damager instanceof TNTPrimed) {
-            // Propagate the igniter of the tnt up the stack
-            TNTPrimed tntPrimed = (TNTPrimed) damager;
-            Entity tntSource = tntPrimed.getSource();
-            if (tntSource == null) {
-                return this.entityTypes.contains(EntityType.PRIMED_TNT);
-            } else {
-                damager = tntSource;
-            }
-        }
-
-        if (damager instanceof Projectile) {
-            // Check for the projectile type first, if not fall back to the shooter
-            Projectile projectile = (Projectile) damager;
-            if (this.entityTypes.contains(projectile.getType())) {
-                return true;
-            } else if (projectile.getShooter() instanceof Entity) {
-                return this.entityTypes.contains(((Entity) projectile.getShooter()).getType());
-            }
-        }
-
+        Entity damager = LootUtils.propagateKiller(event.getDamager());
         return this.entityTypes.contains(damager.getType());
     }
 

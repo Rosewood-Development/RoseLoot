@@ -74,7 +74,8 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
          */
         public void trigger(Player player, Location location) {
             if (this.playerOnly) {
-                player.playSound(location, this.sound, this.category, this.volume, this.pitch);
+                if (player != null)
+                    player.playSound(location, this.sound, this.category, this.volume, this.pitch);
             } else {
                 World world = location.getWorld();
                 if (world != null)

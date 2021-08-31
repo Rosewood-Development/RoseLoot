@@ -11,6 +11,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -70,6 +71,16 @@ public class LootContext {
     @Nullable
     public Entity getLooter() {
         return this.looter;
+    }
+
+    /**
+     * @return the Player that ultimately caused the loot generation, may not be the same as {@link LootContext#getLooter()}
+     */
+    @Nullable
+    public Player getLootingPlayer() {
+        if (this.lootedEntity == null)
+            return null;
+        return this.lootedEntity.getKiller();
     }
 
     /**
