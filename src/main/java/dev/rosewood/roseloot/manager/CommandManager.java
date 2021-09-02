@@ -126,7 +126,7 @@ public class CommandManager extends Manager implements TabExecutor {
                     .collect(Collectors.toList());
 
             if (!invalidArgs.isEmpty()) {
-                localeManager.sendCustomMessage(sender, "&cInvalid argument(s), please correct your mistakes and try again... baka...");
+                localeManager.sendCustomMessage(sender, "&cInvalid argument(s), please correct your mistakes and try again...");
                 return true;
             }
 

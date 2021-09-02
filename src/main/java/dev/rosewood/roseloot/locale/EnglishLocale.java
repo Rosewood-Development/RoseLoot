@@ -44,6 +44,12 @@ public class EnglishLocale implements Locale {
 
             this.put("#6", "Generate Command");
             this.put("command-generate-description", "Runs a loot table");
+
+            this.put("#7", "List Command");
+            this.put("command-list-description", "Display a list of active loot tables");
+            this.put("command-list-none", "&eThere are no loot tables currently active.");
+            this.put("command-list-header", "&eThere are &b%amount% &eloot tables currently active:");
+            this.put("command-list-entry", "  &7%name% &8- %type%");
         }};
     }
 

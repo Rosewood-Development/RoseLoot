@@ -19,7 +19,7 @@ public class PlayerPointsEconomyProvider implements EconomyProvider {
     public String formatCurrency(double amount) {
         if (this.economy == null)
             return String.valueOf(amount);
-        return PlayerPoints.getInstance().getManager(LocaleManager.class).getCurrencyName((int) amount);
+        return PlayerPoints.getInstance().getManager(LocaleManager.class).getCurrencyName((int) Math.round(amount));
     }
 
     @Override
@@ -32,13 +32,13 @@ public class PlayerPointsEconomyProvider implements EconomyProvider {
     @Override
     public void deposit(OfflinePlayer offlinePlayer, double amount) {
         if (this.economy != null)
-            this.economy.give(offlinePlayer.getUniqueId(), (int) amount);
+            this.economy.give(offlinePlayer.getUniqueId(), (int) Math.round(amount));
     }
 
     @Override
     public void withdraw(OfflinePlayer offlinePlayer, double amount) {
         if (this.economy != null)
-            this.economy.take(offlinePlayer.getUniqueId(), (int) amount);
+            this.economy.take(offlinePlayer.getUniqueId(), (int) Math.round(amount));
     }
 
 }
