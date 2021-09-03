@@ -6,19 +6,31 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
 public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
 
     private final String lootTableName;
     private boolean invalid;
     private LootTable lootTable;
+    private org.bukkit.loot.LootTable vanillaLootTable;
     private boolean running;
+    private final Random random;
 
     public LootTableLootItem(String lootTableName) {
         this.lootTableName = lootTableName;
+        this.random = new Random();
     }
 
     @Override
@@ -26,13 +38,19 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         if (this.invalid)
             return Collections.emptyList();
 
-        if (this.lootTable == null) {
+        if (this.lootTable == null && this.vanillaLootTable == null) {
             RosePlugin rosePlugin = RoseLoot.getInstance();
             this.lootTable = rosePlugin.getManager(LootTableManager.class).getLootTable(LootTableType.LOOT_TABLE, this.lootTableName);
             if (this.lootTable == null) {
-                this.invalid = true;
-                rosePlugin.getLogger().warning("Could not find loot table specified: " + this.lootTableName);
-                return Collections.emptyList();
+                NamespacedKey key = NamespacedKey.fromString(this.lootTableName);
+                if (key != null)
+                    this.vanillaLootTable = Bukkit.getLootTable(key);
+
+                if (this.vanillaLootTable == null) {
+                    this.invalid = true;
+                    rosePlugin.getLogger().warning("Could not find loot table specified: " + this.lootTableName);
+                    return Collections.emptyList();
+                }
             }
         }
 
@@ -44,8 +62,36 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         }
 
         this.running = true;
-        List<LootItem<?>> lootItems = this.lootTable.generate(context);
+        List<LootItem<?>> lootItems;
+        if (this.lootTable != null) {
+            lootItems = this.lootTable.generate(context);
+        } else {
+            Location location = context.getLocation();
+            World world = location.getWorld();
+            if (world == null)
+                return Collections.emptyList();
+
+            int lootingModifier = 0;
+            ItemStack itemUsed = context.getItemUsed();
+            if (itemUsed != null) {
+                if (itemUsed.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
+                    lootingModifier = itemUsed.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
+                } else if (itemUsed.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
+                    lootingModifier = itemUsed.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+                }
+            }
+
+            org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(location)
+                    .lootedEntity(context.getLootedEntity())
+                    .killer(context.getLootingPlayer())
+                    .lootingModifier(lootingModifier)
+                    .luck((float) context.getLuckLevel())
+                    .build();
+
+            lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(this.random, vanillaContext)));
+        }
         this.running = false;
+
         return lootItems;
     }
 
@@ -53,6 +99,22 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         if (!section.contains("value"))
             return null;
         return new LootTableLootItem(section.getString("value"));
+    }
+
+    private static class VanillaItemLootItem extends ItemLootItem {
+
+        private final Collection<ItemStack> items;
+
+        public VanillaItemLootItem(Collection<ItemStack> items) {
+            super(null, -1, -1, null, null);
+            this.items = items;
+        }
+
+        @Override
+        public List<ItemStack> create(LootContext context) {
+            return new ArrayList<>(this.items);
+        }
+
     }
 
 }
