@@ -46,7 +46,7 @@ public class ItemLootMeta {
     private boolean uncappedRandomEnchants;
     private List<ItemFlag> hideFlags;
     protected Map<Enchantment, Integer> enchantments;
-    private Multimap<Attribute, AttributeModifier> attributes;
+    private List<AttributeData> attributes;
     protected Boolean copyBlockState;
     protected Boolean copyBlockData;
 
@@ -127,7 +127,7 @@ public class ItemLootMeta {
 
         ConfigurationSection attributesSection = section.getConfigurationSection("attributes");
         if (attributesSection != null) {
-            Multimap<Attribute, AttributeModifier> attributeModifiers = ArrayListMultimap.create();
+            List<AttributeData> attributeData = new ArrayList<>();
             for (String key : attributesSection.getKeys(false)) {
                 ConfigurationSection attributeSection = attributesSection.getConfigurationSection(key);
                 if (attributeSection == null)
@@ -149,7 +149,13 @@ public class ItemLootMeta {
                 if (attribute == null)
                     continue;
 
-                double amount = attributeSection.getDouble("amount", 0);
+                double min, max;
+                if (attributeSection.contains("amount")) {
+                    min = max = attributeSection.getDouble("amount", 0);
+                } else {
+                    min = attributeSection.getDouble("min", 0);
+                    max = attributeSection.getDouble("max", min);
+                }
 
                 String operationName = attributeSection.getString("operation");
                 if (operationName == null)
@@ -177,10 +183,10 @@ public class ItemLootMeta {
                     }
                 }
 
-                attributeModifiers.put(attribute, new AttributeModifier(UUID.randomUUID(), attribute.getKey().getKey(), amount, operation, slot));
+                attributeData.add(new AttributeData(attribute, min, max, operation, slot));
             }
 
-            this.attributes = attributeModifiers;
+            this.attributes = attributeData;
         }
 
         if (section.getBoolean("copy-block-state", false))
@@ -208,7 +214,12 @@ public class ItemLootMeta {
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
         if (this.enchantments != null && itemStack.getType() != Material.ENCHANTED_BOOK) this.enchantments.forEach((x, y) -> itemMeta.addEnchant(x, y, true));
-        if (this.attributes != null) itemMeta.setAttributeModifiers(this.attributes);
+
+        if (this.attributes != null) {
+            Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
+            this.attributes.forEach(x -> attributes.put(x.getAttribute(), x.toAttributeModifier()));
+            itemMeta.setAttributeModifiers(attributes);
+        }
 
         if (itemMeta instanceof Damageable && this.minDurability != null) {
             Damageable damageable = (Damageable) itemMeta;
@@ -282,6 +293,32 @@ public class ItemLootMeta {
             default:
                 return new ItemLootMeta(section);
         }
+    }
+
+    private static class AttributeData {
+
+        private final Attribute attribute;
+        private final double min, max;
+        private final AttributeModifier.Operation operation;
+        private final EquipmentSlot slot;
+
+        private AttributeData(Attribute attribute, double min, double max, AttributeModifier.Operation operation, EquipmentSlot slot) {
+            this.attribute = attribute;
+            this.min = min;
+            this.max = max;
+            this.operation = operation;
+            this.slot = slot;
+        }
+
+        public Attribute getAttribute() {
+            return this.attribute;
+        }
+
+        public AttributeModifier toAttributeModifier() {
+            double amount = LootUtils.randomInRange(this.min, this.max);
+            return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), amount, this.operation, this.slot);
+        }
+
     }
 
 }
