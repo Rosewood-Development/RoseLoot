@@ -290,6 +290,8 @@ public class ItemLootMeta {
                 return new TropicalFishBucketItemLootMeta(section);
             case AXOLOTL_BUCKET:
                 return new AxolotlBucketItemLootMeta(section);
+            case BUNDLE:
+                return new BundleItemLootMeta(section);
             default:
                 return new ItemLootMeta(section);
         }
