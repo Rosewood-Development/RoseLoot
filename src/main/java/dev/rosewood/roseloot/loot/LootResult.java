@@ -5,11 +5,13 @@ public class LootResult {
     private final LootContext lootContext;
     private final LootContents lootContents;
     private final boolean overwriteExisting;
+    private final boolean directlyToLooter;
 
-    public LootResult(LootContext lootContext, LootContents lootContents, boolean overwriteExisting) {
+    public LootResult(LootContext lootContext, LootContents lootContents, boolean overwriteExisting, boolean directlyToLooter) {
         this.lootContext = lootContext;
         this.lootContents = lootContents;
         this.overwriteExisting = overwriteExisting;
+        this.directlyToLooter = directlyToLooter;
     }
 
     public LootContext getLootContext() {
@@ -24,4 +26,7 @@ public class LootResult {
         return this.overwriteExisting;
     }
 
+    public boolean shouldGoDirectlyToLooter() {
+        return directlyToLooter;
+    }
 }

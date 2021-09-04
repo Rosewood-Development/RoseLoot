@@ -7,6 +7,7 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -17,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.LootGenerateEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class LootGenerateListener implements Listener {
 
@@ -51,9 +53,18 @@ public class LootGenerateListener implements Listener {
         event.getLoot().addAll(lootResult.getLootContents().getItems());
 
         int experience = lootContents.getExperience();
-        if (experience > 0) {
-            Location location = looter == null ? block.getLocation() : looter.getLocation();
-            block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+
+
+        // Cancel drop and send it directly to inventory
+        if(lootResult.shouldGoDirectlyToLooter() && LootUtils.isPlayerAndHasSpace(looter, event.getLoot())){
+            ((Player) looter).getInventory().addItem(event.getLoot().toArray(new ItemStack[0]));
+            ((Player) looter).giveExp(experience);
+            event.setCancelled(true);
+        }else{
+            if (experience > 0) {
+                Location location = looter == null ? block.getLocation() : looter.getLocation();
+                block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            }
         }
 
         lootContents.triggerExtras(looter instanceof Player ? (Player) looter : null, block.getLocation());

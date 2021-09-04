@@ -8,7 +8,11 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
+
 import java.util.Iterator;
+
+import dev.rosewood.roseloot.util.LootUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -25,6 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class BlockListener implements Listener {
 
@@ -52,12 +57,18 @@ public class BlockListener implements Listener {
             event.setDropItems(false);
             event.setExpToDrop(0);
         }
-
-        // Drop items and experience
         Location dropLocation = block.getLocation();
-        lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
 
-        event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
+        // Send drop it directly to inventory
+        if (lootResult.shouldGoDirectlyToLooter() && LootUtils.isPlayerAndHasSpace(event.getPlayer(), lootContents.getItems())) {
+            event.getPlayer().getInventory().addItem(lootContents.getItems().toArray(new ItemStack[0]));
+            event.getPlayer().giveExp(event.getExpToDrop() + lootContents.getExperience());
+        } else {
+            // Drop items and experience
+            lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
+            event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
+        }
+
 
         lootContents.triggerExtras(event.getPlayer(), dropLocation);
     }
@@ -139,13 +150,21 @@ public class BlockListener implements Listener {
             if (lootResult.shouldOverwriteExisting())
                 iterator.remove();
 
-            // Drop items and experience
             Location dropLocation = exploded.getLocation();
-            lootContents.getItems().forEach(x -> exploded.getWorld().dropItemNaturally(dropLocation, x));
 
-            int experience = lootContents.getExperience();
-            if (experience > 0)
-                exploded.getWorld().spawn(exploded.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
+            // Cancel drop and send it directly to inventory
+            if (lootResult.shouldGoDirectlyToLooter() && LootUtils.isPlayerAndHasSpace(looter, lootContents.getItems())) {
+                ((Player) looter).getInventory().addItem(lootContents.getItems().toArray(new ItemStack[0]));
+                ((Player) looter).giveExp(lootContents.getExperience());
+            } else {
+                // Drop items and experience
+                lootContents.getItems().forEach(x -> exploded.getWorld().dropItemNaturally(dropLocation, x));
+
+                int experience = lootContents.getExperience();
+                if (experience > 0)
+                    exploded.getWorld().spawn(exploded.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
+            }
+
 
             lootContents.triggerExtras(null, dropLocation);
         }

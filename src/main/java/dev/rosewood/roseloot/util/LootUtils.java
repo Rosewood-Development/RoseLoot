@@ -241,4 +241,16 @@ public final class LootUtils {
         return entity;
     }
 
+    public static boolean isPlayerAndHasSpace(Entity entity, List<ItemStack> isList){
+        boolean playerAndAvailable = false;
+        if (entity instanceof Player) {
+            int i = 0;
+            for (ItemStack is : ((Player) entity).getInventory().getStorageContents()) {
+                if (is == null) ++i;
+            }
+            if (isList.size() <= i) playerAndAvailable = true;
+        }
+        return playerAndAvailable;
+    }
+
 }

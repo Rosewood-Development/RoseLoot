@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class EntityListener implements Listener {
 
@@ -58,6 +59,14 @@ public class EntityListener implements Listener {
         // Add items to drops and adjust experience
         event.getDrops().addAll(lootContents.getItems());
         event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
+
+        // Cancel drop and send it directly to inventory
+        if(lootResult.shouldGoDirectlyToLooter() && LootUtils.isPlayerAndHasSpace(looter, event.getDrops())){
+            ((Player) looter).getInventory().addItem(event.getDrops().toArray(new ItemStack[0]));
+            ((Player) looter).giveExp(event.getDroppedExp());
+            event.getDrops().clear();
+            event.setDroppedExp(0);
+        }
 
         lootContents.triggerExtras(looter instanceof Player ? (Player) looter : null, entity.getLocation());
     }

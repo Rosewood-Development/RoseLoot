@@ -13,13 +13,15 @@ public class LootTable implements LootItemGenerator {
     private final List<LootCondition> conditions;
     private final List<LootPool> pools;
     private final boolean overwriteExisting;
+    private final boolean directlyToLooter;
 
-    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, boolean overwriteExisting) {
+    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, boolean overwriteExisting, boolean directlyToLooter) {
         this.name = name;
         this.type = type;
         this.conditions = conditions;
         this.pools = pools;
         this.overwriteExisting = overwriteExisting;
+        this.directlyToLooter = directlyToLooter;
     }
 
     @Override
@@ -55,7 +57,17 @@ public class LootTable implements LootItemGenerator {
      * @return true if this LootTable should overwrite the existing context's loot, false otherwise
      */
     public boolean shouldOverwriteExisting(LootContext context) {
-        return this.conditions.stream().allMatch(x -> x.check(context)) && this.overwriteExisting;
+        return check(context) && this.overwriteExisting;
+    }
+
+    /**
+     * Checks if the original loot for the given context should go directly to inventory
+     *
+     * @param context The LootContext
+     * @return true if loot should go directly to looter, false otherwise
+     */
+    public boolean shouldGoDirectlyToLooter(LootContext context) {
+        return check(context) && this.directlyToLooter;
     }
 
 }

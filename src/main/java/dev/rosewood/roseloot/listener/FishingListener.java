@@ -66,18 +66,23 @@ public class FishingListener implements Listener {
                     .forEach(x -> player.incrementStatistic(Statistic.FISH_CAUGHT));
         }
 
-        // Drop items and experience
-        for (ItemStack itemStack : lootContents.getItems()) {
-            double x = player.getLocation().getX() - fishHook.getLocation().getX();
-            double y = player.getLocation().getY() - fishHook.getLocation().getY();
-            double z = player.getLocation().getZ() - fishHook.getLocation().getZ();
-            Vector motion = new Vector(x * 0.1, y * 0.1 + Math.sqrt(Math.sqrt(x * x + y * y + z * z)) * 0.08, z * 0.1);
-            fishHook.getWorld().dropItem(fishHook.getLocation(), itemStack, item -> item.setVelocity(motion));
-        }
+        if (lootResult.shouldGoDirectlyToLooter() && LootUtils.isPlayerAndHasSpace(player, lootContents.getItems())) {
+            player.getInventory().addItem(lootContents.getItems().toArray(new ItemStack[0]));
+            player.giveExp(lootContents.getExperience());
+        } else {
+            // Drop items and experience
+            for (ItemStack itemStack : lootContents.getItems()) {
+                double x = player.getLocation().getX() - fishHook.getLocation().getX();
+                double y = player.getLocation().getY() - fishHook.getLocation().getY();
+                double z = player.getLocation().getZ() - fishHook.getLocation().getZ();
+                Vector motion = new Vector(x * 0.1, y * 0.1 + Math.sqrt(Math.sqrt(x * x + y * y + z * z)) * 0.08, z * 0.1);
+                fishHook.getWorld().dropItem(fishHook.getLocation(), itemStack, item -> item.setVelocity(motion));
+            }
 
-        int experience = lootContents.getExperience();
-        if (experience > 0)
-            player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
+            int experience = lootContents.getExperience();
+            if (experience > 0)
+                player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
+        }
 
         lootContents.triggerExtras(player, fishHook.getLocation());
     }

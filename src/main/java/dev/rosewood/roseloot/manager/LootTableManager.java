@@ -78,6 +78,7 @@ public class LootTableManager extends Manager implements Listener {
                 }
 
                 boolean overwriteExisting = configuration.getBoolean("overwrite-existing", false);
+                boolean directlyToLooter = configuration.getBoolean("directly-to-looter", false);
 
                 List<LootCondition> conditions = new ArrayList<>();
                 List<String> conditionStrings = configuration.getStringList("conditions");
@@ -215,7 +216,7 @@ public class LootTableManager extends Manager implements Listener {
                     stringBuilder.append(piece);
                 }
 
-                this.lootTables.get(type).add(new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting));
+                this.lootTables.get(type).add(new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting, directlyToLooter));
             } catch (Exception e) {
                 this.failToLoad(file, null);
             }
@@ -242,11 +243,13 @@ public class LootTableManager extends Manager implements Listener {
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
         boolean overwriteExisting = false;
+        boolean directlyToLooter = false;
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
             lootContents.add(lootTable.generate(lootContext));
             overwriteExisting |= lootTable.shouldOverwriteExisting(lootContext);
+            directlyToLooter |= lootTable.shouldGoDirectlyToLooter(lootContext);
         }
-        return new LootResult(lootContext, lootContents, overwriteExisting);
+        return new LootResult(lootContext, lootContents, overwriteExisting, directlyToLooter);
     }
 
     public LootTable getLootTable(LootTableType lootTableType, String name) {
