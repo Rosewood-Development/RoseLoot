@@ -8,9 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BundleMeta;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BundleItemLootMeta extends ItemLootMeta {
     private List<LootItem> lootItems = new ArrayList<>();
@@ -19,20 +18,18 @@ public class BundleItemLootMeta extends ItemLootMeta {
         super(section);
         if (section.isConfigurationSection("content")) {
             ConfigurationSection contentSection = section.getConfigurationSection("content");
-            Set<String> itemSections = contentSection.getKeys(false);
-            List<Integer> indexList = new ArrayList<>();
-            for (String itemSection : itemSections) {
+            List<String> itemSections = contentSection.getKeys(false).stream().filter((str)->{
                 try {
-                    indexList.add(Integer.parseInt(itemSection));
+                    Integer.parseInt(str);
+                    return true;
                 } catch (NumberFormatException e) {
 
                 }
-            }
-            Collections.sort(indexList);
-            for (int itemIndex : indexList) {
-                String indexString = String.valueOf(itemIndex);
-                if (contentSection.isConfigurationSection(indexString)) {
-                    lootItems.add(ItemLootItem.fromSection(contentSection.getConfigurationSection(indexString)));
+                return false;
+            }).sorted((o1, o2) -> Integer.parseInt(o1) < Integer.parseInt(o2) ? -1 : (Integer.parseInt(o1) == Integer.parseInt(o2) ? 0 : 1)).collect(Collectors.toList());
+            for (String itemIndex : itemSections) {
+                if (contentSection.isConfigurationSection(itemIndex)) {
+                    lootItems.add(ItemLootItem.fromSection(contentSection.getConfigurationSection(itemIndex)));
                 }
             }
         }
