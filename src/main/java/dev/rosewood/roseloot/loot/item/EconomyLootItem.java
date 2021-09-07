@@ -47,7 +47,7 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
             this.plugin.deposit(player, LootUtils.randomInRange(this.min, this.max));
     }
 
-    public static LootItem<?> fromSection(ConfigurationSection section) {
+    public static EconomyLootItem fromSection(ConfigurationSection section) {
         EconomyPlugin economyPlugin = EconomyPlugin.fromString(section.getString("economy"));
         if (economyPlugin == null)
             return null;

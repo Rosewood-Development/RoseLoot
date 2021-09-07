@@ -68,7 +68,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         return generatedItems;
     }
 
-    public static LootItem<?> fromSection(ConfigurationSection section) {
+    public static ItemLootItem fromSection(ConfigurationSection section) {
         String itemString = section.getString("item");
         if (itemString == null)
             return null;

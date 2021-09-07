@@ -41,7 +41,7 @@ public class CommandLootItem implements TriggerableLootItem<String> {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stringPlaceholders.apply(this.command));
     }
 
-    public static LootItem<?> fromSection(ConfigurationSection section) {
+    public static CommandLootItem fromSection(ConfigurationSection section) {
         if (!section.contains("value"))
             return null;
         return new CommandLootItem(section.getString("value"));

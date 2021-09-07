@@ -35,7 +35,7 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
         this.create(context).trigger(location);
     }
 
-    public static LootItem<?> fromSection(ConfigurationSection section) {
+    public static ExplosionLootItem fromSection(ConfigurationSection section) {
         return new ExplosionLootItem(section.getInt("power", 3), section.getBoolean("fire", false), section.getBoolean("break-blocks", true));
     }
 

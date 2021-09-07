@@ -26,7 +26,7 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
         this.create(context).trigger(player, location);
     }
 
-    public static LootItem<?> fromSection(ConfigurationSection section) {
+    public static SoundLootItem fromSection(ConfigurationSection section) {
         String sound = section.getString("sound");
         if (sound == null)
             return null;

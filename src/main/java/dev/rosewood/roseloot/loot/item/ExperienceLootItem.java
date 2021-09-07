@@ -59,7 +59,7 @@ public class ExperienceLootItem implements LootItem<Integer> {
         return true;
     }
 
-    public static LootItem<?> fromSection(ConfigurationSection section) {
+    public static ExperienceLootItem fromSection(ConfigurationSection section) {
         int minExp, maxExp;
         if (section.contains("amount")) {
             minExp = maxExp = section.getInt("amount");
