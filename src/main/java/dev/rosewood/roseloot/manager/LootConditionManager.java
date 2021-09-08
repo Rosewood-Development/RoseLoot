@@ -9,7 +9,6 @@ import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
-import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;

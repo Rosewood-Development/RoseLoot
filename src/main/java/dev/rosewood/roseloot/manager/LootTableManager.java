@@ -58,6 +58,7 @@ public class LootTableManager extends Manager implements Listener {
         LootItemTypeRegistrationEvent event = new LootItemTypeRegistrationEvent();
         Bukkit.getPluginManager().callEvent(event);
         this.registeredLootItemFunctions.putAll(event.getRegisteredLootItemsTypes());
+        RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
 
         File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
         if (!directory.exists()) {
@@ -223,7 +224,7 @@ public class LootTableManager extends Manager implements Listener {
             }
         }
 
-        RoseLoot.getInstance().getLogger().info("Loaded " + this.registeredLootItemFunctions.size() + " loot tables.");
+        RoseLoot.getInstance().getLogger().info("Loaded " + this.lootTables.values().stream().mapToInt(List::size).sum() + " loot tables.");
     }
 
     @Override
