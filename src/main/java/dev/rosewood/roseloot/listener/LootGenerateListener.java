@@ -12,7 +12,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -56,7 +55,7 @@ public class LootGenerateListener implements Listener {
             block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
         }
 
-        lootContents.triggerExtras(looter instanceof Player ? (Player) looter : null, block.getLocation());
+        lootContents.triggerExtras(block.getLocation());
     }
 
 }

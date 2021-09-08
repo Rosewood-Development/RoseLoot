@@ -59,7 +59,7 @@ public class EntityListener implements Listener {
         event.getDrops().addAll(lootContents.getItems());
         event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
 
-        lootContents.triggerExtras(looter instanceof Player ? (Player) looter : null, entity.getLocation());
+        lootContents.triggerExtras(entity.getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -114,7 +114,7 @@ public class EntityListener implements Listener {
         if (experience > 0)
             entity.getWorld().spawn(entity.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-        lootContents.triggerExtras(shearer, dropLocation);
+        lootContents.triggerExtras(dropLocation);
     }
 
 }

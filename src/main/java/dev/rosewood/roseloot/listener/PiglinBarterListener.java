@@ -46,7 +46,7 @@ public class PiglinBarterListener implements Listener {
         if (experience > 0)
             piglin.getWorld().spawn(piglin.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-        lootContents.triggerExtras(null, piglin.getLocation());
+        lootContents.triggerExtras(piglin.getLocation());
     }
 
 }

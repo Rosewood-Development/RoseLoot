@@ -79,7 +79,7 @@ public class FishingListener implements Listener {
         if (experience > 0)
             player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-        lootContents.triggerExtras(player, fishHook.getLocation());
+        lootContents.triggerExtras(fishHook.getLocation());
     }
 
 }

@@ -59,7 +59,7 @@ public class BlockListener implements Listener {
 
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
 
-        lootContents.triggerExtras(event.getPlayer(), dropLocation);
+        lootContents.triggerExtras(dropLocation);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -90,7 +90,7 @@ public class BlockListener implements Listener {
             if (experience > 0)
                 exploded.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
-            lootContents.triggerExtras(null, dropLocation);
+            lootContents.triggerExtras(dropLocation);
         }
     }
 
@@ -147,7 +147,7 @@ public class BlockListener implements Listener {
             if (experience > 0)
                 exploded.getWorld().spawn(exploded.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
 
-            lootContents.triggerExtras(null, dropLocation);
+            lootContents.triggerExtras(dropLocation);
         }
     }
 

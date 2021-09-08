@@ -64,7 +64,7 @@ public class LootContents {
 
     /**
      * Gets the experience amount created by this LootContents.
-     * Handled separately from {@link LootContents#triggerExtras(Player, Location)}.
+     * Handled separately from {@link LootContents#triggerExtras(Location)}.
      *
      * @return the experience amount of this loot contents
      */
@@ -79,10 +79,9 @@ public class LootContents {
     /**
      * Triggers the execution for anything that isn't an item or experience drop
      *
-     * @param player The Player to use for running commands
      * @param location The Location to execute the rest of the drops at
      */
-    public void triggerExtras(Player player, Location location) {
+    public void triggerExtras(Location location) {
         this.contents.stream()
                 .filter(x -> x instanceof TriggerableLootItem)
                 .forEach(x -> ((TriggerableLootItem<?>) x).trigger(this.context, this.context.getLootingPlayer(), location));

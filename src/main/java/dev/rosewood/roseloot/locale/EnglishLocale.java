@@ -37,7 +37,7 @@ public class EnglishLocale implements Locale {
 
             this.put("#4", "Reload Command");
             this.put("command-reload-description", "Reloads the plugin");
-            this.put("command-reload-reloaded", "&eConfiguration and locale files were reloaded.");
+            this.put("command-reload-reloaded", "&eConfiguration, locale files, and loot tables were reloaded.");
 
             this.put("#5", "Test Command");
             this.put("command-test-description", "Simulates a loot table");
