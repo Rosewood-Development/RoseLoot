@@ -47,7 +47,7 @@ public abstract class LootCondition {
      * @param context The LootContext
      * @return true if the condition is met, otherwise false
      */
-    public boolean check(LootContext context) {
+    public final boolean check(LootContext context) {
         return this.checkInternal(context) ^ this.inverted;
     }
 

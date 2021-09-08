@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
@@ -12,9 +12,9 @@ import org.bukkit.entity.LivingEntity;
 
 public class CatConditions extends EntityConditions {
 
-    public CatConditions() {
-        LootConditions.registerTag("cat-type", CatTypeCondition.class);
-        LootConditions.registerTag("cat-collar-color", CatCollarColorCondition.class);
+    public CatConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("cat-type", CatTypeCondition.class);
+        event.registerLootCondition("cat-collar-color", CatCollarColorCondition.class);
     }
 
     public static class CatTypeCondition extends LootCondition {

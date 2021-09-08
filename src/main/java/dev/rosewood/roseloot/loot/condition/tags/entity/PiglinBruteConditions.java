@@ -1,14 +1,14 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import org.bukkit.entity.PiglinBrute;
 
 public class PiglinBruteConditions extends EntityConditions {
 
-    public PiglinBruteConditions() {
-        LootConditions.registerTag("piglin-brute-converting", context -> context.getLootedEntity() instanceof PiglinBrute && ((PiglinBrute) context.getLootedEntity()).isConverting());
-        LootConditions.registerTag("piglin-brute-immune-to-zombification", context -> context.getLootedEntity() instanceof PiglinBrute && ((PiglinBrute) context.getLootedEntity()).isImmuneToZombification());
+    public PiglinBruteConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("piglin-brute-converting", context -> context.getLootedEntity() instanceof PiglinBrute && ((PiglinBrute) context.getLootedEntity()).isConverting());
+        event.registerLootCondition("piglin-brute-immune-to-zombification", context -> context.getLootedEntity() instanceof PiglinBrute && ((PiglinBrute) context.getLootedEntity()).isImmuneToZombification());
     }
 
 }

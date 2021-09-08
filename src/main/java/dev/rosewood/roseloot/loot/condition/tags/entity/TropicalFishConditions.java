@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
@@ -12,10 +12,10 @@ import org.bukkit.entity.TropicalFish;
 
 public class TropicalFishConditions extends EntityConditions {
 
-    public TropicalFishConditions() {
-        LootConditions.registerTag("tropical-fish-body-color", TropicalFishBodyColorCondition.class);
-        LootConditions.registerTag("tropical-fish-pattern", TropicalFishPatternCondition.class);
-        LootConditions.registerTag("tropical-fish-pattern-color", TropicalFishPatternColorCondition.class);
+    public TropicalFishConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("tropical-fish-body-color", TropicalFishBodyColorCondition.class);
+        event.registerLootCondition("tropical-fish-pattern", TropicalFishPatternCondition.class);
+        event.registerLootCondition("tropical-fish-pattern-color", TropicalFishPatternColorCondition.class);
     }
 
     public static class TropicalFishBodyColorCondition extends LootCondition {

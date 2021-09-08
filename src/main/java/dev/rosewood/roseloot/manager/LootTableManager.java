@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.manager;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.manager.Manager;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
@@ -12,7 +13,6 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
@@ -53,6 +53,8 @@ public class LootTableManager extends Manager implements Listener {
 
     @Override
     public void reload() {
+        LootConditionManager lootConditionManager = this.rosePlugin.getManager(LootConditionManager.class);
+
         LootItemTypeRegistrationEvent event = new LootItemTypeRegistrationEvent();
         Bukkit.getPluginManager().callEvent(event);
         this.registeredLootItemFunctions.putAll(event.getRegisteredLootItemsTypes());
@@ -82,7 +84,7 @@ public class LootTableManager extends Manager implements Listener {
                 List<LootCondition> conditions = new ArrayList<>();
                 List<String> conditionStrings = configuration.getStringList("conditions");
                 for (String conditionString : conditionStrings) {
-                    LootCondition condition = LootConditions.parse(conditionString);
+                    LootCondition condition = lootConditionManager.parse(conditionString);
                     if (condition == null)  {
                         this.issueLoading(file, "Invalid condition [" + conditionString + "]");
                         continue;
@@ -107,7 +109,7 @@ public class LootTableManager extends Manager implements Listener {
                     List<LootCondition> poolConditions = new ArrayList<>();
                     List<String> poolConditionStrings = poolSection.getStringList("conditions");
                     for (String conditionString : poolConditionStrings) {
-                        LootCondition condition = LootConditions.parse(conditionString);
+                        LootCondition condition = lootConditionManager.parse(conditionString);
                         if (condition == null)  {
                             this.issueLoading(file, "Invalid pool condition [" + conditionString + "]");
                             continue;
@@ -148,7 +150,7 @@ public class LootTableManager extends Manager implements Listener {
                         List<LootCondition> entryConditions = new ArrayList<>();
                         List<String> entryConditionStrings = entrySection.getStringList("conditions");
                         for (String conditionString : entryConditionStrings) {
-                            LootCondition condition = LootConditions.parse(conditionString);
+                            LootCondition condition = lootConditionManager.parse(conditionString);
                             if (condition == null)  {
                                 this.issueLoading(file, "Invalid entry condition [" + conditionString + "]");
                                 continue;
@@ -220,6 +222,8 @@ public class LootTableManager extends Manager implements Listener {
                 this.failToLoad(file, null);
             }
         }
+
+        RoseLoot.getInstance().getLogger().info("Loaded " + this.registeredLootItemFunctions.size() + " loot tables.");
     }
 
     @Override

@@ -1,10 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 
 public class StrayConditions extends EntityConditions {
 
-    public StrayConditions() {
+    public StrayConditions(LootConditionRegistrationEvent event) {
         // Nothing to see here
     }
 

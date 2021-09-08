@@ -1,17 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.MagmaCube;
 
 public class MagmaCubeConditions extends EntityConditions {
 
-    public MagmaCubeConditions() {
-        LootConditions.registerTag("magma-cube-size", MagmaCubeSizeCondition.class);
+    public MagmaCubeConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("magma-cube-size", MagmaCubeSizeCondition.class);
     }
 
     public static class MagmaCubeSizeCondition extends LootCondition {

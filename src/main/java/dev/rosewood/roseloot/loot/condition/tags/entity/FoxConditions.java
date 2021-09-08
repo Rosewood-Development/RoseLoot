@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Fox;
@@ -11,9 +11,9 @@ import org.bukkit.entity.LivingEntity;
 
 public class FoxConditions extends EntityConditions {
 
-    public FoxConditions() {
-        LootConditions.registerTag("fox-type", FoxTypeCondition.class);
-        LootConditions.registerTag("fox-crouching", context -> context.getLootedEntity() instanceof Fox && ((Fox) context.getLootedEntity()).isCrouching());
+    public FoxConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("fox-type", FoxTypeCondition.class);
+        event.registerLootCondition("fox-crouching", context -> context.getLootedEntity() instanceof Fox && ((Fox) context.getLootedEntity()).isCrouching());
     }
 
     public static class FoxTypeCondition extends LootCondition {

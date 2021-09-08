@@ -1,17 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.PufferFish;
 
 public class PufferfishConditions extends EntityConditions {
 
-    public PufferfishConditions() {
-        LootConditions.registerTag("pufferfish-puff-state", PufferfishPuffStateCondition.class);
+    public PufferfishConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("pufferfish-puff-state", PufferfishPuffStateCondition.class);
     }
 
     public static class PufferfishPuffStateCondition extends LootCondition {

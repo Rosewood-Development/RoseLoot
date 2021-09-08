@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.LivingEntity;
@@ -11,9 +11,9 @@ import org.bukkit.entity.Panda;
 
 public class PandaConditions extends EntityConditions {
 
-    public PandaConditions() {
-        LootConditions.registerTag("panda-main-gene", PandaMainGeneCondition.class);
-        LootConditions.registerTag("panda-hidden-gene", PandaHiddenGeneCondition.class);
+    public PandaConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("panda-main-gene", PandaMainGeneCondition.class);
+        event.registerLootCondition("panda-hidden-gene", PandaHiddenGeneCondition.class);
     }
 
     public static class PandaMainGeneCondition extends LootCondition {

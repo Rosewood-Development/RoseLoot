@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
@@ -12,9 +12,9 @@ import org.bukkit.entity.Sheep;
 
 public class SheepConditions extends EntityConditions {
 
-    public SheepConditions() {
-        LootConditions.registerTag("sheep-sheared", context -> context.getLootedEntity() instanceof Sheep && ((Sheep) context.getLootedEntity()).isSheared());
-        LootConditions.registerTag("sheep-color", SheepColorCondition.class);
+    public SheepConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("sheep-sheared", context -> context.getLootedEntity() instanceof Sheep && ((Sheep) context.getLootedEntity()).isSheared());
+        event.registerLootCondition("sheep-color", SheepColorCondition.class);
     }
 
     public static class SheepColorCondition extends LootCondition {

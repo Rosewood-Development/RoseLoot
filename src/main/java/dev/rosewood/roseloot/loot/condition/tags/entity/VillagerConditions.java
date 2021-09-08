@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.LivingEntity;
@@ -12,11 +12,11 @@ import org.bukkit.entity.Villager;
 
 public class VillagerConditions extends EntityConditions {
 
-    public VillagerConditions() {
-        LootConditions.registerTag("villager-profession", VillagerProfessionCondition.class);
-        LootConditions.registerTag("villager-type", VillagerTypeCondition.class);
+    public VillagerConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("villager-profession", VillagerProfessionCondition.class);
+        event.registerLootCondition("villager-type", VillagerTypeCondition.class);
         if (NMSUtil.getVersionNumber() >= 14)
-            LootConditions.registerTag("villager-level", VillagerLevelCondition.class);
+            event.registerLootCondition("villager-level", VillagerLevelCondition.class);
     }
 
     public static class VillagerProfessionCondition extends LootCondition {

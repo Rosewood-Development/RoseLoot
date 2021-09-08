@@ -12,6 +12,7 @@ import dev.rosewood.roseloot.listener.PiglinBarterListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
+import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,6 +78,7 @@ public class RoseLoot extends RosePlugin {
     protected List<Class<? extends Manager>> getManagerLoadPriority() {
         return Arrays.asList(
                 CommandManager.class,
+                LootConditionManager.class,
                 LootTableManager.class
         );
     }

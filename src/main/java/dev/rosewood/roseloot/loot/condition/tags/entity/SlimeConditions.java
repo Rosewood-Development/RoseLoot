@@ -1,17 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Slime;
 
 public class SlimeConditions extends EntityConditions {
 
-    public SlimeConditions() {
-        LootConditions.registerTag("slime-size", SlimeSizeCondition.class);
+    public SlimeConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("slime-size", SlimeSizeCondition.class);
     }
 
     public static class SlimeSizeCondition extends LootCondition {

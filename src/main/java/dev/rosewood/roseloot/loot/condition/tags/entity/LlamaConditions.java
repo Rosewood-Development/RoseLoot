@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
@@ -13,9 +13,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class LlamaConditions extends EntityConditions {
 
-    public LlamaConditions() {
-        LootConditions.registerTag("llama-decor", LlamaDecorCondition.class);
-        LootConditions.registerTag("llama-color", LlamaColorCondition.class);
+    public LlamaConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("llama-decor", LlamaDecorCondition.class);
+        event.registerLootCondition("llama-color", LlamaColorCondition.class);
     }
 
     public static class LlamaDecorCondition extends LootCondition {

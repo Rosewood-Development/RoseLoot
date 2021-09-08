@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.LivingEntity;
@@ -12,9 +12,9 @@ import org.bukkit.entity.MushroomCow;
 
 public class MushroomCowConditions extends EntityConditions {
 
-    public MushroomCowConditions() {
+    public MushroomCowConditions(LootConditionRegistrationEvent event) {
         if (NMSUtil.getVersionNumber() >= 14)
-            LootConditions.registerTag("mooshroom-variant", MooshroomVariantCondition.class);
+            event.registerLootCondition("mooshroom-variant", MooshroomVariantCondition.class);
     }
 
     public static class MooshroomVariantCondition extends LootCondition {

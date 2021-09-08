@@ -1,17 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Phantom;
 
 public class PhantomConditions extends EntityConditions {
 
-    public PhantomConditions() {
-        LootConditions.registerTag("phantom-size", PhantomSizeCondition.class);
+    public PhantomConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("phantom-size", PhantomSizeCondition.class);
     }
 
     public static class PhantomSizeCondition extends LootCondition {

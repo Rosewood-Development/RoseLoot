@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Illusioner;
@@ -12,8 +12,8 @@ import org.bukkit.entity.Spellcaster;
 
 public class IllusionerConditions extends EntityConditions {
 
-    public IllusionerConditions() {
-        LootConditions.registerTag("illusioner-spell", CatConditions.CatTypeCondition.class);
+    public IllusionerConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("illusioner-spell", CatConditions.CatTypeCondition.class);
     }
 
     public static class IllusionerSpellCondition extends LootCondition {

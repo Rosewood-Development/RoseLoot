@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.LivingEntity;
@@ -11,8 +11,8 @@ import org.bukkit.entity.Rabbit;
 
 public class RabbitConditions extends EntityConditions {
 
-    public RabbitConditions() {
-        LootConditions.registerTag("rabbit-type", RabbitTypeCondition.class);
+    public RabbitConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("rabbit-type", RabbitTypeCondition.class);
     }
 
     public static class RabbitTypeCondition extends LootCondition {

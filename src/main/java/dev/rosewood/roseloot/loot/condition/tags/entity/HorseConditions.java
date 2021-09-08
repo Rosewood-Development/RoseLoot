@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
+import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditions;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Horse;
@@ -12,10 +12,10 @@ import org.bukkit.inventory.ItemStack;
 
 public class HorseConditions extends EntityConditions {
 
-    public HorseConditions() {
-        LootConditions.registerTag("horse-armored", HorseArmoredCondition.class);
-        LootConditions.registerTag("horse-style", HorseStyleCondition.class);
-        LootConditions.registerTag("horse-color", HorseColorCondition.class);
+    public HorseConditions(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("horse-armored", HorseArmoredCondition.class);
+        event.registerLootCondition("horse-style", HorseStyleCondition.class);
+        event.registerLootCondition("horse-color", HorseColorCondition.class);
     }
 
     public static class HorseArmoredCondition extends LootCondition {

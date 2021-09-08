@@ -16,7 +16,7 @@ public class LootItemTypeRegistrationEvent extends Event {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
-    private Map<String, Function<ConfigurationSection, LootItem<?>>> registeredLootItemsTypes;
+    private final Map<String, Function<ConfigurationSection, LootItem<?>>> registeredLootItemsTypes;
 
     public LootItemTypeRegistrationEvent() {
         this.registeredLootItemsTypes = new HashMap<>();
