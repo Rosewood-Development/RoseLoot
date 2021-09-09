@@ -42,11 +42,6 @@ public abstract class NumberProvider {
         }
 
         @Override
-        public int getInteger() {
-            return (int) Math.round(this.value);
-        }
-
-        @Override
         public double getDouble() {
             return this.value;
         }

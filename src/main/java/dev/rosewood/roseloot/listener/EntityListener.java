@@ -84,6 +84,8 @@ public class EntityListener implements Listener {
             return;
 
         LivingEntity entity = (LivingEntity) event.getEntity();
+        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
+            return;
 
         Player shearer;
         switch (entity.getType()) {

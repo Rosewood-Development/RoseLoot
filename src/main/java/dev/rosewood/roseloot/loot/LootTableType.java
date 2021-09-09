@@ -8,6 +8,7 @@ public enum LootTableType {
     CONTAINER,
     PIGLIN_BARTER,
     ENTITY_DROP_ITEM,
+    ADVANCEMENT,
     LOOT_TABLE;
 
     public static LootTableType fromString(String name) {

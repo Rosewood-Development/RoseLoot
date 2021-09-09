@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.tags.AdvancementCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTagCondition;
@@ -85,6 +86,7 @@ public class LootConditionManager extends Manager implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLootConditionRegistration(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("advancement", AdvancementCondition.class);
         event.registerLootCondition("baby", context -> context.getLootedEntity() instanceof org.bukkit.entity.Ageable && !((org.bukkit.entity.Ageable) context.getLootedEntity()).isAdult());
         event.registerLootCondition("biome", BiomeCondition.class);
         event.registerLootCondition("block-data", BlockDataCondition.class);

@@ -24,45 +24,50 @@ public class LootContext {
     private final Block lootedBlock;
     private final FishHook fishHook;
     private final ItemStack inputItem;
-    private final NamespacedKey vanillaLootTableKey;
+    private final NamespacedKey vanillaLootTableKey, advancementKey;
     private final ExplosionType explosionType;
 
-    private LootContext(Entity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey, ExplosionType explosionType) {
+    private LootContext(Entity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey, NamespacedKey advancementKey, ExplosionType explosionType) {
         this.looter = looter;
         this.lootedEntity = lootedEntity;
         this.lootedBlock = lootedBlock;
         this.fishHook = fishHook;
         this.inputItem = inputItem;
         this.vanillaLootTableKey = vanillaLootTableKey;
+        this.advancementKey = advancementKey;
         this.explosionType = explosionType;
     }
 
     public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity) {
-        this(looter, lootedEntity, null, null, null, null, null);
+        this(looter, lootedEntity, null, null, null, null, null, null);
     }
 
     public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock) {
-        this(looter, null, lootedBlock, null, null, null, null);
+        this(looter, null, lootedBlock, null, null, null, null, null);
     }
 
     public LootContext(@NotNull Entity looter, @NotNull FishHook fishHook) {
-        this(looter, null, null, fishHook, null, null, null);
+        this(looter, null, null, fishHook, null, null, null, null);
     }
 
     public LootContext(@NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
-        this(null, lootedEntity, null, null, inputItem, null, null);
+        this(null, lootedEntity, null, null, inputItem, null, null, null);
     }
 
     public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock, @NotNull NamespacedKey vanillaLootTableKey) {
-        this(looter, null, lootedBlock, null, null, vanillaLootTableKey, null);
+        this(looter, null, lootedBlock, null, null, vanillaLootTableKey, null, null);
     }
 
     public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock, @NotNull ExplosionType explosionType) {
-        this(looter, null, lootedBlock, null, null, null, explosionType);
+        this(looter, null, lootedBlock, null, null, null, null, explosionType);
     }
 
     public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
-        this(looter, lootedEntity, null, null, inputItem, null, null);
+        this(looter, lootedEntity, null, null, inputItem, null, null, null);
+    }
+
+    public LootContext(@NotNull Player player, @NotNull NamespacedKey advancementKey) {
+        this(player, null, null, null, null, null, advancementKey, null);
     }
 
     /**
@@ -125,6 +130,14 @@ public class LootContext {
     @Nullable
     public NamespacedKey getVanillaLootTableKey() {
         return this.vanillaLootTableKey;
+    }
+
+    /**
+     * @return the NamespacedKey of the advancement
+     */
+    @Nullable
+    public NamespacedKey getAdvancementKey() {
+        return this.advancementKey;
     }
 
     /**
