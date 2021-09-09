@@ -6,11 +6,12 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -26,11 +27,9 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
     private LootTable lootTable;
     private org.bukkit.loot.LootTable vanillaLootTable;
     private boolean running;
-    private final Random random;
 
     public LootTableLootItem(String lootTableName) {
         this.lootTableName = lootTableName;
-        this.random = new Random();
     }
 
     @Override
@@ -88,7 +87,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
                     .luck((float) context.getLuckLevel())
                     .build();
 
-            lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(this.random, vanillaContext)));
+            lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
         }
         this.running = false;
 
@@ -106,7 +105,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         private final Collection<ItemStack> items;
 
         public VanillaItemLootItem(Collection<ItemStack> items) {
-            super(null, -1, -1, null, null);
+            super(null, NumberProvider.fromSection(null, null, -1), null, null);
             this.items = items;
         }
 

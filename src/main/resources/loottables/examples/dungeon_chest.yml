@@ -82,16 +82,18 @@ pools:
           0:
             type: item
             item: iron_ingot
-            min: 1
-            max: 4
+            amount:
+              min: 1
+              max: 4
       1:
         weight: 10
         items:
           0:
             type: item
             item: gold_ingot
-            min: 1
-            max: 4
+            amount:
+              min: 1
+              max: 4
       2:
         weight: 20
         items:
@@ -104,8 +106,9 @@ pools:
           0:
             type: item
             item: wheat
-            min: 1
-            max: 4
+            amount:
+              min: 1
+              max: 4
       4:
         weight: 10
         items:
@@ -118,40 +121,45 @@ pools:
           0:
             type: item
             item: redstone
-            min: 1
-            max: 4
+            amount:
+              min: 1
+              max: 4
       6:
         weight: 15
         items:
           0:
             type: item
             item: coal
-            min: 1
-            max: 4
+            amount:
+              min: 1
+              max: 4
       7:
         weight: 10
         items:
           0:
             type: item
             item: melon_seeds
-            min: 2
-            max: 4
+            amount:
+              min: 2
+              max: 4
       8:
         weight: 10
         items:
           0:
             type: item
             item: pumpkin_seeds
-            min: 2
-            max: 4
+            amount:
+              min: 2
+              max: 4
       9:
         weight: 10
         items:
           0:
             type: item
             item: beetroot_seeds
-            min: 2
-            max: 4
+            amount:
+              min: 2
+              max: 4
   2:
     rolls: 3
     entries:
@@ -161,32 +169,36 @@ pools:
           0:
             type: item
             item: bone
-            min: 1
-            max: 8
+            amount:
+              min: 1
+              max: 8
       1:
         weight: 10
         items:
           0:
             type: item
             item: gunpowder
-            min: 1
-            max: 8
+            amount:
+              min: 1
+              max: 8
       2:
         weight: 10
         items:
           0:
             type: item
             item: rotten_flesh
-            min: 1
-            max: 8
+            amount:
+              min: 1
+              max: 8
       3:
         weight: 10
         items:
           0:
             type: item
             item: string
-            min: 1
-            max: 8
+            amount:
+              min: 1
+              max: 8
   3:
     rolls: 1
     entries:

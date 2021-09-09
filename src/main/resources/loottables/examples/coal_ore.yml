@@ -21,8 +21,9 @@ pools:
               bonus-per-level: 1
           1:
             type: experience
-            min: 0
-            max: 2
+            amount:
+              min: 0
+              max: 2
       1:
         conditions:
           - 'enchantment:silk_touch'

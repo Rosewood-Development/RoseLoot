@@ -4,7 +4,10 @@ import dev.rosewood.roseloot.economy.EconomyProvider;
 import dev.rosewood.roseloot.economy.PlayerPointsEconomyProvider;
 import dev.rosewood.roseloot.economy.VaultEconomyProvider;
 import dev.rosewood.roseloot.loot.LootContext;
-import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.NumberProvider;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,18 +16,16 @@ import org.bukkit.entity.Player;
 public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     private final EconomyPlugin plugin;
-    private double min;
-    private double max;
+    private final List<NumberProvider> amounts;
 
-    public EconomyLootItem(EconomyPlugin plugin, int min, int max) {
+    public EconomyLootItem(EconomyPlugin plugin, NumberProvider amounts) {
         this.plugin = plugin;
-        this.min = min;
-        this.max = max;
+        this.amounts = new ArrayList<>(Collections.singletonList(amounts));
     }
 
     @Override
     public Double create(LootContext context) {
-        return LootUtils.randomInRange(this.min, this.max);
+        return this.amounts.stream().mapToDouble(NumberProvider::getDouble).sum();
     }
 
     @Override
@@ -36,15 +37,14 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
         if (this.plugin != other.plugin)
             return false;
 
-        this.min += other.min;
-        this.max += other.max;
+        this.amounts.addAll(other.amounts);
         return true;
     }
 
     @Override
     public void trigger(LootContext context, Player player, Location location) {
         if (player != null)
-            this.plugin.deposit(player, LootUtils.randomInRange(this.min, this.max));
+            this.plugin.deposit(player, this.create(context));
     }
 
     public static EconomyLootItem fromSection(ConfigurationSection section) {
@@ -52,15 +52,8 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
         if (economyPlugin == null)
             return null;
 
-        int minExp, maxExp;
-        if (section.contains("amount")) {
-            minExp = maxExp = section.getInt("amount");
-        } else {
-            minExp = section.getInt("min", 1);
-            maxExp = section.getInt("max", 1);
-        }
-
-        return new EconomyLootItem(economyPlugin, minExp, maxExp);
+        NumberProvider amount = NumberProvider.fromSection(section, "amount", 0);
+        return new EconomyLootItem(economyPlugin, amount);
     }
 
     public enum EconomyPlugin implements EconomyProvider {

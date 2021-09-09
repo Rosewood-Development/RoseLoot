@@ -7,6 +7,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,8 +120,10 @@ public class ItemLootMeta {
             Map<Enchantment, Integer> enchantments = new HashMap<>();
             for (String enchantmentName : enchantmentsSection.getKeys(false)) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
-                int level = enchantmentsSection.getInt(enchantmentName, 1);
-                enchantments.put(enchantment, level);
+                NumberProvider levelProvider = NumberProvider.fromSection(enchantmentsSection, enchantmentName, 1);
+                int level = levelProvider.getInteger();
+                if (level > 0)
+                    enchantments.put(enchantment, level);
             }
             this.enchantments = enchantments;
         }
@@ -149,13 +152,7 @@ public class ItemLootMeta {
                 if (attribute == null)
                     continue;
 
-                double min, max;
-                if (attributeSection.contains("amount")) {
-                    min = max = attributeSection.getDouble("amount", 0);
-                } else {
-                    min = attributeSection.getDouble("min", 0);
-                    max = attributeSection.getDouble("max", min);
-                }
+                NumberProvider amount = NumberProvider.fromSection(attributeSection, "amount", 0);
 
                 String operationName = attributeSection.getString("operation");
                 if (operationName == null)
@@ -183,7 +180,7 @@ public class ItemLootMeta {
                     }
                 }
 
-                attributeData.add(new AttributeData(attribute, min, max, operation, slot));
+                attributeData.add(new AttributeData(attribute, amount, operation, slot));
             }
 
             this.attributes = attributeData;
@@ -300,14 +297,13 @@ public class ItemLootMeta {
     private static class AttributeData {
 
         private final Attribute attribute;
-        private final double min, max;
+        private final NumberProvider amount;
         private final AttributeModifier.Operation operation;
         private final EquipmentSlot slot;
 
-        private AttributeData(Attribute attribute, double min, double max, AttributeModifier.Operation operation, EquipmentSlot slot) {
+        private AttributeData(Attribute attribute, NumberProvider amount, AttributeModifier.Operation operation, EquipmentSlot slot) {
             this.attribute = attribute;
-            this.min = min;
-            this.max = max;
+            this.amount = amount;
             this.operation = operation;
             this.slot = slot;
         }
@@ -317,8 +313,7 @@ public class ItemLootMeta {
         }
 
         public AttributeModifier toAttributeModifier() {
-            double amount = LootUtils.randomInRange(this.min, this.max);
-            return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), amount, this.operation, this.slot);
+            return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(), this.operation, this.slot);
         }
 
     }

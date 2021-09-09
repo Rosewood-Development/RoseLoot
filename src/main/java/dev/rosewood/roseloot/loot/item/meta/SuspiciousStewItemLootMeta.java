@@ -1,17 +1,17 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SuspiciousStewMeta;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SuspiciousStewItemLootMeta extends ItemLootMeta {
 
-    private Map<PotionEffect, Boolean> customEffects;
+    private Map<PotionItemLootMeta.PotionEffectData, Boolean> customEffects;
 
     public SuspiciousStewItemLootMeta(ConfigurationSection section) {
         super(section);
@@ -32,14 +32,14 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
                 if (effect == null)
                     continue;
 
-                int duration = customEffectSection.getInt("duration", 200);
-                int amplifier = customEffectSection.getInt("amplifier", 0);
+                NumberProvider duration = NumberProvider.fromSection(customEffectSection, "duration", 200);
+                NumberProvider amplifier = NumberProvider.fromSection(customEffectSection, "amplifier", 0);
                 boolean ambient = customEffectSection.getBoolean("ambient", false);
                 boolean particles = customEffectSection.getBoolean("particles", true);
                 boolean icon = customEffectSection.getBoolean("icon", true);
                 boolean overwrite = customEffectSection.getBoolean("overwrite", true);
 
-                this.customEffects.put(new PotionEffect(effect, duration, amplifier, ambient, particles, icon), overwrite);
+                this.customEffects.put(new PotionItemLootMeta.PotionEffectData(effect, duration, amplifier, ambient, particles, icon), overwrite);
             }
         }
     }
@@ -52,7 +52,7 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.customEffects != null) this.customEffects.forEach(itemMeta::addCustomEffect);
+        if (this.customEffects != null) this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(), y));
 
         itemStack.setItemMeta(itemMeta);
 

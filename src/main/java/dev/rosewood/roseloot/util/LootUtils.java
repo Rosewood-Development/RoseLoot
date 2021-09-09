@@ -35,7 +35,7 @@ public final class LootUtils {
 
     }
 
-    private static final Random RANDOM = new Random();
+    public static final Random RANDOM = new Random();
     private static final String SPAWN_REASON_METADATA_NAME = "spawn_reason";
     public static final Map<String, Color> FIREWORK_COLORS = new HashMap<String, Color>() {{
         this.put("WHITE", Color.WHITE);

@@ -2,6 +2,10 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem.ExplosionInstance;
+import dev.rosewood.roseloot.util.NumberProvider;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,9 +13,9 @@ import org.bukkit.entity.Player;
 
 public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance> {
 
-    private ExplosionInstance explosionInstance;
+    private final ExplosionInstance explosionInstance;
 
-    public ExplosionLootItem(int power, boolean fire, boolean breakBlocks) {
+    public ExplosionLootItem(NumberProvider power, boolean fire, boolean breakBlocks) {
         this.explosionInstance = new ExplosionInstance(power, fire, breakBlocks);
     }
 
@@ -26,7 +30,7 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
             return false;
 
         ExplosionLootItem other = (ExplosionLootItem) lootItem;
-        this.explosionInstance = ExplosionInstance.combine(this.explosionInstance, other.explosionInstance);
+        this.explosionInstance.combineWith(other.explosionInstance);
         return true;
     }
 
@@ -36,17 +40,20 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
     }
 
     public static ExplosionLootItem fromSection(ConfigurationSection section) {
-        return new ExplosionLootItem(section.getInt("power", 3), section.getBoolean("fire", false), section.getBoolean("break-blocks", true));
+        NumberProvider power = NumberProvider.fromSection(section, "power", 3);
+        boolean fire = section.getBoolean("fire", false);
+        boolean breakBlocks = section.getBoolean("break-blocks", true);
+        return new ExplosionLootItem(power, fire, breakBlocks);
     }
 
     public static class ExplosionInstance {
 
-        private final int power;
-        private final boolean fire;
-        private final boolean breakBlocks;
+        private final List<NumberProvider> powers;
+        private boolean fire;
+        private boolean breakBlocks;
 
-        public ExplosionInstance(int power, boolean fire, boolean breakBlocks) {
-            this.power = power;
+        public ExplosionInstance(NumberProvider power, boolean fire, boolean breakBlocks) {
+            this.powers = new ArrayList<>(Collections.singletonList(power));
             this.fire = fire;
             this.breakBlocks = breakBlocks;
         }
@@ -58,22 +65,21 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
          */
         public void trigger(Location location) {
             World world = location.getWorld();
-            if (world != null)
-                world.createExplosion(location, this.power, this.fire, this.breakBlocks);
+            if (world != null) {
+                int power = this.powers.stream().mapToInt(NumberProvider::getInteger).max().orElse(0);
+                world.createExplosion(location, power, this.fire, this.breakBlocks);
+            }
         }
 
         /**
-         * Combines two ExplosionStates into one, using the higher values between the two
+         * Merges another ExlosionInstance with this one using the higher values between the two
          *
-         * @param first The first ExplosionState
-         * @param second The second ExplosionState
-         * @return an ExplosionState with the combined values of the two
+         * @param other The other ExplosionState
          */
-        public static ExplosionInstance combine(ExplosionInstance first, ExplosionInstance second) {
-            int power = Math.max(first.power, second.power);
-            boolean fire = first.fire | second.fire;
-            boolean breakBlocks = first.breakBlocks | second.breakBlocks;
-            return new ExplosionInstance(power, fire, breakBlocks);
+        public void combineWith(ExplosionInstance other) {
+            this.powers.addAll(other.powers);
+            this.fire |= other.fire;
+            this.breakBlocks |= other.breakBlocks;
         }
 
     }

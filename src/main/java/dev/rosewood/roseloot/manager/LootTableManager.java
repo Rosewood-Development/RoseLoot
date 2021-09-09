@@ -22,6 +22,7 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.NumberProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,21 +119,8 @@ public class LootTableManager extends Manager implements Listener {
                         poolConditions.add(condition);
                     }
 
-                    int minRolls, maxRolls;
-                    if (poolSection.isConfigurationSection("rolls")) {
-                        ConfigurationSection rollsSection = poolSection.getConfigurationSection("rolls");
-                        if (rollsSection == null) {
-                            this.issueLoading(file, "Invalid pool rolls section");
-                            continue;
-                        }
-
-                        minRolls = rollsSection.getInt("min", 1);
-                        maxRolls = rollsSection.getInt("max", 1);
-                    } else {
-                        minRolls = maxRolls = poolSection.getInt("rolls", 1);
-                    }
-
-                    int bonusRolls = poolSection.getInt("bonus-rolls", 0);
+                    NumberProvider rolls = NumberProvider.fromSection(poolSection, "rolls", 1);
+                    NumberProvider bonusRolls = NumberProvider.fromSection(poolSection, "bonus-rolls", 0);
 
                     ConfigurationSection entriesSection = poolSection.getConfigurationSection("entries");
                     if (entriesSection == null) {
@@ -159,8 +147,14 @@ public class LootTableManager extends Manager implements Listener {
                             entryConditions.add(condition);
                         }
 
-                        int weight = entrySection.getInt("weight", 0);
-                        int quality = entrySection.getInt("quality", 0);
+                        NumberProvider weight;
+                        if (entriesSection.contains("weight")) {
+                            weight = NumberProvider.fromSection(entrySection, "weight", 0);
+                        } else {
+                            weight = null;
+                        }
+
+                        NumberProvider quality = NumberProvider.fromSection(entrySection, "quality", 0);
 
                         ConfigurationSection itemsSection = entrySection.getConfigurationSection("items");
                         if (itemsSection == null) {
@@ -200,7 +194,7 @@ public class LootTableManager extends Manager implements Listener {
                         lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems));
                     }
 
-                    lootPools.add(new LootPool(poolConditions, minRolls, maxRolls, bonusRolls, lootEntries));
+                    lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, lootEntries));
                 }
 
                 File path = file;

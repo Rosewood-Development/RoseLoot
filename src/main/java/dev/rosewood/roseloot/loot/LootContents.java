@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -50,7 +49,7 @@ public class LootContents {
 
     /**
      * Gets a List of ItemStacks created by this LootContents.
-     * Handled separately from {@link LootContents#triggerExtras(Player, Location)}.
+     * Handled separately from {@link LootContents#triggerExtras(Location)}.
      *
      * @return the items of this loot contents
      */

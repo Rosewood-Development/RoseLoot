@@ -22,4 +22,4 @@ pools:
             value: 'w %player% You feel the power of fire coursing through your veins.'
           2:
             type: experience
-            value: 50
+            amount: 50

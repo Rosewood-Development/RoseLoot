@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.SoundLootItem.SoundInstance;
+import dev.rosewood.roseloot.util.NumberProvider;
 import org.bukkit.Location;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
@@ -45,8 +46,8 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
         if (category == null)
             category = SoundCategory.MASTER;
 
-        float volume = (float) section.getDouble("volume", 1);
-        float pitch = (float) section.getDouble("pitch", 1);
+        float volume = (float) NumberProvider.fromSection(section, "volume", 1).getDouble();
+        float pitch = (float) NumberProvider.fromSection(section, "pitch", 1).getDouble();
         boolean playerOnly = section.getBoolean("player-only", true);
         return new SoundLootItem(sound, category, volume, pitch, playerOnly);
     }

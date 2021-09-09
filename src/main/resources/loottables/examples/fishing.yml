@@ -38,5 +38,6 @@ pools:
         items:
           0:
             type: experience
-            min: 1
-            max: 6
+            amount:
+              min: 1
+              max: 6

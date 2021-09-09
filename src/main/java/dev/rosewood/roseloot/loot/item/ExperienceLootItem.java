@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootContext;
-import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,37 +14,33 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public class ExperienceLootItem implements LootItem<Integer> {
 
-    private int min;
-    private int max;
-    private final List<EquipmentBonus> equipmentBonuses;
+    private final List<NumberProvider> amounts;
+    private final List<NumberProvider> equipmentBonuses;
 
-    public ExperienceLootItem(int min, int max, EquipmentBonus equipmentBonus) {
-        this.min = min;
-        this.max = max;
-        this.equipmentBonuses = new ArrayList<>(equipmentBonus != null ? Collections.singletonList(equipmentBonus) : Collections.emptyList());
+    public ExperienceLootItem(NumberProvider amount, NumberProvider equipmentBonus) {
+        this.amounts = new ArrayList<>(Collections.singletonList(amount));
+        this.equipmentBonuses = new ArrayList<>(Collections.singletonList(equipmentBonus));
     }
 
     @Override
     public Integer create(LootContext context) {
-        int min = this.min;
-        int max = this.max;
+        int amount = this.amounts.stream().mapToInt(NumberProvider::getInteger).sum();
+
         LivingEntity entity = context.getLootedEntity();
         if (entity != null && !this.equipmentBonuses.isEmpty()) {
             EntityEquipment equipment = entity.getEquipment();
             if (equipment != null) {
-                int equipmentAmount = Arrays.stream(EquipmentSlot.values())
+                long equipmentAmount = Arrays.stream(EquipmentSlot.values())
                         .filter(x -> equipment.getItem(x).getType() != Material.AIR)
-                        .mapToInt(x -> 1)
-                        .sum();
+                        .count();
 
-                for (EquipmentBonus equipmentBonus : this.equipmentBonuses) {
-                    min += equipmentAmount * equipmentBonus.getMinBonus();
-                    max += equipmentAmount * equipmentBonus.getMaxBonus();
-                }
+                for (int i = 0; i < equipmentAmount; i++)
+                    for (NumberProvider equipmentBonus : this.equipmentBonuses)
+                        amount += equipmentBonus.getInteger();
             }
         }
 
-        return LootUtils.randomInRange(min, max);
+        return amount;
     }
 
     @Override
@@ -53,55 +49,15 @@ public class ExperienceLootItem implements LootItem<Integer> {
             return false;
 
         ExperienceLootItem other = (ExperienceLootItem) lootItem;
-        this.min += other.min;
-        this.max += other.max;
+        this.amounts.addAll(other.amounts);
         this.equipmentBonuses.addAll(other.equipmentBonuses);
         return true;
     }
 
     public static ExperienceLootItem fromSection(ConfigurationSection section) {
-        int minExp, maxExp;
-        if (section.contains("amount")) {
-            minExp = maxExp = section.getInt("amount");
-        } else {
-            minExp = section.getInt("min", 1);
-            maxExp = section.getInt("max", 1);
-        }
-
-        ConfigurationSection equipmentBonusSection = section.getConfigurationSection("equipment-bonus");
-        EquipmentBonus equipmentBonus = null;
-        if (equipmentBonusSection != null) {
-            int min, max;
-            if (equipmentBonusSection.contains("amount")) {
-                min = max = equipmentBonusSection.getInt("amount");
-            } else {
-                min = equipmentBonusSection.getInt("min", 0);
-                max = equipmentBonusSection.getInt("max", 0);
-            }
-
-            equipmentBonus = new EquipmentBonus(min, max);
-        }
-
-        return new ExperienceLootItem(minExp, maxExp, equipmentBonus);
-    }
-
-    public static class EquipmentBonus {
-
-        private final int min, max;
-
-        public EquipmentBonus(int min, int max) {
-            this.min = min;
-            this.max = max;
-        }
-
-        public int getMinBonus() {
-            return this.min;
-        }
-
-        public int getMaxBonus() {
-            return this.max;
-        }
-
+        NumberProvider amount = NumberProvider.fromSection(section, "amount", 0);
+        NumberProvider equipmentBonus = NumberProvider.fromSection(section, "equipment-bonus", 0);
+        return new ExperienceLootItem(amount, equipmentBonus);
     }
 
 }

@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.bukkit.Color;
@@ -18,7 +19,7 @@ public class PotionItemLootMeta extends ItemLootMeta {
     private final PotionType potionType;
     private final boolean extended;
     private final boolean upgraded;
-    private Map<PotionEffect, Boolean> customEffects;
+    private Map<PotionEffectData, Boolean> customEffects;
 
     public PotionItemLootMeta(ConfigurationSection section) {
         super(section);
@@ -60,14 +61,14 @@ public class PotionItemLootMeta extends ItemLootMeta {
                 if (effect == null)
                     continue;
 
-                int duration = customEffectSection.getInt("duration", 200);
-                int amplifier = customEffectSection.getInt("amplifier", 0);
+                NumberProvider duration = NumberProvider.fromSection(customEffectSection, "duration", 200);
+                NumberProvider amplifier = NumberProvider.fromSection(customEffectSection, "amplifier", 0);
                 boolean ambient = customEffectSection.getBoolean("ambient", false);
                 boolean particles = customEffectSection.getBoolean("particles", true);
                 boolean icon = customEffectSection.getBoolean("icon", true);
                 boolean overwrite = customEffectSection.getBoolean("overwrite", true);
 
-                this.customEffects.put(new PotionEffect(effect, duration, amplifier, ambient, particles, icon), overwrite);
+                this.customEffects.put(new PotionEffectData(effect, duration, amplifier, ambient, particles, icon), overwrite);
             }
         }
     }
@@ -82,11 +83,32 @@ public class PotionItemLootMeta extends ItemLootMeta {
 
         if (this.color != null) itemMeta.setColor(this.color);
         itemMeta.setBasePotionData(new PotionData(this.potionType, this.extended && this.potionType.isExtendable(), this.upgraded && this.potionType.isUpgradeable()));
-        if (this.customEffects != null) this.customEffects.forEach(itemMeta::addCustomEffect);
+        if (this.customEffects != null) this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(), y));
 
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
+    }
+
+    public static class PotionEffectData {
+
+        private final PotionEffectType potionEffectType;
+        private final NumberProvider duration, amplifier;
+        private final boolean ambient, particles, icon;
+
+        public PotionEffectData(PotionEffectType potionEffectType, NumberProvider duration, NumberProvider amplifier, boolean ambient, boolean particles, boolean icon) {
+            this.potionEffectType = potionEffectType;
+            this.duration = duration;
+            this.amplifier = amplifier;
+            this.ambient = ambient;
+            this.particles = particles;
+            this.icon = icon;
+        }
+
+        public PotionEffect toPotionEffect() {
+            return new PotionEffect(this.potionEffectType, this.duration.getInteger(), this.amplifier.getInteger(), this.ambient, this.particles, this.icon);
+        }
+
     }
 
 }
