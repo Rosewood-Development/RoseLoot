@@ -18,6 +18,7 @@ import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
+import dev.rosewood.roseloot.loot.condition.tags.DimensionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DroppedItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
@@ -26,9 +27,11 @@ import dev.rosewood.roseloot.loot.condition.tags.FeatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.GrownCropCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HumidityCondition;
+import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.OnBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
@@ -101,6 +104,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("chested", context -> context.getLootedEntity() instanceof ChestedHorse && ((ChestedHorse) context.getLootedEntity()).isCarryingChest());
         event.registerLootCondition("custom-model-data", CustomModelDataCondition.class);
         event.registerLootCondition("death-cause", DeathCauseCondition.class);
+        event.registerLootCondition("dimension", DimensionCondition.class);
         event.registerLootCondition("dropped-item", DroppedItemCondition.class);
         event.registerLootCondition("enchantment-chance", EnchantmentChanceCondition.class);
         event.registerLootCondition("enchantment", EnchantmentCondition.class);
@@ -111,9 +115,11 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("grown-crop", GrownCropCondition.class);
         event.registerLootCondition("has-saddle", HasSaddleCondition.class);
         event.registerLootCondition("humidity", HumidityCondition.class);
+        event.registerLootCondition("in-fluid", InFluidCondition.class);
         event.registerLootCondition("killed-by", KilledByCondition.class);
         event.registerLootCondition("light-level", LightLevelCondition.class);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition.class);
+        event.registerLootCondition("on-block-type", OnBlockTypeCondition.class);
         event.registerLootCondition("open-water", context -> context.getFishHook() != null && context.getFishHook().isInOpenWater());
         event.registerLootCondition("patrol-leader", context -> context.getLootedEntity() instanceof Raider && !((Raider) context.getLootedEntity()).isPatrolLeader());
         event.registerLootCondition("permission", PermissionCondition.class);
@@ -167,7 +173,7 @@ public class LootConditionManager extends Manager implements Listener {
             if (predicate != null)
                 return new BooleanLootCondition(tag, predicate);
         } catch (Exception e) {
-            e.printStackTrace();
+            this.rosePlugin.getLogger().warning(e.getMessage());
         }
         return null;
     }
