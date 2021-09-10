@@ -35,7 +35,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         if (this.enchantmentBonus != null && itemUsed != null) {
             ItemMeta itemMeta = itemUsed.getItemMeta();
             if (itemMeta != null) {
-                int level = itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment());
+                int level = Math.min(itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment()), this.enchantmentBonus.getMaxBonusLevels().getInteger());
                 for (int i = 0; i < level; i++)
                     amount += this.enchantmentBonus.getBonusPerLevel().getInteger();
             }
@@ -78,8 +78,9 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             if (enchantmentString != null) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
                 NumberProvider bonusPerLevel = NumberProvider.fromSection(enchantmentBonusSection, "bonus-per-level", 0);
+                NumberProvider maxBonusLevels = NumberProvider.fromSection(enchantmentBonusSection, "max-bonus-levels", Integer.MAX_VALUE);
                 if (enchantment != null)
-                    enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel);
+                    enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel, maxBonusLevels);
             }
         }
 
@@ -91,10 +92,12 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         private final Enchantment enchantment;
         private final NumberProvider bonusPerLevel;
+        private final NumberProvider maxBonusLevels;
 
-        public EnchantmentBonus(Enchantment enchantment, NumberProvider bonusPerLevel) {
+        public EnchantmentBonus(Enchantment enchantment, NumberProvider bonusPerLevel, NumberProvider maxBonusLevels) {
             this.enchantment = enchantment;
             this.bonusPerLevel = bonusPerLevel;
+            this.maxBonusLevels = maxBonusLevels;
         }
 
         public Enchantment getEnchantment() {
@@ -103,6 +106,10 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         public NumberProvider getBonusPerLevel() {
             return this.bonusPerLevel;
+        }
+
+        public NumberProvider getMaxBonusLevels() {
+            return this.maxBonusLevels;
         }
 
     }

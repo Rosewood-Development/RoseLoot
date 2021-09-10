@@ -13,12 +13,14 @@ import org.bukkit.inventory.meta.ItemMeta;
  * value 1: Base percentage
  * value 2: The enchantment
  * value 3: Extra chance to add for each level of the enchantment
+ * value 4: The maximum number of levels to count towards increasing the percentage
  */
 public class EnchantmentChanceCondition extends LootCondition {
 
     private double chance;
     private Enchantment enchantment;
     private double chancePerLevel;
+    private int maxCountedLevels;
 
     public EnchantmentChanceCondition(String tag) {
         super(tag);
@@ -34,12 +36,12 @@ public class EnchantmentChanceCondition extends LootCondition {
         if (meta == null)
             return LootUtils.checkChance(this.chance);
 
-        return LootUtils.checkChance(this.chance + this.chancePerLevel * meta.getEnchantLevel(this.enchantment));
+        return LootUtils.checkChance(this.chance + this.chancePerLevel * Math.min(meta.getEnchantLevel(this.enchantment), this.maxCountedLevels));
     }
 
     @Override
     public boolean parseValues(String[] values) {
-        if (values.length != 3)
+        if (values.length != 3 && values.length != 4)
             return false;
 
         try {
@@ -54,6 +56,7 @@ public class EnchantmentChanceCondition extends LootCondition {
             this.chance = Double.parseDouble(value1) / 100;
             this.enchantment = EnchantingUtils.getEnchantmentByName(values[1]);
             this.chancePerLevel = Double.parseDouble(value2) / 100;
+            this.maxCountedLevels = values.length == 4 ? Integer.parseInt(values[3]) : Integer.MAX_VALUE;
             return true;
         } catch (NumberFormatException e) {
             return false;

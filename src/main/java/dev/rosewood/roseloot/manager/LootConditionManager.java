@@ -178,7 +178,7 @@ public class LootConditionManager extends Manager implements Listener {
             if (predicate != null)
                 return new BooleanLootCondition(tag, predicate);
         } catch (Exception e) {
-            this.rosePlugin.getLogger().warning(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
