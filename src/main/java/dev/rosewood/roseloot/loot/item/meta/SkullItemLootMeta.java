@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.LootContext;
-import dev.rosewood.roseloot.util.SkullUtils;
+import dev.rosewood.roseloot.util.nms.SkullUtils;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

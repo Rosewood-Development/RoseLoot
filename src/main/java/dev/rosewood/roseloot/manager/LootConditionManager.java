@@ -22,6 +22,7 @@ import dev.rosewood.roseloot.loot.condition.tags.DroppedItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.FeatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.GrownCropCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HumidityCondition;
@@ -105,6 +106,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("enchantment", EnchantmentCondition.class);
         event.registerLootCondition("entity-type", EntityTypeCondition.class);
         event.registerLootCondition("explosion", context -> context.getExplosionType() != null);
+        event.registerLootCondition("feature", FeatureCondition.class);
         event.registerLootCondition("freezing", context -> context.getLootedEntity() != null && context.getLootedEntity().getFreezeTicks() > 0);
         event.registerLootCondition("grown-crop", GrownCropCondition.class);
         event.registerLootCondition("has-saddle", HasSaddleCondition.class);
