@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
+import dev.rosewood.roseloot.loot.condition.CompoundLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.tags.AdvancementCondition;
@@ -61,6 +62,7 @@ import org.bukkit.inventory.Merchant;
 
 public class LootConditionManager extends Manager implements Listener {
 
+    public static final String OR_PATTERN = "||";
     private static final String PACKAGE_PATH = "dev.rosewood.roseloot.loot.condition.tags.entity";
     private final Map<String, Constructor<? extends LootCondition>> registeredConditionConstructors;
     private final Map<String, Predicate<LootContext>> registeredConditionPredicates;
@@ -161,6 +163,9 @@ public class LootConditionManager extends Manager implements Listener {
      */
     public LootCondition parse(String tag) {
         try {
+            if (tag.contains(OR_PATTERN))
+                return new CompoundLootCondition(tag);
+
             String parsed = (tag.startsWith("!") ? tag.substring(1) : tag).toLowerCase();
             int index = parsed.indexOf(":");
             String tagPrefix = index == -1 ? parsed : parsed.substring(0, index);

@@ -9,10 +9,17 @@ public abstract class LootCondition {
 
     /**
      * @param tag The tag, including both prefix and values
+     * @param parse Whether or not the tag should be parsed
      */
-    public LootCondition(String tag) {
+    protected LootCondition(String tag, boolean parse) {
         if (tag == null || tag.trim().isEmpty())
             throw new IllegalArgumentException("Empty or null tag");
+
+        if (!parse) {
+            this.tag = tag;
+            this.inverted = false;
+            return;
+        }
 
         if (tag.startsWith("!")) {
             tag = tag.substring(1);
@@ -39,6 +46,13 @@ public abstract class LootCondition {
 
         if (!this.parseValues(values))
             throw new IllegalArgumentException(String.format("Invalid tag arguments for %s", prefix));
+    }
+
+    /**
+     * @param tag The tag, including both prefix and values
+     */
+    public LootCondition(String tag) {
+        this(tag, true);
     }
 
     /**

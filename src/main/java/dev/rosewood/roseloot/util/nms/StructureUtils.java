@@ -37,7 +37,7 @@ public final class StructureUtils {
                 class_StructureManager = Class.forName("net.minecraft.world.level.StructureManager");
                 class_StructureStart = Class.forName("net.minecraft.world.level.levelgen.structure.StructureStart");
             } else {
-                class_StructureGenerator = Class.forName("net.minecraft.server.v1_16_R3.StructureGenerator");
+                class_StructureGenerator = Class.forName("net.minecraft.server." + version + ".StructureGenerator");
                 class_CraftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
                 class_BlockPosition = Class.forName("net.minecraft.server." + version + ".BlockPosition");
                 class_WorldServer = Class.forName("net.minecraft.server." + version + ".WorldServer");
