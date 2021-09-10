@@ -12,9 +12,7 @@ import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Material;
@@ -46,7 +44,7 @@ public class ItemLootMeta {
     private boolean includeTreasureEnchantments;
     private boolean uncappedRandomEnchants;
     private List<ItemFlag> hideFlags;
-    protected Map<Enchantment, Integer> enchantments;
+    protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
     protected Boolean copyBlockState;
     protected Boolean copyBlockData;
@@ -117,13 +115,11 @@ public class ItemLootMeta {
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
         if (enchantmentsSection != null) {
-            Map<Enchantment, Integer> enchantments = new HashMap<>();
+            List<EnchantmentData> enchantments = new ArrayList<>();
             for (String enchantmentName : enchantmentsSection.getKeys(false)) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
                 NumberProvider levelProvider = NumberProvider.fromSection(enchantmentsSection, enchantmentName, 1);
-                int level = levelProvider.getInteger();
-                if (level > 0)
-                    enchantments.put(enchantment, level);
+                enchantments.add(new EnchantmentData(enchantment, levelProvider));
             }
             this.enchantments = enchantments;
         }
@@ -210,7 +206,14 @@ public class ItemLootMeta {
         if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
-        if (this.enchantments != null && itemStack.getType() != Material.ENCHANTED_BOOK) this.enchantments.forEach((x, y) -> itemMeta.addEnchant(x, y, true));
+
+        if (this.enchantments != null && itemStack.getType() != Material.ENCHANTED_BOOK) {
+            for (EnchantmentData enchantmentData : this.enchantments) {
+                int level = enchantmentData.getLevel().getInteger();
+                if (level > 0)
+                    itemMeta.addEnchant(enchantmentData.getEnchantment(), level, true);
+            }
+        }
 
         if (this.attributes != null) {
             Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
@@ -314,6 +317,26 @@ public class ItemLootMeta {
 
         public AttributeModifier toAttributeModifier() {
             return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(), this.operation, this.slot);
+        }
+
+    }
+
+    protected static class EnchantmentData {
+
+        private final Enchantment enchantment;
+        private final NumberProvider level;
+
+        public EnchantmentData(Enchantment enchantment, NumberProvider level) {
+            this.enchantment = enchantment;
+            this.level = level;
+        }
+
+        public Enchantment getEnchantment() {
+            return this.enchantment;
+        }
+
+        public NumberProvider getLevel() {
+            return this.level;
         }
 
     }

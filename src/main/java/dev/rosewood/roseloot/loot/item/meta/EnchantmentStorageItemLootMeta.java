@@ -1,9 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.LootContext;
-import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
@@ -21,9 +19,13 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.enchantments != null)
-            for (Map.Entry<Enchantment, Integer> entry : this.enchantments.entrySet())
-                itemMeta.addStoredEnchant(entry.getKey(), entry.getValue(), true);
+        if (this.enchantments != null) {
+            for (EnchantmentData enchantmentData : this.enchantments) {
+                int level = enchantmentData.getLevel().getInteger();
+                if (level > 0)
+                    itemMeta.addStoredEnchant(enchantmentData.getEnchantment(), level, true);
+            }
+        }
 
         itemStack.setItemMeta(itemMeta);
 
