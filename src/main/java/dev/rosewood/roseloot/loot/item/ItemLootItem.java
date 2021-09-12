@@ -16,12 +16,14 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
     private final Material item;
     private final NumberProvider amount;
+    private final NumberProvider maxAmount;
     private final ItemLootMeta itemLootMeta;
     private final EnchantmentBonus enchantmentBonus;
 
-    public ItemLootItem(Material item, NumberProvider amount, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus) {
+    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus) {
         this.item = item;
         this.amount = amount;
+        this.maxAmount = maxAmount;
         this.itemLootMeta = itemLootMeta;
         this.enchantmentBonus = enchantmentBonus;
     }
@@ -40,6 +42,8 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
                     amount += this.enchantmentBonus.getBonusPerLevel().getInteger();
             }
         }
+
+        amount = Math.min(amount, this.maxAmount.getInteger());
 
         if (amount > 0) {
             int maxStackSize = this.item.getMaxStackSize();
@@ -71,6 +75,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             return null;
 
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
+        NumberProvider maxAmount = NumberProvider.fromSection(section, "max-amount", Integer.MAX_VALUE);
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
         ItemLootItem.EnchantmentBonus enchantmentBonus = null;
         if (enchantmentBonusSection != null) {
@@ -85,7 +90,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         }
 
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new ItemLootItem(item, amount, itemLootMeta, enchantmentBonus);
+        return new ItemLootItem(item, amount, maxAmount, itemLootMeta, enchantmentBonus);
     }
 
     public static class EnchantmentBonus {

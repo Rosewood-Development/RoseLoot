@@ -33,6 +33,10 @@ public abstract class NumberProvider {
         }
     }
 
+    public static NumberProvider constant(double value) {
+        return new ConstantNumberProvider(value);
+    }
+
     private static class ConstantNumberProvider extends NumberProvider {
 
         private final double value;
