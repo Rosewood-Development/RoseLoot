@@ -35,6 +35,7 @@ import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.OnBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
+import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
@@ -126,6 +127,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("patrol-leader", context -> context.getLootedEntity() instanceof Raider && !((Raider) context.getLootedEntity()).isPatrolLeader());
         event.registerLootCondition("permission", PermissionCondition.class);
         event.registerLootCondition("placeholder", PlaceholderCondition.class);
+        event.registerLootCondition("potion-effect", PotionEffectCondition.class);
         event.registerLootCondition("required-tool", RequiredToolCondition.class);
         event.registerLootCondition("required-tool-type", RequiredToolTypeCondition.class);
         event.registerLootCondition("sitting", context -> context.getLootedEntity() instanceof Sittable && ((Sittable) context.getLootedEntity()).isSitting());
