@@ -62,4 +62,19 @@ public class SkullItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        SkullMeta itemMeta = (SkullMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        OfflinePlayer owner = itemMeta.getOwningPlayer();
+        if (owner != null) {
+            stringBuilder.append("owner: '").append(owner.getUniqueId()).append("'\n");
+        } else if (Bukkit.getPluginManager().isPluginEnabled("HeadDatabase")) {
+            String texture = new me.arcaniax.hdb.api.HeadDatabaseAPI().getBase64(itemStack);
+            if (texture != null)
+                stringBuilder.append("texture: '").append(texture).append("'\n");
+        }
+    }
+
 }

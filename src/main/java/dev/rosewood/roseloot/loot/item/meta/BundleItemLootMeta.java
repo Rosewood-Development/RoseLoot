@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BundleMeta;
@@ -45,6 +46,22 @@ public class BundleItemLootMeta extends ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
+    }
+
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        BundleMeta itemMeta = (BundleMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        List<ItemStack> contents = itemMeta.getItems();
+        if (!contents.isEmpty()) {
+            stringBuilder.append("contents: \n");
+            for (int i = 0; i < contents.size(); i++) {
+                ItemStack item = contents.get(i);
+                stringBuilder.append("  ").append(i).append(":\n");
+                stringBuilder.append("    ").append(ItemLootItem.toSection(item).replaceAll(Pattern.quote("\n"), "\n    ").trim()).append('\n');
+            }
+        }
     }
 
 }

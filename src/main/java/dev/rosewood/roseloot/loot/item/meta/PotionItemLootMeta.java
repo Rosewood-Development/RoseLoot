@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
@@ -88,6 +89,36 @@ public class PotionItemLootMeta extends ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
+    }
+
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        PotionMeta itemMeta = (PotionMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        Color color = itemMeta.getColor();
+        if (color != null)
+            stringBuilder.append("color: '").append(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue())).append("'\n");
+
+        PotionData baseData = itemMeta.getBasePotionData();
+        stringBuilder.append("potion-type: ").append(baseData.getType().name().toLowerCase()).append('\n');
+        stringBuilder.append("extended: ").append(baseData.isExtended()).append('\n');
+        stringBuilder.append("upgraded: ").append(baseData.isUpgraded()).append('\n');
+
+        List<PotionEffect> effects = itemMeta.getCustomEffects();
+        if (!effects.isEmpty()) {
+            stringBuilder.append("custom-effects:\n");
+            for (int i = 0; i < effects.size(); i++) {
+                PotionEffect effect = effects.get(i);
+                stringBuilder.append("  ").append(i).append(":\n");
+                stringBuilder.append("    effect: ").append(effect.getType().getName().toLowerCase()).append('\n');
+                stringBuilder.append("    duration: ").append(effect.getDuration()).append('\n');
+                stringBuilder.append("    amplifier: ").append(effect.getAmplifier()).append('\n');
+                stringBuilder.append("    ambient: ").append(effect.isAmbient()).append('\n');
+                stringBuilder.append("    particles: ").append(effect.hasParticles()).append('\n');
+                stringBuilder.append("    icon: ").append(effect.hasIcon()).append('\n');
+            }
+        }
     }
 
     public static class PotionEffectData {

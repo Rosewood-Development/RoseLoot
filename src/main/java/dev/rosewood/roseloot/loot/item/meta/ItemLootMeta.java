@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Material;
@@ -294,6 +296,116 @@ public class ItemLootMeta {
                 return new BundleItemLootMeta(section);
             default:
                 return new ItemLootMeta(section);
+        }
+    }
+
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        Material material = itemStack.getType();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        if (itemMeta.hasDisplayName()) stringBuilder.append("display-name: '").append(LootUtils.decolorize(itemMeta.getDisplayName())).append('\'').append('\n');
+        if (itemMeta.hasCustomModelData()) stringBuilder.append("custom-model-data: ").append(itemMeta.getCustomModelData()).append('\n');
+        if (itemMeta.isUnbreakable()) stringBuilder.append("unbreakable: true\n");
+
+        if (itemMeta instanceof Repairable) {
+            Repairable repairable = (Repairable) itemMeta;
+            if (repairable.hasRepairCost())
+                stringBuilder.append("repair-cost: ").append(repairable.getRepairCost()).append('\n');
+        }
+
+        if (itemMeta instanceof Damageable) {
+            Damageable damageable = (Damageable) itemMeta;
+            if (damageable.hasDamage())
+                stringBuilder.append("durability: ").append(itemStack.getType().getMaxDurability() - damageable.getDamage()).append('\n');
+        }
+
+        List<String> lore = itemMeta.getLore();
+        if (lore != null) {
+            stringBuilder.append("lore:\n");
+            for (String line : itemMeta.getLore())
+                stringBuilder.append("  - '").append(LootUtils.decolorize(line)).append("'");
+        }
+
+        Set<ItemFlag> itemFlags = itemMeta.getItemFlags();
+        if (itemFlags.size() == ItemFlag.values().length) {
+            stringBuilder.append("hide-flags: true\n");
+        } else if (!itemFlags.isEmpty()) {
+            stringBuilder.append("hide-flags:\n");
+            for (ItemFlag itemFlag : itemFlags)
+                stringBuilder.append(itemFlag.name().toLowerCase()).append('\n');
+        }
+
+        if (!itemMeta.getEnchants().isEmpty() && material != Material.ENCHANTED_BOOK) {
+            stringBuilder.append("enchantments:\n");
+            for (Map.Entry<Enchantment, Integer> entry : itemMeta.getEnchants().entrySet())
+                stringBuilder.append("  ").append(entry.getKey().getKey().getKey()).append(": ").append(entry.getValue());
+        }
+
+        Multimap<Attribute, AttributeModifier> attributes = itemMeta.getAttributeModifiers();
+        if (attributes != null) {
+            stringBuilder.append("attributes:\n");
+            int i = 0;
+            for (Attribute attribute : attributes.keySet()) {
+                for (AttributeModifier modifier : attributes.get(attribute)) {
+                    stringBuilder.append("  ").append(i++).append(":\n");
+                    stringBuilder.append("    ").append("name: ").append('\'').append(attribute.getKey().getKey()).append('\'');
+                    stringBuilder.append("    ").append("amount: ").append(modifier.getAmount()).append('\n');
+                    stringBuilder.append("    ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append('\'');
+                    if (modifier.getSlot() != null)
+                        stringBuilder.append("    ").append("slot: ").append(modifier.getSlot().name().toLowerCase()).append('\'');
+                }
+            }
+        }
+
+        if (Tag.ITEMS_BANNERS.isTagged(material))
+            BannerItemLootMeta.applyProperties(itemStack, stringBuilder);
+
+        switch (material) {
+            case WRITABLE_BOOK:
+            case WRITTEN_BOOK:
+                BookItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case ENCHANTED_BOOK:
+                EnchantmentStorageItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case FIREWORK_STAR:
+                FireworkEffectItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case FIREWORK_ROCKET:
+                FireworkItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case KNOWLEDGE_BOOK:
+                KnowledgeBookItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case LEATHER_HELMET:
+            case LEATHER_CHESTPLATE:
+            case LEATHER_LEGGINGS:
+            case LEATHER_BOOTS:
+            case LEATHER_HORSE_ARMOR:
+                LeatherArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case POTION:
+            case SPLASH_POTION:
+            case LINGERING_POTION:
+                PotionItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case PLAYER_HEAD:
+                SkullItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case SUSPICIOUS_STEW:
+                SuspiciousStewItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case TROPICAL_FISH_BUCKET:
+                TropicalFishBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case AXOLOTL_BUCKET:
+                AxolotlBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
+            case BUNDLE:
+                BundleItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
         }
     }
 

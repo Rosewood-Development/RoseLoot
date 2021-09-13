@@ -52,4 +52,16 @@ public class KnowledgeBookItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        KnowledgeBookMeta itemMeta = (KnowledgeBookMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        if (itemMeta.hasRecipes()) {
+            stringBuilder.append("recipes:\n");
+            for (NamespacedKey recipe : itemMeta.getRecipes())
+                stringBuilder.append("  - '").append(recipe).append("'\n");
+        }
+    }
+
 }

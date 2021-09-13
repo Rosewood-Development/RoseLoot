@@ -37,4 +37,13 @@ public class LeatherArmorItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        LeatherArmorMeta itemMeta = (LeatherArmorMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        Color color = itemMeta.getColor();
+        stringBuilder.append("color: '").append(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue())).append("'\n");
+    }
+
 }

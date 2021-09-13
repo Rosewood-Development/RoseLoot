@@ -46,4 +46,12 @@ public class AxolotlBucketItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        AxolotlBucketMeta itemMeta = (AxolotlBucketMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        if (itemMeta.hasVariant()) stringBuilder.append("variant: ").append(itemMeta.getVariant().name().toLowerCase()).append('\n');
+    }
+
 }

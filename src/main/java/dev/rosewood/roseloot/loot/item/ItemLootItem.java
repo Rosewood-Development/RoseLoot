@@ -93,6 +93,17 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         return new ItemLootItem(item, amount, maxAmount, itemLootMeta, enchantmentBonus);
     }
 
+    public static String toSection(ItemStack itemStack) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("item: ").append(itemStack.getType().name().toLowerCase()).append('\n');
+        stringBuilder.append("amount: ").append(itemStack.getAmount()).append('\n');
+
+        ItemLootMeta.applyProperties(itemStack, stringBuilder);
+
+        return stringBuilder.toString();
+    }
+
     public static class EnchantmentBonus {
 
         private final Enchantment enchantment;

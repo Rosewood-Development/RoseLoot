@@ -9,7 +9,11 @@ commands:
   rl:
     description: The base RoseLoot command
     aliases: [roseloot, loot]
+    permission: roseloot.basecommand
 permissions:
+  roseloot.basecommand:
+    description: Allows using the RoseLoot commands
+    default: true
   roseloot.reload:
     description: Allows running the reload command
     default: op
@@ -18,4 +22,7 @@ permissions:
     default: op
   roseloot.generate:
     description: Allows running the generate command
+    default: op
+  roseloot.copy:
+    description: Allows running the copy command
     default: op

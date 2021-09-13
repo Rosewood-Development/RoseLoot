@@ -67,4 +67,21 @@ public class BannerItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        BannerMeta itemMeta = (BannerMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        List<Pattern> patterns = itemMeta.getPatterns();
+        if (!patterns.isEmpty()) {
+            stringBuilder.append("patterns:\n");
+            for (int i = 0; i < patterns.size(); i++) {
+                Pattern pattern = patterns.get(i);
+                stringBuilder.append("  ").append(i).append(":\n");
+                stringBuilder.append("    color: ").append(pattern.getColor().name().toLowerCase()).append('\n');
+                stringBuilder.append("    pattern: ").append(pattern.getPattern().name().toLowerCase()).append('\n');
+            }
+        }
+    }
+
 }

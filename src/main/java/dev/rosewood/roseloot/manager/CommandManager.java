@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 @SuppressWarnings("rawtypes")
@@ -101,6 +102,11 @@ public class CommandManager extends Manager implements TabExecutor {
 
             if (!command.canUse(sender)) {
                 localeManager.sendMessage(sender, "no-permission");
+                return true;
+            }
+
+            if (command.isPlayerOnly() && !(sender instanceof Player)) {
+                localeManager.sendMessage(sender, "only-player");
                 return true;
             }
 

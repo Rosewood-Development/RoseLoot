@@ -3,10 +3,12 @@ package dev.rosewood.roseloot.loot.item.meta;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SuspiciousStewMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SuspiciousStewItemLootMeta extends ItemLootMeta {
@@ -57,6 +59,27 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
+    }
+
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        SuspiciousStewMeta itemMeta = (SuspiciousStewMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        List<PotionEffect> effects = itemMeta.getCustomEffects();
+        if (!effects.isEmpty()) {
+            stringBuilder.append("custom-effects:\n");
+            for (int i = 0; i < effects.size(); i++) {
+                PotionEffect effect = effects.get(i);
+                stringBuilder.append("  ").append(i).append(":\n");
+                stringBuilder.append("    effect: ").append(effect.getType().getName().toLowerCase()).append('\n');
+                stringBuilder.append("    duration: ").append(effect.getDuration()).append('\n');
+                stringBuilder.append("    amplifier: ").append(effect.getAmplifier()).append('\n');
+                stringBuilder.append("    ambient: ").append(effect.isAmbient()).append('\n');
+                stringBuilder.append("    particles: ").append(effect.hasParticles()).append('\n');
+                stringBuilder.append("    icon: ").append(effect.hasIcon()).append('\n');
+            }
+        }
     }
 
 }

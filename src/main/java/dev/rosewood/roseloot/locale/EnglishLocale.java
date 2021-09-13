@@ -50,6 +50,12 @@ public class EnglishLocale implements Locale {
             this.put("command-list-none", "&eThere are no loot tables currently active.");
             this.put("command-list-header", "&eThere are &b%amount% &eloot tables currently active:");
             this.put("command-list-entry", "  &7%name% &8- %type%");
+
+            this.put("#8", "Copy Command");
+            this.put("command-copy-description", "Get the item in your hand as a loot item");
+            this.put("command-copy-success", "&eClick to copy the loot table entry to your clipboard.");
+            this.put("command-copy-hover", "&7Click to copy");
+            this.put("command-copy-no-item", "&cYou must be holding an item in your main hand to use this command.");
         }};
     }
 

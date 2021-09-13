@@ -92,4 +92,38 @@ public class FireworkItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        FireworkMeta itemMeta = (FireworkMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        stringBuilder.append("power: ").append(itemMeta.getPower()).append('\n');
+
+        List<FireworkEffect> effects = itemMeta.getEffects();
+        if (!effects.isEmpty()) {
+            stringBuilder.append("firework-effects:\n");
+            for (int i = 0; i < effects.size(); i++) {
+                FireworkEffect effect = effects.get(i);
+                stringBuilder.append("  ").append(i).append(":\n");
+                stringBuilder.append("    flicker: ").append(effect.hasFlicker()).append('\n');
+                stringBuilder.append("    trail: ").append(effect.hasTrail()).append('\n');
+                stringBuilder.append("    type: ").append(effect.getType().name().toLowerCase()).append('\n');
+
+                List<Color> colors = effect.getColors();
+                if (!colors.isEmpty()) {
+                    stringBuilder.append("    colors:\n");
+                    for (Color color : colors)
+                        stringBuilder.append("      - '").append(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue())).append("'\n");
+                }
+
+                List<Color> fadeColors = effect.getFadeColors();
+                if (!fadeColors.isEmpty()) {
+                    stringBuilder.append("    fade-colors:\n");
+                    for (Color color : fadeColors)
+                        stringBuilder.append("      - '").append(String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue())).append("'\n");
+                }
+            }
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -50,6 +51,21 @@ public class BookItemLootMeta extends ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
+    }
+
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        BookMeta itemMeta = (BookMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        if (itemMeta.hasTitle()) stringBuilder.append("title: ").append(LootUtils.decolorize(itemMeta.getTitle())).append('\n');
+        if (itemMeta.hasAuthor()) stringBuilder.append("author: ").append(LootUtils.decolorize(itemMeta.getAuthor())).append('\n');
+        if (itemMeta.hasPages()) {
+            stringBuilder.append("pages:\n");
+            for (String page : itemMeta.getPages())
+                stringBuilder.append("  - '").append(LootUtils.decolorize(page)).append("'\n");
+        }
+        if (itemMeta.getGeneration() != null) stringBuilder.append("generation: ").append(itemMeta.getGeneration().name().toLowerCase()).append('\n');
     }
 
 }

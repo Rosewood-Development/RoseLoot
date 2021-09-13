@@ -74,4 +74,16 @@ public class TropicalFishBucketItemLootMeta extends ItemLootMeta {
         return itemStack;
     }
 
+    public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        TropicalFishBucketMeta itemMeta = (TropicalFishBucketMeta) itemStack.getItemMeta();
+        if (itemMeta == null)
+            return;
+
+        if (itemMeta.hasVariant()) {
+            stringBuilder.append("body-color: ").append(itemMeta.getBodyColor().name().toLowerCase()).append('\n');
+            stringBuilder.append("pattern: ").append(itemMeta.getPattern().name().toLowerCase()).append('\n');
+            stringBuilder.append("pattern-color: ").append(itemMeta.getPatternColor().name().toLowerCase()).append('\n');
+        }
+    }
+
 }

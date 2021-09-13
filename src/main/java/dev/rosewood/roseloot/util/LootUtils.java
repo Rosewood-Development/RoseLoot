@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.AnimalTamer;
@@ -239,6 +240,18 @@ public final class LootUtils {
         }
 
         return entity;
+    }
+
+    /**
+     * Converts Minecraft color code characters into ampersands
+     *
+     * @param string The string to convert
+     * @return a copy of the String with Minecraft color code characters replaced as ampersands
+     */
+    public static String decolorize(String string) {
+        if (string == null || string.isEmpty())
+            return string;
+        return string.replace(ChatColor.COLOR_CHAR, '&');
     }
 
 }
