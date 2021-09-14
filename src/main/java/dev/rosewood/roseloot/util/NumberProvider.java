@@ -10,9 +10,18 @@ public abstract class NumberProvider {
 
     public abstract double getDouble();
 
-    public static NumberProvider fromSection(ConfigurationSection section, String value, double defaultValue) {
-        if (section == null || value == null || value.isEmpty())
-            return new ConstantNumberProvider(defaultValue);
+    public static NumberProvider fromSection(ConfigurationSection section, String value, int defaultValue) {
+        return fromSection(section, value, (double) defaultValue);
+    }
+
+    public static NumberProvider fromSection(ConfigurationSection section, String value, Double defaultValue) {
+        if (section == null || value == null || value.isEmpty()) {
+            if (defaultValue == null) {
+                return null;
+            } else {
+                return new ConstantNumberProvider(defaultValue);
+            }
+        }
 
         if (section.isConfigurationSection(value)) {
             ConfigurationSection numberSection = section.getConfigurationSection(value);
@@ -29,7 +38,11 @@ public abstract class NumberProvider {
                 return new BinomialDistributionNumberProvider(n, p);
             }
         } else {
-            return new ConstantNumberProvider(section.getDouble(value, defaultValue));
+            if (defaultValue == null) {
+                return null;
+            } else {
+                return new ConstantNumberProvider(section.getDouble(value, defaultValue));
+            }
         }
     }
 

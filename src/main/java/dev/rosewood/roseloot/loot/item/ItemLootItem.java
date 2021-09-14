@@ -28,6 +28,10 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         this.enchantmentBonus = enchantmentBonus;
     }
 
+    protected ItemLootItem() {
+        this(null, null, null, null, null);
+    }
+
     @Override
     public List<ItemStack> create(LootContext context) {
         List<ItemStack> generatedItems = new ArrayList<>();
