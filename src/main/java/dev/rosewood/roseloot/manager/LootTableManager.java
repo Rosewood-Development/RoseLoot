@@ -190,38 +190,35 @@ public class LootTableManager extends Manager implements Listener {
             NumberProvider quality = NumberProvider.fromSection(entrySection, "quality", 0);
 
             ConfigurationSection itemsSection = entrySection.getConfigurationSection("items");
-            if (itemsSection == null) {
-                this.issueLoading(file, "Missing items section for pool/entry [" + poolKey + "/" + entryKey + "]");
-                continue;
-            }
-
             List<LootItem<?>> lootItems = new ArrayList<>();
-            for (String itemKey : itemsSection.getKeys(false)) {
-                ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
-                if (itemSection == null) {
-                    this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                    continue;
-                }
+            if (itemsSection != null) {
+                for (String itemKey : itemsSection.getKeys(false)) {
+                    ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
+                    if (itemSection == null) {
+                        this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                        continue;
+                    }
 
-                String lootItemType = itemSection.getString("type");
-                if (lootItemType == null) {
-                    this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                    continue;
-                }
+                    String lootItemType = itemSection.getString("type");
+                    if (lootItemType == null) {
+                        this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                        continue;
+                    }
 
-                Function<ConfigurationSection, LootItem<?>> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
-                if (lootItemFunction == null) {
-                    this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                    continue;
-                }
+                    Function<ConfigurationSection, LootItem<?>> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
+                    if (lootItemFunction == null) {
+                        this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                        continue;
+                    }
 
-                LootItem<?> lootItem = lootItemFunction.apply(itemSection);
-                if (lootItem == null) {
-                    this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                    continue;
-                }
+                    LootItem<?> lootItem = lootItemFunction.apply(itemSection);
+                    if (lootItem == null) {
+                        this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                        continue;
+                    }
 
-                lootItems.add(lootItem);
+                    lootItems.add(lootItem);
+                }
             }
 
             LootEntry.ChildrenStrategy childrenStrategy = LootEntry.ChildrenStrategy.fromString(entrySection.getString("children-strategy", LootEntry.ChildrenStrategy.NORMAL.name()));
