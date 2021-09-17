@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Material;
+import org.bukkit.Nameable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
@@ -42,14 +43,16 @@ public class ItemLootMeta {
     private Boolean unbreakable;
     private Integer repairCost;
     private OptionalPercentageValue minDurability, maxDurability;
-    private Integer enchantmentLevel;
+    private NumberProvider enchantmentLevel;
     private boolean includeTreasureEnchantments;
     private boolean uncappedRandomEnchants;
     private List<ItemFlag> hideFlags;
+    protected List<Enchantment> randomEnchantments;
     protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
     protected Boolean copyBlockState;
     protected Boolean copyBlockData;
+    protected Boolean copyBlockName;
 
     public ItemLootMeta(ConfigurationSection section) {
         if (section.isString("display-name")) this.displayName = section.getString("display-name");
@@ -85,14 +88,9 @@ public class ItemLootMeta {
 
         ConfigurationSection enchantRandomlySection = section.getConfigurationSection("enchant-randomly");
         if (enchantRandomlySection != null) {
-            int level = enchantRandomlySection.getInt("level", -1);
-            boolean treasure = enchantRandomlySection.getBoolean("treasure", false);
-            boolean uncapped = enchantRandomlySection.getBoolean("uncapped", false);
-            if (level > 0) {
-                this.enchantmentLevel = level;
-                this.includeTreasureEnchantments = treasure;
-                this.uncappedRandomEnchants = uncapped;
-            }
+            this.enchantmentLevel = NumberProvider.fromSection(enchantRandomlySection, "level", 30);
+            this.includeTreasureEnchantments = enchantRandomlySection.getBoolean("treasure", false);
+            this.uncappedRandomEnchants = enchantRandomlySection.getBoolean("uncapped", false);
         }
 
         if (section.isBoolean("hide-flags")) {
@@ -113,6 +111,16 @@ public class ItemLootMeta {
 
             if (!flagNames.isEmpty())
                 this.hideFlags = hideFlags;
+        }
+
+        if (section.contains("random-enchantments")) {
+            List<String> randomEnchantments = section.getStringList("random-enchantments");
+            this.randomEnchantments = new ArrayList<>();
+            for (String enchantmentName : randomEnchantments) {
+                Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(enchantmentName));
+                if (enchantment != null)
+                    this.randomEnchantments.add(enchantment);
+            }
         }
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
@@ -189,6 +197,9 @@ public class ItemLootMeta {
 
         if (section.getBoolean("copy-block-data", false))
             this.copyBlockData = true;
+
+        if (section.getBoolean("copy-block-name"))
+            this.copyBlockName = true;
     }
 
     /**
@@ -209,11 +220,30 @@ public class ItemLootMeta {
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
 
-        if (this.enchantments != null && itemStack.getType() != Material.ENCHANTED_BOOK) {
-            for (EnchantmentData enchantmentData : this.enchantments) {
-                int level = enchantmentData.getLevel().getInteger();
-                if (level > 0)
-                    itemMeta.addEnchant(enchantmentData.getEnchantment(), level, true);
+        if (itemStack.getType() != Material.ENCHANTED_BOOK) {
+            if (this.randomEnchantments != null) {
+                List<Enchantment> possibleEnchantments = new ArrayList<>();
+                if (!this.randomEnchantments.isEmpty()) {
+                    // Not empty, use the suggested
+                    possibleEnchantments.addAll(this.randomEnchantments);
+                } else {
+                    // Empty, pick from every applicable enchantment for the item
+                    for (Enchantment enchantment : Enchantment.values())
+                        if (enchantment.canEnchantItem(itemStack))
+                            possibleEnchantments.add(enchantment);
+                }
+
+                Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
+                int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
+                itemMeta.addEnchant(enchantment, level, true);
+            }
+
+            if (this.enchantments != null) {
+                for (EnchantmentData enchantmentData : this.enchantments) {
+                    int level = enchantmentData.getLevel().getInteger();
+                    if (level > 0)
+                        itemMeta.addEnchant(enchantmentData.getEnchantment(), level, true);
+                }
             }
         }
 
@@ -248,12 +278,15 @@ public class ItemLootMeta {
 
             if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta)
                 ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
+
+            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable)
+                itemMeta.setDisplayName(((Nameable) block.getState()).getCustomName());
         }
 
         itemStack.setItemMeta(itemMeta);
 
         if (this.enchantmentLevel != null)
-            EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel, this.includeTreasureEnchantments, this.uncappedRandomEnchants);
+            EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(), this.includeTreasureEnchantments, this.uncappedRandomEnchants);
 
         return itemStack;
     }
@@ -283,6 +316,7 @@ public class ItemLootMeta {
             case POTION:
             case SPLASH_POTION:
             case LINGERING_POTION:
+            case TIPPED_ARROW:
                 return new PotionItemLootMeta(section);
             case PLAYER_HEAD:
                 return new SkullItemLootMeta(section);
@@ -389,6 +423,7 @@ public class ItemLootMeta {
             case POTION:
             case SPLASH_POTION:
             case LINGERING_POTION:
+            case TIPPED_ARROW:
                 PotionItemLootMeta.applyProperties(itemStack, stringBuilder);
                 break;
             case PLAYER_HEAD:

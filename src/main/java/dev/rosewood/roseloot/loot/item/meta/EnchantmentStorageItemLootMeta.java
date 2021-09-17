@@ -1,6 +1,10 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.util.LootUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -20,6 +24,21 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
         EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) itemStack.getItemMeta();
         if (itemMeta == null)
             return itemStack;
+
+        if (this.randomEnchantments != null) {
+            List<Enchantment> possibleEnchantments = new ArrayList<>();
+            if (!this.randomEnchantments.isEmpty()) {
+                // Not empty, use the suggested
+                possibleEnchantments.addAll(this.randomEnchantments);
+            } else {
+                // Empty, pick from every enchantment
+                possibleEnchantments.addAll(Arrays.asList(Enchantment.values()));
+            }
+
+            Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
+            int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
+            itemMeta.addStoredEnchant(enchantment, level, true);
+        }
 
         if (this.enchantments != null) {
             for (EnchantmentData enchantmentData : this.enchantments) {
