@@ -130,73 +130,9 @@ public class LootTableManager extends Manager implements Listener {
                             continue;
                         }
 
-                        List<LootEntry> lootEntries = new ArrayList<>();
-                        for (String entryKey : entriesSection.getKeys(false)) {
-                            ConfigurationSection entrySection = entriesSection.getConfigurationSection(entryKey);
-                            if (entrySection == null) {
-                                this.issueLoading(file, "Invalid entry section for pool [pool: " + poolKey + ", entry: " + entryKey + "]");
-                                continue;
-                            }
+                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, lootConditionManager, poolKey);
 
-                            List<LootCondition> entryConditions = new ArrayList<>();
-                            List<String> entryConditionStrings = entrySection.getStringList("conditions");
-                            for (String conditionString : entryConditionStrings) {
-                                LootCondition condition = lootConditionManager.parse(conditionString);
-                                if (condition == null)  {
-                                    this.issueLoading(file, "Invalid entry condition [" + conditionString + "]");
-                                    continue;
-                                }
-                                entryConditions.add(condition);
-                            }
-
-                            NumberProvider weight;
-                            if (entriesSection.contains("weight")) {
-                                weight = NumberProvider.fromSection(entrySection, "weight", 0);
-                            } else {
-                                weight = null;
-                            }
-
-                            NumberProvider quality = NumberProvider.fromSection(entrySection, "quality", 0);
-
-                            ConfigurationSection itemsSection = entrySection.getConfigurationSection("items");
-                            if (itemsSection == null) {
-                                this.issueLoading(file, "Missing items section for pool/entry [" + poolKey + "/" + entryKey + "]");
-                                continue;
-                            }
-
-                            List<LootItem<?>> lootItems = new ArrayList<>();
-                            for (String itemKey : itemsSection.getKeys(false)) {
-                                ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
-                                if (itemSection == null) {
-                                    this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                                    continue;
-                                }
-
-                                String lootItemType = itemSection.getString("type");
-                                if (lootItemType == null) {
-                                    this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                                    continue;
-                                }
-
-                                Function<ConfigurationSection, LootItem<?>> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
-                                if (lootItemFunction == null) {
-                                    this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                                    continue;
-                                }
-
-                                LootItem<?> lootItem = lootItemFunction.apply(itemSection);
-                                if (lootItem == null) {
-                                    this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
-                                    continue;
-                                }
-
-                                lootItems.add(lootItem);
-                            }
-
-                            lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems));
-                        }
-
-                        lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, lootEntries));
+                        lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, entries));
                     }
 
                     File path = file;
@@ -222,6 +158,80 @@ public class LootTableManager extends Manager implements Listener {
 
             RoseLoot.getInstance().getLogger().info("Loaded " + this.lootTables.values().stream().mapToInt(List::size).sum() + " loot tables.");
         }, 1);
+    }
+
+    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, LootConditionManager lootConditionManager, String poolKey) {
+        List<LootEntry> lootEntries = new ArrayList<>();
+        for (String entryKey : entriesSection.getKeys(false)) {
+            ConfigurationSection entrySection = entriesSection.getConfigurationSection(entryKey);
+            if (entrySection == null) {
+                this.issueLoading(file, "Invalid entry section for pool [pool: " + poolKey + ", entry: " + entryKey + "]");
+                continue;
+            }
+
+            List<LootCondition> entryConditions = new ArrayList<>();
+            List<String> entryConditionStrings = entrySection.getStringList("conditions");
+            for (String conditionString : entryConditionStrings) {
+                LootCondition condition = lootConditionManager.parse(conditionString);
+                if (condition == null)  {
+                    this.issueLoading(file, "Invalid entry condition [" + conditionString + "]");
+                    continue;
+                }
+                entryConditions.add(condition);
+            }
+
+            NumberProvider weight;
+            if (entriesSection.contains("weight")) {
+                weight = NumberProvider.fromSection(entrySection, "weight", 0);
+            } else {
+                weight = null;
+            }
+
+            NumberProvider quality = NumberProvider.fromSection(entrySection, "quality", 0);
+
+            ConfigurationSection itemsSection = entrySection.getConfigurationSection("items");
+            if (itemsSection == null) {
+                this.issueLoading(file, "Missing items section for pool/entry [" + poolKey + "/" + entryKey + "]");
+                continue;
+            }
+
+            List<LootItem<?>> lootItems = new ArrayList<>();
+            for (String itemKey : itemsSection.getKeys(false)) {
+                ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
+                if (itemSection == null) {
+                    this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                    continue;
+                }
+
+                String lootItemType = itemSection.getString("type");
+                if (lootItemType == null) {
+                    this.issueLoading(file, "Invalid item section for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                    continue;
+                }
+
+                Function<ConfigurationSection, LootItem<?>> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
+                if (lootItemFunction == null) {
+                    this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                    continue;
+                }
+
+                LootItem<?> lootItem = lootItemFunction.apply(itemSection);
+                if (lootItem == null) {
+                    this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
+                    continue;
+                }
+
+                lootItems.add(lootItem);
+            }
+
+            LootEntry.ChildrenStrategy childrenStrategy = LootEntry.ChildrenStrategy.fromString(entrySection.getString("children-strategy", LootEntry.ChildrenStrategy.NORMAL.name()));
+            ConfigurationSection childrenSection = entrySection.getConfigurationSection("children");
+            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, lootConditionManager, poolKey) : null;
+
+            lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems, childrenStrategy, childEntries));
+        }
+
+        return lootEntries;
     }
 
     @Override
