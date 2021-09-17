@@ -105,7 +105,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         private final Collection<ItemStack> items;
 
         public VanillaItemLootItem(Collection<ItemStack> items) {
-            super(null, NumberProvider.constant(-1), NumberProvider.constant(-1), null, null);
+            super(null, NumberProvider.constant(-1), NumberProvider.constant(-1), null, null, false);
             this.items = items;
         }
 

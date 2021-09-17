@@ -5,11 +5,15 @@ import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemLootItem implements LootItem<List<ItemStack>> {
@@ -19,17 +23,19 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
     private final NumberProvider maxAmount;
     private final ItemLootMeta itemLootMeta;
     private final EnchantmentBonus enchantmentBonus;
+    private final boolean smeltIfBurning;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus) {
+    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
         this.itemLootMeta = itemLootMeta;
         this.enchantmentBonus = enchantmentBonus;
+        this.smeltIfBurning = smeltIfBurning;
     }
 
     protected ItemLootItem() {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, false);
     }
 
     @Override
@@ -42,16 +48,33 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             ItemMeta itemMeta = itemUsed.getItemMeta();
             if (itemMeta != null) {
                 int level = Math.min(itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment()), this.enchantmentBonus.getMaxBonusLevels().getInteger());
+                double bonusAmount = 0;
                 for (int i = 0; i < level; i++)
-                    amount += this.enchantmentBonus.getBonusPerLevel().getInteger();
+                    bonusAmount += this.enchantmentBonus.getBonusPerLevel().getDouble();
+                amount += Math.round(bonusAmount);
+            }
+        }
+
+        Material item = this.item;
+        if (this.smeltIfBurning && context.getLootedEntity() != null && context.getLootedEntity().getFireTicks() > 0) {
+            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
+            while (recipesIterator.hasNext()) {
+                Recipe recipe = recipesIterator.next();
+                if (recipe instanceof FurnaceRecipe) {
+                    FurnaceRecipe furnaceRecipe = (FurnaceRecipe) recipe;
+                    if (furnaceRecipe.getInput().getType() == item) {
+                        item = furnaceRecipe.getResult().getType();
+                        break;
+                    }
+                }
             }
         }
 
         amount = Math.min(amount, this.maxAmount.getInteger());
 
         if (amount > 0) {
-            int maxStackSize = this.item.getMaxStackSize();
-            ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(this.item), context);
+            int maxStackSize = item.getMaxStackSize();
+            ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(item), context);
             while (amount > maxStackSize) {
                 amount -= maxStackSize;
                 ItemStack clone = itemStack.clone();
@@ -93,8 +116,10 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             }
         }
 
+        boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
+
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new ItemLootItem(item, amount, maxAmount, itemLootMeta, enchantmentBonus);
+        return new ItemLootItem(item, amount, maxAmount, itemLootMeta, enchantmentBonus, smeltIfBurning);
     }
 
     public static String toSection(ItemStack itemStack) {
