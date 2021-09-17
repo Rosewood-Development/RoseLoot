@@ -22,6 +22,7 @@ import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DimensionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DroppedItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
+import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.FeatureCondition;
@@ -111,6 +112,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("death-cause", DeathCauseCondition.class);
         event.registerLootCondition("dimension", DimensionCondition.class);
         event.registerLootCondition("dropped-item", DroppedItemCondition.class);
+        event.registerLootCondition("enchantment-chance-table", EnchantmentChanceTableCondition.class);
         event.registerLootCondition("enchantment-chance", EnchantmentChanceCondition.class);
         event.registerLootCondition("enchantment", EnchantmentCondition.class);
         event.registerLootCondition("entity-type", EntityTypeCondition.class);
