@@ -42,6 +42,7 @@ import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnerTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
+import dev.rosewood.roseloot.loot.condition.tags.ToolTagCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
@@ -140,6 +141,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("spawn-reason", SpawnReasonCondition.class);
         event.registerLootCondition("tamed", context -> context.getLootedEntity() instanceof Tameable && ((Tameable) context.getLootedEntity()).isTamed());
         event.registerLootCondition("temperature", TemperatureCondition.class);
+        event.registerLootCondition("tool-tag", ToolTagCondition.class);
         event.registerLootCondition("trading", context -> context.getLootedEntity() instanceof Merchant && ((Merchant) context.getLootedEntity()).isTrading());
         event.registerLootCondition("vanilla-loot-table", VanillaLootTableCondition.class);
         event.registerLootCondition("weather", WeatherCondition.class);
