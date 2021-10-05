@@ -26,6 +26,8 @@ public class EnglishLocale implements Locale {
             this.put("no-permission", "&cYou don't have permission for that!");
             this.put("command-description", "&8 - &d/rl %cmd% %args% &7- %desc%");
             this.put("only-player", "&cThis command can only be executed by a player.");
+            this.put("unknown-command", "&cUnknown command, use &b/rl help &cfor more info.");
+            this.put("missing-arguments", "&cMissing arguments, &b%amount% &crequired.");
 
             this.put("#2", "Base Command Message");
             this.put("base-command-color", "&e");
