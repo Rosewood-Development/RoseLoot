@@ -1,8 +1,12 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
+import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.util.EnchantingUtils;
+import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +18,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemLootItem implements LootItem<List<ItemStack>> {
 
@@ -22,20 +25,22 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
     private final NumberProvider amount;
     private final NumberProvider maxAmount;
     private final ItemLootMeta itemLootMeta;
+    private final ConditionalBonus conditionalBonus;
     private final EnchantmentBonus enchantmentBonus;
     private final boolean smeltIfBurning;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
+    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, ConditionalBonus conditionalBonus, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
         this.itemLootMeta = itemLootMeta;
+        this.conditionalBonus = conditionalBonus;
         this.enchantmentBonus = enchantmentBonus;
         this.smeltIfBurning = smeltIfBurning;
     }
 
     protected ItemLootItem() {
-        this(null, null, null, null, null, false);
+        this(null, null, null, null, null, null, false);
     }
 
     @Override
@@ -43,17 +48,12 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         List<ItemStack> generatedItems = new ArrayList<>();
 
         int amount = this.amount.getInteger();
-        ItemStack itemUsed = context.getItemUsed();
-        if (this.enchantmentBonus != null && itemUsed != null) {
-            ItemMeta itemMeta = itemUsed.getItemMeta();
-            if (itemMeta != null) {
-                int level = Math.min(itemMeta.getEnchantLevel(this.enchantmentBonus.getEnchantment()), this.enchantmentBonus.getMaxBonusLevels().getInteger());
-                double bonusAmount = 0;
-                for (int i = 0; i < level; i++)
-                    bonusAmount += this.enchantmentBonus.getBonusPerLevel().getDouble();
-                amount += Math.round(bonusAmount);
-            }
-        }
+
+        if (this.conditionalBonus != null)
+            amount += this.conditionalBonus.getBonusAmount(context);
+
+        if (this.enchantmentBonus != null)
+            amount += this.enchantmentBonus.getBonusAmount(context, amount);
 
         Material item = this.item;
         if (this.smeltIfBurning && context.getLootedEntity() != null && context.getLootedEntity().getFireTicks() > 0) {
@@ -103,23 +103,38 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
         NumberProvider maxAmount = NumberProvider.fromSection(section, "max-amount", Integer.MAX_VALUE);
+
+        ConfigurationSection conditionBonusSection = section.getConfigurationSection("conditional-bonus");
+        ItemLootItem.ConditionalBonus conditionalBonus = null;
+        if (conditionBonusSection != null) {
+            LootConditionManager lootConditionManager = RoseLoot.getInstance().getManager(LootConditionManager.class);
+            List<LootCondition> conditions = new ArrayList<>();
+            for (String conditionString : conditionBonusSection.getStringList("conditions")) {
+                LootCondition condition = lootConditionManager.parse(conditionString);
+                if (condition != null)
+                    conditions.add(condition);
+            }
+            NumberProvider bonusPerCondition = NumberProvider.fromSection(conditionBonusSection, "bonus-per-condition", 1);
+            conditionalBonus = new ConditionalBonus(conditions, bonusPerCondition);
+        }
+
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
         ItemLootItem.EnchantmentBonus enchantmentBonus = null;
         if (enchantmentBonusSection != null) {
+            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
                 NumberProvider bonusPerLevel = NumberProvider.fromSection(enchantmentBonusSection, "bonus-per-level", 0);
-                NumberProvider maxBonusLevels = NumberProvider.fromSection(enchantmentBonusSection, "max-bonus-levels", Integer.MAX_VALUE);
+                NumberProvider probability = NumberProvider.fromSection(enchantmentBonusSection, "probability", 0);
                 if (enchantment != null)
-                    enchantmentBonus = new ItemLootItem.EnchantmentBonus(enchantment, bonusPerLevel, maxBonusLevels);
+                    enchantmentBonus = new ItemLootItem.EnchantmentBonus(formula, enchantment, bonusPerLevel, probability);
             }
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new ItemLootItem(item, amount, maxAmount, itemLootMeta, enchantmentBonus, smeltIfBurning);
+        return new ItemLootItem(item, amount, maxAmount, itemLootMeta, conditionalBonus, enchantmentBonus, smeltIfBurning);
     }
 
     public static String toSection(ItemStack itemStack) {
@@ -133,30 +148,83 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         return stringBuilder.toString();
     }
 
+    public static class ConditionalBonus {
+
+        private final List<LootCondition> conditions;
+        private final NumberProvider bonusPerCondition;
+
+        public ConditionalBonus(List<LootCondition> conditions, NumberProvider bonusPerCondition) {
+            this.conditions = conditions;
+            this.bonusPerCondition = bonusPerCondition;
+        }
+
+        public int getBonusAmount(LootContext context) {
+            return this.conditions.stream()
+                    .filter(x -> x.check(context))
+                    .mapToInt(x -> this.bonusPerCondition.getInteger())
+                    .sum();
+        }
+
+    }
+
     public static class EnchantmentBonus {
 
+        private final BonusFormula formula;
         private final Enchantment enchantment;
-        private final NumberProvider bonusPerLevel;
-        private final NumberProvider maxBonusLevels;
+        private final NumberProvider bonus;
+        private final NumberProvider probability;
 
-        public EnchantmentBonus(Enchantment enchantment, NumberProvider bonusPerLevel, NumberProvider maxBonusLevels) {
+        public EnchantmentBonus(BonusFormula formula, Enchantment enchantment, NumberProvider bonus, NumberProvider probability) {
+            this.formula = formula;
             this.enchantment = enchantment;
-            this.bonusPerLevel = bonusPerLevel;
-            this.maxBonusLevels = maxBonusLevels;
+            this.bonus = bonus;
+            this.probability = probability;
         }
 
-        public Enchantment getEnchantment() {
-            return this.enchantment;
+        public int getBonusAmount(LootContext context, int originalAmount) {
+            ItemStack itemUsed = context.getItemUsed();
+            if (itemUsed == null)
+                return 0;
+
+            int level = itemUsed.getEnchantmentLevel(this.enchantment);
+            if (level <= 0)
+                return 0;
+
+            int bonus = 0;
+            switch (this.formula) {
+                case UNIFORM:
+                    for (int i = 0; i < level; i++)
+                        bonus += this.bonus.getInteger();
+                    break;
+                case BINOMIAL:
+                    int n = level + this.bonus.getInteger();
+                    double p = this.probability.getDouble();
+                    for (int i = 0; i < n; i++)
+                        if (LootUtils.checkChance(p))
+                            bonus++;
+                    break;
+                case ORE_DROPS:
+                    int multiplier = LootUtils.RANDOM.nextInt(level + 2) - 1;
+                    if (multiplier > 0)
+                        bonus += originalAmount * multiplier;
+                    break;
+            }
+            return bonus;
         }
 
-        public NumberProvider getBonusPerLevel() {
-            return this.bonusPerLevel;
-        }
+    }
 
-        public NumberProvider getMaxBonusLevels() {
-            return this.maxBonusLevels;
-        }
+    public enum BonusFormula {
+        UNIFORM,
+        BINOMIAL, // Requires an extra probability parameter
+        ORE_DROPS;
 
+        public static BonusFormula fromString(String name) {
+            for (BonusFormula value : values())
+                if (value.name().toLowerCase().equals(name))
+                    return value;
+            return UNIFORM;
+        }
     }
 
 }
