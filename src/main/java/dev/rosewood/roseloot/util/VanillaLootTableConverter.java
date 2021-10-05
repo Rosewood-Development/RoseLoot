@@ -1,0 +1,607 @@
+package dev.rosewood.roseloot.util;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.manager.LootConditionManager;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.loot.LootTables;
+
+public class VanillaLootTableConverter {
+
+    public static void convert(File directory) {
+        File vanillaDirectory = new File(directory, "vanilla");
+        vanillaDirectory.mkdirs();
+
+        for (LootTables lootTables : LootTables.values()) {
+            if (lootTables == LootTables.EMPTY)
+                continue;
+
+            String path = lootTables.getKey().getKey();
+            handle(vanillaDirectory, path);
+        }
+
+        for (Material material : Material.values())
+            handle(vanillaDirectory, "blocks/" + material.name().toLowerCase());
+    }
+
+    private static void handle(File directory, String path) {
+        File destination = new File(directory, path + ".yml");
+        destination.delete(); // TODO: REMOVE THIS, TESTING ONLY
+        if (destination.exists())
+            return;
+
+        try (InputStream inputStream = Bukkit.class.getClassLoader().getResourceAsStream("data/minecraft/loot_tables/" + path + ".json")) {
+            if (inputStream == null)
+                return;
+
+            JsonElement json = new JsonParser().parse(new InputStreamReader(inputStream));
+
+            destination.getParentFile().mkdirs();
+            destination.createNewFile();
+
+            try (FileWriter fileWriter = new FileWriter(destination)) {
+                IndentedFileWriter writer = new IndentedFileWriter(fileWriter);
+                if (path.startsWith("entities") && !path.equals("entities/sheep")) {
+                    writeEntityHeader(path, writer);
+                } else if (path.startsWith("blocks")) {
+                    writeBlockHeader(path, writer);
+                } else if (path.equals("gameplay/fishing")) {
+                    writeFishingHeader(path, writer);
+                } else if (path.startsWith("chests")) {
+                    writeContainerHeader(path, writer);
+                } else if (path.equals("gameplay/piglin_bartering")) {
+                    writePiglinBarteringHeader(path, writer);
+                } else if (path.equals("gameplay/cat_morning_gift") || path.startsWith("gameplay/hero_of_the_village")) {
+                    writeEntityDropsHeader(path, writer);
+                } else {
+                    writeLootTableHeader(path, writer);
+                }
+
+                writeTableContents(path, writer, json.getAsJsonObject());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void writeEntityHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: ENTITY");
+        writer.write("overwrite-existing: true");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        String entityType = path.substring("entities/".length());
+        if (entityType.startsWith("sheep")) {
+            writer.write("- 'entity-type:sheep'");
+            writer.write("- 'sheep-color:" + entityType.substring("sheep/".length()) + "'");
+        } else {
+            writer.write("- 'entity-type:" + entityType + "'");
+        }
+        writer.decreaseIndentation();
+    }
+
+    private static void writeBlockHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: BLOCK");
+        writer.write("overwrite-existing: true");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        writer.write("- 'block-type:" + path.substring("blocks/".length()) + "'");
+        writer.decreaseIndentation();
+    }
+
+    private static void writeFishingHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: FISHING");
+        writer.write("overwrite-existing: true");
+        writer.write("conditions: []");
+    }
+
+    private static void writeContainerHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: CONTAINER");
+        writer.write("overwrite-existing: true");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        writer.write("- 'vanilla-loot-table:" + path + "'");
+        writer.decreaseIndentation();
+    }
+
+    private static void writePiglinBarteringHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: PIGLIN_BARTER");
+        writer.write("overwrite-existing: true");
+        writer.write("conditions: []");
+    }
+
+    private static void writeEntityDropsHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: ENTITY_DROP_ITEM");
+        writer.write("overwrite-existing: true");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        if (path.startsWith("gameplay/cat_morning_gift")) {
+            writer.write("- 'entity-type:cat'");
+        } else {
+            writer.write("- 'entity-type:villager'");
+            writer.write("- 'villager-profession:" + path.substring("gameplay/hero_of_the_village/".length(), path.length() - "_gift".length()) + "'");
+        }
+        writer.decreaseIndentation();
+    }
+
+    private static void writeLootTableHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: LOOT_TABLE");
+    }
+
+    private static void writeTableContents(String path, IndentedFileWriter writer, JsonObject json) throws IOException {
+        if (path.equals("entities/wither")) {
+            // Manually add nether stars to the wither loot table since they are handled outside of loot tables
+            writer.write("pools:");
+            writer.increaseIndentation();
+            writer.write("0:");
+            writer.increaseIndentation();
+            writer.write("type: item");
+            writer.write("item: nether_star");
+            writer.write("amount: 1");
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            return;
+        }
+
+        JsonElement poolsElement = json.get("pools");
+        if (poolsElement == null) {
+            writer.write("pools: {}");
+            return;
+        }
+
+        writer.write("pools:");
+        writer.increaseIndentation();
+
+        JsonArray pools = poolsElement.getAsJsonArray();
+        for (int i = 0; i < pools.size(); i++) {
+            JsonObject pool = pools.get(i).getAsJsonObject();
+            writer.write(i + ":");
+            writer.increaseIndentation();
+
+            writeItemConditions(path, writer, pool);
+            writeNumberProvider("rolls", "rolls", writer, pool, 1.0);
+            writeNumberProvider("bonus-rolls", "bonus_rolls", writer, pool, null);
+
+            if (path.contains("entities/sheep/") && i == 0) {
+                // Manually add the sheared condition since this check is normally handled outside of loot tables
+                writer.write("conditions:");
+                writer.increaseIndentation();
+                writer.write("- 'sheep-sheared:false'");
+                writer.decreaseIndentation();
+            }
+
+            JsonElement entriesElement = pool.get("entries");
+            if (entriesElement == null) {
+                writer.write("entries: {}");
+                continue;
+            }
+
+            writeEntries(path, "entries", writer, entriesElement.getAsJsonArray());
+
+            writer.decreaseIndentation();
+        }
+
+        writer.decreaseIndentation();
+    }
+
+    private static void writeEntries(String path, String yamlName, IndentedFileWriter writer, JsonArray entries) throws IOException {
+        writer.write(yamlName + ":");
+        writer.increaseIndentation();
+
+        for (int i = 0; i < entries.size(); i++) {
+            JsonObject entry = entries.get(i).getAsJsonObject();
+            writer.write(i + ":");
+            writer.increaseIndentation();
+
+            writeItemConditions(path, writer, entry);
+
+            if (yamlName.equals("entries"))
+                writeNumberProvider("weight", "weight", writer, entry, entries.size() == 1 ? null : 1.0);
+
+            writeNumberProvider("quality", "quality", writer, entry, null);
+
+            String type = entry.get("type").getAsString();
+            switch (type) {
+                case "minecraft:item":
+                    writer.write("items:");
+                    writer.increaseIndentation();
+
+                    writer.write("0:");
+                    writer.increaseIndentation();
+
+                    writer.write("type: item");
+                    writer.write("item: " + entry.get("name").getAsString().substring("minecraft:".length()));
+
+                    writeItemFunctions(path, writer, entry);
+
+                    writer.decreaseIndentation();
+                    writer.decreaseIndentation();
+                    break;
+//              case "minecraft:tag":
+//                  break;
+                case "minecraft:loot_table":
+                    writer.write("items:");
+                    writer.increaseIndentation();
+
+                    writer.write("0:");
+                    writer.increaseIndentation();
+
+                    writer.write("type: loot_table");
+                    writer.write("value: " + entry.get("name").getAsString().substring("minecraft:".length()));
+
+                    writer.decreaseIndentation();
+                    writer.decreaseIndentation();
+                    break;
+                case "minecraft:alternatives":
+                    writer.write("children-strategy: first_passing");
+                    JsonArray children = entry.get("children").getAsJsonArray();
+                    writeEntries(path, "children", writer, children);
+                    break;
+                case "minecraft:empty":
+                    writer.write("items: {}");
+                    break;
+                default:
+                    RoseLoot.getInstance().getLogger().warning("Unhandled item type: " + type + " | " + path);
+                    break;
+            }
+
+            writer.decreaseIndentation();
+        }
+
+        writer.decreaseIndentation();
+    }
+
+    private static void writeNumberProvider(String yamlName, String jsonName, IndentedFileWriter writer, JsonObject json, Double defaultValue) throws IOException {
+        JsonElement element = json.get(jsonName);
+        if (element == null) {
+            if (defaultValue != null) {
+                String value = defaultValue.intValue() == defaultValue ? String.valueOf(defaultValue.intValue()) : defaultValue.toString();
+                writer.write(yamlName + ": " + value);
+            }
+            return;
+        }
+
+        if (element.isJsonObject()) {
+            writer.write(yamlName + ":");
+            writer.increaseIndentation();
+            JsonObject object = element.getAsJsonObject();
+            JsonElement typeElement = object.get("type");
+            String type;
+            if (typeElement != null) {
+                type = typeElement.getAsString();
+            } else {
+                type = "minecraft:uniform";
+            }
+
+            switch (type) {
+                case "minecraft:uniform":
+                    writeNumberProvider("min", "min", writer, object, 0.0);
+                    writeNumberProvider("max", "max", writer, object, 0.0);
+                    break;
+                case "minecraft:binomial":
+                    writeNumberProvider("n", "n", writer, object, 0.0);
+                    writeNumberProvider("p", "p", writer, object, 0.0);
+                    break;
+            }
+            writer.decreaseIndentation();
+        } else if (element.isJsonPrimitive()) {
+            if (element.getAsInt() == element.getAsDouble()) {
+                writer.write(yamlName + ": " + element.getAsInt());
+            } else {
+                writer.write(yamlName + ": " + element.getAsDouble());
+            }
+        }
+    }
+
+    private static void writeItemConditions(String path, IndentedFileWriter writer, JsonObject json) throws IOException {
+        JsonElement conditionsElement = json.get("conditions");
+        if (conditionsElement == null) {
+            writer.write("conditions: []");
+            return;
+        }
+
+        JsonArray conditions = conditionsElement.getAsJsonArray();
+        if (conditions.size() == 0) {
+            writer.write("conditions: []");
+            return;
+        }
+
+        List<String> conditionList = new ArrayList<>();
+        for (JsonElement conditionElement : conditions) {
+            StringBuilder conditionBuilder = new StringBuilder();
+            JsonObject condition = conditionElement.getAsJsonObject();
+            buildConditionRecursively(path, conditionBuilder, condition);
+            if (conditionBuilder.length() > 0) {
+                String output = conditionBuilder.toString();
+                if (output.startsWith("!") && output.contains(LootConditionManager.OR_PATTERN)) {
+                    String parsed = output.substring(1);
+                    String[] splitConditions = parsed.split(Pattern.quote(LootConditionManager.OR_PATTERN));
+                    for (String value : splitConditions)
+                        conditionList.add("!" + value);
+                } else {
+                    conditionList.add(conditionBuilder.toString());
+                }
+            }
+        }
+
+        if (!conditionList.isEmpty()) {
+            writer.write("conditions:");
+            writer.increaseIndentation();
+
+            for (String value : conditionList)
+                writer.write("- '" + value + "'");
+
+            writer.decreaseIndentation();
+        } else {
+            writer.write("conditions: []");
+        }
+    }
+
+    private static void buildConditionRecursively(String path, StringBuilder stringBuilder, JsonObject json) {
+        String type = json.get("condition").getAsString();
+        switch (type) {
+            case "minecraft:inverted":
+                stringBuilder.append("!");
+                buildConditionRecursively(path, stringBuilder, json.get("term").getAsJsonObject());
+                break;
+            case "minecraft:alternative":
+                JsonArray terms = json.get("terms").getAsJsonArray();
+                Iterator<JsonElement> termIterator = terms.iterator();
+                while (termIterator.hasNext()) {
+                    JsonElement termElement = termIterator.next();
+                    JsonObject term = termElement.getAsJsonObject();
+                    buildConditionRecursively(path, stringBuilder, term);
+                    if (termIterator.hasNext())
+                        stringBuilder.append(LootConditionManager.OR_PATTERN);
+                }
+                break;
+            case "minecraft:random_chance":
+                stringBuilder.append("chance:").append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append('%');
+                break;
+            case "minecraft:random_chance_with_looting":
+                stringBuilder.append("enchantment-chance:");
+                stringBuilder.append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append("%,looting,");
+                stringBuilder.append(LootUtils.getToMaximumDecimals(json.get("looting_multiplier").getAsDouble() * 100, 3)).append('%');
+                break;
+            case "minecraft:table_bonus":
+                stringBuilder.append("enchantment-chance-table:");
+                stringBuilder.append(json.get("enchantment").getAsString().substring("minecraft:".length())).append(',');
+                JsonArray chancesElement = json.get("chances").getAsJsonArray();
+                Iterator<JsonElement> chanceElementIterator = chancesElement.iterator();
+                while (chanceElementIterator.hasNext()) {
+                    double chance = chanceElementIterator.next().getAsDouble() * 100;
+                    stringBuilder.append(LootUtils.getToMaximumDecimals(chance, 3)).append('%');
+                    if (chanceElementIterator.hasNext())
+                        stringBuilder.append(',');
+                }
+                break;
+            case "minecraft:block_state_property":
+                JsonObject properties = json.get("properties").getAsJsonObject();
+                for (Map.Entry<String, JsonElement> entry : properties.entrySet())
+                    stringBuilder.append("block-data:").append(entry.getKey()).append("=").append(entry.getValue().getAsString());
+                break;
+            case "minecraft:killed_by_player":
+                stringBuilder.append("killed-by:player");
+                break;
+            case "minecraft:match_tool":
+                JsonObject predicate = json.get("predicate").getAsJsonObject();
+                JsonElement itemsElement = predicate.get("items");
+                JsonElement enchantmentsElement = predicate.get("enchantments");
+                JsonElement tagElement = predicate.get("tag");
+                if (itemsElement != null) {
+                    JsonArray items = itemsElement.getAsJsonArray();
+                    Iterator<JsonElement> toolsIterator = items.iterator();
+                    stringBuilder.append("required-tool-type:");
+                    while (toolsIterator.hasNext()) {
+                        JsonElement toolElement = toolsIterator.next();
+                        stringBuilder.append(toolElement.getAsString().substring("minecraft:".length()));
+                        if (toolsIterator.hasNext())
+                            stringBuilder.append(',');
+                    }
+                } else if (enchantmentsElement != null) {
+                    JsonArray enchantments = enchantmentsElement.getAsJsonArray();
+                    if (enchantments.size() > 0) {
+                        JsonObject enchantment = enchantments.get(0).getAsJsonObject();
+                        stringBuilder.append("enchantment:");
+                        stringBuilder.append(enchantment.get("enchantment").getAsString().substring("minecraft:".length()));
+                        JsonElement levels = enchantment.get("levels");
+                        if (levels != null)
+                            stringBuilder.append(',').append(levels.getAsJsonObject().get("min").getAsInt());
+                    }
+                } else if (tagElement != null) {
+                    String tag = tagElement.getAsString().substring("minecraft:".length());
+                    stringBuilder.append("tool-tag:").append(tag);
+                } else {
+                    RoseLoot.getInstance().getLogger().warning("minecraft:match_tool unhandled value" + " | " + path);
+                }
+                break;
+            case "minecraft:damage_source_properties":
+                JsonObject damagePredicate = json.get("predicate").getAsJsonObject();
+                List<String> causes = new ArrayList<>();
+                Map<String, List<String>> causeMapping = new HashMap<>();
+                causeMapping.put("bypasses_armor", Collections.singletonList("suffocation"));
+                causeMapping.put("bypasses_invulnerability", Arrays.asList("void", "custom"));
+                causeMapping.put("bypasses_magic", Collections.singletonList("starvation"));
+                causeMapping.put("is_explosion", Arrays.asList("block_explosion", "entity_explosion"));
+                causeMapping.put("is_fire", Arrays.asList("fire", "fire_tick"));
+                causeMapping.put("is_magic", Collections.singletonList("magic"));
+                causeMapping.put("is_projectile", Collections.singletonList("projectile"));
+                causeMapping.put("is_lightning", Collections.singletonList("lightning"));
+                for (Map.Entry<String, JsonElement> entry : damagePredicate.entrySet()) {
+                    JsonElement element = entry.getValue();
+                    if (element.getAsBoolean()) {
+                        List<String> mappedValues = causeMapping.get(entry.getKey());
+                        if (mappedValues != null)
+                            causes.addAll(mappedValues);
+                    }
+                }
+                if (!causes.isEmpty()) {
+                    stringBuilder.append("death-cause:");
+                    Iterator<String> causeIterator = causes.iterator();
+                    while (causeIterator.hasNext()) {
+                        String cause = causeIterator.next();
+                        stringBuilder.append(cause);
+                        if (causeIterator.hasNext())
+                            stringBuilder.append(',');
+                    }
+                }
+                break;
+            case "minecraft:survives_explosion":
+                // Ignored, still handled by vanilla logic
+                break;
+            default:
+                RoseLoot.getInstance().getLogger().warning("Unhandled condition type: " + type + " | " + path);
+                break;
+        }
+    }
+
+    private static void writeItemFunctions(String path, IndentedFileWriter writer, JsonObject json) throws IOException {
+        JsonElement functionsElement = json.get("functions");
+        if (functionsElement == null)
+            return;
+
+        JsonArray functions = functionsElement.getAsJsonArray();
+        for (JsonElement functionElement : functions) {
+            JsonObject function = functionElement.getAsJsonObject();
+            String name = json.get("name").getAsString();
+            String type = function.get("function").getAsString();
+            switch (type) {
+                case "minecraft:set_count":
+                    writeNumberProvider("amount", "count", writer, function, 1.0);
+                    JsonElement addElement = function.get("add");
+                    if (addElement != null && addElement.getAsBoolean())
+                        RoseLoot.getInstance().getLogger().warning("minecraft:set_count unhandled true add value: " + path);
+                    break;
+                case "minecraft:limit_count":
+                    writeNumberProvider("max-amount", "limit", writer, function, null);
+                    break;
+                case "minecraft:set_damage":
+                    JsonObject damageObject = function.get("damage").getAsJsonObject();
+                    double min = damageObject.get("min").getAsDouble() * 100;
+                    double max = damageObject.get("max").getAsDouble() * 100;
+                    writer.write("durability:");
+                    writer.increaseIndentation();
+                    writer.write("min: " + min + "%");
+                    writer.write("max: " + max + "%");
+                    writer.decreaseIndentation();
+                    break;
+                case "minecraft:set_contents":
+                    if (name.contains("shulker")) {
+                        writer.write("copy-block-state: true");
+                    } else {
+                        RoseLoot.getInstance().getLogger().warning("minecraft:set_contents unhandled: " + path);
+                    }
+                    break;
+                case "minecraft:set_nbt":
+                    if (name.contains("potion") || name.contains("tipped_arrow")) {
+                        String potionType = function.get("tag").getAsString();
+                        potionType = potionType.substring(potionType.lastIndexOf(":") + 1, potionType.lastIndexOf("\""));
+                        writer.write("potion-type: " + potionType);
+                    } else {
+                        RoseLoot.getInstance().getLogger().warning("minecraft:set_nbt unhandled: " + path);
+                    }
+                    break;
+                case "minecraft:copy_nbt":
+                    if (name.contains("player_head") || name.contains("bee") || name.contains("banner")) {
+                        writer.write("copy-block-state: true");
+                    } else if (!name.contains("shulker")) {
+                        RoseLoot.getInstance().getLogger().warning("minecraft:copy_nbt unhandled: " + path);
+                    }
+                    break;
+                case "minecraft:copy_state":
+                    writer.write("copy-block-data: true");
+                    break;
+                case "minecraft:copy_name":
+                    writer.write("copy-block-name: true");
+                    break;
+                case "minecraft:enchant_randomly":
+                    JsonElement enchantmentsElement = function.get("enchantments");
+                    if (enchantmentsElement == null) {
+                        writer.write("random-enchantments: []");
+                    } else {
+                        writer.write("random-enchantments:");
+                        writer.increaseIndentation();
+                        JsonArray enchantments = enchantmentsElement.getAsJsonArray();
+                        for (JsonElement enchantmentElement : enchantments) {
+                            String enchantment = enchantmentElement.getAsString().substring("minecraft:".length());
+                            writer.write("- " + enchantment);
+                        }
+                        writer.decreaseIndentation();
+                    }
+                    break;
+                case "minecraft:enchant_with_levels":
+                    writer.write("enchant-randomly:");
+                    writer.increaseIndentation();
+                    writeNumberProvider("level", "levels", writer, function, 30.0);
+                    JsonElement treasureElement = function.get("treasure");
+                    boolean treasure = treasureElement != null && treasureElement.getAsBoolean();
+                    writer.write("treasure: " + treasure);
+                    writer.decreaseIndentation();
+                    break;
+                case "minecraft:looting_enchant":
+                    writer.write("enchantment-bonus:");
+                    writer.increaseIndentation();
+                    writer.write("enchantment: looting");
+                    writeNumberProvider("bonus-per-level", "count", writer, function, 0.0);
+                    writeNumberProvider("max-bonus-levels", "limit", writer, function, null);
+                    writer.decreaseIndentation();
+                    break;
+                case "minecraft:furnace_smelt":
+                    writer.write("smelt-if-burning: true");
+                    break;
+                case "minecraft:explosion_decay":
+                    // Ignored, still handled by vanilla logic
+                    break;
+                default:
+                    RoseLoot.getInstance().getLogger().warning("Unhandled item function type: " + type + " | " + path);
+                    break;
+            }
+        }
+    }
+
+    private static class IndentedFileWriter {
+
+        private final FileWriter fileWriter;
+        private int indentation;
+
+        public IndentedFileWriter(FileWriter fileWriter) {
+            this.fileWriter = fileWriter;
+            this.indentation = 0;
+        }
+
+        /**
+         * Writes a line with the current indentation, also appends a newline at the end
+         *
+         * @param line The line to write
+         */
+        public void write(String line) throws IOException {
+            this.fileWriter.write(new String(new char[this.indentation]).replace('\0', ' ') + line + '\n');
+        }
+
+        public void increaseIndentation() {
+            this.indentation += 2;
+        }
+
+        public void decreaseIndentation() {
+            this.indentation = Math.max(0, this.indentation - 2);
+        }
+
+    }
+
+}

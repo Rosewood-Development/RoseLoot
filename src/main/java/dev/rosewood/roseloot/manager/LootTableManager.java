@@ -24,6 +24,7 @@ import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,10 +65,13 @@ public class LootTableManager extends Manager implements Listener {
             RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
 
             File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
-            if (!directory.exists()) {
-                directory.mkdirs();
+            File examplesDirectory = new File(directory, "examples");
+            if (!examplesDirectory.exists()) {
+                examplesDirectory.mkdirs();
                 // TODO: Create example files
             }
+
+            VanillaLootTableConverter.convert(examplesDirectory);
 
             // Populate with lists for LootTableTypes
             for (LootTableType type : LootTableType.values())

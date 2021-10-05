@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -252,6 +253,11 @@ public final class LootUtils {
         if (string == null || string.isEmpty())
             return string;
         return string.replace(ChatColor.COLOR_CHAR, '&');
+    }
+
+    public static String getToMaximumDecimals(double value, int decimals) {
+        DecimalFormat decimalFormat = new DecimalFormat("0." + new String(new char[decimals]).replace('\0', '#'));
+        return decimalFormat.format(value);
     }
 
 }
