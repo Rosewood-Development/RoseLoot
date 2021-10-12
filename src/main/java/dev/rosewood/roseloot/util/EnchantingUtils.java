@@ -29,7 +29,7 @@ public final class EnchantingUtils {
      * @return The Enchantment, or null if not found
      */
     public static Enchantment getEnchantmentByName(String name) {
-        return Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
+        return Enchantment.getByKey(NamespacedKey.fromString(name.toLowerCase()));
     }
 
     /**

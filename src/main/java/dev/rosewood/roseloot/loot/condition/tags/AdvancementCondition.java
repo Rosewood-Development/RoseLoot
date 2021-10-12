@@ -23,7 +23,7 @@ public class AdvancementCondition extends LootCondition {
             return false;
 
         try {
-            this.advancementKey = NamespacedKey.minecraft(values[0]);
+            this.advancementKey = NamespacedKey.fromString(values[0]);
             return true;
         } catch (Exception e) {
             return false;
