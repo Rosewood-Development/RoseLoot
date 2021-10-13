@@ -21,7 +21,7 @@ import org.bukkit.inventory.Recipe;
 
 public class ItemLootItem implements LootItem<List<ItemStack>> {
 
-    private final Material item;
+    protected Material item;
     private final NumberProvider amount;
     private final NumberProvider maxAmount;
     private final ItemLootMeta itemLootMeta;

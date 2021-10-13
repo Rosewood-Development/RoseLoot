@@ -22,6 +22,7 @@ import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
+import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
@@ -251,6 +252,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("sound", SoundLootItem::fromSection);
         event.registerLootItem("economy", EconomyLootItem::fromSection);
         event.registerLootItem("entity_equipment", EntityEquipmentLootItem::fromSection);
+        event.registerLootItem("tag", TagLootItem::fromSection);
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {

@@ -233,8 +233,21 @@ public class VanillaLootTableConverter {
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
                     break;
-//              case "minecraft:tag":
-//                  break;
+              case "minecraft:tag":
+                  writer.write("items:");
+                  writer.increaseIndentation();
+
+                  writer.write("0:");
+                  writer.increaseIndentation();
+
+                  writer.write("type: tag");
+                  writer.write("tag: " + entry.get("name").getAsString().substring("minecraft:".length()));
+
+                  writeItemFunctions(path, writer, entry);
+
+                  writer.decreaseIndentation();
+                  writer.decreaseIndentation();
+                  break;
                 case "minecraft:loot_table":
                     writer.write("items:");
                     writer.increaseIndentation();
