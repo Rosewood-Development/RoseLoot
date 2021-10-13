@@ -11,7 +11,9 @@ import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
 import dev.rosewood.roseloot.loot.condition.CompoundLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.tags.AboveBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.AdvancementCondition;
+import dev.rosewood.roseloot.loot.condition.tags.BelowBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTagCondition;
@@ -33,7 +35,6 @@ import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
-import dev.rosewood.roseloot.loot.condition.tags.OnBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
@@ -97,8 +98,10 @@ public class LootConditionManager extends Manager implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLootConditionRegistration(LootConditionRegistrationEvent event) {
+        event.registerLootCondition("above-block-type", AboveBlockTypeCondition.class);
         event.registerLootCondition("advancement", AdvancementCondition.class);
         event.registerLootCondition("baby", context -> context.getLootedEntity() instanceof org.bukkit.entity.Ageable && !((org.bukkit.entity.Ageable) context.getLootedEntity()).isAdult());
+        event.registerLootCondition("below-block-type", BelowBlockTypeCondition.class);
         event.registerLootCondition("biome", BiomeCondition.class);
         event.registerLootCondition("block-data", BlockDataCondition.class);
         event.registerLootCondition("block-tag", BlockTagCondition.class);
@@ -127,7 +130,6 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("killed-by", KilledByCondition.class);
         event.registerLootCondition("light-level", LightLevelCondition.class);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition.class);
-        event.registerLootCondition("on-block-type", OnBlockTypeCondition.class);
         event.registerLootCondition("open-water", context -> context.getFishHook() != null && context.getFishHook().isInOpenWater());
         event.registerLootCondition("patrol-leader", context -> context.getLootedEntity() instanceof Raider && !((Raider) context.getLootedEntity()).isPatrolLeader());
         event.registerLootCondition("permission", PermissionCondition.class);

@@ -462,6 +462,37 @@ public class VanillaLootTableConverter {
                     }
                 }
                 break;
+            case "minecraft:location_check":
+                JsonObject locationPredicate = json.get("predicate").getAsJsonObject();
+                if (locationPredicate.has("biome")) {
+                    stringBuilder.append("biome:").append(locationPredicate.get("biome").getAsString().substring("minecraft:".length()));
+                } else if (locationPredicate.has("block")) {
+                    JsonObject blockObject = locationPredicate.get("block").getAsJsonObject();
+                    if (blockObject.has("blocks")) {
+                        JsonArray blocksArray = blockObject.get("blocks").getAsJsonArray();
+                        if (blocksArray.size() > 0) {
+                            int offsetY = 0;
+                            if (json.has("offsetY"))
+                                offsetY = json.get("offsetY").getAsInt();
+
+                            if (offsetY == 1) {
+                                stringBuilder.append("above-block-type:");
+                            } else if (offsetY == -1) {
+                                stringBuilder.append("below-block-type:");
+                            } else {
+                                stringBuilder.append("block-type:");
+                            }
+
+                            Iterator<JsonElement> blocksIterator = blocksArray.iterator();
+                            while (blocksIterator.hasNext()) {
+                                stringBuilder.append(blocksIterator.next().getAsString().substring("minecraft:".length()));
+                                if (blocksIterator.hasNext())
+                                    stringBuilder.append(',');
+                            }
+                        }
+                    }
+                }
+                break;
             case "minecraft:survives_explosion":
                 // Ignored, still handled by vanilla logic
                 break;
