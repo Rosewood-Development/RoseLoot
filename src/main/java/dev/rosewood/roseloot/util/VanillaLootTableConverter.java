@@ -233,21 +233,21 @@ public class VanillaLootTableConverter {
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
                     break;
-              case "minecraft:tag":
-                  writer.write("items:");
-                  writer.increaseIndentation();
+                case "minecraft:tag":
+                    writer.write("items:");
+                    writer.increaseIndentation();
 
-                  writer.write("0:");
-                  writer.increaseIndentation();
+                    writer.write("0:");
+                    writer.increaseIndentation();
 
-                  writer.write("type: tag");
-                  writer.write("tag: " + entry.get("name").getAsString().substring("minecraft:".length()));
+                    writer.write("type: tag");
+                    writer.write("tag: " + entry.get("name").getAsString().substring("minecraft:".length()));
 
-                  writeItemFunctions(path, writer, entry);
+                    writeItemFunctions(path, writer, entry);
 
-                  writer.decreaseIndentation();
-                  writer.decreaseIndentation();
-                  break;
+                    writer.decreaseIndentation();
+                    writer.decreaseIndentation();
+                    break;
                 case "minecraft:loot_table":
                     writer.write("items:");
                     writer.increaseIndentation();
@@ -472,6 +472,25 @@ public class VanillaLootTableConverter {
                         stringBuilder.append(cause);
                         if (causeIterator.hasNext())
                             stringBuilder.append(',');
+                    }
+                }
+                break;
+            case "minecraft:entity_properties":
+                JsonObject propertiesPredicate = json.get("predicate").getAsJsonObject();
+                if (propertiesPredicate.has("type")) {
+                    String entityType = propertiesPredicate.get("type").getAsString().replace("minecraft:", "");
+                    String entityTarget = json.get("entity").getAsString();
+                    if (entityTarget.equals("killer")) {
+                        stringBuilder.append("killed-by:").append(entityType);
+                    } else if (entityTarget.equals("this")) {
+                        stringBuilder.append("entity-type:").append(entityType);
+                    }
+                } else if (propertiesPredicate.has("fishing_hook")) {
+                    JsonObject fishingHookObject = propertiesPredicate.get("fishing_hook").getAsJsonObject();
+                    if (fishingHookObject.get("in_open_water").getAsBoolean()) {
+                        stringBuilder.append("open-water");
+                    } else {
+                        stringBuilder.append("!open-water");
                     }
                 }
                 break;

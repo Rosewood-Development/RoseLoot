@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -41,6 +42,14 @@ public class KilledByCondition extends LootCondition {
 
         for (String value : values) {
             try {
+                if (value.startsWith("#")) {
+                    Set<EntityType> tagEntities = LootUtils.getTaggedEntities(value.substring(1));
+                    if (tagEntities != null) {
+                        this.entityTypes.addAll(tagEntities);
+                        continue;
+                    }
+                }
+
                 this.entityTypes.add(EntityType.valueOf(value.toUpperCase()));
             } catch (Exception ignored) { }
         }

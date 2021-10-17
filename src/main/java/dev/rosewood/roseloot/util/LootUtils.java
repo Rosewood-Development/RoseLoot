@@ -10,12 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -258,6 +261,17 @@ public final class LootUtils {
     public static String getToMaximumDecimals(double value, int decimals) {
         DecimalFormat decimalFormat = new DecimalFormat("0." + new String(new char[decimals]).replace('\0', '#'));
         return decimalFormat.format(value);
+    }
+
+    public static Set<EntityType> getTaggedEntities(String value) {
+        NamespacedKey key = NamespacedKey.fromString(value);
+        if (key != null) {
+            // Look for a tag to expand, hardcoded the "entity_types" registry name since only newer versions past 1.17.1 have this
+            Tag<EntityType> tag = Bukkit.getTag("entity_types", key, EntityType.class);
+            if (tag != null)
+                return tag.getValues();
+        }
+        return null;
     }
 
 }
