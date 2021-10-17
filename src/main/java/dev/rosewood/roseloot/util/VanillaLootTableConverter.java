@@ -281,6 +281,10 @@ public class VanillaLootTableConverter {
     }
 
     private static void writeNumberProvider(String yamlName, String jsonName, IndentedFileWriter writer, JsonObject json, Double defaultValue) throws IOException {
+        writeNumberProvider(yamlName, jsonName, writer, json, defaultValue, 1.0);
+    }
+
+    private static void writeNumberProvider(String yamlName, String jsonName, IndentedFileWriter writer, JsonObject json, Double defaultValue, double multiplier) throws IOException {
         JsonElement element = json.get(jsonName);
         if (element == null) {
             if (defaultValue != null) {
@@ -304,20 +308,22 @@ public class VanillaLootTableConverter {
 
             switch (type) {
                 case "minecraft:uniform":
-                    writeNumberProvider("min", "min", writer, object, 0.0);
-                    writeNumberProvider("max", "max", writer, object, 0.0);
+                    writeNumberProvider("min", "min", writer, object, 0.0, multiplier);
+                    writeNumberProvider("max", "max", writer, object, 0.0, multiplier);
                     break;
                 case "minecraft:binomial":
-                    writeNumberProvider("n", "n", writer, object, 0.0);
-                    writeNumberProvider("p", "p", writer, object, 0.0);
+                    writeNumberProvider("n", "n", writer, object, 0.0, multiplier);
+                    writeNumberProvider("p", "p", writer, object, 0.0, multiplier);
                     break;
             }
             writer.decreaseIndentation();
         } else if (element.isJsonPrimitive()) {
-            if (element.getAsInt() == element.getAsDouble()) {
-                writer.write(yamlName + ": " + element.getAsInt());
+            int intValue = (int) (element.getAsInt() * multiplier);
+            double doubleValue = element.getAsDouble() * multiplier;
+            if (intValue == doubleValue) {
+                writer.write(yamlName + ": " + intValue);
             } else {
-                writer.write(yamlName + ": " + element.getAsDouble());
+                writer.write(yamlName + ": " + doubleValue);
             }
         }
     }
@@ -546,10 +552,34 @@ public class VanillaLootTableConverter {
             String type = function.get("function").getAsString();
             switch (type) {
                 case "minecraft:set_count":
-                    writeNumberProvider("amount", "count", writer, function, 1.0);
                     JsonElement addElement = function.get("add");
-                    if (addElement != null && addElement.getAsBoolean())
+
+                    if (path.contains("blocks/glow_lichen")) {
+                        int count = function.get("count").getAsInt();
+                        if (count == -1) {
+                            writer.write("amount: 0");
+                            writer.write("conditional-bonus:");
+                            writer.increaseIndentation();
+                            writer.write("bonus-per-condition: 1");
+                            writer.write("conditions:");
+                            writer.increaseIndentation();
+                            writer.write("- 'block-data:east=true'");
+                            writer.write("- 'block-data:west=true'");
+                            writer.write("- 'block-data:north=true'");
+                            writer.write("- 'block-data:south=true'");
+                            writer.write("- 'block-data:up=true'");
+                            writer.write("- 'block-data:down=true'");
+                            writer.decreaseIndentation();
+                            writer.decreaseIndentation();
+                        }
+                        break;
+                    }
+
+                    if (addElement != null && addElement.getAsBoolean()) {
                         RoseLoot.getInstance().getLogger().warning("minecraft:set_count unhandled true add value: " + path);
+                    } else {
+                        writeNumberProvider("amount", "count", writer, function, 1.0);
+                    }
                     break;
                 case "minecraft:limit_count":
                     writeNumberProvider("max-amount", "limit", writer, function, null);
@@ -570,6 +600,22 @@ public class VanillaLootTableConverter {
                     } else {
                         RoseLoot.getInstance().getLogger().warning("minecraft:set_contents unhandled: " + path);
                     }
+                    break;
+                case "minecraft:set_stew_effect":
+                    JsonArray effectsArray = function.get("effects").getAsJsonArray();
+                    writer.write("pick-random-effect: true");
+                    writer.write("custom-effects:");
+                    writer.increaseIndentation();
+                    int i = 0;
+                    for (JsonElement effectElement : effectsArray) {
+                        JsonObject effectObject = effectElement.getAsJsonObject();
+                        writer.write(i++ + ":");
+                        writer.increaseIndentation();
+                        writer.write("effect: " + effectObject.get("type").getAsString().substring("minecraft:".length()));
+                        writeNumberProvider("duration", "duration", writer, effectObject, 8.0, 20);
+                        writer.decreaseIndentation();
+                    }
+                    writer.decreaseIndentation();
                     break;
                 case "minecraft:set_nbt":
                     if (name.contains("potion") || name.contains("tipped_arrow")) {
