@@ -328,6 +328,8 @@ public class ItemLootMeta {
                 return new AxolotlBucketItemLootMeta(section);
             case BUNDLE:
                 return new BundleItemLootMeta(section);
+            case MAP:
+                return new MapItemLootMeta(section);
             default:
                 return new ItemLootMeta(section);
         }
@@ -441,6 +443,8 @@ public class ItemLootMeta {
             case BUNDLE:
                 BundleItemLootMeta.applyProperties(itemStack, stringBuilder);
                 break;
+            case MAP:
+                MapItemLootMeta.applyProperties(itemStack, stringBuilder);
         }
     }
 

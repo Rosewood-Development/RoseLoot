@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.loot.LootTables;
+import org.bukkit.map.MapView;
 
 public class VanillaLootTableConverter {
 
@@ -616,6 +617,33 @@ public class VanillaLootTableConverter {
                         writer.decreaseIndentation();
                     }
                     writer.decreaseIndentation();
+                    break;
+                case "minecraft:exploration_map":
+                    byte zoom = function.get("zoom").getAsByte();
+                    boolean skipExistingChunks = function.get("skip_existing_chunks").getAsBoolean();
+                    MapView.Scale scale;
+                    switch (zoom) {
+                        case 0:
+                            scale = MapView.Scale.CLOSEST;
+                            break;
+                        case 1:
+                            scale = MapView.Scale.CLOSE;
+                            break;
+                        case 3:
+                            scale = MapView.Scale.FAR;
+                            break;
+                        case 4:
+                            scale = MapView.Scale.FARTHEST;
+                            break;
+                        case 2:
+                        default:
+                            scale = MapView.Scale.NORMAL;
+                            break;
+                    }
+                    writer.write("destination: mansion");
+                    writer.write("scale: " + scale.name().toLowerCase());
+                    writer.write("search-radius: 50");
+                    writer.write("skip-existing-chunks: " + skipExistingChunks);
                     break;
                 case "minecraft:set_nbt":
                     if (name.contains("potion") || name.contains("tipped_arrow")) {
