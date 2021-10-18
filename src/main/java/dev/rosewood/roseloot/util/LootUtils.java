@@ -107,7 +107,7 @@ public final class LootUtils {
             min = max;
             max = temp;
         }
-        return RANDOM.nextDouble() * (max - min + 1) + min;
+        return RANDOM.nextDouble() * (max - min) + min;
     }
 
     /**
