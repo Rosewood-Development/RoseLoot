@@ -72,7 +72,7 @@ public class TagLootItem extends ItemLootItem {
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
         TagLootItem.EnchantmentBonus enchantmentBonus = null;
         if (enchantmentBonusSection != null) {
-            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
+            EnchantmentBonus.BonusFormula formula = EnchantmentBonus.BonusFormula.fromString(enchantmentBonusSection.getString("formula", EnchantmentBonus.BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
@@ -86,17 +86,6 @@ public class TagLootItem extends ItemLootItem {
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(Iterators.get(tag.getValues().iterator(), 0), section);
         return new TagLootItem(tag, amount, maxAmount, itemLootMeta, conditionalBonus, enchantmentBonus, smeltIfBurning);
-    }
-
-    public static String toSection(ItemStack itemStack) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("tag: ").append(itemStack.getType().name().toLowerCase()).append('\n');
-        stringBuilder.append("amount: ").append(itemStack.getAmount()).append('\n');
-
-        ItemLootMeta.applyProperties(itemStack, stringBuilder);
-
-        return stringBuilder.toString();
     }
 
 }

@@ -699,6 +699,35 @@ public class VanillaLootTableConverter {
                     writeNumberProvider("max-bonus-levels", "limit", writer, function, null);
                     writer.decreaseIndentation();
                     break;
+                case "minecraft:apply_bonus":
+                    writer.write("enchantment-bonus:");
+                    writer.increaseIndentation();
+
+                    String formula = function.get("formula").getAsString().substring("minecraft:".length());
+                    writer.write("formula: " + formula);
+                    writer.write("enchantment: " + function.get("enchantment").getAsString().substring("minecraft:".length()));
+
+                    JsonElement parametersElement = function.get("parameters");
+                    if (parametersElement != null) {
+                        JsonObject parametersObject = parametersElement.getAsJsonObject();
+                        switch (formula) {
+                            case "uniform_bonus_count":
+                                writeNumberProvider("bonus", "bonusMultiplier", writer, parametersObject, 1.0);
+                                break;
+                            case "binomial_with_bonus_count":
+                                writeNumberProvider("bonus", "extra", writer, parametersObject, 1.0);
+                                writeNumberProvider("probability", "probability", writer, parametersObject, 0.5);
+                                break;
+                            case "ore_drops":
+                                break;
+                            default:
+                                RoseLoot.getInstance().getLogger().warning("minecraft:apply_bonus unhandled formula: " + formula);
+                                break;
+                        }
+                    }
+
+                    writer.decreaseIndentation();
+                    break;
                 case "minecraft:furnace_smelt":
                     writer.write("smelt-if-burning: true");
                     break;

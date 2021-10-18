@@ -121,7 +121,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
         ItemLootItem.EnchantmentBonus enchantmentBonus = null;
         if (enchantmentBonusSection != null) {
-            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
+            EnchantmentBonus.BonusFormula formula = EnchantmentBonus.BonusFormula.fromString(enchantmentBonusSection.getString("formula", EnchantmentBonus.BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
@@ -193,8 +193,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             int bonus = 0;
             switch (this.formula) {
                 case UNIFORM:
-                    for (int i = 0; i < level; i++)
-                        bonus += this.bonus.getInteger();
+                    bonus += LootUtils.randomInRange(0, this.bonus.getInteger() * level);
                     break;
                 case BINOMIAL:
                     int n = level + this.bonus.getInteger();
@@ -212,19 +211,19 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             return bonus;
         }
 
-    }
+        public enum BonusFormula {
+            UNIFORM,
+            BINOMIAL, // Requires an extra probability parameter
+            ORE_DROPS;
 
-    public enum BonusFormula {
-        UNIFORM,
-        BINOMIAL, // Requires an extra probability parameter
-        ORE_DROPS;
-
-        public static BonusFormula fromString(String name) {
-            for (BonusFormula value : values())
-                if (value.name().toLowerCase().equals(name))
-                    return value;
-            return UNIFORM;
+            public static BonusFormula fromString(String name) {
+                for (BonusFormula value : values())
+                    if (value.name().toLowerCase().equals(name))
+                        return value;
+                return UNIFORM;
+            }
         }
+
     }
 
 }
