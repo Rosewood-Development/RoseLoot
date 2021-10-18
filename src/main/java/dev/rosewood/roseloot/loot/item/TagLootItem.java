@@ -23,8 +23,8 @@ public class TagLootItem extends ItemLootItem {
 
     private final Tag<Material> tag;
 
-    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, ConditionalBonus conditionalBonus, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
-        super(null, amount, maxAmount, itemLootMeta, conditionalBonus, enchantmentBonus, smeltIfBurning);
+    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
+        super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
         this.tag = tag;
     }
 
@@ -40,14 +40,14 @@ public class TagLootItem extends ItemLootItem {
         if (tagString == null)
             return null;
 
-        NamespacedKey key = NamespacedKey.fromString(tagString);
-        if (key == null)
+        NamespacedKey namespacedKey = NamespacedKey.fromString(tagString);
+        if (namespacedKey == null)
             return null;
 
         // Look for matching tags
-        Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, key, Material.class);
+        Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, namespacedKey, Material.class);
         if (tag == null)
-            tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, key, Material.class);
+            tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, namespacedKey, Material.class);
 
         if (tag == null)
             return null;
@@ -55,18 +55,25 @@ public class TagLootItem extends ItemLootItem {
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
         NumberProvider maxAmount = NumberProvider.fromSection(section, "max-amount", Integer.MAX_VALUE);
 
-        ConfigurationSection conditionBonusSection = section.getConfigurationSection("conditional-bonus");
-        TagLootItem.ConditionalBonus conditionalBonus = null;
-        if (conditionBonusSection != null) {
+        List<AmountModifier> amountModifiers = new ArrayList<>();
+        ConfigurationSection amountModifiersSection = section.getConfigurationSection("amount-modifiers");
+        if (amountModifiersSection != null) {
             LootConditionManager lootConditionManager = RoseLoot.getInstance().getManager(LootConditionManager.class);
-            List<LootCondition> conditions = new ArrayList<>();
-            for (String conditionString : conditionBonusSection.getStringList("conditions")) {
-                LootCondition condition = lootConditionManager.parse(conditionString);
-                if (condition != null)
-                    conditions.add(condition);
+            for (String key : amountModifiersSection.getKeys(false)) {
+                ConfigurationSection entrySection = amountModifiersSection.getConfigurationSection(key);
+                if (entrySection != null) {
+                    List<LootCondition> conditions = new ArrayList<>();
+                    for (String conditionString : entrySection.getStringList("conditions")) {
+                        LootCondition condition = lootConditionManager.parse(conditionString);
+                        if (condition != null)
+                            conditions.add(condition);
+                    }
+
+                    NumberProvider value = NumberProvider.fromSection(entrySection, "value", 1);
+                    boolean add = entrySection.getBoolean("add", false);
+                    amountModifiers.add(new AmountModifier(conditions, value, add));
+                }
             }
-            NumberProvider bonusPerCondition = NumberProvider.fromSection(conditionBonusSection, "bonus-per-condition", 1);
-            conditionalBonus = new ConditionalBonus(conditions, bonusPerCondition);
         }
 
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
@@ -85,7 +92,7 @@ public class TagLootItem extends ItemLootItem {
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(Iterators.get(tag.getValues().iterator(), 0), section);
-        return new TagLootItem(tag, amount, maxAmount, itemLootMeta, conditionalBonus, enchantmentBonus, smeltIfBurning);
+        return new TagLootItem(tag, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
     }
 
 }

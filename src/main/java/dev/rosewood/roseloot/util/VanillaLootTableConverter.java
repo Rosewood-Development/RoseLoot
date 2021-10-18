@@ -229,6 +229,7 @@ public class VanillaLootTableConverter {
                     writer.write("type: item");
                     writer.write("item: " + entry.get("name").getAsString().substring("minecraft:".length()));
 
+                    writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
 
                     writer.decreaseIndentation();
@@ -244,6 +245,7 @@ public class VanillaLootTableConverter {
                     writer.write("type: tag");
                     writer.write("tag: " + entry.get("name").getAsString().substring("minecraft:".length()));
 
+                    writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
 
                     writer.decreaseIndentation();
@@ -541,6 +543,60 @@ public class VanillaLootTableConverter {
         }
     }
 
+    private static void writeAmountModifiers(String path, IndentedFileWriter writer, JsonObject json) throws IOException {
+        JsonElement functionsElement = json.get("functions");
+        if (functionsElement == null)
+            return;
+
+        List<AmountModifierData> amountModifiers = new ArrayList<>();
+
+        JsonArray functions = functionsElement.getAsJsonArray();
+        for (JsonElement functionElement : functions) {
+            JsonObject function = functionElement.getAsJsonObject();
+            String type = function.get("function").getAsString();
+            if (!type.equals("minecraft:set_count"))
+                continue;
+
+            JsonElement conditionsElement = function.get("conditions");
+            if (conditionsElement == null)
+                continue;
+
+            List<String> conditionList = new ArrayList<>();
+            for (JsonElement conditionElement : conditionsElement.getAsJsonArray()) {
+                StringBuilder conditionBuilder = new StringBuilder();
+                JsonObject condition = conditionElement.getAsJsonObject();
+                buildConditionRecursively(path, conditionBuilder, condition);
+                if (conditionBuilder.length() > 0) {
+                    String output = conditionBuilder.toString();
+                    if (output.startsWith("!") && output.contains(LootConditionManager.OR_PATTERN)) {
+                        String parsed = output.substring(1);
+                        String[] splitConditions = parsed.split(Pattern.quote(LootConditionManager.OR_PATTERN));
+                        for (String value : splitConditions)
+                            conditionList.add("!" + value);
+                    } else {
+                        conditionList.add(conditionBuilder.toString());
+                    }
+                }
+            }
+
+            boolean add = function.get("add").getAsBoolean();
+            amountModifiers.add(new AmountModifierData(conditionList, function, add));
+        }
+
+        if (!amountModifiers.isEmpty()) {
+            writer.write("amount-modifiers:");
+            writer.increaseIndentation();
+            int i = 0;
+            for (AmountModifierData amountModifier : amountModifiers) {
+                writer.write(i++ + ":");
+                writer.increaseIndentation();
+                amountModifier.write(writer);
+                writer.decreaseIndentation();
+            }
+            writer.decreaseIndentation();
+        }
+    }
+
     private static void writeItemFunctions(String path, IndentedFileWriter writer, JsonObject json) throws IOException {
         JsonElement functionsElement = json.get("functions");
         if (functionsElement == null)
@@ -553,37 +609,20 @@ public class VanillaLootTableConverter {
             String type = function.get("function").getAsString();
             switch (type) {
                 case "minecraft:set_count":
-                    JsonElement addElement = function.get("add");
+                    if (function.has("conditions")) // set_count Conditions are handled in a different method
+                        break;
 
                     if (path.contains("blocks/glow_lichen")) {
-                        int count = function.get("count").getAsInt();
-                        if (count == -1) {
-                            writer.write("amount: 0");
-                            writer.write("conditional-bonus:");
-                            writer.increaseIndentation();
-                            writer.write("bonus-per-condition: 1");
-                            writer.write("conditions:");
-                            writer.increaseIndentation();
-                            writer.write("- 'block-data:east=true'");
-                            writer.write("- 'block-data:west=true'");
-                            writer.write("- 'block-data:north=true'");
-                            writer.write("- 'block-data:south=true'");
-                            writer.write("- 'block-data:up=true'");
-                            writer.write("- 'block-data:down=true'");
-                            writer.decreaseIndentation();
-                            writer.decreaseIndentation();
-                        }
+                        writer.write("amount: 0");
                         break;
                     }
 
-                    if (addElement != null && addElement.getAsBoolean()) {
-                        RoseLoot.getInstance().getLogger().warning("minecraft:set_count unhandled true add value: " + path);
-                    } else {
-                        writeNumberProvider("amount", "count", writer, function, 1.0);
-                    }
+                    writeNumberProvider("amount", "count", writer, function, 1.0);
                     break;
                 case "minecraft:limit_count":
-                    writeNumberProvider("max-amount", "limit", writer, function, null);
+                    JsonObject limitObject = function.get("limit").getAsJsonObject();
+                    if (limitObject.has("max"))
+                        writer.write("max-amount: " + limitObject.get("max").getAsNumber().intValue());
                     break;
                 case "minecraft:set_damage":
                     JsonObject damageObject = function.get("damage").getAsJsonObject();
@@ -766,6 +805,34 @@ public class VanillaLootTableConverter {
 
         public void decreaseIndentation() {
             this.indentation = Math.max(0, this.indentation - 2);
+        }
+
+    }
+
+    private static class AmountModifierData {
+
+        private final List<String> conditions;
+        private final JsonObject parent;
+        private final boolean add;
+
+        public AmountModifierData(List<String> conditions, JsonObject parent, boolean add) {
+            this.conditions = conditions;
+            this.parent = parent;
+            this.add = add;
+        }
+
+        public void write(IndentedFileWriter writer) throws IOException {
+            if (this.conditions.isEmpty()) {
+                writer.write("conditions: []");
+            } else {
+                writer.write("conditions:");
+                writer.increaseIndentation();
+                for (String condition : this.conditions)
+                    writer.write("- '" + condition + "'");
+                writer.decreaseIndentation();
+            }
+            writeNumberProvider("value", "count", writer, this.parent, 1.0);
+            writer.write("add: " + this.add);
         }
 
     }

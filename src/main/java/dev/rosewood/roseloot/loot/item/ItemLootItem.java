@@ -24,17 +24,17 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
     protected Material item;
     private final NumberProvider amount;
     private final NumberProvider maxAmount;
+    private final List<AmountModifier> amountModifiers;
     private final ItemLootMeta itemLootMeta;
-    private final ConditionalBonus conditionalBonus;
     private final EnchantmentBonus enchantmentBonus;
     private final boolean smeltIfBurning;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, ItemLootMeta itemLootMeta, ConditionalBonus conditionalBonus, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
+    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
+        this.amountModifiers = amountModifiers;
         this.itemLootMeta = itemLootMeta;
-        this.conditionalBonus = conditionalBonus;
         this.enchantmentBonus = enchantmentBonus;
         this.smeltIfBurning = smeltIfBurning;
     }
@@ -49,8 +49,16 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         int amount = this.amount.getInteger();
 
-        if (this.conditionalBonus != null)
-            amount += this.conditionalBonus.getBonusAmount(context);
+        for (AmountModifier amountModifier : this.amountModifiers) {
+            if (!amountModifier.check(context))
+                break;
+
+            if (amountModifier.isAdditive()) {
+                amount += amountModifier.getValue();
+            } else {
+                amount = amountModifier.getValue();
+            }
+        }
 
         if (this.enchantmentBonus != null)
             amount += this.enchantmentBonus.getBonusAmount(context, amount);
@@ -104,18 +112,25 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
         NumberProvider maxAmount = NumberProvider.fromSection(section, "max-amount", Integer.MAX_VALUE);
 
-        ConfigurationSection conditionBonusSection = section.getConfigurationSection("conditional-bonus");
-        ItemLootItem.ConditionalBonus conditionalBonus = null;
-        if (conditionBonusSection != null) {
+        List<AmountModifier> amountModifiers = new ArrayList<>();
+        ConfigurationSection amountModifiersSection = section.getConfigurationSection("amount-modifiers");
+        if (amountModifiersSection != null) {
             LootConditionManager lootConditionManager = RoseLoot.getInstance().getManager(LootConditionManager.class);
-            List<LootCondition> conditions = new ArrayList<>();
-            for (String conditionString : conditionBonusSection.getStringList("conditions")) {
-                LootCondition condition = lootConditionManager.parse(conditionString);
-                if (condition != null)
-                    conditions.add(condition);
+            for (String key : amountModifiersSection.getKeys(false)) {
+                ConfigurationSection entrySection = amountModifiersSection.getConfigurationSection(key);
+                if (entrySection != null) {
+                    List<LootCondition> conditions = new ArrayList<>();
+                    for (String conditionString : entrySection.getStringList("conditions")) {
+                        LootCondition condition = lootConditionManager.parse(conditionString);
+                        if (condition != null)
+                            conditions.add(condition);
+                    }
+
+                    NumberProvider value = NumberProvider.fromSection(entrySection, "value", 1);
+                    boolean add = entrySection.getBoolean("add", false);
+                    amountModifiers.add(new AmountModifier(conditions, value, add));
+                }
             }
-            NumberProvider bonusPerCondition = NumberProvider.fromSection(conditionBonusSection, "bonus-per-condition", 1);
-            conditionalBonus = new ConditionalBonus(conditions, bonusPerCondition);
         }
 
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
@@ -134,7 +149,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new ItemLootItem(item, amount, maxAmount, itemLootMeta, conditionalBonus, enchantmentBonus, smeltIfBurning);
+        return new ItemLootItem(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
     }
 
     public static String toSection(ItemStack itemStack) {
@@ -148,21 +163,28 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         return stringBuilder.toString();
     }
 
-    public static class ConditionalBonus {
+    public static class AmountModifier {
 
         private final List<LootCondition> conditions;
-        private final NumberProvider bonusPerCondition;
+        private final NumberProvider value;
+        private final boolean add;
 
-        public ConditionalBonus(List<LootCondition> conditions, NumberProvider bonusPerCondition) {
+        public AmountModifier(List<LootCondition> conditions, NumberProvider value, boolean add) {
             this.conditions = conditions;
-            this.bonusPerCondition = bonusPerCondition;
+            this.value = value;
+            this.add = add;
         }
 
-        public int getBonusAmount(LootContext context) {
-            return this.conditions.stream()
-                    .filter(x -> x.check(context))
-                    .mapToInt(x -> this.bonusPerCondition.getInteger())
-                    .sum();
+        public boolean check(LootContext context) {
+            return this.conditions.stream().allMatch(x -> x.check(context));
+        }
+
+        public int getValue() {
+            return this.value.getInteger();
+        }
+
+        public boolean isAdditive() {
+            return this.add;
         }
 
     }
