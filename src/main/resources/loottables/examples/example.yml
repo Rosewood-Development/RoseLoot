@@ -1,5 +1,5 @@
 type: ENTITY
-overwrite-existing: false
+overwrite-existing: items
 conditions:
   - 'entity-type:iron_golem'
 pools:

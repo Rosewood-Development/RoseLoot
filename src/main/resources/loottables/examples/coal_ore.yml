@@ -1,5 +1,5 @@
 type: BLOCK
-overwrite-existing: true
+overwrite-existing: items
 conditions:
   - 'block-type:coal_ore'
 pools:

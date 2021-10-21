@@ -84,7 +84,7 @@ public class VanillaLootTableConverter {
 
     private static void writeEntityHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: ENTITY");
-        writer.write("overwrite-existing: true");
+        writer.write("overwrite-existing: items");
         writer.write("conditions:");
         writer.increaseIndentation();
         String entityType = path.substring("entities/".length());
@@ -99,7 +99,7 @@ public class VanillaLootTableConverter {
 
     private static void writeBlockHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: BLOCK");
-        writer.write("overwrite-existing: true");
+        writer.write("overwrite-existing: items");
         writer.write("conditions:");
         writer.increaseIndentation();
         writer.write("- 'block-type:" + path.substring("blocks/".length()) + "'");
@@ -108,13 +108,13 @@ public class VanillaLootTableConverter {
 
     private static void writeFishingHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: FISHING");
-        writer.write("overwrite-existing: true");
+        writer.write("overwrite-existing: items");
         writer.write("conditions: []");
     }
 
     private static void writeContainerHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: CONTAINER");
-        writer.write("overwrite-existing: true");
+        writer.write("overwrite-existing: items");
         writer.write("conditions:");
         writer.increaseIndentation();
         writer.write("- 'vanilla-loot-table:" + path + "'");
@@ -123,13 +123,13 @@ public class VanillaLootTableConverter {
 
     private static void writePiglinBarteringHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: PIGLIN_BARTER");
-        writer.write("overwrite-existing: true");
+        writer.write("overwrite-existing: items");
         writer.write("conditions: []");
     }
 
     private static void writeEntityDropsHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: ENTITY_DROP_ITEM");
-        writer.write("overwrite-existing: true");
+        writer.write("overwrite-existing: items");
         writer.write("conditions:");
         writer.increaseIndentation();
         if (path.startsWith("gameplay/cat_morning_gift")) {

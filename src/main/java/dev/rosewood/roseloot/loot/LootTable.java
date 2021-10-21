@@ -12,9 +12,9 @@ public class LootTable implements LootItemGenerator {
     private final LootTableType type;
     private final List<LootCondition> conditions;
     private final List<LootPool> pools;
-    private final boolean overwriteExisting;
+    private final OverwriteExisting overwriteExisting;
 
-    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, boolean overwriteExisting) {
+    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, OverwriteExisting overwriteExisting) {
         this.name = name;
         this.type = type;
         this.conditions = conditions;
@@ -54,8 +54,8 @@ public class LootTable implements LootItemGenerator {
      * @param context The LootContext
      * @return true if this LootTable should overwrite the existing context's loot, false otherwise
      */
-    public boolean shouldOverwriteExisting(LootContext context) {
-        return this.conditions.stream().allMatch(x -> x.check(context)) && this.overwriteExisting;
+    public OverwriteExisting getOverwriteExistingValue(LootContext context) {
+        return this.conditions.stream().allMatch(x -> x.check(context)) ? this.overwriteExisting : OverwriteExisting.NONE;
     }
 
 }

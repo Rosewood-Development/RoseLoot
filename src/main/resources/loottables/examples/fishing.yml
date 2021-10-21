@@ -1,5 +1,5 @@
 type: FISHING
-overwrite-existing: true
+overwrite-existing: all
 conditions: []
 pools:
   0:

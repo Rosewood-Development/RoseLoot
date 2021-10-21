@@ -12,6 +12,7 @@ import dev.rosewood.roseloot.loot.LootPool;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
@@ -88,7 +89,8 @@ public class LootTableManager extends Manager implements Listener {
                         continue;
                     }
 
-                    boolean overwriteExisting = configuration.getBoolean("overwrite-existing", false);
+                    String overwriteExistingString = configuration.getString("overwrite-existing", "none");
+                    OverwriteExisting overwriteExisting = OverwriteExisting.fromString(overwriteExistingString);
 
                     List<LootCondition> conditions = new ArrayList<>();
                     List<String> conditionStrings = configuration.getStringList("conditions");
@@ -257,10 +259,10 @@ public class LootTableManager extends Manager implements Listener {
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
-        boolean overwriteExisting = false;
+        OverwriteExisting overwriteExisting = OverwriteExisting.NONE;
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
             lootContents.add(lootTable.generate(lootContext));
-            overwriteExisting |= lootTable.shouldOverwriteExisting(lootContext);
+            overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue(lootContext));
         }
         return new LootResult(lootContext, lootContents, overwriteExisting);
     }

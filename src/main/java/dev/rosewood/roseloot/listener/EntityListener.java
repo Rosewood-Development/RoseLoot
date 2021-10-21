@@ -50,10 +50,11 @@ public class EntityListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteExisting()) {
+        if (lootResult.shouldOverwriteItems())
             event.getDrops().clear();
+
+        if (lootResult.shouldOverwriteExperience())
             event.setDroppedExp(0);
-        }
 
         // Add items to drops and adjust experience
         event.getDrops().addAll(lootContents.getItems());
@@ -106,7 +107,7 @@ public class EntityListener implements Listener {
         Location dropLocation = event.getItemDrop().getLocation();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteExisting())
+        if (lootResult.shouldOverwriteItems())
             event.setCancelled(true);
 
         // Add items to drops and spawn experience
