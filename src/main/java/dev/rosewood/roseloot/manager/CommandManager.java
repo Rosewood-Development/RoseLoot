@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.manager;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.ClassUtils;
+import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.command.argument.EnumArgumentHandler;
 import dev.rosewood.roseloot.command.framework.ArgumentInstance;
 import dev.rosewood.roseloot.command.framework.CommandContext;
@@ -25,6 +26,9 @@ import org.bukkit.util.StringUtil;
 @SuppressWarnings("rawtypes")
 public class CommandManager extends Manager implements TabExecutor {
 
+    private static final String COMMAND_PACKAGE = "dev.rosewood.roseloot.command.command";
+    private static final String ARGUMENT_PACKAGE = "dev.rosewood.roseloot.command.argument";
+
     private final Map<Class<? extends RoseCommandArgumentHandler>, RoseCommandArgumentHandler<?>> argumentHandlers;
     private final Map<String, RoseCommand> commandLookupMap;
 
@@ -39,14 +43,14 @@ public class CommandManager extends Manager implements TabExecutor {
     public void reload() {
         try {
             // Load commands
-            for (Class<RoseCommand> commandClass : ClassUtils.getClassesOf(this.rosePlugin, "dev.rosewood.roseloot.command.command", RoseCommand.class)) {
+            for (Class<RoseCommand> commandClass : ClassUtils.getClassesOf(this.rosePlugin, COMMAND_PACKAGE, RoseCommand.class)) {
                 RoseCommand command = commandClass.getConstructor(RosePlugin.class).newInstance(this.rosePlugin);
                 this.commandLookupMap.put(command.getName().toLowerCase(), command);
                 command.getAliases().forEach(x -> this.commandLookupMap.put(x.toLowerCase(), command));
             }
 
             // Load arguments
-            for (Class<RoseCommandArgumentHandler> argumentHandlerClass : ClassUtils.getClassesOf(this.rosePlugin, "dev.rosewood.roseloot.command.argument", RoseCommandArgumentHandler.class)) {
+            for (Class<RoseCommandArgumentHandler> argumentHandlerClass : ClassUtils.getClassesOf(this.rosePlugin, ARGUMENT_PACKAGE, RoseCommandArgumentHandler.class)) {
                 RoseCommandArgumentHandler<?> argumentHandler = argumentHandlerClass.getConstructor(RosePlugin.class).newInstance(this.rosePlugin);
                 this.argumentHandlers.put(argumentHandlerClass, argumentHandler);
             }
@@ -96,7 +100,7 @@ public class CommandManager extends Manager implements TabExecutor {
 
             RoseCommand command = this.getCommand(args[0]);
             if (command == null) {
-                localeManager.sendCustomMessage(sender, "&cUnknown command, use &b/rl help &cfor more info.");
+                localeManager.sendMessage(sender, "unknown-command");
                 return true;
             }
 
@@ -111,7 +115,7 @@ public class CommandManager extends Manager implements TabExecutor {
             }
 
             if (command.getNumRequiredArguments() > args.length - 1) {
-                localeManager.sendCustomMessage(sender, "&cMissing arguments, " + command.getNumRequiredArguments() + " required.");
+                localeManager.sendMessage(sender, "missing-arguments", StringPlaceholders.single("amount", command.getNumRequiredArguments()));
                 return true;
             }
 

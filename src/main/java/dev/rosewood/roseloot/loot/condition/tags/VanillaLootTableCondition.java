@@ -23,7 +23,7 @@ public class VanillaLootTableCondition extends LootCondition {
             return false;
 
         try {
-            this.vanillaLootTableKey = NamespacedKey.minecraft(values[0]);
+            this.vanillaLootTableKey = NamespacedKey.fromString(values[0]);
             return true;
         } catch (Exception e) {
             return false;

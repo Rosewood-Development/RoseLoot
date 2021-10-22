@@ -8,11 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-public class OnBlockTypeCondition extends LootCondition {
+public class BelowBlockTypeCondition extends LootCondition {
 
     private List<Material> blockTypes;
 
-    public OnBlockTypeCondition(String tag) {
+    public BelowBlockTypeCondition(String tag) {
         super(tag);
     }
 

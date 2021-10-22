@@ -48,10 +48,11 @@ public class BlockListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteExisting()) {
+        if (lootResult.shouldOverwriteItems())
             event.setDropItems(false);
+
+        if (lootResult.shouldOverwriteExperience())
             event.setExpToDrop(0);
-        }
 
         // Drop items and experience
         Location dropLocation = block.getLocation();
@@ -79,7 +80,7 @@ public class BlockListener implements Listener {
             LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
-            if (lootResult.shouldOverwriteExisting())
+            if (lootResult.shouldOverwriteItems())
                 iterator.remove();
 
             // Drop items and experience
@@ -136,7 +137,7 @@ public class BlockListener implements Listener {
             LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
-            if (lootResult.shouldOverwriteExisting())
+            if (lootResult.shouldOverwriteItems())
                 iterator.remove();
 
             // Drop items and experience

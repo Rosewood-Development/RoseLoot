@@ -29,7 +29,7 @@ public final class EnchantingUtils {
      * @return The Enchantment, or null if not found
      */
     public static Enchantment getEnchantmentByName(String name) {
-        return Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
+        return Enchantment.getByKey(NamespacedKey.fromString(name.toLowerCase()));
     }
 
     /**
@@ -104,7 +104,8 @@ public final class EnchantingUtils {
             if ((enchantment.asSpigot().isTreasure() && !treasure) || !enchantment.isDiscoverable() || (!enchantment.asSpigot().canEnchantItem(itemStack) && !book))
                 continue;
 
-            for (int i = enchantment.asSpigot().getMaxLevel(); i > enchantment.asSpigot().getStartLevel() - 1; --i) {
+            int maxLevel = uncapped ? (enchantment.asSpigot().getMaxLevel() == 1 ? 1 : 10) : enchantment.asSpigot().getMaxLevel();
+            for (int i = maxLevel; i > enchantment.asSpigot().getStartLevel() - 1; --i) {
                 if (level < enchantment.getMinCost(i) || (level > enchantment.getMaxCost(i) && !uncapped))
                     continue;
 

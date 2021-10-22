@@ -4,9 +4,9 @@ public class LootResult {
 
     private final LootContext lootContext;
     private final LootContents lootContents;
-    private final boolean overwriteExisting;
+    private final OverwriteExisting overwriteExisting;
 
-    public LootResult(LootContext lootContext, LootContents lootContents, boolean overwriteExisting) {
+    public LootResult(LootContext lootContext, LootContents lootContents, OverwriteExisting overwriteExisting) {
         this.lootContext = lootContext;
         this.lootContents = lootContents;
         this.overwriteExisting = overwriteExisting;
@@ -20,8 +20,18 @@ public class LootResult {
         return this.lootContents;
     }
 
-    public boolean shouldOverwriteExisting() {
-        return this.overwriteExisting;
+    /**
+     * @return true if this LootTable should overwrite items, false otherwise
+     */
+    public boolean shouldOverwriteItems() {
+        return this.overwriteExisting == OverwriteExisting.ITEMS || this.overwriteExisting == OverwriteExisting.ALL;
+    }
+
+    /**
+     * @return true if this LootTable should overwrite experience, false otherwise
+     */
+    public boolean shouldOverwriteExperience() {
+        return this.overwriteExisting == OverwriteExisting.EXPERIENCE || this.overwriteExisting == OverwriteExisting.ALL;
     }
 
 }

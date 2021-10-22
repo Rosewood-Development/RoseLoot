@@ -12,6 +12,7 @@ import dev.rosewood.roseloot.loot.LootPool;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
@@ -22,8 +23,10 @@ import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
+import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,10 +67,13 @@ public class LootTableManager extends Manager implements Listener {
             RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
 
             File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
-            if (!directory.exists()) {
-                directory.mkdirs();
+            File examplesDirectory = new File(directory, "examples");
+            if (!examplesDirectory.exists()) {
+                examplesDirectory.mkdirs();
                 // TODO: Create example files
             }
+
+            VanillaLootTableConverter.convert(examplesDirectory);
 
             // Populate with lists for LootTableTypes
             for (LootTableType type : LootTableType.values())
@@ -83,7 +89,8 @@ public class LootTableManager extends Manager implements Listener {
                         continue;
                     }
 
-                    boolean overwriteExisting = configuration.getBoolean("overwrite-existing", false);
+                    String overwriteExistingString = configuration.getString("overwrite-existing", "none");
+                    OverwriteExisting overwriteExisting = OverwriteExisting.fromString(overwriteExistingString);
 
                     List<LootCondition> conditions = new ArrayList<>();
                     List<String> conditionStrings = configuration.getStringList("conditions");
@@ -130,7 +137,7 @@ public class LootTableManager extends Manager implements Listener {
                             continue;
                         }
 
-                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, lootConditionManager, poolKey);
+                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, lootConditionManager, poolKey, false);
 
                         lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, entries));
                     }
@@ -160,7 +167,7 @@ public class LootTableManager extends Manager implements Listener {
         }, 1);
     }
 
-    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, LootConditionManager lootConditionManager, String poolKey) {
+    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, LootConditionManager lootConditionManager, String poolKey, boolean child) {
         List<LootEntry> lootEntries = new ArrayList<>();
         for (String entryKey : entriesSection.getKeys(false)) {
             ConfigurationSection entrySection = entriesSection.getConfigurationSection(entryKey);
@@ -223,9 +230,9 @@ public class LootTableManager extends Manager implements Listener {
 
             LootEntry.ChildrenStrategy childrenStrategy = LootEntry.ChildrenStrategy.fromString(entrySection.getString("children-strategy", LootEntry.ChildrenStrategy.NORMAL.name()));
             ConfigurationSection childrenSection = entrySection.getConfigurationSection("children");
-            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, lootConditionManager, poolKey) : null;
+            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, lootConditionManager, poolKey, true) : null;
 
-            lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems, childrenStrategy, childEntries));
+            lootEntries.add(new LootEntry(child, entryConditions, weight, quality, lootItems, childrenStrategy, childEntries));
         }
 
         return lootEntries;
@@ -247,14 +254,15 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("sound", SoundLootItem::fromSection);
         event.registerLootItem("economy", EconomyLootItem::fromSection);
         event.registerLootItem("entity_equipment", EntityEquipmentLootItem::fromSection);
+        event.registerLootItem("tag", TagLootItem::fromSection);
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
-        boolean overwriteExisting = false;
+        OverwriteExisting overwriteExisting = OverwriteExisting.NONE;
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
             lootContents.add(lootTable.generate(lootContext));
-            overwriteExisting |= lootTable.shouldOverwriteExisting(lootContext);
+            overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue(lootContext));
         }
         return new LootResult(lootContext, lootContents, overwriteExisting);
     }

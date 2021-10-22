@@ -36,7 +36,7 @@ public class PiglinBarterListener implements Listener {
 
         // Overwrite existing loot if applicable
         List<ItemStack> outputItems = event.getOutcome();
-        if (lootResult.shouldOverwriteExisting())
+        if (lootResult.shouldOverwriteItems())
             outputItems.clear();
 
         // Set items and drop experience

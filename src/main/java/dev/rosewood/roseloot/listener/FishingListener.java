@@ -44,7 +44,7 @@ public class FishingListener implements Listener {
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.FISHING, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
-        if (lootResult.shouldOverwriteExisting()) {
+        if (lootResult.shouldOverwriteItems()) {
             // Prevent the reel
             event.setCancelled(true);
 
@@ -64,7 +64,13 @@ public class FishingListener implements Listener {
                     .stream()
                     .filter(x -> Tag.ITEMS_FISHES.isTagged(x.getType()))
                     .forEach(x -> player.incrementStatistic(Statistic.FISH_CAUGHT));
+
+            if (!lootResult.shouldOverwriteExperience())
+                player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(event.getExpToDrop()));
         }
+
+        if (lootResult.shouldOverwriteExperience())
+            event.setExpToDrop(0);
 
         // Drop items and experience
         for (ItemStack itemStack : lootContents.getItems()) {

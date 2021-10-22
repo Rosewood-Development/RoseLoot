@@ -43,7 +43,7 @@ public class LootGenerateListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing loot if applicable
-        if (lootResult.shouldOverwriteExisting())
+        if (lootResult.shouldOverwriteItems())
             event.getLoot().clear();
 
         // Set items and drop experience

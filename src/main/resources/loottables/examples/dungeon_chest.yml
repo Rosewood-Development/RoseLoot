@@ -1,5 +1,5 @@
 type: CONTAINER
-overwrite-existing: true
+overwrite-existing: items
 conditions:
   - 'vanilla-loot-table:chests/simple_dungeon'
 pools:

@@ -15,6 +15,7 @@ pools:
             item: blaze_powder
             amount: 1
             enchantment-bonus:
+              formula: uniform
               enchantment: looting
               bonus-per-level: 1
           1:
