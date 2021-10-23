@@ -41,8 +41,17 @@ public abstract class NumberProvider {
             if (defaultValue == null) {
                 return null;
             } else {
-                return new ConstantNumberProvider(section.getDouble(value, defaultValue));
+                if (section.isString(value)) {
+                    String percentage = section.getString(value, "");
+                    if (percentage.endsWith("%")) {
+                        try {
+                            double percentageValue = Double.parseDouble(percentage.substring(0, percentage.length() - 1));
+                            return new ConstantNumberProvider(percentageValue / 100);
+                        } catch (NumberFormatException ignored) { }
+                    }
+                }
             }
+            return new ConstantNumberProvider(section.getDouble(value, defaultValue));
         }
     }
 
