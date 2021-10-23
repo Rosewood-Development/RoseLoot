@@ -6,6 +6,7 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
@@ -15,14 +16,18 @@ import org.bukkit.inventory.ItemStack;
 
 public class EntityEquipmentLootItem extends ItemLootItem {
 
+    private final NumberProvider mainHandDropChance;
+    private final NumberProvider offHandDropChance;
     private final NumberProvider helmetDropChance;
     private final NumberProvider chestplateDropChance;
     private final NumberProvider leggingsDropChance;
     private final NumberProvider bootsDropChance;
     private final boolean dropInventory;
 
-    public EntityEquipmentLootItem(NumberProvider helmetDropChance, NumberProvider chestplateDropChance, NumberProvider leggingsDropChance, NumberProvider bootsDropChance, boolean dropInventory) {
+    public EntityEquipmentLootItem(NumberProvider mainHandDropChance, NumberProvider offHandDropChance, NumberProvider helmetDropChance, NumberProvider chestplateDropChance, NumberProvider leggingsDropChance, NumberProvider bootsDropChance, boolean dropInventory) {
         super();
+        this.mainHandDropChance = mainHandDropChance;
+        this.offHandDropChance = offHandDropChance;
         this.helmetDropChance = helmetDropChance;
         this.chestplateDropChance = chestplateDropChance;
         this.leggingsDropChance = leggingsDropChance;
@@ -47,10 +52,18 @@ public class EntityEquipmentLootItem extends ItemLootItem {
         if (equipment == null)
             return droppedEquipment;
 
+        double mainHandChance = this.mainHandDropChance != null ? this.mainHandDropChance.getDouble() / 100 : equipment.getItemInMainHandDropChance();
+        double offHandChance = this.offHandDropChance != null ? this.offHandDropChance.getDouble() / 100 : equipment.getItemInOffHandDropChance();
         double helmetChance = this.helmetDropChance != null ? this.helmetDropChance.getDouble() / 100 : equipment.getHelmetDropChance();
         double chestplateChance = this.chestplateDropChance != null ? this.chestplateDropChance.getDouble() / 100 : equipment.getChestplateDropChance();
         double leggingsChance = this.leggingsDropChance != null ? this.leggingsDropChance.getDouble() / 100 : equipment.getLeggingsDropChance();
         double bootsChance = this.bootsDropChance != null ? this.bootsDropChance.getDouble() / 100 : equipment.getBootsDropChance();
+
+        if (equipment.getItemInMainHand().getType() != Material.AIR && LootUtils.checkChance(mainHandChance))
+            droppedEquipment.add(equipment.getItemInMainHand());
+
+        if (equipment.getItemInOffHand().getType() != Material.AIR && LootUtils.checkChance(offHandChance))
+            droppedEquipment.add(equipment.getItemInOffHand());
 
         if (equipment.getBoots() != null && LootUtils.checkChance(helmetChance))
             droppedEquipment.add(equipment.getBoots());
@@ -68,12 +81,14 @@ public class EntityEquipmentLootItem extends ItemLootItem {
     }
 
     public static EntityEquipmentLootItem fromSection(ConfigurationSection section) {
+        NumberProvider mainHandDropChance = NumberProvider.fromSection(section, "main-hand-drop-chance", null);
+        NumberProvider offHandDropChance = NumberProvider.fromSection(section, "off-hand-drop-chance", null);
         NumberProvider helmetDropChance = NumberProvider.fromSection(section, "helmet-drop-chance", null);
         NumberProvider chestplateDropChance = NumberProvider.fromSection(section, "chestplate-drop-chance", null);
         NumberProvider leggingsDropChance = NumberProvider.fromSection(section, "leggings-drop-chance", null);
         NumberProvider bootsDropChance = NumberProvider.fromSection(section, "boots-drop-chance", null);
         boolean dropInventory = section.getBoolean("drop-inventory", false);
-        return new EntityEquipmentLootItem(helmetDropChance, chestplateDropChance, leggingsDropChance, bootsDropChance, dropInventory);
+        return new EntityEquipmentLootItem(mainHandDropChance, offHandDropChance, helmetDropChance, chestplateDropChance, leggingsDropChance, bootsDropChance, dropInventory);
     }
 
 }
