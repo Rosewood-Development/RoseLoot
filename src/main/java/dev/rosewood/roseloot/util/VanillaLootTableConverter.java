@@ -146,32 +146,8 @@ public class VanillaLootTableConverter {
     }
 
     private static void writeTableContents(String path, IndentedFileWriter writer, JsonObject json) throws IOException {
-        if (path.equals("entities/wither")) {
-            // Manually add nether stars to the wither loot table since they are handled outside of loot tables
-            writer.write("pools:");
-            writer.increaseIndentation();
-            writer.write("0:");
-            writer.increaseIndentation();
-            writer.write("type: item");
-            writer.write("item: nether_star");
-            writer.write("amount: 1");
-            writer.decreaseIndentation();
-            writer.decreaseIndentation();
-            return;
-        } else if (path.equals("entities/armor_stand")) {
-            writer.write("pools:");
-            writer.increaseIndentation();
-            writer.write("0:");
-            writer.increaseIndentation();
-            writer.write("type: item");
-            writer.write("item: armor_stand");
-            writer.write("amount: 1");
-            writer.decreaseIndentation();
-            writer.decreaseIndentation();
-        }
-
         JsonElement poolsElement = json.get("pools");
-        if (poolsElement == null) {
+        if (poolsElement == null && !path.startsWith("entities/")) {
             writer.write("pools: {}");
             return;
         }
@@ -179,33 +155,135 @@ public class VanillaLootTableConverter {
         writer.write("pools:");
         writer.increaseIndentation();
 
-        JsonArray pools = poolsElement.getAsJsonArray();
-        for (int i = 0; i < pools.size(); i++) {
-            JsonObject pool = pools.get(i).getAsJsonObject();
-            writer.write(i + ":");
-            writer.increaseIndentation();
-
-            writeItemConditions(path, writer, pool);
-            writeNumberProvider("rolls", "rolls", writer, pool, 1.0);
-            writeNumberProvider("bonus-rolls", "bonus_rolls", writer, pool, null);
-
-            if (path.contains("entities/sheep/") && i == 0) {
-                // Manually add the sheared condition since this check is normally handled outside of loot tables
-                writer.write("conditions:");
+        int poolIndex = 0;
+        if (poolsElement != null) {
+            JsonArray pools = poolsElement.getAsJsonArray();
+            for (; poolIndex < pools.size(); poolIndex++) {
+                JsonObject pool = pools.get(poolIndex).getAsJsonObject();
+                writer.write(poolIndex + ":");
                 writer.increaseIndentation();
-                writer.write("- '!sheep-sheared'");
+
+                writeItemConditions(path, writer, pool);
+                writeNumberProvider("rolls", "rolls", writer, pool, 1.0);
+                writeNumberProvider("bonus-rolls", "bonus_rolls", writer, pool, null);
+
+                if (path.contains("entities/sheep/") && poolIndex == 0) {
+                    // Manually add the sheared condition since this check is normally handled outside of loot tables
+                    writer.write("conditions:");
+                    writer.increaseIndentation();
+                    writer.write("- '!sheep-sheared'");
+                    writer.decreaseIndentation();
+                }
+
+                JsonElement entriesElement = pool.get("entries");
+                if (entriesElement == null) {
+                    writer.write("entries: {}");
+                    continue;
+                }
+
+                writeEntries(path, "entries", writer, entriesElement.getAsJsonArray());
+
                 writer.decreaseIndentation();
             }
+        }
 
-            JsonElement entriesElement = pool.get("entries");
-            if (entriesElement == null) {
-                writer.write("entries: {}");
-                continue;
+        // Manually add special items since they are handled outside of loot tables
+        if (path.equals("entities/wither") || path.equals("entities/armor_stand")) {
+            String item = path.equals("entities/wither") ? "nether_star" : "armor_stand";
+            writer.write(poolIndex++ + ":");
+            writer.increaseIndentation();
+            writer.write("conditions: []");
+            writer.write("rolls: 1");
+            writer.write("bonus-rolls: 0");
+            writer.write("entries:");
+            writer.increaseIndentation();
+            writer.write("0:");
+            writer.increaseIndentation();
+            writer.write("conditions: []");
+            writer.write("items:");
+            writer.increaseIndentation();
+            writer.write("0:");
+            writer.increaseIndentation();
+            writer.write("type: item");
+            writer.write("item: " + item);
+            writer.write("amount: 1");
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+        }
+
+        // Entity equipment
+        if (path.startsWith("entities/")) {
+            writer.write(poolIndex++ + ":");
+            writer.increaseIndentation();
+            writer.write("conditions: []");
+            writer.write("rolls: 1");
+            writer.write("bonus-rolls: 0");
+            writer.write("entries:");
+            writer.increaseIndentation();
+            writer.write("0:");
+            writer.increaseIndentation();
+            writer.write("conditions: []");
+            writer.write("items:");
+            writer.increaseIndentation();
+            writer.write("0:");
+            writer.increaseIndentation();
+            writer.write("type: entity_equipment");
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
+        }
+
+        // Charged creeper drops
+        if (path.startsWith("entities/")) {
+            String entityType = path.substring(path.indexOf("/") + 1);
+            String skullItem;
+            switch (entityType) {
+                case "zombie":
+                    skullItem = "zombie_head";
+                    break;
+                case "creeper":
+                    skullItem = "creeper_head";
+                    break;
+                case "skeleton":
+                    skullItem = "skeleton_skull";
+                    break;
+                case "wither_skeleton":
+                    skullItem = "wither_skeleton_skull";
+                    break;
+                default:
+                    skullItem = null;
+                    break;
             }
 
-            writeEntries(path, "entries", writer, entriesElement.getAsJsonArray());
-
-            writer.decreaseIndentation();
+            if (skullItem != null) {
+                writer.write(poolIndex + ":");
+                writer.increaseIndentation();
+                writer.write("conditions: []");
+                writer.write("rolls: 1");
+                writer.write("bonus-rolls: 0");
+                writer.write("entries:");
+                writer.increaseIndentation();
+                writer.write("0:");
+                writer.increaseIndentation();
+                writer.write("conditions: []");
+                writer.write("items:");
+                writer.increaseIndentation();
+                writer.write("0:");
+                writer.increaseIndentation();
+                writer.write("type: item");
+                writer.write("item: " + skullItem);
+                writer.write("amount: 1");
+                writer.decreaseIndentation();
+                writer.decreaseIndentation();
+                writer.decreaseIndentation();
+                writer.decreaseIndentation();
+                writer.decreaseIndentation();
+            }
         }
 
         writer.decreaseIndentation();
