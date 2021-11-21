@@ -73,6 +73,11 @@ public class LootTableManager extends Manager implements Listener {
                 // TODO: Create example files
             }
 
+            // Copy README.txt file if it doesn't already exist
+            File readme = new File(directory, "README.txt");
+            if (!readme.exists())
+                this.rosePlugin.saveResource("loottables/README.txt", false);
+
             VanillaLootTableConverter.convert(examplesDirectory);
 
             // Populate with lists for LootTableTypes
