@@ -44,7 +44,6 @@ public class VanillaLootTableConverter {
 
     private static void handle(File directory, String path) {
         File destination = new File(directory, path + ".yml");
-        destination.delete(); // TODO: REMOVE THIS, TESTING ONLY
         if (destination.exists())
             return;
 
@@ -88,6 +87,7 @@ public class VanillaLootTableConverter {
         writer.write("conditions:");
         writer.increaseIndentation();
         String entityType = path.substring("entities/".length());
+        entityType = fixEntityNames(entityType);
         if (entityType.startsWith("sheep")) {
             writer.write("- 'entity-type:sheep'");
             writer.write("- 'sheep-color:" + entityType.substring("sheep/".length()) + "'");
@@ -158,6 +158,16 @@ public class VanillaLootTableConverter {
             writer.decreaseIndentation();
             writer.decreaseIndentation();
             return;
+        } else if (path.equals("entities/armor_stand")) {
+            writer.write("pools:");
+            writer.increaseIndentation();
+            writer.write("0:");
+            writer.increaseIndentation();
+            writer.write("type: item");
+            writer.write("item: armor_stand");
+            writer.write("amount: 1");
+            writer.decreaseIndentation();
+            writer.decreaseIndentation();
         }
 
         JsonElement poolsElement = json.get("pools");
@@ -183,7 +193,7 @@ public class VanillaLootTableConverter {
                 // Manually add the sheared condition since this check is normally handled outside of loot tables
                 writer.write("conditions:");
                 writer.increaseIndentation();
-                writer.write("- 'sheep-sheared:false'");
+                writer.write("- '!sheep-sheared'");
                 writer.decreaseIndentation();
             }
 
@@ -423,10 +433,14 @@ public class VanillaLootTableConverter {
                 break;
             case "minecraft:match_tool":
                 JsonObject predicate = json.get("predicate").getAsJsonObject();
+                JsonElement itemElement = predicate.get("item");
                 JsonElement itemsElement = predicate.get("items");
                 JsonElement enchantmentsElement = predicate.get("enchantments");
                 JsonElement tagElement = predicate.get("tag");
-                if (itemsElement != null) {
+                if (itemElement != null) {
+                    stringBuilder.append("required-tool-type:");
+                    stringBuilder.append(itemElement.getAsString().substring("minecraft:".length()));
+                } else if (itemsElement != null) {
                     JsonArray items = itemsElement.getAsJsonArray();
                     Iterator<JsonElement> toolsIterator = items.iterator();
                     stringBuilder.append("required-tool-type:");
@@ -488,6 +502,8 @@ public class VanillaLootTableConverter {
                 JsonObject propertiesPredicate = json.get("predicate").getAsJsonObject();
                 if (propertiesPredicate.has("type")) {
                     String entityType = propertiesPredicate.get("type").getAsString().replace("minecraft:", "");
+                    entityType = fixEntityNames(entityType);
+
                     String entityTarget = json.get("entity").getAsString();
                     if (entityTarget.equals("killer")) {
                         stringBuilder.append("killed-by:").append(entityType);
@@ -579,7 +595,7 @@ public class VanillaLootTableConverter {
                 }
             }
 
-            boolean add = function.get("add").getAsBoolean();
+            boolean add = function.has("add") && function.get("add").getAsBoolean();
             amountModifiers.add(new AmountModifierData(conditionList, function, add));
         }
 
@@ -777,6 +793,18 @@ public class VanillaLootTableConverter {
                     RoseLoot.getInstance().getLogger().warning("Unhandled item function type: " + type + " | " + path);
                     break;
             }
+        }
+    }
+
+    private static String fixEntityNames(String entityType) {
+        // Apply replacements for spigot enums that are wrong
+        switch (entityType) {
+            case "snow_golem":
+                return entityType = "snowman";
+            case "mooshroom":
+                return entityType = "mushroom_cow";
+            default:
+                return entityType;
         }
     }
 

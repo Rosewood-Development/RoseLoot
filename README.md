@@ -1,7 +1,7 @@
 ![](https://i.imgur.com/YWDZ0pA.png)
 
 
-RoseLoot is a highly configurable custom loot plugin allowing the loot manipulation of mobs, blocks, fishing, chests, and piglin bartering.
+RoseLoot is a highly configurable custom loot plugin allowing the loot manipulation of mobs, blocks, fishing, chests, piglin bartering, and advancements.
 
 ### Documentation
 Instructions on how to use the plugin and create custom loot tables can be found [in our Wiki](https://github.com/Rosewood-Development/RoseLoot/wiki)!

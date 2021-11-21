@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 group = 'dev.rosewood'
-version = '1.0.0-BETA-5'
+version = '1.0.0-BETA-6'
 
 compileJava {
     options.compilerArgs += ['-parameters']
@@ -41,7 +41,11 @@ shadowJar {
     archiveClassifier.set(null)
     minimize()
 
+
     relocate('dev.rosewood.rosegarden', 'dev.rosewood.roseloot.lib.rosegarden')
+
+    exclude 'dev/rosewood/rosegarden/lib/hikaricp/**/*.class'
+    exclude 'dev/rosewood/rosegarden/lib/slf4j/**/*.class'
 }
 
 processResources {

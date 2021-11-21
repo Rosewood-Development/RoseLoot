@@ -5,6 +5,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -259,7 +260,11 @@ public final class LootUtils {
     }
 
     public static String getToMaximumDecimals(double value, int decimals) {
-        DecimalFormat decimalFormat = new DecimalFormat("0." + new String(new char[decimals]).replace('\0', '#'));
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator('.');
+
+        DecimalFormat decimalFormat = new DecimalFormat("0." + new String(new char[decimals]).replace('\0', '#'), decimalFormatSymbols);
+        decimalFormat.setGroupingUsed(false);
         return decimalFormat.format(value);
     }
 
