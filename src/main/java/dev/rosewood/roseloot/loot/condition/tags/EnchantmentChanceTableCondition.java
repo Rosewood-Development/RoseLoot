@@ -53,7 +53,7 @@ public class EnchantmentChanceTableCondition extends LootCondition {
             this.enchantment = EnchantingUtils.getEnchantmentByName(values[0]);
 
             for (int i = 1; i < values.length; i++) {
-                String value = values[0];
+                String value = values[i];
                 if (value.endsWith("%"))
                     value = value.substring(0, value.length() - 1);
                 this.chances.add(Double.parseDouble(value) / 100);
