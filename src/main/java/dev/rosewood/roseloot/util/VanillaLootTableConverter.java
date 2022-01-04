@@ -778,11 +778,15 @@ public class VanillaLootTableConverter {
                     writer.write("search-radius: 50");
                     writer.write("skip-existing-chunks: " + skipExistingChunks);
                     break;
+                case "minecraft:set_potion":
+                    String potionType = function.get("id").getAsString().substring("minecraft:".length());
+                    writer.write("potion-type: " + potionType);
+                    break;
                 case "minecraft:set_nbt":
                     if (name.contains("potion") || name.contains("tipped_arrow")) {
-                        String potionType = function.get("tag").getAsString();
-                        potionType = potionType.substring(potionType.lastIndexOf(":") + 1, potionType.lastIndexOf("\""));
-                        writer.write("potion-type: " + potionType);
+                        String potionTypeNbt = function.get("tag").getAsString();
+                        potionTypeNbt = potionTypeNbt.substring(potionTypeNbt.lastIndexOf(":") + 1, potionTypeNbt.lastIndexOf("\""));
+                        writer.write("potion-type: " + potionTypeNbt);
                     } else {
                         RoseLoot.getInstance().getLogger().warning("minecraft:set_nbt unhandled: " + path);
                     }
