@@ -23,7 +23,7 @@ public class HelpCommand extends RoseCommand {
 
         localeManager.sendMessage(context.getSender(), "command-help-title");
         for (RoseCommand command : commandManager.getCommands()) {
-            if (!command.canUse(context.getSender()))
+            if (!command.hasHelp() || !command.canUse(context.getSender()))
                 continue;
 
             StringPlaceholders stringPlaceholders = StringPlaceholders.builder("cmd", command.getName().toLowerCase())

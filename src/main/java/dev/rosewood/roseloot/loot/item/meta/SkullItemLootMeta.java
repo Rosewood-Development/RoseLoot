@@ -28,8 +28,8 @@ public class SkullItemLootMeta extends ItemLootMeta {
         if (section.contains("hdb-id")) this.hdbId = section.getString("hdb-id");
     }
 
-    @SuppressWarnings("deprecation")
     @Override
+    @SuppressWarnings("deprecation")
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         super.apply(itemStack, context);
 

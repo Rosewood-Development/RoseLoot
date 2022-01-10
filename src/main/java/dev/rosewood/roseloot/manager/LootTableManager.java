@@ -70,7 +70,7 @@ public class LootTableManager extends Manager implements Listener {
             File examplesDirectory = new File(directory, "examples");
             if (!examplesDirectory.exists()) {
                 examplesDirectory.mkdirs();
-                // TODO: Create example files
+                // TODO: Create additional example files
             }
 
             // Copy README.txt file if it doesn't already exist

@@ -45,7 +45,7 @@ public class RoseLoot extends RosePlugin {
     @Override
     public void enable() {
         if (NMSUtil.getVersionNumber() < 16)
-            this.getLogger().severe(this.getDescription().getName() + " only supports 1.16 and newer. You will get no support for running an unsupported version.");
+            this.getLogger().severe(this.getDescription().getName() + " best supports 1.16 servers and newer. If you try to use part of the plugin that is not available for your current server version, expect to see some errors.");
 
         PluginCommand command = this.getCommand("rl");
         if (command != null)

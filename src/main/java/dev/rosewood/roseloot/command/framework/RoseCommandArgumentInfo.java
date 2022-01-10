@@ -6,13 +6,19 @@ import java.lang.reflect.Parameter;
 public class RoseCommandArgumentInfo {
 
     private final Parameter parameter;
+    private final int index;
 
-    public RoseCommandArgumentInfo(Parameter parameter) {
+    public RoseCommandArgumentInfo(Parameter parameter, int index) {
         this.parameter = parameter;
+        this.index = index;
     }
 
     public Class<?> getType() {
         return this.parameter.getType();
+    }
+
+    public int getIndex() {
+        return this.index;
     }
 
     public String getName() {
@@ -21,6 +27,10 @@ public class RoseCommandArgumentInfo {
 
     public boolean isOptional() {
         return this.parameter.isAnnotationPresent(Optional.class);
+    }
+
+    public boolean isSubCommand() {
+        return this.getType() == RoseSubCommand.class;
     }
 
     @Override

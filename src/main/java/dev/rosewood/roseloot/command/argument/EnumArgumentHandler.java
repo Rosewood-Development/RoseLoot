@@ -32,8 +32,13 @@ public class EnumArgumentHandler<T extends Enum<T>> extends RoseCommandArgumentH
 
     @Override
     public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        return "Invalid " + this.handledType.getSimpleName() + " type [" + argumentInstance.getArgument() + "]. Valid types: " +
-                Stream.of(this.getHandledType().getEnumConstants()).map(x -> x.name().toLowerCase()).collect(Collectors.joining(", "));
+        T[] enumConstants = this.getHandledType().getEnumConstants();
+        if (enumConstants.length <= 10) {
+            return "Invalid " + this.handledType.getSimpleName() + " type [" + argumentInstance.getArgument() + "]. Valid types: " +
+                    Stream.of(enumConstants).map(x -> x.name().toLowerCase()).collect(Collectors.joining(", "));
+        } else {
+            return "Invalid " + this.handledType.getSimpleName() + " type [" + argumentInstance.getArgument() + "]";
+        }
     }
 
     @Override
