@@ -47,6 +47,12 @@ public class CommandManager extends Manager implements TabExecutor {
     @Override
     public void reload() {
         try {
+            // Load arguments
+            for (Class<RoseCommandArgumentHandler> argumentHandlerClass : ClassUtils.getClassesOf(this.rosePlugin, ARGUMENT_PACKAGE, RoseCommandArgumentHandler.class)) {
+                RoseCommandArgumentHandler<?> argumentHandler = argumentHandlerClass.getConstructor(RosePlugin.class).newInstance(this.rosePlugin);
+                this.argumentHandlers.put(argumentHandlerClass, argumentHandler);
+            }
+
             // Load commands
             for (Class<RoseCommand> commandClass : ClassUtils.getClassesOf(this.rosePlugin, COMMAND_PACKAGE, RoseCommand.class)) {
                 // Subcommands get loaded within commands
@@ -58,12 +64,6 @@ public class CommandManager extends Manager implements TabExecutor {
                 List<String> aliases = command.getAliases();
                 if (aliases != null)
                     aliases.forEach(x -> this.commandLookupMap.put(x.toLowerCase(), command));
-            }
-
-            // Load arguments
-            for (Class<RoseCommandArgumentHandler> argumentHandlerClass : ClassUtils.getClassesOf(this.rosePlugin, ARGUMENT_PACKAGE, RoseCommandArgumentHandler.class)) {
-                RoseCommandArgumentHandler<?> argumentHandler = argumentHandlerClass.getConstructor(RosePlugin.class).newInstance(this.rosePlugin);
-                this.argumentHandlers.put(argumentHandlerClass, argumentHandler);
             }
         } catch (Exception e) {
             this.rosePlugin.getLogger().severe("Fatal error initializing commands");
@@ -113,8 +113,8 @@ public class CommandManager extends Manager implements TabExecutor {
         try {
             if (args.length == 0) {
                 String baseColor = this.localeManager.getLocaleMessage("base-command-color");
-                this.localeManager.sendCustomMessage(sender, baseColor + "Running <g:#8A2387:#E94057:#F27121>RoseLoot" + baseColor + " v" + this.rosePlugin.getDescription().getVersion());
-                this.localeManager.sendCustomMessage(sender, baseColor + "Plugin created by: <g:#41e0f0:#ff8dce>" + this.rosePlugin.getDescription().getAuthors().get(0));
+                this.localeManager.sendCustomMessage(sender, baseColor + "Running <g:#8A2387:#E94057:#F27121>" + this.rosePlugin.getDescription().getName() + baseColor + " v" + this.rosePlugin.getDescription().getVersion());
+                this.localeManager.sendCustomMessage(sender, baseColor + "Plugin created by: <g:#41E0F0:#FF8DCE>" + this.rosePlugin.getDescription().getAuthors().get(0));
                 this.localeManager.sendSimpleMessage(sender, "base-command-help");
                 return true;
             }
@@ -164,7 +164,7 @@ public class CommandManager extends Manager implements TabExecutor {
         }
 
         List<ArgumentInstance> invalidArgs = parsedArgs.stream()
-                .filter(x -> !x.getArgumentInfo().isSubCommand() && x.getArgumentHandler().isInvalid(context, x.getArgument(), x))
+                .filter(x -> !x.getArgumentInfo().isSubCommand() && x.getArgumentHandler().isInvalid(context, x))
                 .collect(Collectors.toList());
 
         if (!invalidArgs.isEmpty()) {

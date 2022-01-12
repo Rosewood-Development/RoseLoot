@@ -12,10 +12,16 @@ public class CommandContext {
         this.args = args;
     }
 
+    /**
+     * @return the executor of the command
+     */
     public CommandSender getSender() {
         return this.sender;
     }
 
+    /**
+     * @return the raw unparsed arguments of the command
+     */
     public String[] getArgs() {
         return this.args;
     }

@@ -1,5 +1,8 @@
 package dev.rosewood.roseloot.command.framework;
 
+/**
+ * Holds information about a parsed argument
+ */
 public class ArgumentInstance {
 
     private final RoseCommandArgumentInfo argumentInfo;
