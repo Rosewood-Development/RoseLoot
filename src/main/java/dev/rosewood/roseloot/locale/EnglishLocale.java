@@ -56,7 +56,9 @@ public class EnglishLocale implements Locale {
             this.put("command-list-description", "Display a list of active loot tables");
             this.put("command-list-none", "&eThere are no loot tables currently active.");
             this.put("command-list-header", "&eThere are &b%amount% &eloot tables currently active:");
-            this.put("command-list-entry", "  &7%name% &8- %type%");
+            this.put("command-list-hierarchy-spacer", "  ");
+            this.put("command-list-hierarchy-branch", "%spacer%&3%name%/");
+            this.put("command-list-hierarchy-leaf", "%spacer%&b%name% &8- &7%type%");
 
             this.put("#8", "Copy Command");
             this.put("command-copy-description", "Get the item in your hand as a loot item");
