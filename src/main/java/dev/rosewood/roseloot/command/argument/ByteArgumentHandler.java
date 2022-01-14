@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,22 +14,19 @@ public class ByteArgumentHandler extends RoseCommandArgumentHandler<Byte> {
     }
 
     @Override
-    protected Byte handleInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected Byte handleInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        String input = argumentParser.next();
         try {
-            return Byte.parseByte(argumentInstance.getArgument());
+            return Byte.parseByte(input);
         } catch (Exception e) {
-            return null;
+            throw new HandledArgumentException("Byte [" + input + "] must be a whole number between -128 and 127 inclusively");
         }
     }
 
     @Override
-    protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
-        return Collections.singletonList(argumentInstance.getArgumentInfo().toString());
-    }
-
-    @Override
-    public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        return "Invalid Byte [" + argumentInstance.getArgument() + "], must be a whole number between -128 and 127 inclusively";
+    protected List<String> suggestInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        argumentParser.next();
+        return Collections.singletonList(argumentInfo.toString());
     }
 
 }

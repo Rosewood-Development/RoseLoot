@@ -1,10 +1,11 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,15 +16,30 @@ public class EnumArgumentHandler<T extends Enum<T>> extends RoseCommandArgumentH
     }
 
     @Override
-    protected T handleInternal(CommandContext context, ArgumentInstance argumentInstance) {
-        return Stream.of(this.getHandledType().getEnumConstants())
-                .filter(x -> x.name().equalsIgnoreCase(argumentInstance.getArgument()))
-                .findFirst()
-                .orElse(null);
+    protected T handleInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        String input = argumentParser.next();
+        T[] enumConstants = this.getHandledType().getEnumConstants();
+        Optional<T> value = Stream.of(enumConstants)
+                .filter(x -> x.name().equalsIgnoreCase(input))
+                .findFirst();
+
+        if (!value.isPresent()) {
+            String message;
+            if (enumConstants.length <= 10) {
+                message = this.handledType.getSimpleName() + " type [" + input + "]. Valid types: " +
+                        Stream.of(enumConstants).map(x -> x.name().toLowerCase()).collect(Collectors.joining(", "));
+            } else {
+                message = this.handledType.getSimpleName() + " type [" + input + "]";
+            }
+            throw new HandledArgumentException(message);
+        }
+
+        return value.get();
     }
 
     @Override
-    protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected List<String> suggestInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        argumentParser.next();
         return Stream.of(this.getHandledType().getEnumConstants())
                 .map(Enum::name)
                 .map(String::toLowerCase)
@@ -31,20 +47,9 @@ public class EnumArgumentHandler<T extends Enum<T>> extends RoseCommandArgumentH
     }
 
     @Override
-    public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        T[] enumConstants = this.getHandledType().getEnumConstants();
-        if (enumConstants.length <= 10) {
-            return "Invalid " + this.handledType.getSimpleName() + " type [" + argumentInstance.getArgument() + "]. Valid types: " +
-                    Stream.of(enumConstants).map(x -> x.name().toLowerCase()).collect(Collectors.joining(", "));
-        } else {
-            return "Invalid " + this.handledType.getSimpleName() + " type [" + argumentInstance.getArgument() + "]";
-        }
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public void preProcess(ArgumentInstance argumentInstance) {
-        this.handledType = (Class<T>) argumentInstance.getArgumentInfo().getType();
+    public void preProcess(RoseCommandArgumentInfo argumentInfo) {
+        this.handledType = (Class<T>) argumentInfo.getType();
     }
 
 }

@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,22 +14,19 @@ public class DoubleArgumentHandler extends RoseCommandArgumentHandler<Double> {
     }
 
     @Override
-    protected Double handleInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected Double handleInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        String input = argumentParser.next();
         try {
-            return Double.parseDouble(argumentInstance.getArgument());
+            return Double.parseDouble(input);
         } catch (Exception e) {
-            return null;
+            throw new HandledArgumentException("Double [" + input + "] must be a number within bounds");
         }
     }
 
     @Override
-    protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
-        return Collections.singletonList(argumentInstance.getArgumentInfo().toString());
-    }
-
-    @Override
-    public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        return "Invalid Double [" + argumentInstance.getArgument() + "], must be a number within bounds";
+    protected List<String> suggestInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        argumentParser.next();
+        return Collections.singletonList(argumentInfo.toString());
     }
 
 }

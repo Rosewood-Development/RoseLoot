@@ -229,10 +229,14 @@ public abstract class RoseCommand implements Comparable<RoseCommand> {
             if (optionalFound && !parameter.isAnnotationPresent(Optional.class))
                 throw new InvalidRoseCommandArgumentsException("Parameter '" + parameter.getType().getSimpleName() + " " + parameter.getName() + "' must be marked as Optional because a previous parameter was already marked as Optional");
 
-            try {
-                commandManager.resolveArgumentHandler(parameter.getType());
-            } catch (IllegalStateException e) {
-                throw new InvalidRoseCommandArgumentsException("Parameter '" + parameter.getType().getSimpleName() + " " + parameter.getName() + "' is missing a RoseCommandArgumentHandler");
+            if (parameter.getType() != RoseSubCommand.class) {
+                try {
+                    commandManager.resolveArgumentHandler(parameter.getType());
+                } catch (IllegalStateException e) {
+                    throw new InvalidRoseCommandArgumentsException("Parameter '" + parameter.getType().getSimpleName() + " " + parameter.getName() + "' is missing a RoseCommandArgumentHandler");
+                }
+            } else {
+                subCommandFound = true;
             }
 
             if (parameter.isAnnotationPresent(Optional.class)) {
@@ -241,9 +245,6 @@ public abstract class RoseCommand implements Comparable<RoseCommand> {
 
                 optionalFound = true;
             }
-
-            if (parameter.getType() == RoseSubCommand.class)
-                subCommandFound = true;
         }
 
         if (subCommandFound && this.subCommands.isEmpty())

@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Collections;
@@ -17,12 +17,18 @@ public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTab
     }
 
     @Override
-    protected LootTable handleInternal(CommandContext context, ArgumentInstance argumentInstance) {
-        return this.rosePlugin.getManager(LootTableManager.class).getLootTable(argumentInstance.getArgument());
+    protected LootTable handleInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        String input = argumentParser.next();
+        LootTable value = this.rosePlugin.getManager(LootTableManager.class).getLootTable(input);
+        if (value == null)
+            throw new HandledArgumentException("LootTable [" + input + "] does not exist");
+        return value;
     }
 
     @Override
-    protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected List<String> suggestInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        argumentParser.next();
+
         List<LootTable> lootTables = this.rosePlugin.getManager(LootTableManager.class).getLootTables();
         if (lootTables.isEmpty())
             return Collections.singletonList("<no loaded loot tables>");
@@ -30,11 +36,6 @@ public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTab
         return lootTables.stream()
                 .map(LootTable::getName)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        return "Invalid LootTable [" + argumentInstance.getArgument() + "]";
     }
 
 }

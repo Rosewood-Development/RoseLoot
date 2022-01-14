@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,22 +14,19 @@ public class BooleanArgumentHandler extends RoseCommandArgumentHandler<Boolean> 
     }
 
     @Override
-    protected Boolean handleInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected Boolean handleInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        String input = argumentParser.next();
         try {
-            return Boolean.parseBoolean(argumentInstance.getArgument());
+            return Boolean.parseBoolean(input);
         } catch (Exception e) {
-            return null;
+            throw new HandledArgumentException("Boolean [" + input + "] must be true or false");
         }
     }
 
     @Override
-    protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected List<String> suggestInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        argumentParser.next();
         return Arrays.asList("true", "false");
-    }
-
-    @Override
-    public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        return "Invalid Boolean [" + argumentInstance.getArgument() + "], must be true or false";
     }
 
 }

@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
-import dev.rosewood.roseloot.command.framework.CommandContext;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,22 +14,19 @@ public class IntegerArgumentHandler extends RoseCommandArgumentHandler<Integer> 
     }
 
     @Override
-    protected Integer handleInternal(CommandContext context, ArgumentInstance argumentInstance) {
+    protected Integer handleInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        String input = argumentParser.next();
         try {
-            return Integer.parseInt(argumentInstance.getArgument());
+            return Integer.parseInt(input);
         } catch (Exception e) {
-            return null;
+            throw new HandledArgumentException("Integer [" + input + "] must be a whole number between -2^31 and 2^31-1 inclusively");
         }
     }
 
     @Override
-    protected List<String> suggestInternal(CommandContext context, ArgumentInstance argumentInstance) {
-        return Collections.singletonList(argumentInstance.getArgumentInfo().toString());
-    }
-
-    @Override
-    public String getErrorMessage(CommandContext context, ArgumentInstance argumentInstance) {
-        return "Invalid Integer [" + argumentInstance.getArgument() + "], must be a whole number between -2^31 and 2^31-1 inclusively";
+    protected List<String> suggestInternal(RoseCommandArgumentInfo argumentInfo, ArgumentParser argumentParser) {
+        argumentParser.next();
+        return Collections.singletonList(argumentInfo.toString());
     }
 
 }

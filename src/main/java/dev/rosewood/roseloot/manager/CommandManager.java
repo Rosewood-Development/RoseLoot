@@ -5,17 +5,20 @@ import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.ClassUtils;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.command.argument.EnumArgumentHandler;
-import dev.rosewood.roseloot.command.framework.ArgumentInstance;
+import dev.rosewood.roseloot.command.framework.ArgumentParser;
 import dev.rosewood.roseloot.command.framework.CommandContext;
 import dev.rosewood.roseloot.command.framework.RoseCommand;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
 import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
 import dev.rosewood.roseloot.command.framework.RoseSubCommand;
 import dev.rosewood.roseloot.util.LootUtils;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,12 +52,20 @@ public class CommandManager extends Manager implements TabExecutor {
         try {
             // Load arguments
             for (Class<RoseCommandArgumentHandler> argumentHandlerClass : ClassUtils.getClassesOf(this.rosePlugin, ARGUMENT_PACKAGE, RoseCommandArgumentHandler.class)) {
+                // Ignore abstract/interface classes
+                if (Modifier.isAbstract(argumentHandlerClass.getModifiers()) || Modifier.isInterface(argumentHandlerClass.getModifiers()))
+                    continue;
+
                 RoseCommandArgumentHandler<?> argumentHandler = argumentHandlerClass.getConstructor(RosePlugin.class).newInstance(this.rosePlugin);
                 this.argumentHandlers.put(argumentHandlerClass, argumentHandler);
             }
 
             // Load commands
             for (Class<RoseCommand> commandClass : ClassUtils.getClassesOf(this.rosePlugin, COMMAND_PACKAGE, RoseCommand.class)) {
+                // Ignore abstract/interface classes
+                if (Modifier.isAbstract(commandClass.getModifiers()) || Modifier.isInterface(commandClass.getModifiers()))
+                    continue;
+
                 // Subcommands get loaded within commands
                 if (RoseSubCommand.class.isAssignableFrom(commandClass))
                     continue;
@@ -90,7 +101,7 @@ public class CommandManager extends Manager implements TabExecutor {
                 .stream()
                 .filter(x -> x.getHandledType() != null && x.getHandledType() == finalHandledParameterClass)
                 .findFirst()
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("Tried to resolve a RoseCommandArgumentHandler for an unhandled type"));
     }
 
     public RoseCommand getCommand(String commandName) {
@@ -125,7 +136,12 @@ public class CommandManager extends Manager implements TabExecutor {
                 return true;
             }
 
-            this.runCommand(sender, command, args, new ArrayList<>());
+            String[] cmdArgs = new String[args.length - 1];
+            System.arraycopy(args, 1, cmdArgs, 0, cmdArgs.length);
+            CommandContext context = new CommandContext(sender, cmdArgs);
+            ArgumentParser argumentParser = new ArgumentParser(context, new LinkedList<>(Arrays.asList(cmdArgs)));
+
+            this.runCommand(sender, command, argumentParser, new ArrayList<>(), 0);
         } catch (Exception e) {
             e.printStackTrace();
             this.localeManager.sendCustomMessage(sender, "&cAn unknown error occurred; details have been printed to console. Please contact a server administrator.");
@@ -133,7 +149,7 @@ public class CommandManager extends Manager implements TabExecutor {
         return true;
     }
 
-    private void runCommand(CommandSender sender, RoseCommand command, String[] args, List<ArgumentInstance> parsedArgs) throws ReflectiveOperationException {
+    private void runCommand(CommandSender sender, RoseCommand command, ArgumentParser argumentParser, List<Object> parsedArgs, int commandLayer) throws ReflectiveOperationException {
         if (!command.canUse(sender)) {
             this.localeManager.sendMessage(sender, "no-permission");
             return;
@@ -144,75 +160,53 @@ public class CommandManager extends Manager implements TabExecutor {
             return;
         }
 
-        if (command.getNumRequiredArguments() > args.length - 1) {
-            if (command.hasSubCommand()) {
-                this.localeManager.sendMessage(sender, "missing-arguments-extra", StringPlaceholders.single("amount", command.getNumRequiredArguments()));
-            } else {
-                this.localeManager.sendMessage(sender, "missing-arguments", StringPlaceholders.single("amount", parsedArgs.size() + command.getNumRequiredArguments()));
-            }
-            return;
-        }
+        // Start parsing parameters based on the command requirements, print errors out as we go
+        for (RoseCommandArgumentInfo argumentInfo : command.getArgumentInfo()) {
+            if (!argumentParser.hasNext()) {
+                // All other arguments are optional, this is fine
+                if (argumentInfo.isOptional())
+                    break;
 
-        String[] cmdArgs = new String[args.length - 1];
-        System.arraycopy(args, 1, cmdArgs, 0, args.length - 1);
-        CommandContext context = new CommandContext(sender, cmdArgs);
-
-        List<RoseCommandArgumentInfo> argumentInfo = command.getArgumentInfo();
-        for (int i = 0; i < argumentInfo.size() && i < cmdArgs.length; i++) {
-            RoseCommandArgumentInfo argInfo = argumentInfo.get(i);
-            parsedArgs.add(new ArgumentInstance(argInfo, !argInfo.isSubCommand() ? this.resolveArgumentHandler(argInfo.getType()) : null, cmdArgs[i]));
-        }
-
-        List<ArgumentInstance> invalidArgs = parsedArgs.stream()
-                .filter(x -> !x.getArgumentInfo().isSubCommand() && x.getArgumentHandler().isInvalid(context, x))
-                .collect(Collectors.toList());
-
-        if (!invalidArgs.isEmpty()) {
-            if (invalidArgs.size() == 1) {
-                this.localeManager.sendMessage(sender, "invalid-argument-header");
-            } else {
-                this.localeManager.sendMessage(sender, "invalid-arguments-header");
-            }
-
-            for (ArgumentInstance invalidArgument : invalidArgs)
-                this.localeManager.sendSimpleMessage(sender, "invalid-argument", StringPlaceholders.single("message", invalidArgument.getArgumentHandler().getErrorMessage(context, invalidArgument)));
-            return;
-        }
-
-        int argumentPosition = args.length - 1;
-        if (argumentPosition > command.getNumRequiredArguments() - (command.hasSubCommand() ? 1 : 0)) {
-            if (!command.hasSubCommand()) {
-                this.executeCommand(context, command, parsedArgs);
+                // Ran out of arguments while parsing
+                if (command.hasSubCommand()) {
+                    this.localeManager.sendMessage(sender, "missing-arguments-extra", StringPlaceholders.single("amount", command.getNumRequiredArguments()));
+                } else {
+                    this.localeManager.sendMessage(sender, "missing-arguments", StringPlaceholders.single("amount", parsedArgs.size() + command.getNumRequiredArguments() + commandLayer));
+                }
                 return;
             }
 
-            int subCommandIndex = command.getSubCommandArgumentIndex();
-            if (argumentPosition <= subCommandIndex) {
-                this.executeCommand(context, command, parsedArgs);
+            if (argumentInfo.isSubCommand()) {
+                RoseSubCommand subCommand = this.getSubCommand(command, argumentParser.next());
+                if (subCommand == null) {
+                    this.localeManager.sendMessage(sender, "invalid-subcommand");
+                    return;
+                }
+
+                this.runCommand(sender, subCommand, argumentParser, parsedArgs, commandLayer + 1);
                 return;
             }
 
-            RoseSubCommand subCommand = this.getSubCommand(command, args[subCommandIndex + 1]);
-            if (subCommand == null) {
-                this.localeManager.sendMessage(sender, "invalid-subcommand");
+            try {
+                Object parsedArgument = this.resolveArgumentHandler(argumentInfo.getType()).handle(argumentInfo, argumentParser);
+                if (parsedArgument == null) {
+                    this.localeManager.sendMessage(sender, "invalid-argument-null", StringPlaceholders.single("name", argumentInfo.toString()));
+                    return;
+                }
+
+                parsedArgs.add(parsedArgument);
+            } catch (RoseCommandArgumentHandler.HandledArgumentException e) {
+                this.localeManager.sendMessage(sender, "invalid-argument", StringPlaceholders.single("message", e.getMessage()));
                 return;
             }
-
-            String[] subCmdArgs = new String[args.length - subCommandIndex - 1];
-            System.arraycopy(args, subCommandIndex + 1, subCmdArgs, 0, subCmdArgs.length);
-
-            this.runCommand(sender, subCommand, subCmdArgs, parsedArgs);
-            return;
         }
 
-        this.executeCommand(context, command, parsedArgs);
+        this.executeCommand(argumentParser.getContext(), command, parsedArgs);
     }
 
-    private void executeCommand(CommandContext context, RoseCommand command, List<ArgumentInstance> parsedArgs) throws ReflectiveOperationException {
+    private void executeCommand(CommandContext context, RoseCommand command, List<Object> parsedArgs) throws ReflectiveOperationException {
         Stream.Builder<Object> argumentBuilder = Stream.builder().add(context);
-        for (ArgumentInstance argumentInstance : parsedArgs)
-            if (!argumentInstance.getArgumentInfo().isSubCommand())
-                argumentBuilder.add(argumentInstance.getArgumentHandler().handle(context, argumentInstance));
+        parsedArgs.forEach(argumentBuilder::add);
 
         // Fill optional parameters with nulls
         for (int i = parsedArgs.size(); i < command.getNumParameters(); i++)
@@ -235,45 +229,47 @@ public class CommandManager extends Manager implements TabExecutor {
         if (command == null)
             return Collections.emptyList();
 
-        return this.tabCompleteCommand(sender, command, args);
-    }
-
-    private List<String> tabCompleteCommand(CommandSender sender, RoseCommand command, String[] args) {
-        if (!command.canUse(sender) || (command.isPlayerOnly() && !(sender instanceof Player)))
-            return Collections.emptyList();
-
-        int argumentPosition = args.length - 2;
-        if (argumentPosition >= command.getArgumentInfo().size()) {
-            if (!command.hasSubCommand())
-                return Collections.emptyList();
-
-            int subCommandIndex = command.getSubCommandArgumentIndex();
-            RoseSubCommand subCommand = this.getSubCommand(command, args[subCommandIndex + 1]);
-            if (subCommand == null)
-                return Collections.emptyList();
-
-            String[] cmdArgs = new String[args.length - subCommandIndex - 1];
-            System.arraycopy(args, subCommandIndex + 1, cmdArgs, 0, cmdArgs.length);
-
-            return this.tabCompleteCommand(sender, subCommand, cmdArgs);
-        }
-
         String[] cmdArgs = new String[args.length - 1];
         System.arraycopy(args, 1, cmdArgs, 0, cmdArgs.length);
         CommandContext context = new CommandContext(sender, cmdArgs);
+        ArgumentParser argumentParser = new ArgumentParser(context, new LinkedList<>(Arrays.asList(cmdArgs)));
 
-        RoseCommandArgumentInfo argumentInfo = command.getArgumentInfo().get(argumentPosition);
-        if (argumentInfo.isSubCommand())
-            return command.getSubCommands().keySet()
-                    .stream()
-                    .filter(x -> StringUtil.startsWithIgnoreCase(x, cmdArgs[cmdArgs.length - 1]))
-                    .collect(Collectors.toList());
+        return this.tabCompleteCommand(sender, command, argumentParser);
+    }
 
-        RoseCommandArgumentHandler<?> argumentHandler = this.resolveArgumentHandler(argumentInfo.getType());
-        return argumentHandler.suggest(context, new ArgumentInstance(argumentInfo, argumentHandler, cmdArgs[cmdArgs.length - 1]))
-                .stream()
-                .filter(x -> StringUtil.startsWithIgnoreCase(x, cmdArgs[cmdArgs.length - 1]))
-                .collect(Collectors.toList());
+    private List<String> tabCompleteCommand(CommandSender sender, RoseCommand command, ArgumentParser argumentParser) {
+        if (!command.canUse(sender) || (command.isPlayerOnly() && !(sender instanceof Player)))
+            return Collections.emptyList();
+
+        // Consume all arguments until there are no more, then print those results
+        for (RoseCommandArgumentInfo argumentInfo : command.getArgumentInfo()) {
+            if (argumentInfo.isSubCommand()) {
+                if (!argumentParser.hasNext())
+                    return new ArrayList<>(command.getSubCommands().keySet());
+
+                String input = argumentParser.next();
+                RoseSubCommand subCommand = this.getSubCommand(command, input);
+                if (subCommand == null)
+                    return command.getSubCommands().keySet()
+                            .stream()
+                            .filter(x -> StringUtil.startsWithIgnoreCase(x, input))
+                            .collect(Collectors.toList());
+
+                if (argumentParser.hasNext())
+                    return this.tabCompleteCommand(sender, subCommand, argumentParser);
+
+                return Collections.emptyList();
+            }
+
+            List<String> suggestions = this.resolveArgumentHandler(argumentInfo.getType()).suggest(argumentInfo, argumentParser);
+            String input = argumentParser.previous();
+            if (!argumentParser.hasNext())
+                return suggestions.stream()
+                        .filter(x -> StringUtil.startsWithIgnoreCase(x, input))
+                        .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 
 }
