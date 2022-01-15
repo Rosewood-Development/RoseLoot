@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.CommandContext;
-import dev.rosewood.roseloot.command.framework.RoseCommand;
-import dev.rosewood.roseloot.command.framework.annotation.RoseExecutable;
+import dev.rosewood.rosegarden.command.framework.CommandContext;
+import dev.rosewood.rosegarden.command.framework.RoseCommand;
+import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import java.util.Collections;
@@ -59,7 +59,7 @@ public class CopyCommand extends RoseCommand {
 
     @Override
     public String getRequiredPermission() {
-        return "roseloot.copy";
+        return "rosegarden.copy";
     }
 
     @Override

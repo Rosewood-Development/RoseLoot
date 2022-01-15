@@ -36,7 +36,7 @@ dependencies {
         exclude group: 'org.spigotmc'
     }
 
-    api 'dev.rosewood:rosegarden:1.0.9'
+    api 'dev.rosewood:rosegarden:1.1.0.2-SNAPSHOT'
 }
 
 shadowJar {

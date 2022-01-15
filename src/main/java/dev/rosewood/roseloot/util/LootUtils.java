@@ -63,18 +63,6 @@ public final class LootUtils {
         this.put("ORANGE", Color.ORANGE);
     }};
 
-    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<Class<?>, Class<?>>() {{
-        this.put(boolean.class, Boolean.class);
-        this.put(byte.class, Byte.class);
-        this.put(char.class, Character.class);
-        this.put(double.class, Double.class);
-        this.put(float.class, Float.class);
-        this.put(int.class, Integer.class);
-        this.put(long.class, Long.class);
-        this.put(short.class, Short.class);
-        this.put(void.class, Void.class);
-    }};
-
     /**
      * Checks if a chance between 0 and 100 passes
      *
@@ -289,16 +277,6 @@ public final class LootUtils {
                 return tag.getValues();
         }
         return null;
-    }
-
-    /**
-     * Gets a primitive class as its wrapper counterpart
-     *
-     * @param clazz The class to get the wrapped class of
-     * @return The wrapped class, or the same class if not primitive
-     */
-    public static Class<?> getPrimitiveAsWrapper(Class<?> clazz) {
-        return clazz.isPrimitive() ? PRIMITIVE_TO_WRAPPER.get(clazz) : clazz;
     }
 
 }

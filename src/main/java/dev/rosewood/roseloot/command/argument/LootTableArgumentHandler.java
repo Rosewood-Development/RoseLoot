@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.command.argument;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.command.framework.ArgumentParser;
-import dev.rosewood.roseloot.command.framework.RoseCommandArgumentHandler;
-import dev.rosewood.roseloot.command.framework.RoseCommandArgumentInfo;
+import dev.rosewood.rosegarden.command.framework.ArgumentParser;
+import dev.rosewood.rosegarden.command.framework.RoseCommandArgumentHandler;
+import dev.rosewood.rosegarden.command.framework.RoseCommandArgumentInfo;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Collections;

@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.database.DataMigration;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.listener.AdvancementListener;
@@ -16,7 +15,6 @@ import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -37,7 +35,7 @@ public class RoseLoot extends RosePlugin {
     }
 
     public RoseLoot() {
-        super(-1, 12626, ConfigurationManager.class, null, LocaleManager.class);
+        super(-1, 12626, ConfigurationManager.class, null, LocaleManager.class, CommandManager.class);
 
         instance = this;
     }
@@ -79,15 +77,9 @@ public class RoseLoot extends RosePlugin {
     @Override
     protected List<Class<? extends Manager>> getManagerLoadPriority() {
         return Arrays.asList(
-                CommandManager.class,
                 LootConditionManager.class,
                 LootTableManager.class
         );
-    }
-
-    @Override
-    public List<Class<? extends DataMigration>> getDataMigrations() {
-        return Collections.emptyList();
     }
 
 }
