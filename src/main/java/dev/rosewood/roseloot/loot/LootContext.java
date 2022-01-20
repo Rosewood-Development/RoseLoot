@@ -84,7 +84,7 @@ public class LootContext {
     @Nullable
     public Player getLootingPlayer() {
         if (this.lootedEntity == null)
-            return null;
+            return this.getLooter() instanceof Player ? (Player) this.getLooter() : null;
         return this.lootedEntity.getKiller();
     }
 
@@ -105,7 +105,7 @@ public class LootContext {
     }
 
     /**
-     * @return the fish hook
+     * @return the fishhook
      */
     @Nullable
     public FishHook getFishHook() {
