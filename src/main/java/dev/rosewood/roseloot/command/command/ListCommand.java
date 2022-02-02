@@ -54,7 +54,7 @@ public class ListCommand extends RoseCommand {
 
     @Override
     public String getRequiredPermission() {
-        return "rosegarden.list";
+        return "roseloot.list";
     }
 
     /**

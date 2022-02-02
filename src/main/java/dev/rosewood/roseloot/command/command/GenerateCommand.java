@@ -40,7 +40,7 @@ public class GenerateCommand extends RoseCommand {
 
     @Override
     public String getRequiredPermission() {
-        return "rosegarden.generate";
+        return "roseloot.generate";
     }
 
 }

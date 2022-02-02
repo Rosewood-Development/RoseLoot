@@ -59,7 +59,7 @@ public class CopyCommand extends RoseCommand {
 
     @Override
     public String getRequiredPermission() {
-        return "rosegarden.copy";
+        return "roseloot.copy";
     }
 
     @Override
