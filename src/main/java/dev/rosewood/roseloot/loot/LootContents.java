@@ -1,6 +1,11 @@
 package dev.rosewood.roseloot.loot;
 
-import dev.rosewood.roseloot.loot.item.*;
+import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
+import dev.rosewood.roseloot.loot.item.ItemLootItem;
+import dev.rosewood.roseloot.loot.item.LootItem;
+import dev.rosewood.roseloot.loot.item.LootTableLootItem;
+import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
+import dev.rosewood.roseloot.loot.item.EcoLootItem;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
