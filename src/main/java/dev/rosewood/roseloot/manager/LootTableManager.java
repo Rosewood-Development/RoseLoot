@@ -16,6 +16,7 @@ import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
+import dev.rosewood.roseloot.loot.item.EcoLootItem;
 import dev.rosewood.roseloot.loot.item.EntityEquipmentLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem;
@@ -260,6 +261,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("economy", EconomyLootItem::fromSection);
         event.registerLootItem("entity_equipment", EntityEquipmentLootItem::fromSection);
         event.registerLootItem("tag", TagLootItem::fromSection);
+        event.registerLootItem("eco", EcoLootItem::fromSection);
     }
 
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {

@@ -1,16 +1,12 @@
 package dev.rosewood.roseloot.loot;
 
-import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
-import dev.rosewood.roseloot.loot.item.ItemLootItem;
-import dev.rosewood.roseloot.loot.item.LootItem;
-import dev.rosewood.roseloot.loot.item.LootTableLootItem;
-import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import dev.rosewood.roseloot.loot.item.*;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Holds miscellaneous contents that can be obtained from looting
@@ -54,11 +50,15 @@ public class LootContents {
      * @return the items of this loot contents
      */
     public List<ItemStack> getItems() {
-        return this.contents.stream()
-                .filter(x -> x instanceof ItemLootItem)
-                .map(x -> (ItemLootItem) x)
-                .flatMap(x -> x.create(this.context).stream())
-                .collect(Collectors.toList());
+        List<ItemStack> list = new ArrayList<>();
+        for (LootItem<?> item : this.contents) {
+            if (item instanceof ItemLootItem) {
+                list.addAll(((ItemLootItem) item).create(this.context));
+            } else if (item instanceof EcoLootItem) {
+                list.addAll(((EcoLootItem) item).create(this.context));
+            }
+        }
+        return list;
     }
 
     /**
