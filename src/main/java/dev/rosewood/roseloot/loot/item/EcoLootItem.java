@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EcoLootItem implements LootItem<List<ItemStack>> {
+public class EcoLootItem extends ItemLootItem {
     private final String lookup;
     private final NumberProvider amount;
     private final NumberProvider maxAmount;
