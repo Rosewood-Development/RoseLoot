@@ -138,11 +138,9 @@ public final class LootUtils {
         if (NMSUtil.getVersionNumber() > 13) {
             PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
             NamespacedKey key = new NamespacedKey(rosePlugin, SPAWN_REASON_METADATA_NAME);
-            if (!dataContainer.has(key, PersistentDataType.STRING))
-                dataContainer.set(key, PersistentDataType.STRING, spawnReason.name());
+            dataContainer.set(key, PersistentDataType.STRING, spawnReason.name());
         } else {
-            if (!entity.hasMetadata(SPAWN_REASON_METADATA_NAME))
-                entity.setMetadata(SPAWN_REASON_METADATA_NAME, new FixedMetadataValue(rosePlugin, spawnReason.name()));
+            entity.setMetadata(SPAWN_REASON_METADATA_NAME, new FixedMetadataValue(rosePlugin, spawnReason.name()));
         }
     }
 

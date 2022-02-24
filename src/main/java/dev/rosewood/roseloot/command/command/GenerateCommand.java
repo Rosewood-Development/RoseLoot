@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.command.command;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.RoseCommand;
+import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
 import dev.rosewood.rosegarden.command.framework.annotation.Optional;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.loot.LootTable;
@@ -13,8 +14,8 @@ import org.bukkit.entity.Player;
 
 public class GenerateCommand extends RoseCommand {
 
-    public GenerateCommand(RosePlugin rosePlugin) {
-        super(rosePlugin);
+    public GenerateCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
+        super(rosePlugin, parent);
     }
 
     @RoseExecutable
@@ -24,12 +25,12 @@ public class GenerateCommand extends RoseCommand {
     }
 
     @Override
-    public String getName() {
+    protected String getDefaultName() {
         return "generate";
     }
 
     @Override
-    public List<String> getAliases() {
+    protected List<String> getDefaultAliases() {
         return Collections.emptyList();
     }
 

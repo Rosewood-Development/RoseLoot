@@ -23,6 +23,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 public class EntityListener implements Listener {
@@ -67,6 +68,14 @@ public class EntityListener implements Listener {
     public void onEntitySpawn(CreatureSpawnEvent event) {
         // Tag all spawned entities with the spawn reason
         LootUtils.setEntitySpawnReason(event.getEntity(), event.getSpawnReason());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntitySpawnFromSpawner(SpawnerSpawnEvent event) {
+        // Tag all spawned entities with the spawn reason, separate event listener for spawners for custom spawner plugins
+        Entity entity = event.getEntity();
+        if (entity instanceof LivingEntity)
+            LootUtils.setEntitySpawnReason((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.SPAWNER);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

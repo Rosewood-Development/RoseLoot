@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.command.command;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.RoseCommand;
+import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.manager.LocaleManager;
@@ -19,8 +20,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class CopyCommand extends RoseCommand {
 
-    public CopyCommand(RosePlugin rosePlugin) {
-        super(rosePlugin);
+    public CopyCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
+        super(rosePlugin, parent);
     }
 
     @RoseExecutable
@@ -43,12 +44,12 @@ public class CopyCommand extends RoseCommand {
     }
 
     @Override
-    public String getName() {
+    protected String getDefaultName() {
         return "copy";
     }
 
     @Override
-    public List<String> getAliases() {
+    protected List<String> getDefaultAliases() {
         return Collections.emptyList();
     }
 

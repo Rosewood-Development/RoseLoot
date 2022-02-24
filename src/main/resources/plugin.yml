@@ -5,11 +5,6 @@ api-version: '1.13'
 description: Manipulate loot of mobs, blocks, fishing, chests, piglin bartering, and advancements
 author: Esophose
 softdepend: [PlaceholderAPI, HeadDatabase]
-commands:
-  rl:
-    description: The base RoseLoot command
-    aliases: [roseloot, loot]
-    permission: roseloot.basecommand
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

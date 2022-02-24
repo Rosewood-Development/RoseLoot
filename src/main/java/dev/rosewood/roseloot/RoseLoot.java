@@ -17,7 +17,6 @@ import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -44,10 +43,6 @@ public class RoseLoot extends RosePlugin {
     public void enable() {
         if (NMSUtil.getVersionNumber() < 16)
             this.getLogger().severe(this.getDescription().getName() + " best supports 1.16 servers and newer. If you try to use part of the plugin that is not available for your current server version, expect to see some errors.");
-
-        PluginCommand command = this.getCommand("rl");
-        if (command != null)
-            command.setExecutor(this.getManager(CommandManager.class));
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new BlockListener(this), this);

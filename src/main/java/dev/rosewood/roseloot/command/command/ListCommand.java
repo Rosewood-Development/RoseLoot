@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.command.command;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.RoseCommand;
+import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
@@ -16,8 +17,8 @@ import org.bukkit.command.CommandSender;
 
 public class ListCommand extends RoseCommand {
 
-    public ListCommand(RosePlugin rosePlugin) {
-        super(rosePlugin);
+    public ListCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
+        super(rosePlugin, parent);
     }
 
     @RoseExecutable
@@ -38,12 +39,12 @@ public class ListCommand extends RoseCommand {
     }
 
     @Override
-    public String getName() {
+    protected String getDefaultName() {
         return "list";
     }
 
     @Override
-    public List<String> getAliases() {
+    protected List<String> getDefaultAliases() {
         return Collections.emptyList();
     }
 
