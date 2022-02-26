@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class GenerateCommand extends RoseCommand {
 
@@ -42,7 +43,7 @@ public class GenerateCommand extends RoseCommand {
         LootContents lootContents = lootResult.getLootContents();
 
         // Drop items and experience
-        lootResult.getLootContents().getItems().forEach(x -> target.getWorld().dropItemNaturally(target.getLocation(), x));
+        target.getInventory().addItem(lootContents.getItems().toArray(new ItemStack[0])).forEach((x, y) -> target.getWorld().dropItem(target.getLocation(), y));
 
         int experience = lootContents.getExperience();
         if (experience > 0) {
