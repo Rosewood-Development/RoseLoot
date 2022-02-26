@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.hook.items.EcoItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemProvider;
+import dev.rosewood.roseloot.hook.items.MMOItemProvider;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.manager.LootConditionManager;
@@ -85,7 +86,8 @@ public class CustomItemLootItem extends ItemLootItem {
     }
 
     public enum CustomItemPlugin {
-        ECOITEMS(new EcoItemProvider());
+        ECOITEMS(new EcoItemProvider()),
+        MMOITEMS(new MMOItemProvider());
 
         private final ItemProvider itemProvider;
 

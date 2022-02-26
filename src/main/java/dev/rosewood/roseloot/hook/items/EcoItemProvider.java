@@ -6,27 +6,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class EcoItemProvider implements ItemProvider {
 
-    private final boolean enabled;
     private Method lookupMethod, getItemMethod;
 
     public EcoItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("eco");
+        if (!Bukkit.getPluginManager().isPluginEnabled("eco"))
+            return;
 
-        if (this.enabled) {
-            try {
-                Class<?> itemClass = Class.forName("com.willfp.eco.core.items.Items");
-                this.lookupMethod = itemClass.getMethod("lookup", String.class);
-                Class<?> testableItemClass = Class.forName("com.willfp.eco.core.items.TestableItem");
-                this.getItemMethod = testableItemClass.getMethod("getItem");
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
+        try {
+            Class<?> itemClass = Class.forName("com.willfp.eco.core.items.Items");
+            this.lookupMethod = itemClass.getMethod("lookup", String.class);
+            Class<?> testableItemClass = Class.forName("com.willfp.eco.core.items.TestableItem");
+            this.getItemMethod = testableItemClass.getMethod("getItem");
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled || this.lookupMethod == null || this.getItemMethod == null)
+        if (this.lookupMethod == null || this.getItemMethod == null)
             return null;
 
         try {
