@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.economy;
+package dev.rosewood.roseloot.hook.economy;
 
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
@@ -25,7 +25,7 @@ public class PlayerPointsEconomyProvider implements EconomyProvider {
     @Override
     public double checkBalance(OfflinePlayer offlinePlayer) {
         if (this.economy == null)
-            return -1;
+            return 0;
         return this.economy.look(offlinePlayer.getUniqueId());
     }
 

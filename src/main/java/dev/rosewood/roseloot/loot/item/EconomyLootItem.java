@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.economy.EconomyProvider;
-import dev.rosewood.roseloot.economy.PlayerPointsEconomyProvider;
-import dev.rosewood.roseloot.economy.VaultEconomyProvider;
+import dev.rosewood.roseloot.hook.economy.EconomyProvider;
+import dev.rosewood.roseloot.hook.economy.PlayerPointsEconomyProvider;
+import dev.rosewood.roseloot.hook.economy.VaultEconomyProvider;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;

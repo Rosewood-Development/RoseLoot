@@ -22,12 +22,12 @@ import org.bukkit.inventory.Recipe;
 public class ItemLootItem implements LootItem<List<ItemStack>> {
 
     protected Material item;
-    private final NumberProvider amount;
-    private final NumberProvider maxAmount;
-    private final List<AmountModifier> amountModifiers;
-    private final ItemLootMeta itemLootMeta;
-    private final EnchantmentBonus enchantmentBonus;
-    private final boolean smeltIfBurning;
+    protected final ItemLootMeta itemLootMeta;
+    protected final NumberProvider amount;
+    protected final NumberProvider maxAmount;
+    protected final List<AmountModifier> amountModifiers;
+    protected final EnchantmentBonus enchantmentBonus;
+    protected final boolean smeltIfBurning;
 
     public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
         this.item = item;
@@ -41,6 +41,24 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
     protected ItemLootItem() {
         this(null, null, null, null, null, null, false);
+    }
+
+    protected ItemStack getCreationItem(LootContext context) {
+        Material item = this.item;
+        if (this.smeltIfBurning && context.getLootedEntity() != null && context.getLootedEntity().getFireTicks() > 0) {
+            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
+            while (recipesIterator.hasNext()) {
+                Recipe recipe = recipesIterator.next();
+                if (recipe instanceof FurnaceRecipe) {
+                    FurnaceRecipe furnaceRecipe = (FurnaceRecipe) recipe;
+                    if (furnaceRecipe.getInput().getType() == item) {
+                        item = furnaceRecipe.getResult().getType();
+                        break;
+                    }
+                }
+            }
+        }
+        return this.itemLootMeta.apply(new ItemStack(item), context);
     }
 
     @Override
@@ -62,36 +80,20 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         if (this.enchantmentBonus != null)
             amount += this.enchantmentBonus.getBonusAmount(context, amount);
-
-        Material item = this.item;
-        if (this.smeltIfBurning && context.getLootedEntity() != null && context.getLootedEntity().getFireTicks() > 0) {
-            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
-            while (recipesIterator.hasNext()) {
-                Recipe recipe = recipesIterator.next();
-                if (recipe instanceof FurnaceRecipe) {
-                    FurnaceRecipe furnaceRecipe = (FurnaceRecipe) recipe;
-                    if (furnaceRecipe.getInput().getType() == item) {
-                        item = furnaceRecipe.getResult().getType();
-                        break;
-                    }
-                }
-            }
-        }
-
         amount = Math.min(amount, this.maxAmount.getInteger());
-
+        
+        ItemStack creationItem = this.getCreationItem(context);
         if (amount > 0) {
-            int maxStackSize = item.getMaxStackSize();
-            ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(item), context);
+            int maxStackSize = creationItem.getMaxStackSize();
             while (amount > maxStackSize) {
                 amount -= maxStackSize;
-                ItemStack clone = itemStack.clone();
+                ItemStack clone = creationItem.clone();
                 clone.setAmount(maxStackSize);
                 generatedItems.add(clone);
             }
 
             if (amount > 0) {
-                ItemStack clone = itemStack.clone();
+                ItemStack clone = creationItem.clone();
                 clone.setAmount(amount);
                 generatedItems.add(clone);
             }
