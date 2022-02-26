@@ -13,6 +13,7 @@ softdepend:
   - MythicLib
   - MMOItems
   - ItemBridge
+  - ExecutableItems
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
