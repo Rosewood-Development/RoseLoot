@@ -17,6 +17,7 @@ softdepend:
   - ItemsAdder
   - ItemsXL
   - Oraxen
+  - CustomItems
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
