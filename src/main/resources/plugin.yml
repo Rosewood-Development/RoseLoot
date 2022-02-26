@@ -14,6 +14,7 @@ softdepend:
   - MMOItems
   - ItemBridge
   - ExecutableItems
+  - ItemsAdder
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
