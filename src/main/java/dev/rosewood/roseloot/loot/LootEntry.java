@@ -48,7 +48,7 @@ public class LootEntry implements LootItemGenerator {
                             // If weighted, add to the random entries
                             randomEntries.add(child.getWeight(context), child);
                         } else {
-                            // Otherwise generate it right away
+                            // Otherwise, generate it right away
                             unweightedEntries.add(child);
                         }
                     }

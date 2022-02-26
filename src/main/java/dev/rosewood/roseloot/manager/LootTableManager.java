@@ -195,7 +195,7 @@ public class LootTableManager extends Manager implements Listener {
             }
 
             NumberProvider weight;
-            if (entriesSection.contains("weight")) {
+            if (entrySection.contains("weight")) {
                 weight = NumberProvider.fromSection(entrySection, "weight", 0);
             } else {
                 weight = null;
