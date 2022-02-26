@@ -46,13 +46,12 @@ public class EnglishLocale implements Locale {
             this.put("command-reload-description", "Reloads the plugin");
             this.put("command-reload-reloaded", "&eConfiguration and locale files were reloaded.");
 
-            this.put("#5", "Test Command");
-            this.put("command-test-description", "Simulates a loot table");
-
-            this.put("#6", "Generate Command");
+            this.put("#5", "Generate Command");
             this.put("command-generate-description", "Runs a loot table");
+            this.put("command-generate-requires-player", "&cYou must specify a player when running this command through the console.");
+            this.put("command-generate-success", "&eLoot was generated for &b%player%&e using &b%loottable%&e.");
 
-            this.put("#7", "List Command");
+            this.put("#6", "List Command");
             this.put("command-list-description", "Display a list of active loot tables");
             this.put("command-list-none", "&eThere are no loot tables currently active.");
             this.put("command-list-header", "&eThere are &b%amount% &eloot tables currently active:");
@@ -60,13 +59,13 @@ public class EnglishLocale implements Locale {
             this.put("command-list-hierarchy-branch", "%spacer%&3%name%/");
             this.put("command-list-hierarchy-leaf", "%spacer%&b%name% &8- &7%type%");
 
-            this.put("#8", "Copy Command");
+            this.put("#7", "Copy Command");
             this.put("command-copy-description", "Get the item in your hand as a loot item");
             this.put("command-copy-success", "&eClick to copy the loot table entry to your clipboard.");
             this.put("command-copy-hover", "&7Click to copy");
             this.put("command-copy-no-item", "&cYou must be holding an item in your main hand to use this command.");
 
-            this.put("#9", "Argument Handler Error Messages");
+            this.put("#8", "Argument Handler Error Messages");
             this.put("argument-handler-loot-table", "LootTable [%input%] does not exist");
             this.put("argument-handler-player", "No Player with the username [%input%] was found online");
         }};

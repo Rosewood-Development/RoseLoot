@@ -80,14 +80,19 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
                 }
             }
 
-            org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(location)
-                    .lootedEntity(context.getLootedEntity())
-                    .killer(context.getLootingPlayer())
-                    .lootingModifier(lootingModifier)
-                    .luck((float) context.getLuckLevel())
-                    .build();
+            try {
+                org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(location)
+                        .lootedEntity(context.getLootedEntity())
+                        .killer(context.getLootingPlayer())
+                        .lootingModifier(lootingModifier)
+                        .luck((float) context.getLuckLevel())
+                        .build();
 
-            lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
+                lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
+            } catch (Exception e) {
+                RoseLoot.getInstance().getLogger().warning("Failed to generate loot from vanilla loot table: [" + this.vanillaLootTable.getKey() + "]. Reason: " + e.getMessage());
+                lootItems = Collections.emptyList();
+            }
         }
         this.running = false;
 

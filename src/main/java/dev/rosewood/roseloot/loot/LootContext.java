@@ -70,6 +70,10 @@ public class LootContext {
         this(player, null, null, null, null, null, advancementKey, null);
     }
 
+    public LootContext(@NotNull Player player) {
+        this(player, null, null, null, null, null, null, null);
+    }
+
     /**
      * @return the entity that triggered the loot generation
      */

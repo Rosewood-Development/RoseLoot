@@ -265,6 +265,13 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("custom_item", CustomItemLootItem::fromSection);
     }
 
+    /**
+     * Generates loot from all LootTables with the given LootTableType with the given LootContext.
+     *
+     * @param lootTableType The LootTableType of the LootTables to run
+     * @param lootContext The LootContext to use when generating loot
+     * @return A LootResult containing all generated loot
+     */
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
         OverwriteExisting overwriteExisting = OverwriteExisting.NONE;
@@ -273,11 +280,34 @@ public class LootTableManager extends Manager implements Listener {
             overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue(lootContext));
         }
 
-        LootResult lootResult = new LootResult(lootContext, lootContents, overwriteExisting);
+        return this.callEvent(new LootResult(lootContext, lootContents, overwriteExisting));
+    }
+
+    /**
+     * Generates loot from a LootTable with the given LootContext.
+     *
+     * @param lootTable The LootTable to run
+     * @param lootContext The LootContext to use when generating loot
+     * @return A LootResult containing all generated loot
+     */
+    public LootResult getLoot(LootTable lootTable, LootContext lootContext) {
+        LootContents lootContents = new LootContents(lootContext);
+        lootContents.add(lootTable.generate(lootContext));
+        return this.callEvent(new LootResult(lootContext, lootContents, OverwriteExisting.NONE));
+    }
+
+    /**
+     * Calls the PostLootGenerateEvent for the given LootResult.
+     * May modify the given LootResult or return a new one entirely.
+     *
+     * @param lootResult The LootResult to call the event with
+     * @return The LootResult after the event has been called
+     */
+    private LootResult callEvent(LootResult lootResult) {
         PostLootGenerateEvent event = new PostLootGenerateEvent(lootResult);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())
-            return new LootResult(lootContext, new LootContents(lootContext), OverwriteExisting.NONE);
+            return new LootResult(lootResult.getLootContext(), new LootContents(lootResult.getLootContext()), OverwriteExisting.NONE);
 
         if (!event.shouldDropItems())
             lootResult.getLootContents().removeItems();

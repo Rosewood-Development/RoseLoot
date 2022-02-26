@@ -38,7 +38,7 @@ public class LootPool implements LootItemGenerator {
                 // If weighted, add to the random entries
                 randomEntries.add(entry.getWeight(context), entry);
             } else {
-                // Otherwise generate it right away
+                // Otherwise, generate it right away
                 unweightedEntries.add(entry);
             }
         }
