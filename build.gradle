@@ -41,6 +41,7 @@ dependencies {
     compileOnly 'com.ssomar:executableitems:4.1.3.2'
     compileOnly 'com.github.LoneDev6:api-itemsadder:2.5.5'
     compileOnly 'de.erethon:caliburn:1.0.3'
+    compileOnly 'com.github.oraxen:oraxen:master-SNAPSHOT'
     compileOnly 'com.arcaniax:HeadDatabase-API:1.3.1', {
         exclude group: 'org.spigotmc'
     }

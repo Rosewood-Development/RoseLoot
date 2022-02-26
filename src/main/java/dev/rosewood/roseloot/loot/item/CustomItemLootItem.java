@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.hook.items.ItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemsAdderItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemsXLItemProvider;
 import dev.rosewood.roseloot.hook.items.MMOItemProvider;
+import dev.rosewood.roseloot.hook.items.OraxenItemProvider;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.manager.LootConditionManager;
@@ -95,7 +96,8 @@ public class CustomItemLootItem extends ItemLootItem {
         ITEMBRIDGE(new ItemBridgeItemProvider()),
         EXECUTABLEITEMS(new ExecutableItemProvider()),
         ITEMSADDER(new ItemsAdderItemProvider()),
-        ITEMSXL(new ItemsXLItemProvider());
+        ITEMSXL(new ItemsXLItemProvider()),
+        ORAXEN(new OraxenItemProvider());
 
         private final ItemProvider itemProvider;
 
