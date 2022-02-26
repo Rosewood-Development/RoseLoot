@@ -21,6 +21,7 @@ compileJava {
 repositories {
     mavenCentral()
 
+    maven { url = 'https://erethon.de/repo/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
     maven { url = 'https://libraries.minecraft.net' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
@@ -39,6 +40,7 @@ dependencies {
     compileOnly 'com.github.jojodmo:ItemBridge:master-SNAPSHOT'
     compileOnly 'com.ssomar:executableitems:4.1.3.2'
     compileOnly 'com.github.LoneDev6:api-itemsadder:2.5.5'
+    compileOnly 'de.erethon:caliburn:1.0.3'
     compileOnly 'com.arcaniax:HeadDatabase-API:1.3.1', {
         exclude group: 'org.spigotmc'
     }

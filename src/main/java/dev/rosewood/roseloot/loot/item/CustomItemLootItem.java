@@ -6,6 +6,7 @@ import dev.rosewood.roseloot.hook.items.ExecutableItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemBridgeItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemsAdderItemProvider;
+import dev.rosewood.roseloot.hook.items.ItemsXLItemProvider;
 import dev.rosewood.roseloot.hook.items.MMOItemProvider;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
@@ -93,7 +94,8 @@ public class CustomItemLootItem extends ItemLootItem {
         MMOITEMS(new MMOItemProvider()),
         ITEMBRIDGE(new ItemBridgeItemProvider()),
         EXECUTABLEITEMS(new ExecutableItemProvider()),
-        ITEMSADDER(new ItemsAdderItemProvider());
+        ITEMSADDER(new ItemsAdderItemProvider()),
+        ITEMSXL(new ItemsXLItemProvider());
 
         private final ItemProvider itemProvider;
 
