@@ -4,7 +4,7 @@ public class LootResult {
 
     private final LootContext lootContext;
     private final LootContents lootContents;
-    private final OverwriteExisting overwriteExisting;
+    private OverwriteExisting overwriteExisting;
 
     public LootResult(LootContext lootContext, LootContents lootContents, OverwriteExisting overwriteExisting) {
         this.lootContext = lootContext;
@@ -12,12 +12,32 @@ public class LootResult {
         this.overwriteExisting = overwriteExisting;
     }
 
+    /**
+     * @return the LootContext used to generate this LootResult
+     */
     public LootContext getLootContext() {
         return this.lootContext;
     }
 
+    /**
+     * @return the LootContents generated
+     */
     public LootContents getLootContents() {
         return this.lootContents;
+    }
+
+    /**
+     * @return the OverwriteExisting value
+     */
+    public OverwriteExisting getOverwriteExisting() {
+        return this.overwriteExisting;
+    }
+
+    /**
+     * @param overwriteExisting the OverwriteExisting value to set
+     */
+    public void setOverwriteExisting(OverwriteExisting overwriteExisting) {
+        this.overwriteExisting = overwriteExisting;
     }
 
     /**

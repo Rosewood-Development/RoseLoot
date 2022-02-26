@@ -5,6 +5,7 @@ import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
+import dev.rosewood.roseloot.event.PostLootGenerateEvent;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootEntry;
@@ -271,7 +272,25 @@ public class LootTableManager extends Manager implements Listener {
             lootContents.add(lootTable.generate(lootContext));
             overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue(lootContext));
         }
-        return new LootResult(lootContext, lootContents, overwriteExisting);
+
+        LootResult lootResult = new LootResult(lootContext, lootContents, overwriteExisting);
+        PostLootGenerateEvent event = new PostLootGenerateEvent(lootResult);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled())
+            return new LootResult(lootContext, new LootContents(lootContext), OverwriteExisting.NONE);
+
+        if (!event.shouldDropItems())
+            lootResult.getLootContents().removeItems();
+
+        if (!event.shouldDropExperience())
+            lootResult.getLootContents().removeExperience();
+
+        if (!event.shouldTriggerExtras())
+            lootResult.getLootContents().removeExtraTriggers();
+
+        lootResult.setOverwriteExisting(event.getOverwriteExisting());
+
+        return lootResult;
     }
 
     public LootTable getLootTable(LootTableType lootTableType, String name) {

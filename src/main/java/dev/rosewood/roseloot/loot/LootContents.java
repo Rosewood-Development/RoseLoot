@@ -86,4 +86,32 @@ public class LootContents {
                 .forEach(x -> ((TriggerableLootItem<?>) x).trigger(this.context, this.context.getLootingPlayer(), location));
     }
 
+    /**
+     * @return true if there are other actions that will happen due to the loot generation, false otherwise
+     */
+    public boolean hasExtraTriggers() {
+        return this.contents.stream().anyMatch(x -> x instanceof TriggerableLootItem);
+    }
+
+    /**
+     * Removes all ItemLootItems from the contents
+     */
+    public void removeItems() {
+        this.contents.removeIf(x -> x instanceof ItemLootItem);
+    }
+
+    /**
+     * Removes all ExperienceLootItems from the contents
+     */
+    public void removeExperience() {
+        this.contents.removeIf(x -> x instanceof ExperienceLootItem);
+    }
+
+    /**
+     * Removes all TriggerableLootItems from the contents
+     */
+    public void removeExtraTriggers() {
+        this.contents.removeIf(x -> x instanceof TriggerableLootItem);
+    }
+
 }

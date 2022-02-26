@@ -8,6 +8,7 @@ import java.util.function.Function;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An event that gets called during the RoseLoot LootItem registration
@@ -25,6 +26,7 @@ public class LootItemTypeRegistrationEvent extends Event {
     /**
      * @return an unmodifiable map of registered LootItem types
      */
+    @NotNull
     public Map<String, Function<ConfigurationSection, LootItem<?>>> getRegisteredLootItemsTypes() {
         return Collections.unmodifiableMap(this.registeredLootItemsTypes);
     }
@@ -36,7 +38,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @param function The function to read a ConfigurationSection and output a LootItem
      * @return true if registering the new LootItem type overwrote a different LootItem type with the same name, false otherwise
      */
-    public boolean registerLootItem(String name, Function<ConfigurationSection, LootItem<?>> function) {
+    public boolean registerLootItem(@NotNull String name, @NotNull Function<ConfigurationSection, LootItem<?>> function) {
         return this.registeredLootItemsTypes.put(name.toUpperCase(), function) == null;
     }
 
@@ -46,7 +48,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @param name The name of the LootItem type to unregister
      * @return true if a LootItem type was unregistered, false otherwise
      */
-    public boolean unregisterLootItem(String name) {
+    public boolean unregisterLootItem(@NotNull String name) {
         return this.registeredLootItemsTypes.remove(name.toUpperCase()) != null;
     }
 
