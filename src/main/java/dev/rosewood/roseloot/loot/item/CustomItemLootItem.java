@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.hook.items.EcoItemProvider;
 import dev.rosewood.roseloot.hook.items.ExecutableItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemBridgeItemProvider;
+import dev.rosewood.roseloot.hook.items.ItemEditItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemsAdderItemProvider;
 import dev.rosewood.roseloot.hook.items.ItemsXLItemProvider;
@@ -99,7 +100,8 @@ public class CustomItemLootItem extends ItemLootItem {
         ITEMSADDER(new ItemsAdderItemProvider()),
         ITEMSXL(new ItemsXLItemProvider()),
         ORAXEN(new OraxenItemProvider()),
-        KNOKKOCUSTOMITEMS(new KnokkoCustomItemProvider());
+        KNOKKOCUSTOMITEMS(new KnokkoCustomItemProvider()),
+        ITEMEDIT(new ItemEditItemProvider());
 
         private final ItemProvider itemProvider;
 
