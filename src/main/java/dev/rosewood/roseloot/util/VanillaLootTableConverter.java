@@ -274,7 +274,10 @@ public class VanillaLootTableConverter {
             if (skullItem != null) {
                 writer.write(poolIndex + ":");
                 writer.increaseIndentation();
-                writer.write("conditions: []");
+                writer.write("conditions:");
+                writer.increaseIndentation();
+                writer.write("- 'charged-explosion'");
+                writer.decreaseIndentation();
                 writer.write("rolls: 1");
                 writer.write("bonus-rolls: 0");
                 writer.write("entries:");
