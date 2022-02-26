@@ -19,6 +19,7 @@ softdepend:
   - Oraxen
   - CustomItems
   - ItemEdit
+  - UberItems
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
