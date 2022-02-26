@@ -12,6 +12,7 @@ softdepend:
   - eco
   - MythicLib
   - MMOItems
+  - ItemBridge
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

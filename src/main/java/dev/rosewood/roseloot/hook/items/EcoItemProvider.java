@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * EcoItems support is added through reflection since it requires Java 17, and we want to keep compatibility with Java 8.
+ */
 public class EcoItemProvider implements ItemProvider {
 
     private Method lookupMethod, getItemMethod;
