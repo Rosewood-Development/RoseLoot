@@ -21,11 +21,11 @@ compileJava {
 repositories {
     mavenCentral()
 
+    maven { url = 'https://repo.rosewooddev.io/repository/public/' }
     maven { url = 'https://erethon.de/repo/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
     maven { url = 'https://libraries.minecraft.net' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-    maven { url = 'https://repo.rosewooddev.io/repository/public/' }
     maven { url = 'https://jitpack.io/' }
 }
 
@@ -35,6 +35,7 @@ dependencies {
     compileOnly 'org.jetbrains:annotations:22.0.0'
     compileOnly 'com.github.milkbowl:vault:1.7.3'
     compileOnly 'org.black_ixx:playerpoints:3.1.0'
+    compileOnly 'me.realized:tokenmanager:3.2.5'
     compileOnly 'io.lumine:MythicLib-dist:1.2'
     compileOnly 'net.Indyuce:MMOItems:6.7'
     compileOnly 'com.github.jojodmo:ItemBridge:master-SNAPSHOT'
