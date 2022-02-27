@@ -1,46 +1,42 @@
 package dev.rosewood.roseloot.hook.economy;
 
 import me.realized.tokenmanager.TokenManagerPlugin;
-import me.realized.tokenmanager.api.TokenManager;
 import me.realized.tokenmanager.util.NumberUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 public class TokenManagerEconomyProvider implements EconomyProvider {
 
-    private TokenManager economy;
+    private final boolean enabled;
 
     public TokenManagerEconomyProvider() {
-        if (Bukkit.getPluginManager().isPluginEnabled("TokenManager"))
-            this.economy = TokenManagerPlugin.getInstance();
+        this.enabled = Bukkit.getPluginManager().isPluginEnabled("TokenManager");
     }
 
     @Override
     public String formatCurrency(double amount) {
-        if (this.economy == null)
+        if (!this.enabled)
             return String.valueOf(amount);
         return NumberUtil.withCommas((long) amount);
     }
 
     @Override
     public double checkBalance(OfflinePlayer offlinePlayer) {
-        if (this.economy == null || !offlinePlayer.isOnline())
+        if (!this.enabled)
             return 0;
-        return this.economy.getTokens(offlinePlayer.getPlayer()).orElse(0);
+        return TokenManagerPlugin.getInstance().getTokens(offlinePlayer.getPlayer()).orElse(0);
     }
 
     @Override
     public void deposit(OfflinePlayer offlinePlayer, double amount) {
-        if (this.economy == null || !offlinePlayer.isOnline())
-            return;
-        this.economy.addTokens(offlinePlayer.getPlayer(), (long) amount);
+        if (this.enabled)
+            TokenManagerPlugin.getInstance().addTokens(offlinePlayer.getPlayer(), (long) amount);
     }
 
     @Override
     public void withdraw(OfflinePlayer offlinePlayer, double amount) {
-        if (this.economy == null || !offlinePlayer.isOnline())
-            return;
-        this.economy.removeTokens(offlinePlayer.getPlayer(), (long) amount);
+        if (this.enabled)
+            TokenManagerPlugin.getInstance().removeTokens(offlinePlayer.getPlayer(), (long) amount);
     }
 
 }

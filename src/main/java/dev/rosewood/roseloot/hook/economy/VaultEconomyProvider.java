@@ -7,10 +7,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class VaultEconomyProvider implements EconomyProvider {
 
+    private final boolean enabled;
     private Economy economy;
 
     public VaultEconomyProvider() {
-        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+        this.enabled = Bukkit.getPluginManager().isPluginEnabled("Vault");
+        if (this.enabled) {
             RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
             if (rsp != null)
                 this.economy = rsp.getProvider();
@@ -19,27 +21,27 @@ public class VaultEconomyProvider implements EconomyProvider {
 
     @Override
     public String formatCurrency(double amount) {
-        if (this.economy == null)
+        if (!this.enabled)
             return String.valueOf(amount);
         return this.economy.format(amount);
     }
 
     @Override
     public double checkBalance(OfflinePlayer offlinePlayer) {
-        if (this.economy == null)
-            return -1;
+        if (!this.enabled)
+            return 0;
         return this.economy.getBalance(offlinePlayer);
     }
 
     @Override
     public void deposit(OfflinePlayer offlinePlayer, double amount) {
-        if (this.economy != null)
+        if (this.enabled)
             this.economy.depositPlayer(offlinePlayer, amount);
     }
 
     @Override
     public void withdraw(OfflinePlayer offlinePlayer, double amount) {
-        if (this.economy != null)
+        if (this.enabled)
             this.economy.withdrawPlayer(offlinePlayer, amount);
     }
 
