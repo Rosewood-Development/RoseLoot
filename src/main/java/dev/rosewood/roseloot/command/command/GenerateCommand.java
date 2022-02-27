@@ -7,7 +7,6 @@ import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
 import dev.rosewood.rosegarden.command.framework.annotation.Optional;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
-import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
@@ -15,11 +14,8 @@ import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public class GenerateCommand extends RoseCommand {
 
@@ -40,18 +36,7 @@ public class GenerateCommand extends RoseCommand {
         Player target = player == null ? (Player) sender : player;
         LootContext lootContext = new LootContext(target);
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
-        LootContents lootContents = lootResult.getLootContents();
-
-        // Drop items and experience
-        target.getInventory().addItem(lootContents.getItems().toArray(new ItemStack[0])).forEach((x, y) -> target.getWorld().dropItem(target.getLocation(), y));
-
-        int experience = lootContents.getExperience();
-        if (experience > 0) {
-            Location location = target.getLocation();
-            target.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
-        }
-
-        lootContents.triggerExtras(target.getLocation());
+        lootResult.getLootContents().dropForPlayer(target);
 
         if (silent == null || !silent)
             localeManager.sendMessage(sender, "command-generate-success", StringPlaceholders.builder("player", target.getName()).addPlaceholder("loottable", lootTable.getName()).build());

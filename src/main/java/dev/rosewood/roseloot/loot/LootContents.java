@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bukkit.Location;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -112,6 +114,23 @@ public class LootContents {
      */
     public void removeExtraTriggers() {
         this.contents.removeIf(x -> x instanceof TriggerableLootItem);
+    }
+
+    /**
+     * Gives the loot contained within this LootContents to a Player and executes all triggers
+     *
+     * @param player The Player to
+     */
+    public void dropForPlayer(Player player) {
+        player.getInventory().addItem(this.getItems().toArray(new ItemStack[0])).forEach((x, y) -> player.getWorld().dropItemNaturally(player.getLocation(), y));
+
+        int experience = this.getExperience();
+        if (experience > 0) {
+            Location location = player.getLocation();
+            player.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+        }
+
+        this.triggerExtras(player.getLocation());
     }
 
 }

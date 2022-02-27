@@ -65,7 +65,10 @@ public class EnglishLocale implements Locale {
             this.put("command-copy-hover", "&7Click to copy");
             this.put("command-copy-no-item", "&cYou must be holding an item in your main hand to use this command.");
 
-            this.put("#8", "Argument Handler Error Messages");
+            this.put("#8", "Voucher Messages");
+            this.put("voucher-expired", "&cThis voucher has either expired or was improperly configured and can no longer be redeemed. Please contact a server administrator.");
+
+            this.put("#9", "Argument Handler Error Messages");
             this.put("argument-handler-loot-table", "LootTable [%input%] does not exist");
             this.put("argument-handler-player", "No Player with the username [%input%] was found online");
         }};
