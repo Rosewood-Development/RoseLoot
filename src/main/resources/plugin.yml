@@ -8,6 +8,7 @@ softdepend:
   - PlaceholderAPI
   - HeadDatabase
   - Vault
+  - Treasury
   - PlayerPoints
   - eco
   - MythicLib

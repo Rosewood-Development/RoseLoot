@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.hook.economy.EconomyProvider;
 import dev.rosewood.roseloot.hook.economy.PlayerPointsEconomyProvider;
 import dev.rosewood.roseloot.hook.economy.TokenManagerEconomyProvider;
+import dev.rosewood.roseloot.hook.economy.TreasuryEconomyProvider;
 import dev.rosewood.roseloot.hook.economy.VaultEconomyProvider;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.NumberProvider;
@@ -59,6 +60,7 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     public enum EconomyPlugin implements EconomyProvider {
         VAULT(new VaultEconomyProvider()),
+        TREASURY(new TreasuryEconomyProvider()),
         PLAYERPOINTS(new PlayerPointsEconomyProvider()),
         TOKENMANAGER(new TokenManagerEconomyProvider());
 
