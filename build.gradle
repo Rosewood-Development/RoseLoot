@@ -48,6 +48,7 @@ dependencies {
     compileOnly 'nl.knokko:customitems:9.18'
     compileOnly 'com.github.emanondev:ItemEdit:2.18'
     compileOnly 'thirtyvirus.uber:uberitems:2.6'
+    compileOnly 'com.github.Slimefun:Slimefun4:RC-30'
     compileOnly 'com.arcaniax:HeadDatabase-API:1.3.1', {
         exclude group: 'org.spigotmc'
     }

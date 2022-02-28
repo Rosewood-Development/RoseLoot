@@ -10,6 +10,7 @@ softdepend:
   - Vault
   - Treasury
   - PlayerPoints
+  - TokenManager
   - eco
   - MythicLib
   - MMOItems
@@ -21,6 +22,7 @@ softdepend:
   - CustomItems
   - ItemEdit
   - UberItems
+  - Slimefun
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

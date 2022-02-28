@@ -11,6 +11,7 @@ import dev.rosewood.roseloot.hook.items.ItemsXLItemProvider;
 import dev.rosewood.roseloot.hook.items.KnokkoCustomItemProvider;
 import dev.rosewood.roseloot.hook.items.MMOItemProvider;
 import dev.rosewood.roseloot.hook.items.OraxenItemProvider;
+import dev.rosewood.roseloot.hook.items.SlimefunItemProvider;
 import dev.rosewood.roseloot.hook.items.UberItemProvider;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
@@ -103,7 +104,8 @@ public class CustomItemLootItem extends ItemLootItem {
         ORAXEN(new OraxenItemProvider()),
         KNOKKOCUSTOMITEMS(new KnokkoCustomItemProvider()),
         ITEMEDIT(new ItemEditItemProvider()),
-        UBERITEMS(new UberItemProvider());
+        UBERITEMS(new UberItemProvider()),
+        SLIMEFUN(new SlimefunItemProvider());
 
         private final ItemProvider itemProvider;
 
