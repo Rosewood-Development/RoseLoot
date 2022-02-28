@@ -27,7 +27,9 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     @Override
     public Double create(LootContext context) {
-        return this.amounts.stream().mapToDouble(NumberProvider::getDouble).sum();
+        double amount = this.amounts.stream().mapToDouble(NumberProvider::getDouble).sum();
+        context.getPlaceholders().add("economy_amount", amount);
+        return amount;
     }
 
     @Override

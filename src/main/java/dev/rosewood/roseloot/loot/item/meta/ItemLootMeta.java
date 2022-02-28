@@ -198,7 +198,7 @@ public class ItemLootMeta {
         if (section.getBoolean("copy-block-data", false))
             this.copyBlockData = true;
 
-        if (section.getBoolean("copy-block-name"))
+        if (section.getBoolean("copy-block-name", false))
             this.copyBlockName = true;
     }
 

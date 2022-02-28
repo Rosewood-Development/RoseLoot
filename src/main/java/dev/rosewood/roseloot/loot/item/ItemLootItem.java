@@ -99,6 +99,8 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             }
         }
 
+        context.getPlaceholders().add("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
+
         return generatedItems;
     }
 

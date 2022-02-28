@@ -1,8 +1,10 @@
 package dev.rosewood.roseloot.loot;
 
+import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
@@ -26,6 +28,7 @@ public class LootContext {
     private final ItemStack inputItem;
     private final NamespacedKey vanillaLootTableKey, advancementKey;
     private final ExplosionType explosionType;
+    private final LootPlaceholders placeholders;
 
     private LootContext(Entity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey, NamespacedKey advancementKey, ExplosionType explosionType) {
         this.looter = looter;
@@ -36,6 +39,9 @@ public class LootContext {
         this.vanillaLootTableKey = vanillaLootTableKey;
         this.advancementKey = advancementKey;
         this.explosionType = explosionType;
+
+        this.placeholders = new LootPlaceholders();
+        this.addContextPlaceholders();
     }
 
     public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity) {
@@ -209,6 +215,37 @@ public class LootContext {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return the LootPlaceholders used to parse placeholders within loot item strings
+     */
+    @NotNull
+    public LootPlaceholders getPlaceholders() {
+        return this.placeholders;
+    }
+
+    /**
+     * Adds placeholders relative to this context
+     */
+    private void addContextPlaceholders() {
+        if (this.getLootingPlayer() != null) this.placeholders.add("player", this.getLootingPlayer().getName());
+        if (this.getLootedEntity() != null) this.placeholders.add("entity_type", this.getLootedEntity().getType().name().toLowerCase());
+        if (this.getLootedBlock() != null) this.placeholders.add("block_type", this.getLootedBlock().getType().name().toLowerCase());
+        if (this.getItemUsed() != null) this.placeholders.add("item_type", this.getItemUsed().getType().name().toLowerCase());
+        if (this.getVanillaLootTableKey() != null) this.placeholders.add("vanilla_loot_table_name", this.getVanillaLootTableKey().toString());
+        if (this.getAdvancementKey() != null) this.placeholders.add("advancement_name", this.getAdvancementKey().toString());
+        if (this.getExplosionType() != null) this.placeholders.add("explosion_type", this.getExplosionType().name().toLowerCase());
+        this.placeholders.add("luck_level", this.getLuckLevel());
+
+        Location location = this.getLocation();
+        World world = location.getWorld();
+        if (world != null)
+            this.placeholders.add("world", world.getName());
+
+        this.placeholders.add("x", LootUtils.getToMaximumDecimals(location.getX(), 2));
+        this.placeholders.add("y", LootUtils.getToMaximumDecimals(location.getY(), 2));
+        this.placeholders.add("z", LootUtils.getToMaximumDecimals(location.getZ(), 2));
     }
 
 }
