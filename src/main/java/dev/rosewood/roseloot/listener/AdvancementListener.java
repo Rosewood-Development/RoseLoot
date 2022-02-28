@@ -26,7 +26,7 @@ public class AdvancementListener implements Listener {
         if (ConfigurationManager.Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(player.getWorld().getName())))
             return;
 
-        LootContext lootContext = new LootContext(player, event.getAdvancement().getKey());
+        LootContext lootContext = LootContext.builder().looter(player).advancementKey(event.getAdvancement().getKey()).build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ADVANCEMENT, lootContext);
         lootResult.getLootContents().dropForPlayer(player);
     }

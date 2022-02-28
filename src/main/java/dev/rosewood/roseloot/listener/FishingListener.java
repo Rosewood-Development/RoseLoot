@@ -13,6 +13,7 @@ import org.bukkit.Statistic;
 import org.bukkit.Tag;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.FishHook;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,7 +41,11 @@ public class FishingListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(fishHook.getWorld().getName())))
             return;
 
-        LootContext lootContext = new LootContext(player, fishHook);
+        LootContext lootContext = LootContext.builder()
+                .looter(player)
+                .fishHook(fishHook)
+                .hasExistingItems(fishHook.getHookedEntity() instanceof Item)
+                .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.FISHING, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 

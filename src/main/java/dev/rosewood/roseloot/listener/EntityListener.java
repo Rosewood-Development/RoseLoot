@@ -46,7 +46,11 @@ public class EntityListener implements Listener {
         if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent)
             looter = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
 
-        LootContext lootContext = new LootContext(looter, entity);
+        LootContext lootContext = LootContext.builder()
+                .looter(looter)
+                .lootedEntity(entity)
+                .hasExistingItems(!event.getDrops().isEmpty())
+                .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
@@ -109,7 +113,11 @@ public class EntityListener implements Listener {
                 break;
         }
 
-        LootContext lootContext = new LootContext(shearer, entity);
+        LootContext lootContext = LootContext.builder()
+                .looter(shearer)
+                .lootedEntity(entity)
+                .hasExistingItems(true)
+                .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY_DROP_ITEM, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 

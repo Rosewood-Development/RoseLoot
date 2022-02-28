@@ -38,7 +38,7 @@ public class LootGenerateListener implements Listener {
         if (event.getEntity() instanceof LivingEntity)
             looter = (LivingEntity) event.getEntity();
 
-        LootContext lootContext = new LootContext(looter, block, event.getLootTable().getKey());
+        LootContext lootContext = LootContext.builder().looter(looter).lootedBlock(block).vanillaLootTableKey(event.getLootTable().getKey()).build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.CONTAINER, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 

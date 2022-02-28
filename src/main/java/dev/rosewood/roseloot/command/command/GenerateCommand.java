@@ -34,7 +34,7 @@ public class GenerateCommand extends RoseCommand {
         }
 
         Player target = player == null ? (Player) sender : player;
-        LootContext lootContext = new LootContext(target);
+        LootContext lootContext = LootContext.builder().looter(target).build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
         lootResult.getLootContents().dropForPlayer(target);
 

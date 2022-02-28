@@ -30,7 +30,9 @@ public class VoucherListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onVoucherRedeem(PlayerInteractEvent event) {
         // Want to be able to execute this regardless if it's cancelled or not
-        if ((event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) || event.getHand() != EquipmentSlot.HAND)
+        if ((event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
+                || event.getHand() != EquipmentSlot.HAND
+                || event.useInteractedBlock() == Event.Result.DENY)
             return;
 
         Block block = event.getClickedBlock();
@@ -55,7 +57,7 @@ public class VoucherListener implements Listener {
         // Remove one of the vouchers
         itemInHand.setAmount(itemInHand.getAmount() - 1);
 
-        LootContext lootContext = new LootContext(player);
+        LootContext lootContext = LootContext.builder().looter(player).build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
         lootResult.getLootContents().dropForPlayer(player);
 

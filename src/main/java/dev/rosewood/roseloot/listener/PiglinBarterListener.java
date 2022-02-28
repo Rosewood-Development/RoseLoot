@@ -30,7 +30,11 @@ public class PiglinBarterListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(piglin.getWorld().getName())))
             return;
 
-        LootContext lootContext = new LootContext(piglin, event.getInput());
+        LootContext lootContext = LootContext.builder()
+                .looter(piglin)
+                .inputItem(event.getInput())
+                .hasExistingItems(!event.getOutcome().isEmpty())
+                .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.PIGLIN_BARTER, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 

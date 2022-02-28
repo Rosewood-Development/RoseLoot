@@ -124,6 +124,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("feature", FeatureCondition.class);
         event.registerLootCondition("freezing", context -> context.getLootedEntity() != null && context.getLootedEntity().getFreezeTicks() > 0);
         event.registerLootCondition("grown-crop", GrownCropCondition.class);
+        event.registerLootCondition("has-existing-drops", LootContext::hasExistingItems);
         event.registerLootCondition("has-saddle", HasSaddleCondition.class);
         event.registerLootCondition("humidity", HumidityCondition.class);
         event.registerLootCondition("in-fluid", InFluidCondition.class);

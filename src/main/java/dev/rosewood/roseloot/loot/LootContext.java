@@ -28,9 +28,10 @@ public class LootContext {
     private final ItemStack inputItem;
     private final NamespacedKey vanillaLootTableKey, advancementKey;
     private final ExplosionType explosionType;
+    private final boolean hasExistingItems;
     private final LootPlaceholders placeholders;
 
-    private LootContext(Entity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey, NamespacedKey advancementKey, ExplosionType explosionType) {
+    private LootContext(Entity looter, LivingEntity lootedEntity, Block lootedBlock, FishHook fishHook, ItemStack inputItem, NamespacedKey vanillaLootTableKey, NamespacedKey advancementKey, ExplosionType explosionType, boolean hasExistingItems) {
         this.looter = looter;
         this.lootedEntity = lootedEntity;
         this.lootedBlock = lootedBlock;
@@ -39,45 +40,10 @@ public class LootContext {
         this.vanillaLootTableKey = vanillaLootTableKey;
         this.advancementKey = advancementKey;
         this.explosionType = explosionType;
+        this.hasExistingItems = hasExistingItems;
 
         this.placeholders = new LootPlaceholders();
         this.addContextPlaceholders();
-    }
-
-    public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity) {
-        this(looter, lootedEntity, null, null, null, null, null, null);
-    }
-
-    public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock) {
-        this(looter, null, lootedBlock, null, null, null, null, null);
-    }
-
-    public LootContext(@NotNull Entity looter, @NotNull FishHook fishHook) {
-        this(looter, null, null, fishHook, null, null, null, null);
-    }
-
-    public LootContext(@NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
-        this(null, lootedEntity, null, null, inputItem, null, null, null);
-    }
-
-    public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock, @NotNull NamespacedKey vanillaLootTableKey) {
-        this(looter, null, lootedBlock, null, null, vanillaLootTableKey, null, null);
-    }
-
-    public LootContext(@Nullable Entity looter, @NotNull Block lootedBlock, @NotNull ExplosionType explosionType) {
-        this(looter, null, lootedBlock, null, null, null, null, explosionType);
-    }
-
-    public LootContext(@Nullable Entity looter, @NotNull LivingEntity lootedEntity, @NotNull ItemStack inputItem) {
-        this(looter, lootedEntity, null, null, inputItem, null, null, null);
-    }
-
-    public LootContext(@NotNull Player player, @NotNull NamespacedKey advancementKey) {
-        this(player, null, null, null, null, null, advancementKey, null);
-    }
-
-    public LootContext(@NotNull Player player) {
-        this(player, null, null, null, null, null, null, null);
     }
 
     /**
@@ -192,7 +158,7 @@ public class LootContext {
             if (item != null && item.getType() == Material.FISHING_ROD && item.getItemMeta() != null)
                 luck += item.getItemMeta().getEnchantLevel(Enchantment.LUCK);
         }
-        
+
         return luck;
     }
 
@@ -215,6 +181,13 @@ public class LootContext {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return true if the already generated loot (from server events) created any items, false otherwise
+     */
+    public boolean hasExistingItems() {
+        return this.hasExistingItems;
     }
 
     /**
@@ -246,6 +219,147 @@ public class LootContext {
         this.placeholders.add("x", LootUtils.getToMaximumDecimals(location.getX(), 2));
         this.placeholders.add("y", LootUtils.getToMaximumDecimals(location.getY(), 2));
         this.placeholders.add("z", LootUtils.getToMaximumDecimals(location.getZ(), 2));
+    }
+
+    /**
+     * @return a new LootContext builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private Entity looter;
+        private LivingEntity lootedEntity;
+        private Block lootedBlock;
+        private FishHook fishHook;
+        private ItemStack inputItem;
+        private NamespacedKey vanillaLootTableKey, advancementKey;
+        private ExplosionType explosionType;
+        private boolean hasExistingItmes;
+
+        /**
+         * Sets the looting entity
+         *
+         * @param looter The looting entity
+         * @return This builder
+         */
+        public Builder looter(Entity looter) {
+            this.looter = looter;
+            return this;
+        }
+
+        /**
+         * Sets the looted entity
+         *
+         * @param lootedEntity The looted entity
+         * @return This builder
+         */
+        public Builder lootedEntity(LivingEntity lootedEntity) {
+            this.lootedEntity = lootedEntity;
+            return this;
+        }
+
+        /**
+         * Sets the looted block
+         *
+         * @param lootedBlock The looted block
+         * @return This builder
+         */
+        public Builder lootedBlock(Block lootedBlock) {
+            this.lootedBlock = lootedBlock;
+            return this;
+        }
+
+        /**
+         * Sets the fishing hook
+         *
+         * @param fishHook The fishing hook
+         * @return This builder
+         */
+        public Builder fishHook(FishHook fishHook) {
+            this.fishHook = fishHook;
+            return this;
+        }
+
+        /**
+         * Sets the input item
+         *
+         * @param inputItem The input item
+         * @return This builder
+         */
+        public Builder inputItem(ItemStack inputItem) {
+            this.inputItem = inputItem;
+            return this;
+        }
+
+        /**
+         * Sets the vanilla loot table key
+         *
+         * @param vanillaLootTableKey The vanilla loot table key
+         * @return This builder
+         */
+        public Builder vanillaLootTableKey(NamespacedKey vanillaLootTableKey) {
+            this.vanillaLootTableKey = vanillaLootTableKey;
+            return this;
+        }
+
+        /**
+         * Sets the advancement key
+         *
+         * @param advancementKey The advancement key
+         * @return This builder
+         */
+        public Builder advancementKey(NamespacedKey advancementKey) {
+            this.advancementKey = advancementKey;
+            return this;
+        }
+
+        /**
+         * Sets the explosion type
+         *
+         * @param explosionType The explosion type
+         * @return This builder
+         */
+        public Builder explosionType(ExplosionType explosionType) {
+            this.explosionType = explosionType;
+            return this;
+        }
+
+        /**
+         * Sets whether the loot table has existing items
+         *
+         * @param hasExistingItmes Whether the loot table has existing items
+         * @return This builder
+         */
+        public Builder hasExistingItems(boolean hasExistingItmes) {
+            this.hasExistingItmes = hasExistingItmes;
+            return this;
+        }
+
+        /**
+         * Builds the LootContext
+         *
+         * @return The built LootContext
+         * @throws IllegalStateException If the builder has not been configured with something that can provide a Location
+         */
+        public LootContext build() {
+            LootContext lootContext = new LootContext(
+                    this.looter,
+                    this.lootedEntity,
+                    this.lootedBlock,
+                    this.fishHook,
+                    this.inputItem,
+                    this.vanillaLootTableKey,
+                    this.advancementKey,
+                    this.explosionType,
+                    this.hasExistingItmes
+            );
+            lootContext.getLocation();
+            return lootContext;
+        }
+
     }
 
 }

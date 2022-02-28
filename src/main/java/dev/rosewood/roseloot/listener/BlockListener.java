@@ -43,7 +43,11 @@ public class BlockListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
-        LootContext lootContext = new LootContext(event.getPlayer(), block);
+        LootContext lootContext = LootContext.builder()
+                .looter(event.getPlayer())
+                .lootedBlock(block)
+                .hasExistingItems(!block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
+                .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
@@ -76,7 +80,11 @@ public class BlockListener implements Listener {
         while (iterator.hasNext()) {
             Block exploded = iterator.next();
 
-            LootContext lootContext = new LootContext(null, exploded, ExplosionType.BLOCK);
+            LootContext lootContext = LootContext.builder()
+                    .lootedBlock(exploded)
+                    .explosionType(ExplosionType.BLOCK)
+                    .hasExistingItems(!exploded.getDrops().isEmpty())
+                    .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
@@ -133,7 +141,12 @@ public class BlockListener implements Listener {
         while (iterator.hasNext()) {
             Block exploded = iterator.next();
 
-            LootContext lootContext = new LootContext(looter, exploded, explosionType);
+            LootContext lootContext = LootContext.builder()
+                    .looter(looter)
+                    .lootedBlock(exploded)
+                    .explosionType(explosionType)
+                    .hasExistingItems(!exploded.getDrops().isEmpty())
+                    .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
