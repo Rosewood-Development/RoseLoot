@@ -23,6 +23,7 @@ softdepend:
   - ItemEdit
   - UberItems
   - Slimefun
+  - MythicMobs
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

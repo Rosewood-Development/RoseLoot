@@ -3,6 +3,7 @@ package dev.rosewood.roseloot;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.hook.conditions.HookConditionListener;
 import dev.rosewood.roseloot.listener.AdvancementListener;
 import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
@@ -51,6 +52,7 @@ public class RoseLoot extends RosePlugin {
         pluginManager.registerEvents(new FishingListener(this), this);
         pluginManager.registerEvents(new AdvancementListener(this), this);
         pluginManager.registerEvents(new VoucherListener(this), this);
+        pluginManager.registerEvents(new HookConditionListener(), this);
         if (NMSUtil.getVersionNumber() >= 15)
             pluginManager.registerEvents(new LootGenerateListener(this), this);
 
