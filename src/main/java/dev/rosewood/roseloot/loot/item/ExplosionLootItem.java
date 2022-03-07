@@ -9,7 +9,6 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance> {
 
@@ -35,7 +34,7 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
     }
 
     @Override
-    public void trigger(LootContext context, Player player, Location location) {
+    public void trigger(LootContext context, Location location) {
         this.create(context).trigger(location);
     }
 

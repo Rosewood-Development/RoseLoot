@@ -21,11 +21,12 @@ public class CommandLootItem implements TriggerableLootItem<String> {
     }
 
     @Override
-    public void trigger(LootContext context, Player player, Location location) {
+    public void trigger(LootContext context, Location location) {
         World world = location.getWorld();
         if (world == null)
             return;
 
+        Player player = context.getLootingPlayer();
         if (!this.command.contains("%player%") || player != null)
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.getPlaceholders().apply(this.command));
     }

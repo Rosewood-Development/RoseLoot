@@ -2,7 +2,6 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.EnchantingUtils;
@@ -214,8 +213,8 @@ public class ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.displayName != null) itemMeta.setDisplayName(HexUtils.colorify(this.displayName));
-        if (this.lore != null) itemMeta.setLore(this.lore.stream().map(HexUtils::colorify).collect(Collectors.toList()));
+        if (this.displayName != null) itemMeta.setDisplayName(context.formatText(this.displayName));
+        if (this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).collect(Collectors.toList()));
         if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
@@ -445,6 +444,7 @@ public class ItemLootMeta {
                 break;
             case MAP:
                 MapItemLootMeta.applyProperties(itemStack, stringBuilder);
+                break;
         }
     }
 

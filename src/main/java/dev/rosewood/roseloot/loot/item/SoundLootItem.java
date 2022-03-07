@@ -23,8 +23,8 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
     }
 
     @Override
-    public void trigger(LootContext context, Player player, Location location) {
-        this.create(context).trigger(player, location);
+    public void trigger(LootContext context, Location location) {
+        this.create(context).trigger(context.getLootingPlayer(), location);
     }
 
     public static SoundLootItem fromSection(ConfigurationSection section) {

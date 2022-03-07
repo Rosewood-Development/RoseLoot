@@ -46,7 +46,8 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
     }
 
     @Override
-    public void trigger(LootContext context, Player player, Location location) {
+    public void trigger(LootContext context, Location location) {
+        Player player = context.getLootingPlayer();
         if (player != null)
             this.plugin.deposit(player, this.create(context));
     }

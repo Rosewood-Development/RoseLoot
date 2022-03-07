@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.List;
@@ -45,7 +44,7 @@ public class BookItemLootMeta extends ItemLootMeta {
 
         if (this.title != null) itemMeta.setTitle(this.title);
         if (this.author != null) itemMeta.setAuthor(this.author);
-        if (this.pages != null && !this.pages.isEmpty()) itemMeta.spigot().setPages(this.pages.stream().map(HexUtils::colorify).map(TextComponent::fromLegacyText).collect(Collectors.toList()));
+        if (this.pages != null && !this.pages.isEmpty()) itemMeta.spigot().setPages(this.pages.stream().map(context::formatText).map(TextComponent::fromLegacyText).collect(Collectors.toList()));
         if (this.generation != null) itemMeta.setGeneration(this.generation);
 
         itemStack.setItemMeta(itemMeta);

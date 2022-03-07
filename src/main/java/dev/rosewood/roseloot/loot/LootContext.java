@@ -1,5 +1,7 @@
 package dev.rosewood.roseloot.loot;
 
+import dev.rosewood.rosegarden.hook.PlaceholderAPIHook;
+import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -196,6 +198,17 @@ public class LootContext {
     @NotNull
     public LootPlaceholders getPlaceholders() {
         return this.placeholders;
+    }
+
+    /**
+     * Formats the text using HexUtils, PlaceholderAPI, and this LootContext's placeholders.
+     *
+     * @param text the text to format
+     * @return the formatted text
+     */
+    @NotNull
+    public String formatText(String text) {
+        return HexUtils.colorify(PlaceholderAPIHook.applyPlaceholders(this.getLootingPlayer(), this.placeholders.apply(text)));
     }
 
     /**
