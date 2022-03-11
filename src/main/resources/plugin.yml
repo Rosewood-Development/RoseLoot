@@ -12,6 +12,7 @@ softdepend:
   - PlayerPoints
   - TokenManager
   - eco
+  - EcoBosses
   - MythicLib
   - MMOItems
   - ItemBridge
