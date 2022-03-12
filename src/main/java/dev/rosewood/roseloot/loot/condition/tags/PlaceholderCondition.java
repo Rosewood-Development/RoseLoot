@@ -1,10 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.rosegarden.hook.PlaceholderAPIHook;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import java.util.function.BiFunction;
-import org.bukkit.entity.Player;
 
 public class PlaceholderCondition extends LootCondition {
 
@@ -17,14 +15,7 @@ public class PlaceholderCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        if (!PlaceholderAPIHook.enabled())
-            return false;
-
-        Player player = null;
-        if (context.getLooter() instanceof Player)
-            player = (Player) context.getLooter();
-
-        return this.operator.evaluate(PlaceholderAPIHook.applyPlaceholders(player, this.left), PlaceholderAPIHook.applyPlaceholders(player, this.right));
+        return this.operator.evaluate(context.applyPlaceholders(this.left), context.applyPlaceholders(this.right));
     }
 
     @Override

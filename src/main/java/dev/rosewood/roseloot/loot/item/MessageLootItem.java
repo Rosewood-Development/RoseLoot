@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.rosegarden.hook.PlaceholderAPIHook;
 import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.util.TriConsumer;
 import net.md_5.bungee.api.ChatMessageType;
@@ -104,7 +103,7 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
     }
 
     public enum MessageType {
-        CHAT_RAW((context, player, message) -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(PlaceholderAPIHook.applyPlaceholders(context.getLootingPlayer(), context.getPlaceholders().apply(message.getText()))))),
+        CHAT_RAW((context, player, message) -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(context.applyPlaceholders(message.getText())))),
         CHAT((context, player, message) -> player.sendMessage(context.formatText(message.getText()))),
         HOTBAR((context, player, message) -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(context.formatText(message.getText())))),
         TITLE((context, player, message) -> player.sendTitle(context.formatText(message.getText()), null, message.getFadeIn(), message.getDuration(), message.getFadeOut())),

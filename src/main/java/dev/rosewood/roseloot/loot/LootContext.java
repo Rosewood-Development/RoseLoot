@@ -208,7 +208,18 @@ public class LootContext {
      */
     @NotNull
     public String formatText(String text) {
-        return HexUtils.colorify(PlaceholderAPIHook.applyPlaceholders(this.getLootingPlayer(), this.placeholders.apply(text)));
+        return HexUtils.colorify(this.applyPlaceholders(text));
+    }
+
+    /**
+     * Applies placeholders to the text using PlaceholderAPI, and this LootContext's placeholders.
+     *
+     * @param text the text to apply placeholders to
+     * @return the text with placeholders applied
+     */
+    @NotNull
+    public String applyPlaceholders(String text) {
+        return PlaceholderAPIHook.applyPlaceholders(this.getLootingPlayer(), this.placeholders.apply(text));
     }
 
     /**
@@ -216,7 +227,14 @@ public class LootContext {
      */
     private void addContextPlaceholders() {
         if (this.getLootingPlayer() != null) this.placeholders.add("player", this.getLootingPlayer().getName());
-        if (this.getLootedEntity() != null) this.placeholders.add("entity_type", this.getLootedEntity().getType().name().toLowerCase());
+        if (this.getLootedEntity() != null) {
+            LivingEntity lootedEntity = this.getLootedEntity();
+            this.placeholders.add("entity_type", lootedEntity.getType().name().toLowerCase());
+
+            String customName = lootedEntity.getCustomName();
+            if (customName != null)
+                this.placeholders.add("entity_name", customName);
+        }
         if (this.getLootedBlock() != null) this.placeholders.add("block_type", this.getLootedBlock().getType().name().toLowerCase());
         if (this.getItemUsed() != null) this.placeholders.add("item_type", this.getItemUsed().getType().name().toLowerCase());
         if (this.getVanillaLootTableKey() != null) this.placeholders.add("vanilla_loot_table_name", this.getVanillaLootTableKey().toString());
