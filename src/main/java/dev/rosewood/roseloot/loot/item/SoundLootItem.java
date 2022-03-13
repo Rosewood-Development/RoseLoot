@@ -13,8 +13,8 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
 
     private final SoundInstance soundInstance;
 
-    private SoundLootItem(String sound, SoundCategory category, float volume, float pitch, boolean playerOnly) {
-        this.soundInstance = new SoundInstance(sound, category, volume, pitch, playerOnly);
+    private SoundLootItem(SoundInstance soundInstance) {
+        this.soundInstance = soundInstance;
     }
 
     @Override
@@ -49,7 +49,8 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
         float volume = (float) NumberProvider.fromSection(section, "volume", 1).getDouble();
         float pitch = (float) NumberProvider.fromSection(section, "pitch", 1).getDouble();
         boolean playerOnly = section.getBoolean("player-only", true);
-        return new SoundLootItem(sound, category, volume, pitch, playerOnly);
+        SoundInstance soundInstance = new SoundInstance(sound, category, volume, pitch, playerOnly);
+        return new SoundLootItem(soundInstance);
     }
 
     public static class SoundInstance {

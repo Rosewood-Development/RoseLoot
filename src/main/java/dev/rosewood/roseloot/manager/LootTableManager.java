@@ -25,6 +25,7 @@ import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.loot.item.MessageLootItem;
+import dev.rosewood.roseloot.loot.item.ParticleLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
@@ -33,6 +34,7 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -88,7 +90,7 @@ public class LootTableManager extends Manager implements Listener {
             for (LootTableType type : LootTableType.values())
                 this.lootTables.put(type, new ArrayList<>());
 
-            List<File> files = LootUtils.listFiles(directory, Collections.singletonList("examples"), Collections.singletonList("yml"));
+            List<File> files = LootUtils.listFiles(directory, Arrays.asList("examples", "disabled"), Collections.singletonList("yml"));
             for (File file : files) {
                 try {
                     ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);
@@ -267,6 +269,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("custom_item", CustomItemLootItem::fromSection);
         event.registerLootItem("voucher", VoucherLootItem::fromSection);
         event.registerLootItem("message", MessageLootItem::fromSection);
+        event.registerLootItem("particle", ParticleLootItem::fromSection);
     }
 
     /**

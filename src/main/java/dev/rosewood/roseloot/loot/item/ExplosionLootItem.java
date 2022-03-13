@@ -14,8 +14,8 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
 
     private final ExplosionInstance explosionInstance;
 
-    public ExplosionLootItem(NumberProvider power, boolean fire, boolean breakBlocks) {
-        this.explosionInstance = new ExplosionInstance(power, fire, breakBlocks);
+    public ExplosionLootItem(ExplosionInstance explosionInstance) {
+        this.explosionInstance = explosionInstance;
     }
 
     @Override
@@ -42,7 +42,8 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
         NumberProvider power = NumberProvider.fromSection(section, "power", 3);
         boolean fire = section.getBoolean("fire", false);
         boolean breakBlocks = section.getBoolean("break-blocks", true);
-        return new ExplosionLootItem(power, fire, breakBlocks);
+        ExplosionInstance explosionInstance = new ExplosionInstance(power, fire, breakBlocks);
+        return new ExplosionLootItem(explosionInstance);
     }
 
     public static class ExplosionInstance {
