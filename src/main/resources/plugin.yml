@@ -29,6 +29,9 @@ permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
     default: true
+  roseloot.help.wiki:
+    description: Allows viewing the RoseLoot wiki link in the help menu
+    default: op
   roseloot.reload:
     description: Allows running the reload command
     default: op
