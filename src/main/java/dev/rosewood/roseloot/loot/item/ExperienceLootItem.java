@@ -1,11 +1,13 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -26,9 +28,9 @@ public class ExperienceLootItem implements LootItem<Integer> {
     public Integer create(LootContext context) {
         int amount = this.amounts.stream().mapToInt(NumberProvider::getInteger).sum();
 
-        LivingEntity entity = context.getLootedEntity();
-        if (entity != null && !this.equipmentBonuses.isEmpty()) {
-            EntityEquipment equipment = entity.getEquipment();
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (lootedEntity.isPresent() && !this.equipmentBonuses.isEmpty()) {
+            EntityEquipment equipment = lootedEntity.get().getEquipment();
             if (equipment != null) {
                 long equipmentAmount = Arrays.stream(EquipmentSlot.values())
                         .filter(x -> equipment.getItem(x).getType() != Material.AIR)

@@ -1,13 +1,15 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -38,10 +40,11 @@ public class MythicMobsTypeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        LivingEntity entity = context.getLootedEntity();
-        if (entity == null)
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (!lootedEntity.isPresent())
             return false;
 
+        LivingEntity entity = lootedEntity.get();
         if (apiHelper != null) {
             try {
                 Object activeMob = method_BukkitAPIHelper_getMythicMobInstance.invoke(apiHelper, entity);

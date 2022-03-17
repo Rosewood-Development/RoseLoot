@@ -1,6 +1,8 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.Optional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.inventory.ItemStack;
@@ -35,8 +37,9 @@ public class AxolotlBucketItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.copyLooted && context.getLootedEntity() instanceof Axolotl) {
-            itemMeta.setVariant(((Axolotl) context.getLootedEntity()).getVariant());
+        Optional<Axolotl> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, Axolotl.class);
+        if (this.copyLooted && lootedEntity.isPresent()) {
+            itemMeta.setVariant(lootedEntity.get().getVariant());
         } else if (this.variant != null) {
             itemMeta.setVariant(this.variant);
         }

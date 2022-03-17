@@ -1,6 +1,8 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.StructureType;
@@ -52,8 +54,11 @@ public class MapItemLootMeta extends ItemLootMeta {
             return itemStack;
         }
 
-        Location origin = context.getLocation();
-        World world = origin.getWorld();
+        Optional<Location> origin = context.get(LootContextParams.ORIGIN);
+        if (!origin.isPresent())
+            return itemStack;
+
+        World world = origin.get().getWorld();
         if (world == null) {
             super.apply(itemStack, context);
             return itemStack;
@@ -63,7 +68,7 @@ public class MapItemLootMeta extends ItemLootMeta {
         int searchRadius = this.searchRadius != null ? this.searchRadius : 50;
         boolean skipKnownStructures = this.skipKnownStructures != null ? this.skipKnownStructures : true;
 
-        ItemStack explorerMap = Bukkit.createExplorerMap(world, origin, this.destination, searchRadius, skipKnownStructures);
+        ItemStack explorerMap = Bukkit.createExplorerMap(world, origin.get(), this.destination, searchRadius, skipKnownStructures);
         MapMeta itemMeta = (MapMeta) explorerMap.getItemMeta();
         if (itemMeta != null) {
             MapView mapView = itemMeta.getMapView();

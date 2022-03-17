@@ -15,17 +15,22 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -266,15 +271,56 @@ public final class LootUtils {
         return decimalFormat.format(value);
     }
 
-    public static Set<EntityType> getTaggedEntities(String value) {
+    public static <T extends Keyed> Set<T> getTags(String value, Class<T> clazz, String registry) {
         NamespacedKey key = NamespacedKey.fromString(value);
         if (key != null) {
-            // Look for a tag to expand, hardcoded the "entity_types" registry name since only newer versions past 1.17.1 have this
-            Tag<EntityType> tag = Bukkit.getTag("entity_types", key, EntityType.class);
+            Tag<T> tag = Bukkit.getTag(registry, key, clazz);
             if (tag != null)
                 return tag.getValues();
         }
         return null;
+    }
+
+    /**
+     * Gets an Entity's luck level
+     *
+     * @param entity The Entity to get the luck level of
+     * @param includeFishingLuck Whether to include fishing luck
+     * @return The luck level of the LivingEntity
+     */
+    public static double getEntityLuck(Entity entity, boolean includeFishingLuck) {
+        if (!(entity instanceof LivingEntity))
+            return 0;
+
+        LivingEntity livingEntity = (LivingEntity) entity;
+
+        double luck = 0;
+        AttributeInstance attribute = livingEntity.getAttribute(Attribute.GENERIC_LUCK);
+        if (attribute != null)
+            luck += attribute.getValue();
+
+        if (includeFishingLuck) {
+            EntityEquipment equipment = livingEntity.getEquipment();
+            if (equipment != null) {
+                if (equipment.getItemInMainHand().getType() == Material.FISHING_ROD && equipment.getItemInMainHand().getItemMeta() != null) {
+                    luck += equipment.getItemInMainHand().getItemMeta().getEnchantLevel(Enchantment.LUCK);
+                } else if (equipment.getItemInOffHand().getType() == Material.FISHING_ROD && equipment.getItemInOffHand().getItemMeta() != null) {
+                    luck += equipment.getItemInOffHand().getItemMeta().getEnchantLevel(Enchantment.LUCK);
+                }
+            }
+        }
+
+        return luck;
+    }
+
+    /**
+     * Gets an Entity's luck level
+     *
+     * @param entity The Entity to get the luck level of
+     * @return The luck level of the Entity
+     */
+    public static double getEntityLuck(Entity entity) {
+        return getEntityLuck(entity, false);
     }
 
 }

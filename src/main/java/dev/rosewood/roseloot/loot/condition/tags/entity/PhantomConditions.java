@@ -1,9 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Phantom;
@@ -24,7 +25,10 @@ public class PhantomConditions extends EntityConditions {
 
         @Override
         protected boolean checkInternal(LootContext context) {
-            return context.getLootedEntity() instanceof Phantom && this.sizes.contains(((Phantom) context.getLootedEntity()).getSize());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Phantom.class)
+                    .map(Phantom::getSize)
+                    .filter(this.sizes::contains)
+                    .isPresent();
         }
 
         @Override

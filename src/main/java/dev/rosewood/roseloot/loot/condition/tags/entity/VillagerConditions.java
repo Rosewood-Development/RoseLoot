@@ -2,12 +2,12 @@ package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Villager;
 
 public class VillagerConditions extends EntityConditions {
@@ -29,10 +29,10 @@ public class VillagerConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Villager))
-                return false;
-            return this.professions.contains(((Villager) looted).getProfession());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Villager.class)
+                    .map(Villager::getProfession)
+                    .filter(this.professions::contains)
+                    .isPresent();
         }
 
         @Override
@@ -61,10 +61,10 @@ public class VillagerConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Villager))
-                return false;
-            return this.types.contains(((Villager) looted).getVillagerType());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Villager.class)
+                    .map(Villager::getVillagerType)
+                    .filter(this.types::contains)
+                    .isPresent();
         }
 
         @Override
@@ -93,7 +93,10 @@ public class VillagerConditions extends EntityConditions {
 
         @Override
         protected boolean checkInternal(LootContext context) {
-            return context.getLootedEntity() instanceof Villager && ((Villager) context.getLootedEntity()).getVillagerLevel() >= this.level;
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Villager.class)
+                    .map(Villager::getVillagerLevel)
+                    .filter(x -> x >= this.level)
+                    .isPresent();
         }
 
         @Override

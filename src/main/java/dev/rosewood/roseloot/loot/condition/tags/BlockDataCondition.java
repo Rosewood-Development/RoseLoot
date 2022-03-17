@@ -1,9 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -18,11 +20,11 @@ public class BlockDataCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Block block = context.getLootedBlock();
-        if (block == null)
+        Optional<Block> block = context.get(LootContextParams.LOOTED_BLOCK);
+        if (!block.isPresent())
             return false;
 
-        BlockData blockData = block.getBlockData();
+        BlockData blockData = block.get().getBlockData();
         String blockDataString = blockData.getAsString(false);
         blockDataString = blockDataString.substring(blockDataString.indexOf('[') + 1, blockDataString.lastIndexOf(']')).replaceAll(" ", "").toLowerCase(); // Remove [] and all spaces
         List<String> dataValues = Arrays.asList(blockDataString.split(","));

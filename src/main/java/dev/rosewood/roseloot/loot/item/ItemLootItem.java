@@ -1,8 +1,9 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.util.EnchantingUtils;
@@ -11,10 +12,12 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -45,7 +48,8 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
     protected ItemStack getCreationItem(LootContext context) {
         Material item = this.item;
-        if (this.smeltIfBurning && context.getLootedEntity() != null && context.getLootedEntity().getFireTicks() > 0) {
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
             Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
             while (recipesIterator.hasNext()) {
                 Recipe recipe = recipesIterator.next();
@@ -208,11 +212,11 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         }
 
         public int getBonusAmount(LootContext context, int originalAmount) {
-            ItemStack itemUsed = context.getItemUsed();
-            if (itemUsed == null)
+            Optional<ItemStack> itemUsed = context.getItemUsed();
+            if (!itemUsed.isPresent())
                 return 0;
 
-            int level = itemUsed.getEnchantmentLevel(this.enchantment);
+            int level = itemUsed.get().getEnchantmentLevel(this.enchantment);
             if (level <= 0)
                 return 0;
 

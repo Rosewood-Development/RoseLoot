@@ -1,9 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -17,11 +20,10 @@ public class BlockTypeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Block block = context.getLootedBlock();
-        if (block == null)
-            return false;
-
-        return this.blockTypes.contains(block.getType());
+        return context.get(LootContextParams.LOOTED_BLOCK)
+                .map(Block::getType)
+                .filter(this.blockTypes::contains)
+                .isPresent();
     }
 
     @Override
@@ -30,6 +32,14 @@ public class BlockTypeCondition extends LootCondition {
 
         for (String value : values) {
             try {
+                if (value.startsWith("#")) {
+                    Set<Material> tagEntities = LootUtils.getTags(value.substring(1), Material.class, "blocks");
+                    if (tagEntities != null) {
+                        this.blockTypes.addAll(tagEntities);
+                        continue;
+                    }
+                }
+
                 Material blockMaterial = Material.matchMaterial(value);
                 if (blockMaterial != null && blockMaterial.isBlock())
                     this.blockTypes.add(blockMaterial);

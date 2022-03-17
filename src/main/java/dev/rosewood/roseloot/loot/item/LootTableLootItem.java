@@ -2,9 +2,10 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.LootTableType;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
@@ -12,10 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -65,25 +66,25 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         if (this.lootTable != null) {
             lootItems = this.lootTable.generate(context);
         } else {
-            Location location = context.getLocation();
-            World world = location.getWorld();
-            if (world == null)
-                return Collections.emptyList();
-
             int lootingModifier = 0;
-            ItemStack itemUsed = context.getItemUsed();
-            if (itemUsed != null) {
-                if (itemUsed.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
-                    lootingModifier = itemUsed.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
-                } else if (itemUsed.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
-                    lootingModifier = itemUsed.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+            Optional<ItemStack> itemUsed = context.getItemUsed();
+            if (itemUsed.isPresent()) {
+                ItemStack item = itemUsed.get();
+                if (item.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
+                    lootingModifier = item.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
+                } else if (item.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
+                    lootingModifier = item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
                 }
             }
 
             try {
-                org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(location)
-                        .lootedEntity(context.getLootedEntity())
-                        .killer(context.getLootingPlayer())
+                Optional<Location> origin = context.get(LootContextParams.ORIGIN);
+                if (!origin.isPresent())
+                    return Collections.emptyList();
+
+                org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())
+                        .lootedEntity(context.get(LootContextParams.LOOTED_ENTITY).orElse(null))
+                        .killer(context.getLootingPlayer().orElse(null))
                         .lootingModifier(lootingModifier)
                         .luck((float) context.getLuckLevel())
                         .build();
@@ -91,6 +92,8 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
                 lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
             } catch (Exception e) {
                 RoseLoot.getInstance().getLogger().warning("Failed to generate loot from vanilla loot table: [" + this.vanillaLootTable.getKey() + "]. Reason: " + e.getMessage());
+                if (e.getMessage().contains("<parameter minecraft:tool>"))
+                    RoseLoot.getInstance().getLogger().warning("Vanilla fishing loot tables cannot currently run properly. Please provide RoseLoot versions of the vanilla fishing loot tables instead if you wish to use them.");
                 lootItems = Collections.emptyList();
             }
         }

@@ -1,7 +1,9 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.nms.SkullUtils;
+import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,12 +39,12 @@ public class SkullItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.copyLooted && context.getLootedEntity() instanceof Player) {
-            Player looted = (Player) context.getLootedEntity();
-            itemMeta.setOwningPlayer(looted);
-        } else if (this.copyLooter && context.getLooter() instanceof Player) {
-            Player looter = (Player) context.getLooter();
-            itemMeta.setOwningPlayer(looter);
+        Optional<Player> lootedPlayer = context.get(LootContextParams.LOOTED_ENTITY).map(x -> x instanceof Player ? (Player) x : null);
+        Optional<Player> lootingPlayer = context.getLootingPlayer();
+        if (this.copyLooted && lootedPlayer.isPresent()) {
+            itemMeta.setOwningPlayer(lootedPlayer.get());
+        } else if (this.copyLooter && lootingPlayer.isPresent()) {
+            itemMeta.setOwningPlayer(lootingPlayer.get());
         } else if (this.texture != null) {
             SkullUtils.setSkullTexture(itemMeta, this.texture);
         } else if (this.owner != null) {

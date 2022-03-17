@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.event;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashMap;

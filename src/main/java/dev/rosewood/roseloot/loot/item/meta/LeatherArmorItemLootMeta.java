@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

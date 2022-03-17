@@ -1,9 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,9 +20,12 @@ public class BelowBlockTypeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Block block = context.getLocation().getBlock();
-        Material belowType = block.getRelative(BlockFace.DOWN).getType();
-        return this.blockTypes.contains(belowType);
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getBlock)
+                .map(x -> x.getRelative(BlockFace.DOWN))
+                .map(Block::getType)
+                .filter(this.blockTypes::contains)
+                .isPresent();
     }
 
     @Override

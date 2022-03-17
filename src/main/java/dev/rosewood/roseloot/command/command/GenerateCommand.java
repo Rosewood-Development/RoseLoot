@@ -7,11 +7,13 @@ import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
 import dev.rosewood.rosegarden.command.framework.annotation.Optional;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
@@ -34,7 +36,9 @@ public class GenerateCommand extends RoseCommand {
         }
 
         Player target = player == null ? (Player) sender : player;
-        LootContext lootContext = LootContext.builder().looter(target).build();
+        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(target))
+                .put(LootContextParams.LOOTER, target)
+                .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
         lootResult.getLootContents().dropForPlayer(target);
 

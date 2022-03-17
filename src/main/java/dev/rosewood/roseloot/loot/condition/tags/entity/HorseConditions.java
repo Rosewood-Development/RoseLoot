@@ -1,13 +1,14 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Horse;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 
 public class HorseConditions extends EntityConditions {
@@ -28,15 +29,15 @@ public class HorseConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity entity = context.getLootedEntity();
-            if (!(entity instanceof Horse))
-                return false;
+            if (this.armorTypes.isEmpty())
+                return true;
 
-            Horse horse = (Horse) entity;
-            if (horse.getInventory().getArmor() == null)
-                return false;
-
-            return this.armorTypes.isEmpty() || this.armorTypes.contains(HorseArmorType.from(horse.getInventory().getArmor()));
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Horse.class)
+                    .map(Horse::getInventory)
+                    .map(HorseInventory::getArmor)
+                    .map(HorseArmorType::from)
+                    .filter(this.armorTypes::contains)
+                    .isPresent();
         }
 
         @Override
@@ -98,10 +99,10 @@ public class HorseConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Horse))
-                return false;
-            return this.types.contains(((Horse) looted).getStyle());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Horse.class)
+                    .map(Horse::getStyle)
+                    .filter(this.types::contains)
+                    .isPresent();
         }
 
         @Override
@@ -130,10 +131,10 @@ public class HorseConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Horse))
-                return false;
-            return this.colors.contains(((Horse) looted).getColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Horse.class)
+                    .map(Horse::getColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override

@@ -3,11 +3,13 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContents;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.Iterator;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -43,10 +45,12 @@ public class BlockListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
-        LootContext lootContext = LootContext.builder()
-                .looter(event.getPlayer())
-                .lootedBlock(block)
-                .hasExistingItems(!block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
+        Player player = event.getPlayer();
+        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
+                .put(LootContextParams.ORIGIN, block.getLocation())
+                .put(LootContextParams.LOOTER, player)
+                .put(LootContextParams.LOOTED_BLOCK, block)
+                .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
         LootContents lootContents = lootResult.getLootContents();
@@ -81,9 +85,10 @@ public class BlockListener implements Listener {
             Block exploded = iterator.next();
 
             LootContext lootContext = LootContext.builder()
-                    .lootedBlock(exploded)
-                    .explosionType(ExplosionType.BLOCK)
-                    .hasExistingItems(!exploded.getDrops().isEmpty())
+                    .put(LootContextParams.ORIGIN, exploded.getLocation())
+                    .put(LootContextParams.LOOTED_BLOCK, exploded)
+                    .put(LootContextParams.EXPLOSION_TYPE, ExplosionType.BLOCK)
+                    .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
@@ -141,11 +146,12 @@ public class BlockListener implements Listener {
         while (iterator.hasNext()) {
             Block exploded = iterator.next();
 
-            LootContext lootContext = LootContext.builder()
-                    .looter(looter)
-                    .lootedBlock(exploded)
-                    .explosionType(explosionType)
-                    .hasExistingItems(!exploded.getDrops().isEmpty())
+            LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter))
+                    .put(LootContextParams.ORIGIN, exploded.getLocation())
+                    .put(LootContextParams.LOOTER, looter)
+                    .put(LootContextParams.LOOTED_BLOCK, exploded)
+                    .put(LootContextParams.EXPLOSION_TYPE, explosionType)
+                    .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();

@@ -1,11 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -37,12 +38,11 @@ public class RequiredToolCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        ItemStack item = context.getItemUsed();
-        if (item == null)
+        Optional<ItemStack> itemUsed = context.getItemUsed();
+        if (!itemUsed.isPresent())
             return false;
 
-        String toolName = item.getType().name().toLowerCase();
-
+        String toolName = itemUsed.get().getType().name().toLowerCase();
         if (TOOL_TYPES.contains(toolName))
             return TOOL_QUALITY.getOrDefault(toolName, 0) >= this.toolQuality;
 

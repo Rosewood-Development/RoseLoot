@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 
 public abstract class LootCondition {
 

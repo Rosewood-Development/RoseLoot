@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import org.bukkit.NamespacedKey;
 
 public class VanillaLootTableCondition extends LootCondition {
@@ -14,7 +15,9 @@ public class VanillaLootTableCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.getVanillaLootTableKey() != null && context.getVanillaLootTableKey().equals(this.vanillaLootTableKey);
+        return context.get(LootContextParams.VANILLA_LOOT_TABLE_KEY)
+                .filter(this.vanillaLootTableKey::equals)
+                .isPresent();
     }
 
     @Override

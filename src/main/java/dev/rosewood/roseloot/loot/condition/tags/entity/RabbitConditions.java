@@ -1,12 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Rabbit;
 
 public class RabbitConditions extends EntityConditions {
@@ -25,10 +25,10 @@ public class RabbitConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Rabbit))
-                return false;
-            return this.types.contains(((Rabbit) looted).getRabbitType());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Rabbit.class)
+                    .map(Rabbit::getRabbitType)
+                    .filter(this.types::contains)
+                    .isPresent();
         }
 
         @Override

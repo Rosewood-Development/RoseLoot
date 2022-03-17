@@ -1,10 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 public class WorldCondition extends LootCondition {
@@ -17,10 +19,11 @@ public class WorldCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        World world = context.getLocation().getWorld();
-        if (world == null)
-            return false;
-        return this.worlds.stream().anyMatch(x -> x.equalsIgnoreCase(world.getName()));
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getWorld)
+                .map(World::getName)
+                .filter(x -> this.worlds.stream().anyMatch(y -> y.equalsIgnoreCase(x)))
+                .isPresent();
     }
 
     @Override

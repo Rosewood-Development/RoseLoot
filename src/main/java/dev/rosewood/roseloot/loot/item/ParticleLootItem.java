@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.ParticleLootItem.ParticleSpawnData;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
@@ -30,16 +31,12 @@ public class ParticleLootItem implements TriggerableLootItem<ParticleSpawnData> 
 
     @Override
     public void trigger(LootContext context, Location location) {
-        Location targetLocation;
-        if (context.getLootedEntity() != null) {
-            targetLocation = context.getLootedEntity().getLocation().add(0, context.getLootedEntity().getHeight() / 2, 0);
-        } else if (context.getLootedBlock() != null) {
-            targetLocation = context.getLootedBlock().getLocation().add(0.5, 0.5, 0.5);
-        } else {
-            targetLocation = location;
-        }
+        // Use the center of the entity or the center of the block, whichever is available first, or fall back to the given location
+        Location targetLocation = context.get(LootContextParams.LOOTED_ENTITY).map(livingEntity -> livingEntity.getLocation().add(0, livingEntity.getHeight() / 2, 0))
+                .orElseGet(() -> context.get(LootContextParams.LOOTED_BLOCK).map(block -> block.getLocation().add(0.5, 0.5, 0.5))
+                .orElse(location));
 
-        this.create(context).trigger(context.getLootingPlayer(), targetLocation);
+        this.create(context).trigger(context.getLootingPlayer().orElse(null), targetLocation);
     }
 
     public static ParticleLootItem fromSection(ConfigurationSection section) {

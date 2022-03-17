@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
@@ -20,8 +21,9 @@ public class InFluidCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Location location = context.getLocation();
-        return this.fluids.stream().anyMatch(x -> x.isInFluid(location));
+        return context.get(LootContextParams.ORIGIN)
+                .filter(x -> this.fluids.stream().anyMatch(y -> y.isInFluid(x)))
+                .isPresent();
     }
 
     @Override

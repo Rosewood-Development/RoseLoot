@@ -1,7 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 public class HumidityCondition extends LootCondition {
 
@@ -13,7 +16,11 @@ public class HumidityCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.getLocation().getBlock().getHumidity() >= this.humidity;
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getBlock)
+                .map(Block::getHumidity)
+                .filter(x -> x >= this.humidity)
+                .isPresent();
     }
 
     @Override

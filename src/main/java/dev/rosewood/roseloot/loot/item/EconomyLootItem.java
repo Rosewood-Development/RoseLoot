@@ -5,7 +5,7 @@ import dev.rosewood.roseloot.hook.economy.PlayerPointsEconomyProvider;
 import dev.rosewood.roseloot.hook.economy.TokenManagerEconomyProvider;
 import dev.rosewood.roseloot.hook.economy.TreasuryEconomyProvider;
 import dev.rosewood.roseloot.hook.economy.VaultEconomyProvider;
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,6 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class EconomyLootItem implements TriggerableLootItem<Double> {
 
@@ -47,9 +46,7 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        Player player = context.getLootingPlayer();
-        if (player != null)
-            this.plugin.deposit(player, this.create(context));
+        context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, this.create(context)));
     }
 
     public static EconomyLootItem fromSection(ConfigurationSection section) {

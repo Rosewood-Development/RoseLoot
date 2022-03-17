@@ -1,19 +1,19 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wolf;
 
 public class WolfConditions extends EntityConditions {
 
     public WolfConditions(LootConditionRegistrationEvent event) {
-        event.registerLootCondition("wolf-angry", context -> context.getLootedEntity() instanceof Wolf && ((Wolf) context.getLootedEntity()).isAngry());
+        event.registerLootCondition("wolf-angry", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Wolf.class).filter(Wolf::isAngry).isPresent());
         event.registerLootCondition("wolf-color", WolfColorCondition.class);
     }
 
@@ -27,10 +27,10 @@ public class WolfConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Wolf))
-                return false;
-            return this.colors.contains(((Wolf) looted).getCollarColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Wolf.class)
+                    .map(Wolf::getCollarColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override

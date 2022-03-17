@@ -3,7 +3,8 @@ package dev.rosewood.roseloot.loot.item.meta;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.utils.NMSUtil;
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -270,8 +272,9 @@ public class ItemLootMeta {
         if (this.repairCost != null && itemMeta instanceof Repairable)
             ((Repairable) itemMeta).setRepairCost(this.repairCost);
 
-        Block block = context.getLootedBlock();
-        if (block != null && block.getType() == itemStack.getType()) {
+        Optional<Block> lootedBlock = context.get(LootContextParams.LOOTED_BLOCK);
+        if (lootedBlock.isPresent() && lootedBlock.get().getType() == itemStack.getType()) {
+            Block block = lootedBlock.get();
             if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta)
                 ((BlockStateMeta) itemMeta).setBlockState(block.getState());
 

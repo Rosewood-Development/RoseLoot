@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
@@ -17,15 +17,11 @@ public class CustomModelDataCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        ItemStack item = context.getItemUsed();
-        if (item == null)
-            return false;
-
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null)
-            return false;
-
-        return this.customModelDataValues.contains(meta.getCustomModelData());
+        return context.getItemUsed()
+                .map(ItemStack::getItemMeta)
+                .map(ItemMeta::getCustomModelData)
+                .filter(this.customModelDataValues::contains)
+                .isPresent();
     }
 
     @Override

@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
@@ -17,11 +18,10 @@ public class DroppedItemCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        ItemStack itemStack = context.getInputItem();
-        if (itemStack == null)
-            return false;
-
-        return this.materials.contains(itemStack.getType());
+        return context.get(LootContextParams.INPUT_ITEM)
+                .map(ItemStack::getType)
+                .filter(this.materials::contains)
+                .isPresent();
     }
 
     @Override

@@ -1,11 +1,13 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -38,10 +40,11 @@ public class EntityEquipmentLootItem extends ItemLootItem {
     @Override
     public List<ItemStack> create(LootContext context) {
         List<ItemStack> droppedEquipment = new ArrayList<>();
-        if (context.getLootedEntity() == null)
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (!lootedEntity.isPresent())
             return droppedEquipment;
 
-        LivingEntity entity = context.getLootedEntity();
+        LivingEntity entity = lootedEntity.get();
 
         if (this.dropInventory && entity instanceof InventoryHolder) {
             Inventory inventory = ((InventoryHolder) entity).getInventory();

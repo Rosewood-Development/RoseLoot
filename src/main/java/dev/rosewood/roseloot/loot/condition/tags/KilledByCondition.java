@@ -1,14 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class KilledByCondition extends LootCondition {
@@ -21,13 +24,15 @@ public class KilledByCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        LivingEntity entity = context.getLootedEntity();
-        if (entity == null)
-            return false;
-
-        if (context.getLootingPlayer() != null)
+        Optional<Player> lootingPlayer = context.getLootingPlayer();
+        if (lootingPlayer.isPresent())
             return this.entityTypes.contains(EntityType.PLAYER);
 
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (!lootedEntity.isPresent())
+            return false;
+
+        LivingEntity entity = lootedEntity.get();
         if (!(entity.getLastDamageCause() instanceof EntityDamageByEntityEvent))
             return false;
 
@@ -43,7 +48,7 @@ public class KilledByCondition extends LootCondition {
         for (String value : values) {
             try {
                 if (value.startsWith("#")) {
-                    Set<EntityType> tagEntities = LootUtils.getTaggedEntities(value.substring(1));
+                    Set<EntityType> tagEntities = LootUtils.getTags(value.substring(1), EntityType.class, "entity_types");
                     if (tagEntities != null) {
                         this.entityTypes.addAll(tagEntities);
                         continue;

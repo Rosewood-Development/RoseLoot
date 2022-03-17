@@ -1,11 +1,13 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VoucherUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -57,7 +59,10 @@ public class VoucherListener implements Listener {
         // Remove one of the vouchers
         itemInHand.setAmount(itemInHand.getAmount() - 1);
 
-        LootContext lootContext = LootContext.builder().looter(player).build();
+        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
+                .put(LootContextParams.ORIGIN, player.getLocation())
+                .put(LootContextParams.LOOTER, player)
+                .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
         lootResult.getLootContents().dropForPlayer(player);
 

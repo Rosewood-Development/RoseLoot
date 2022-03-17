@@ -1,7 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.Optional;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 public class LightLevelCondition extends LootCondition {
@@ -14,10 +18,14 @@ public class LightLevelCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        int light = context.getLocation().getBlock().getLightLevel();
+        Optional<Block> originBlock = context.get(LootContextParams.ORIGIN).map(Location::getBlock);
+        if (!originBlock.isPresent())
+            return false;
+
+        int light = originBlock.get().getLightLevel();
         if (light == 0) {
             // Sometimes a block can have a light level of 0 if it's not a full block, try to check the block above it too
-            light = context.getLocation().getBlock().getRelative(BlockFace.UP).getLightLevel();
+            light = originBlock.get().getRelative(BlockFace.UP).getLightLevel();
         }
         return light >= this.lightLevel;
     }

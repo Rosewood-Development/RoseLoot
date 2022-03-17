@@ -1,7 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 public class TemperatureCondition extends LootCondition {
 
@@ -13,7 +16,11 @@ public class TemperatureCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.getLocation().getBlock().getTemperature() >= this.temperature;
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getBlock)
+                .map(Block::getTemperature)
+                .filter(x -> x >= this.temperature)
+                .isPresent();
     }
 
     @Override

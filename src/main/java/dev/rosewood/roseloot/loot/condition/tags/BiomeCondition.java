@@ -1,10 +1,13 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
 
 public class BiomeCondition extends LootCondition {
 
@@ -16,7 +19,11 @@ public class BiomeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return this.biomes.contains(context.getLocation().getBlock().getBiome());
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getBlock)
+                .map(Block::getBiome)
+                .filter(this.biomes::contains)
+                .isPresent();
     }
 
     @Override

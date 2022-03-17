@@ -1,9 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,11 +19,10 @@ public class RequiredToolTypeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        ItemStack itemStack = context.getItemUsed();
-        if (itemStack == null)
-            return false;
-
-        return this.toolTypes.contains(itemStack.getType());
+        return context.getItemUsed()
+                .map(ItemStack::getType)
+                .filter(this.toolTypes::contains)
+                .isPresent();
     }
 
     @Override
@@ -29,6 +30,14 @@ public class RequiredToolTypeCondition extends LootCondition {
         this.toolTypes = new ArrayList<>();
 
         for (String value : values) {
+            if (value.startsWith("#")) {
+                Set<Material> tagEntities = LootUtils.getTags(value.substring(1), Material.class, "items");
+                if (tagEntities != null) {
+                    this.toolTypes.addAll(tagEntities);
+                    continue;
+                }
+            }
+
             Material toolType = Material.matchMaterial(value);
             if (toolType != null)
                 this.toolTypes.add(toolType);

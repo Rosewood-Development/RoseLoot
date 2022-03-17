@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.LivingEntity;
@@ -18,15 +19,11 @@ public class DeathCauseCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        LivingEntity entity = context.getLootedEntity();
-        if (entity == null)
-            return false;
-
-        EntityDamageEvent event = entity.getLastDamageCause();
-        if (event == null)
-            return false;
-
-        return this.damageCauses.contains(event.getCause());
+        return context.get(LootContextParams.LOOTED_ENTITY)
+                .map(LivingEntity::getLastDamageCause)
+                .map(EntityDamageEvent::getCause)
+                .filter(this.damageCauses::contains)
+                .isPresent();
     }
 
     @Override

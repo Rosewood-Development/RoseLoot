@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;

@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.event;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.event.Cancellable;

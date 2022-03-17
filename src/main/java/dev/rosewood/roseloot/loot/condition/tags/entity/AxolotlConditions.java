@@ -1,18 +1,18 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Axolotl;
-import org.bukkit.entity.LivingEntity;
 
 public class AxolotlConditions extends EntityConditions {
 
     public AxolotlConditions(LootConditionRegistrationEvent event) {
-        event.registerLootCondition("axolotl-playing-dead", context -> context.getLootedEntity() instanceof Axolotl && ((Axolotl) context.getLootedEntity()).isPlayingDead());
+        event.registerLootCondition("axolotl-playing-dead", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Axolotl.class).filter(Axolotl::isPlayingDead).isPresent());
         event.registerLootCondition("axolotl-variant", AxolotlVariantCondition.class);
     }
 
@@ -26,10 +26,10 @@ public class AxolotlConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Axolotl))
-                return false;
-            return this.variants.contains(((Axolotl) looted).getVariant());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Axolotl.class)
+                    .map(Axolotl::getVariant)
+                    .filter(this.variants::contains)
+                    .isPresent();
         }
 
         @Override

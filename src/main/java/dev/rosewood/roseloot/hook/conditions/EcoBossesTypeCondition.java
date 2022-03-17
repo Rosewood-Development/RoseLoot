@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,15 +28,11 @@ public class EcoBossesTypeCondition extends LootCondition {
         if (this.bossKey == null)
             return false;
 
-        LivingEntity entity = context.getLootedEntity();
-        if (entity == null)
-            return false;
-
-        String type = entity.getPersistentDataContainer().get(this.bossKey, PersistentDataType.STRING);
-        if (type == null)
-            return false;
-
-        return this.types.contains(type);
+        return context.get(LootContextParams.LOOTED_ENTITY)
+                .map(LivingEntity::getPersistentDataContainer)
+                .map(x -> x.get(this.bossKey, PersistentDataType.STRING))
+                .filter(this.types::contains)
+                .isPresent();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package dev.rosewood.roseloot.loot;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
+
 public class LootResult {
 
     private final LootContext lootContext;

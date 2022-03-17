@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 
 /**
  * @param <T> The type created by this LootItem

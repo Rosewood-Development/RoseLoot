@@ -1,9 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.PufferFish;
@@ -24,7 +25,10 @@ public class PufferfishConditions extends EntityConditions {
 
         @Override
         protected boolean checkInternal(LootContext context) {
-            return context.getLootedEntity() instanceof PufferFish && this.puffStates.contains(((PufferFish) context.getLootedEntity()).getPuffState());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, PufferFish.class)
+                    .map(PufferFish::getPuffState)
+                    .filter(this.puffStates::contains)
+                    .isPresent();
         }
 
         @Override

@@ -1,13 +1,13 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.LivingEntity;
 
 public class EnderDragonConditions extends EntityConditions {
 
@@ -25,10 +25,10 @@ public class EnderDragonConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof EnderDragon))
-                return false;
-            return this.phases.contains(((EnderDragon) looted).getPhase());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, EnderDragon.class)
+                    .map(EnderDragon::getPhase)
+                    .filter(this.phases::contains)
+                    .isPresent();
         }
 
         @Override

@@ -1,9 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 public class WeatherCondition extends LootCondition {
@@ -16,10 +18,11 @@ public class WeatherCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        World world = context.getLocation().getWorld();
-        if (world == null)
-            return false;
-        return this.weatherTypes.contains(WeatherType.fromWorld(world));
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getWorld)
+                .map(WeatherType::fromWorld)
+                .filter(this.weatherTypes::contains)
+                .isPresent();
     }
 
     @Override

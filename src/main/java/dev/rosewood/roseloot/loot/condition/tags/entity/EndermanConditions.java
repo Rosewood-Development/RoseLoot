@@ -1,14 +1,15 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Enderman;
-import org.bukkit.entity.LivingEntity;
 
 public class EndermanConditions extends EntityConditions {
 
@@ -26,15 +27,11 @@ public class EndermanConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity entity = context.getLootedEntity();
-            if (!(entity instanceof Enderman))
-                return false;
-
-            Enderman enderman = (Enderman) entity;
-            if (enderman.getCarriedBlock() == null)
-                return false;
-
-            return this.blockTypes.isEmpty() || this.blockTypes.contains(enderman.getCarriedBlock().getMaterial());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Enderman.class)
+                    .map(Enderman::getCarriedBlock)
+                    .map(BlockData::getMaterial)
+                    .filter(this.blockTypes::contains)
+                    .isPresent();
         }
 
         @Override

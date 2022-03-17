@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import org.bukkit.NamespacedKey;
 
 public class AdvancementCondition extends LootCondition {
@@ -14,7 +15,9 @@ public class AdvancementCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.getAdvancementKey() != null && context.getAdvancementKey().equals(this.advancementKey);
+        return context.get(LootContextParams.ADVANCEMENT_KEY)
+                .filter(this.advancementKey::equals)
+                .isPresent();
     }
 
     @Override

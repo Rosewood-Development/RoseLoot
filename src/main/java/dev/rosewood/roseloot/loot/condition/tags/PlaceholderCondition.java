@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.function.BiFunction;
 
 public class PlaceholderCondition extends LootCondition {

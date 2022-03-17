@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.SoundLootItem.SoundInstance;
 import dev.rosewood.roseloot.util.NumberProvider;
 import org.bukkit.Location;
@@ -24,7 +24,7 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        this.create(context).trigger(context.getLootingPlayer(), location);
+        context.getLootingPlayer().ifPresent(x -> this.create(context).trigger(x, location));
     }
 
     public static SoundLootItem fromSection(ConfigurationSection section) {

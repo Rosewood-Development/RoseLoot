@@ -1,15 +1,16 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Llama;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.LlamaInventory;
 
 public class LlamaConditions extends EntityConditions {
 
@@ -28,13 +29,12 @@ public class LlamaConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Llama))
-                return false;
-            ItemStack decor = ((Llama) looted).getInventory().getDecor();
-            if (decor == null)
-                return false;
-            return this.decorMaterials.contains(decor.getType());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Llama.class)
+                    .map(Llama::getInventory)
+                    .map(LlamaInventory::getDecor)
+                    .map(ItemStack::getType)
+                    .filter(this.decorMaterials::contains)
+                    .isPresent();
         }
 
         @Override
@@ -56,7 +56,7 @@ public class LlamaConditions extends EntityConditions {
 
     public static class LlamaColorCondition extends LootCondition {
 
-        private List<Llama.Color> types;
+        private List<Llama.Color> colors;
 
         public LlamaColorCondition(String tag) {
             super(tag);
@@ -64,24 +64,24 @@ public class LlamaConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Llama))
-                return false;
-            return this.types.contains(((Llama) looted).getColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Llama.class)
+                    .map(Llama::getColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override
         public boolean parseValues(String[] values) {
-            this.types = new ArrayList<>();
+            this.colors = new ArrayList<>();
 
             for (String value : values) {
                 try {
                     Llama.Color color = Llama.Color.valueOf(value.toUpperCase());
-                    this.types.add(color);
+                    this.colors.add(color);
                 } catch (Exception ignored) { }
             }
 
-            return !this.types.isEmpty();
+            return !this.colors.isEmpty();
         }
 
     }

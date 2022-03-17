@@ -2,9 +2,10 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -41,10 +42,11 @@ public class FishingListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(fishHook.getWorld().getName())))
             return;
 
-        LootContext lootContext = LootContext.builder()
-                .looter(player)
-                .fishHook(fishHook)
-                .hasExistingItems(fishHook.getHookedEntity() instanceof Item)
+        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player, true))
+                .put(LootContextParams.ORIGIN, fishHook.getLocation())
+                .put(LootContextParams.LOOTER, player)
+                .put(LootContextParams.FISH_HOOK, fishHook)
+                .put(LootContextParams.HAS_EXISTING_ITEMS, fishHook.getHookedEntity() instanceof Item)
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.FISHING, lootContext);
         LootContents lootContents = lootResult.getLootContents();

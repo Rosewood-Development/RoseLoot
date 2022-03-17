@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.condition;
 
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import java.util.ArrayList;
 import java.util.List;

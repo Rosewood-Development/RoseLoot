@@ -1,7 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.Optional;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Steerable;
@@ -14,7 +16,11 @@ public class HasSaddleCondition extends LootCondition {
 
     @Override
     protected boolean checkInternal(LootContext context) {
-        LivingEntity entity = context.getLootedEntity();
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (!lootedEntity.isPresent())
+            return false;
+
+        LivingEntity entity = lootedEntity.get();
         if (entity instanceof Steerable) {
             return ((Steerable) entity).hasSaddle();
         } else if (entity instanceof AbstractHorse) {

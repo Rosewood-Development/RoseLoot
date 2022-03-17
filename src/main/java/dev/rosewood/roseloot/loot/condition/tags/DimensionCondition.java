@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
@@ -17,12 +18,11 @@ public class DimensionCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Location location = context.getLocation();
-        World world = location.getWorld();
-        if (world == null)
-            return false;
-
-        return this.dimensions.contains(world.getEnvironment());
+        return context.get(LootContextParams.ORIGIN)
+                .map(Location::getWorld)
+                .map(World::getEnvironment)
+                .filter(this.dimensions::contains)
+                .isPresent();
     }
 
     @Override

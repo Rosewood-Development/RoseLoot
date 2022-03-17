@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.util.EnchantingUtils;

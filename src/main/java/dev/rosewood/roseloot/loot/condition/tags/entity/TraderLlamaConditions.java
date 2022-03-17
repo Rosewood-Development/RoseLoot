@@ -1,16 +1,17 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Llama;
 import org.bukkit.entity.TraderLlama;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.LlamaInventory;
 
 public class TraderLlamaConditions extends EntityConditions {
 
@@ -29,13 +30,12 @@ public class TraderLlamaConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof TraderLlama))
-                return false;
-            ItemStack decor = ((TraderLlama) looted).getInventory().getDecor();
-            if (decor == null)
-                return false;
-            return this.decorMaterials.contains(decor.getType());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, TraderLlama.class)
+                    .map(TraderLlama::getInventory)
+                    .map(LlamaInventory::getDecor)
+                    .map(ItemStack::getType)
+                    .filter(this.decorMaterials::contains)
+                    .isPresent();
         }
 
         @Override
@@ -57,7 +57,7 @@ public class TraderLlamaConditions extends EntityConditions {
 
     public static class TraderLlamaColorCondition extends LootCondition {
 
-        private List<Llama.Color> types;
+        private List<Llama.Color> colors;
 
         public TraderLlamaColorCondition(String tag) {
             super(tag);
@@ -65,24 +65,24 @@ public class TraderLlamaConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof TraderLlama))
-                return false;
-            return this.types.contains(((TraderLlama) looted).getColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, TraderLlama.class)
+                    .map(TraderLlama::getColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override
         public boolean parseValues(String[] values) {
-            this.types = new ArrayList<>();
+            this.colors = new ArrayList<>();
 
             for (String value : values) {
                 try {
                     Llama.Color color = Llama.Color.valueOf(value.toUpperCase());
-                    this.types.add(color);
+                    this.colors.add(color);
                 } catch (Exception ignored) { }
             }
 
-            return !this.types.isEmpty();
+            return !this.colors.isEmpty();
         }
 
     }

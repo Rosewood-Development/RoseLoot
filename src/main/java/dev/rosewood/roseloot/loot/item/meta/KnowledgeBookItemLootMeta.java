@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

@@ -2,9 +2,10 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTableType;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -46,10 +47,11 @@ public class EntityListener implements Listener {
         if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent)
             looter = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
 
-        LootContext lootContext = LootContext.builder()
-                .looter(looter)
-                .lootedEntity(entity)
-                .hasExistingItems(!event.getDrops().isEmpty())
+        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter))
+                .put(LootContextParams.ORIGIN, entity.getLocation())
+                .put(LootContextParams.LOOTER, looter)
+                .put(LootContextParams.LOOTED_ENTITY, entity)
+                .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY, lootContext);
         LootContents lootContents = lootResult.getLootContents();
@@ -113,10 +115,11 @@ public class EntityListener implements Listener {
                 break;
         }
 
-        LootContext lootContext = LootContext.builder()
-                .looter(shearer)
-                .lootedEntity(entity)
-                .hasExistingItems(true)
+        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(shearer))
+                .put(LootContextParams.ORIGIN, entity.getLocation())
+                .put(LootContextParams.LOOTER, shearer)
+                .put(LootContextParams.LOOTED_ENTITY, entity)
+                .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY_DROP_ITEM, lootContext);
         LootContents lootContents = lootResult.getLootContents();

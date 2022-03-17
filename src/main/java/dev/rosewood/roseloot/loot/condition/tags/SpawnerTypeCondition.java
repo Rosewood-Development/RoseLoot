@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.block.Block;
@@ -18,11 +19,12 @@ public class SpawnerTypeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Block block = context.getLootedBlock();
-        if (block == null || !(block.getState() instanceof CreatureSpawner))
-            return false;
-
-        return this.entityTypes.contains(((CreatureSpawner) block.getState()).getSpawnedType());
+        return context.get(LootContextParams.LOOTED_BLOCK)
+                .map(Block::getState)
+                .map(x -> x instanceof CreatureSpawner ? ((CreatureSpawner) x) : null)
+                .map(CreatureSpawner::getSpawnedType)
+                .filter(x -> this.entityTypes.contains(x))
+                .isPresent();
     }
 
     @Override

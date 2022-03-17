@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.TriConsumer;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -24,9 +24,7 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
 
     @Override
     public void trigger(LootContext context, Location location) {
-        Player player = context.getLootingPlayer();
-        if (player != null)
-            this.storedChatMessage.invoke(context);
+        context.getLootingPlayer().ifPresent(x -> this.storedChatMessage.invoke(context, x));
     }
 
     public static MessageLootItem fromSection(ConfigurationSection section) {
@@ -95,9 +93,10 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
          * Sends the chat message to a player
          *
          * @param context the loot context
+         * @param player the player to send the message to
          */
-        public void invoke(LootContext context) {
-            this.messageType.invoke(context, this);
+        public void invoke(LootContext context, Player player) {
+            this.messageType.invoke(context, player, this);
         }
 
     }
@@ -115,10 +114,8 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
             this.consumer = consumer;
         }
 
-        public void invoke(LootContext context, StoredChatMessage message) {
-            Player player = context.getLootingPlayer();
-            if (player != null)
-                this.consumer.accept(context, player, message);
+        public void invoke(LootContext context, Player player, StoredChatMessage message) {
+            this.consumer.accept(context, player, message);
         }
 
         public static MessageType fromString(String name) {

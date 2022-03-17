@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +20,10 @@ public class EntityTypeCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        LivingEntity entity = context.getLootedEntity();
-        if (entity == null)
-            return false;
-
-        return this.entityTypes.contains(entity.getType());
+        return context.get(LootContextParams.LOOTED_ENTITY)
+                .map(LivingEntity::getType)
+                .filter(this.entityTypes::contains)
+                .isPresent();
     }
 
     @Override
@@ -33,7 +33,7 @@ public class EntityTypeCondition extends LootCondition {
         for (String value : values) {
             try {
                 if (value.startsWith("#")) {
-                    Set<EntityType> tagEntities = LootUtils.getTaggedEntities(value.substring(1));
+                    Set<EntityType> tagEntities = LootUtils.getTags(value.substring(1), EntityType.class, "entity_types");
                     if (tagEntities != null) {
                         this.entityTypes.addAll(tagEntities);
                         continue;

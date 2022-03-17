@@ -1,11 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,11 +29,11 @@ public class EnchantmentChanceTableCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        ItemStack item = context.getItemUsed();
-        if (item == null)
+        Optional<ItemStack> item = context.getItemUsed();
+        if (!item.isPresent())
             return LootUtils.checkChance(this.chances.get(0));
 
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = item.get().getItemMeta();
         if (meta == null)
             return LootUtils.checkChance(this.chances.get(0));
 

@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 
 public class PermissionCondition extends LootCondition {
 
@@ -13,7 +14,9 @@ public class PermissionCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.getLooter() != null && context.getLooter().hasPermission(this.permission);
+        return context.get(LootContextParams.LOOTER)
+                .filter(x -> x.hasPermission(this.permission))
+                .isPresent();
     }
 
     @Override

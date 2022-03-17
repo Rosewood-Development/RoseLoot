@@ -1,11 +1,11 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 public class SpawnReasonCondition extends LootCondition {
@@ -18,11 +18,10 @@ public class SpawnReasonCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        LivingEntity looted = context.getLootedEntity();
-        if (looted == null)
-            return false;
-
-        return this.spawnReasons.contains(LootUtils.getEntitySpawnReason(looted));
+        return context.get(LootContextParams.LOOTED_ENTITY)
+                .map(LootUtils::getEntitySpawnReason)
+                .filter(this.spawnReasons::contains)
+                .isPresent();
     }
 
     @Override

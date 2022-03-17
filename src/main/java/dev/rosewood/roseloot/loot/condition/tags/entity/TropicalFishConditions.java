@@ -1,13 +1,13 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.TropicalFish;
 
 public class TropicalFishConditions extends EntityConditions {
@@ -28,10 +28,10 @@ public class TropicalFishConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof TropicalFish))
-                return false;
-            return this.colors.contains(((TropicalFish) looted).getBodyColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, TropicalFish.class)
+                    .map(TropicalFish::getBodyColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override
@@ -60,10 +60,10 @@ public class TropicalFishConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof TropicalFish))
-                return false;
-            return this.patterns.contains(((TropicalFish) looted).getPattern());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, TropicalFish.class)
+                    .map(TropicalFish::getPattern)
+                    .filter(this.patterns::contains)
+                    .isPresent();
         }
 
         @Override
@@ -92,10 +92,10 @@ public class TropicalFishConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof TropicalFish))
-                return false;
-            return this.colors.contains(((TropicalFish) looted).getPatternColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, TropicalFish.class)
+                    .map(TropicalFish::getPatternColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override

@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem.ExplosionInstance;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;

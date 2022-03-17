@@ -1,14 +1,14 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Cat;
-import org.bukkit.entity.LivingEntity;
 
 public class CatConditions extends EntityConditions {
 
@@ -27,10 +27,10 @@ public class CatConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Cat))
-                return false;
-            return this.types.contains(((Cat) looted).getCatType());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Cat.class)
+                    .map(Cat::getCatType)
+                    .filter(this.types::contains)
+                    .isPresent();
         }
 
         @Override
@@ -59,10 +59,10 @@ public class CatConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Cat))
-                return false;
-            return this.colors.contains(((Cat) looted).getCollarColor());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Cat.class)
+                    .map(Cat::getCollarColor)
+                    .filter(this.colors::contains)
+                    .isPresent();
         }
 
         @Override

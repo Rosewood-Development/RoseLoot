@@ -1,19 +1,19 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.ZombieVillager;
 
 public class ZombieVillagerConditions extends EntityConditions {
 
     public ZombieVillagerConditions(LootConditionRegistrationEvent event) {
-        event.registerLootCondition("zombie-villager-converting", context -> context.getLootedEntity() instanceof ZombieVillager && ((ZombieVillager) context.getLootedEntity()).isConverting());
+        event.registerLootCondition("zombie-villager-converting", context -> context.getAs(LootContextParams.LOOTED_ENTITY, ZombieVillager.class).filter(ZombieVillager::isConverting).isPresent());
         event.registerLootCondition("zombie-villager-profession", ZombieVillagerProfessionCondition.class);
     }
 
@@ -27,10 +27,10 @@ public class ZombieVillagerConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof ZombieVillager))
-                return false;
-            return this.professions.contains(((ZombieVillager) looted).getVillagerProfession());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, ZombieVillager.class)
+                    .map(ZombieVillager::getVillagerProfession)
+                    .filter(this.professions::contains)
+                    .isPresent();
         }
 
         @Override

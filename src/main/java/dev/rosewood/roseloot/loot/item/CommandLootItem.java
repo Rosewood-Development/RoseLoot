@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,8 +27,8 @@ public class CommandLootItem implements TriggerableLootItem<String> {
         if (world == null)
             return;
 
-        Player player = context.getLootingPlayer();
-        if (!this.command.contains("%player%") || player != null)
+        Optional<Player> player = context.getLootingPlayer();
+        if (!this.command.contains("%player%") || player.isPresent())
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.getPlaceholders().apply(this.command));
     }
 

@@ -1,8 +1,9 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import org.bukkit.entity.Entity;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.Optional;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -18,12 +19,11 @@ public class PotionEffectCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Entity entity = context.getLooter();
-        if (!(entity instanceof LivingEntity))
+        Optional<LivingEntity> looter = context.getAs(LootContextParams.LOOTER, LivingEntity.class);
+        if (!looter.isPresent())
             return false;
 
-        LivingEntity livingEntity = (LivingEntity) entity;
-        for (PotionEffect potionEffect : livingEntity.getActivePotionEffects())
+        for (PotionEffect potionEffect : looter.get().getActivePotionEffects())
             if (potionEffect.getType() == this.potionEffectType && potionEffect.getAmplifier() + 1 >= this.minLevel)
                 return true;
 

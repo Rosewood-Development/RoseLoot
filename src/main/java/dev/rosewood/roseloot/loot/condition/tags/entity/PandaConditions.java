@@ -1,12 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags.entity;
 
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
-import dev.rosewood.roseloot.loot.LootContext;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Panda;
 
 public class PandaConditions extends EntityConditions {
@@ -26,10 +26,10 @@ public class PandaConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Panda))
-                return false;
-            return this.types.contains(((Panda) looted).getMainGene());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Panda.class)
+                    .map(Panda::getMainGene)
+                    .filter(this.types::contains)
+                    .isPresent();
         }
 
         @Override
@@ -58,10 +58,10 @@ public class PandaConditions extends EntityConditions {
 
         @Override
         public boolean checkInternal(LootContext context) {
-            LivingEntity looted = context.getLootedEntity();
-            if (!(looted instanceof Panda))
-                return false;
-            return this.types.contains(((Panda) looted).getHiddenGene());
+            return context.getAs(LootContextParams.LOOTED_ENTITY, Panda.class)
+                    .map(Panda::getHiddenGene)
+                    .filter(this.types::contains)
+                    .isPresent();
         }
 
         @Override
