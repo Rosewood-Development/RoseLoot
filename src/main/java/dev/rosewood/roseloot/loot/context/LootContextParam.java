@@ -21,33 +21,65 @@ public class LootContextParam<T> {
         this.type = type;
     }
 
+    /**
+     * @return the name of this parameter
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * @return the type of this parameter
+     */
     public Class<T> getType() {
         return this.type;
     }
 
+    /**
+     * Applies any placeholders for this parameter value to the given LootPlaceholders instance
+     *
+     * @param value the value to apply placeholders with
+     * @param placeholders the placeholders to apply to
+     */
     public void applyPlaceholders(Object value, LootPlaceholders placeholders) {
         if (this.placeholderApplicator != null)
             this.transform(value).ifPresent(x -> this.placeholderApplicator.accept(x, placeholders));
     }
 
+    /**
+     * Gets an optional player from the given value
+     *
+     * @param value the value to get the player from
+     * @return an optional player
+     */
     public Optional<Player> getPlayer(Object value) {
         if (this.playerProvider != null)
             return this.transform(value).map(x -> this.playerProvider.apply(x));
         return Optional.empty();
     }
 
+    /**
+     * Gets an optional item used from the given value
+     *
+     * @param value the value to get the item from
+     * @return an optional item
+     */
     public Optional<ItemStack> getItemUsed(Object value) {
         if (this.itemUsedProvider != null)
             return this.transform(value).map(x -> this.itemUsedProvider.apply(x));
         return Optional.empty();
     }
 
+    /**
+     * Transforms the given value into the type of this parameter
+     *
+     * @param value the value to transform
+     * @return an optional transformed value
+     */
     @SuppressWarnings("unchecked")
     private Optional<T> transform(Object value) {
+        if (value == null)
+            return Optional.empty();
         if (this.type.isAssignableFrom(value.getClass()))
             return Optional.of((T) value);
         return Optional.empty();
@@ -65,4 +97,5 @@ public class LootContextParam<T> {
     public int hashCode() {
         return Objects.hash(this.name);
     }
+
 }

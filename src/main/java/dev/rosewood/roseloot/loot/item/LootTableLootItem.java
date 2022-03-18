@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.LootTable;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
@@ -40,7 +40,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
 
         if (this.lootTable == null && this.vanillaLootTable == null) {
             RosePlugin rosePlugin = RoseLoot.getInstance();
-            this.lootTable = rosePlugin.getManager(LootTableManager.class).getLootTable(LootTableType.LOOT_TABLE, this.lootTableName);
+            this.lootTable = rosePlugin.getManager(LootTableManager.class).getLootTable(LootTableTypes.LOOT_TABLE, this.lootTableName);
             if (this.lootTable == null) {
                 NamespacedKey key = NamespacedKey.fromString(this.lootTableName);
                 if (key != null)

@@ -5,7 +5,10 @@ import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,8 +22,8 @@ public class LootContext {
     private LootContext(double luck) {
         this.paramStorage = new LinkedHashMap<>();
         this.luck = luck;
-
         this.placeholders = new LootPlaceholders();
+
         this.addContextPlaceholders();
     }
 
@@ -65,6 +68,16 @@ public class LootContext {
     @SuppressWarnings("unchecked")
     public <T, R> Optional<R> getAs(LootContextParam<T> param, Class<R> clazz) {
         return Optional.ofNullable((T) this.paramStorage.get(param)).map(x -> clazz.isAssignableFrom(x.getClass()) ? (R) x : null);
+    }
+
+    /**
+     * @return a copy of all the non-null LootContextParams in this context
+     */
+    public Set<LootContextParam<?>> getParams() {
+        return this.paramStorage.entrySet().stream()
+                .filter(Objects::nonNull)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**

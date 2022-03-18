@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.util;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.loot.ExplosionType;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -23,13 +24,17 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -323,4 +328,30 @@ public final class LootUtils {
         return getEntityLuck(entity, false);
     }
 
+    /**
+     * Gets the explosion type from a killed entity
+     *
+     * @param entity The killed entity
+     * @return The explosion type
+     */
+    public static ExplosionType getDeathExplosionType(LivingEntity entity) {
+        EntityDamageEvent event = entity.getLastDamageCause();
+        if (event == null)
+            return null;
+
+        switch (event.getCause()) {
+            case BLOCK_EXPLOSION:
+                return ExplosionType.BLOCK;
+            case ENTITY_EXPLOSION:
+                if (event instanceof EntityDamageByEntityEvent) {
+                    EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
+                    Entity damager = entityDamageByEntityEvent.getDamager();
+                    if (damager.getType() == EntityType.CREEPER)
+                        return ((Creeper) damager).isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
+                }
+                return ExplosionType.ENTITY;
+            default:
+                return null;
+        }
+    }
 }

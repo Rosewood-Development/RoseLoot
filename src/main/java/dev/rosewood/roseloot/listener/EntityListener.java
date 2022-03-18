@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -51,9 +51,10 @@ public class EntityListener implements Listener {
                 .put(LootContextParams.ORIGIN, entity.getLocation())
                 .put(LootContextParams.LOOTER, looter)
                 .put(LootContextParams.LOOTED_ENTITY, entity)
+                .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY, lootContext);
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
@@ -119,9 +120,10 @@ public class EntityListener implements Listener {
                 .put(LootContextParams.ORIGIN, entity.getLocation())
                 .put(LootContextParams.LOOTER, shearer)
                 .put(LootContextParams.LOOTED_ENTITY, entity)
+                .put(LootContextParams.INPUT_ITEM, event.getItemDrop().getItemStack())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ENTITY_DROP_ITEM, lootContext);
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY_DROP_ITEM, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
         Location dropLocation = event.getItemDrop().getLocation();

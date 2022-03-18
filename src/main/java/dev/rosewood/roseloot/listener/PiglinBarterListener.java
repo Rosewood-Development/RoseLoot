@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.List;
@@ -37,7 +37,7 @@ public class PiglinBarterListener implements Listener {
                 .put(LootContextParams.INPUT_ITEM, event.getInput())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getOutcome().isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableType.PIGLIN_BARTER, lootContext);
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.PIGLIN_BARTER, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing loot if applicable

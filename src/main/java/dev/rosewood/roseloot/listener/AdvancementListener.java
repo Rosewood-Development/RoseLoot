@@ -2,9 +2,9 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootResult;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -33,7 +33,7 @@ public class AdvancementListener implements Listener {
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.ADVANCEMENT_KEY, event.getAdvancement().getKey())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableType.ADVANCEMENT, lootContext);
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ADVANCEMENT, lootContext);
         lootResult.getLootContents().dropForPlayer(player);
     }
 

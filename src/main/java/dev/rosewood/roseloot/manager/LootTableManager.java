@@ -1,17 +1,21 @@
 package dev.rosewood.roseloot.manager;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
+import dev.rosewood.roseloot.event.LootTableTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.PostLootGenerateEvent;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootEntry;
 import dev.rosewood.roseloot.loot.LootPool;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -29,13 +33,14 @@ import dev.rosewood.roseloot.loot.item.ParticleLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
+import dev.rosewood.roseloot.loot.table.LootTableType;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,13 +56,15 @@ import org.bukkit.event.Listener;
 
 public class LootTableManager extends Manager implements Listener {
 
-    private final Map<LootTableType, List<LootTable>> lootTables;
+    private final BiMap<String, LootTableType> lootTableTypes;
+    private final Multimap<LootTableType, LootTable> lootTables;
     private final Map<String, Function<ConfigurationSection, LootItem<?>>> registeredLootItemFunctions;
 
     public LootTableManager(RosePlugin rosePlugin) {
         super(rosePlugin);
 
-        this.lootTables = new HashMap<>();
+        this.lootTableTypes = HashBiMap.create();
+        this.lootTables = ArrayListMultimap.create();
         this.registeredLootItemFunctions = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, rosePlugin);
     }
@@ -67,9 +74,14 @@ public class LootTableManager extends Manager implements Listener {
         Bukkit.getScheduler().runTaskLater(this.rosePlugin, () -> {
             LootConditionManager lootConditionManager = this.rosePlugin.getManager(LootConditionManager.class);
 
-            LootItemTypeRegistrationEvent event = new LootItemTypeRegistrationEvent();
-            Bukkit.getPluginManager().callEvent(event);
-            this.registeredLootItemFunctions.putAll(event.getRegisteredLootItemsTypes());
+            LootTableTypeRegistrationEvent lootTableTypeRegistrationEvent = new LootTableTypeRegistrationEvent();
+            Bukkit.getPluginManager().callEvent(lootTableTypeRegistrationEvent);
+            this.lootTableTypes.putAll(lootTableTypeRegistrationEvent.getRegisteredLootTableTypes());
+            RoseLoot.getInstance().getLogger().info("Registered " + this.lootTableTypes.size() + " loot table types.");
+
+            LootItemTypeRegistrationEvent lootItemTypeRegistrationEvent = new LootItemTypeRegistrationEvent();
+            Bukkit.getPluginManager().callEvent(lootItemTypeRegistrationEvent);
+            this.registeredLootItemFunctions.putAll(lootItemTypeRegistrationEvent.getRegisteredLootItemsTypes());
             RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
 
             File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
@@ -86,15 +98,11 @@ public class LootTableManager extends Manager implements Listener {
 
             VanillaLootTableConverter.convert(examplesDirectory);
 
-            // Populate with lists for LootTableTypes
-            for (LootTableType type : LootTableType.values())
-                this.lootTables.put(type, new ArrayList<>());
-
             List<File> files = LootUtils.listFiles(directory, Arrays.asList("examples", "disabled"), Collections.singletonList("yml"));
             for (File file : files) {
                 try {
                     ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);
-                    LootTableType type = LootTableType.fromString(configuration.getString("type"));
+                    LootTableType type = this.getLootTableType(configuration.getString("type"));
                     if (type == null) {
                         this.failToLoad(file, "Invalid type");
                         continue;
@@ -168,13 +176,13 @@ public class LootTableManager extends Manager implements Listener {
                         stringBuilder.append(piece);
                     }
 
-                    this.lootTables.get(type).add(new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting));
+                    this.lootTables.put(type, new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting));
                 } catch (Exception e) {
                     this.failToLoad(file, null);
                 }
             }
 
-            RoseLoot.getInstance().getLogger().info("Loaded " + this.lootTables.values().stream().mapToInt(List::size).sum() + " loot tables.");
+            RoseLoot.getInstance().getLogger().info("Loaded " + this.lootTables.values().size() + " loot tables.");
         }, 1);
     }
 
@@ -256,6 +264,11 @@ public class LootTableManager extends Manager implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
+    public void onLootTableTypeRegistration(LootTableTypeRegistrationEvent event) {
+        LootTableTypes.values().forEach(event::registerLootTableType);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onLootItemTypeRegistration(LootItemTypeRegistrationEvent event) {
         event.registerLootItem("item", ItemLootItem::fromSection);
         event.registerLootItem("experience", ExperienceLootItem::fromSection);
@@ -330,6 +343,14 @@ public class LootTableManager extends Manager implements Listener {
         return lootResult;
     }
 
+    public LootTableType getLootTableType(String name) {
+        return this.lootTableTypes.get(name.toUpperCase());
+    }
+
+    public String getLootTableTypeName(LootTableType lootTableType) {
+        return this.lootTableTypes.inverse().get(lootTableType);
+    }
+
     public LootTable getLootTable(LootTableType lootTableType, String name) {
         return this.lootTables.get(lootTableType).stream()
                 .filter(x -> x.getName().equals(name))
@@ -339,7 +360,6 @@ public class LootTableManager extends Manager implements Listener {
 
     public LootTable getLootTable(String name) {
         return this.lootTables.values().stream()
-                .flatMap(Collection::stream)
                 .filter(x -> x.getName().equals(name))
                 .findFirst()
                 .orElse(null);
@@ -347,7 +367,6 @@ public class LootTableManager extends Manager implements Listener {
 
     public List<LootTable> getLootTables() {
         return this.lootTables.values().stream()
-                .flatMap(Collection::stream)
                 .sorted(Comparator.comparing(LootTable::getName))
                 .collect(Collectors.toList());
     }

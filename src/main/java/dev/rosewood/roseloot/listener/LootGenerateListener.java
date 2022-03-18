@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -46,7 +46,7 @@ public class LootGenerateListener implements Listener {
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableType.CONTAINER, lootContext);
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing loot if applicable

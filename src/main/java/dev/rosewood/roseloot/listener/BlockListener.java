@@ -4,9 +4,9 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
-import dev.rosewood.roseloot.loot.LootTableType;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -52,7 +52,7 @@ public class BlockListener implements Listener {
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
@@ -90,7 +90,7 @@ public class BlockListener implements Listener {
                     .put(LootContextParams.EXPLOSION_TYPE, ExplosionType.BLOCK)
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
+            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
             if (lootResult.shouldOverwriteItems())
@@ -131,17 +131,7 @@ public class BlockListener implements Listener {
             }
         }
 
-        ExplosionType explosionType;
-        if (looter instanceof Creeper) {
-            if (((Creeper) looter).isPowered()) {
-                explosionType = ExplosionType.CHARGED_ENTITY;
-            } else {
-                explosionType = ExplosionType.ENTITY;
-            }
-        } else {
-            explosionType = ExplosionType.ENTITY;
-        }
-
+        ExplosionType explosionType = looter instanceof Creeper && ((Creeper) looter).isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
         Iterator<Block> iterator = event.blockList().iterator();
         while (iterator.hasNext()) {
             Block exploded = iterator.next();
@@ -153,7 +143,7 @@ public class BlockListener implements Listener {
                     .put(LootContextParams.EXPLOSION_TYPE, explosionType)
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableType.BLOCK, lootContext);
+            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
             if (lootResult.shouldOverwriteItems())

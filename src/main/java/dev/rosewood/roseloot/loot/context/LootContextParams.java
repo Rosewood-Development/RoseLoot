@@ -52,10 +52,27 @@ public final class LootContextParams {
     public static final LootContextParam<ExplosionType> EXPLOSION_TYPE = create("explosion_type", ExplosionType.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("explosion_type", x.name().toLowerCase())));
 
+    /**
+     * Creates a new {@link LootContextParam} with the given name and type.
+     *
+     * @param name The name of the parameter
+     * @param type The type of the parameter
+     * @param <T> The type of the parameter
+     * @return The new {@link LootContextParam}
+     */
     public static <T> LootContextParam<T> create(String name, Class<T> type) {
         return new LootContextParam<>(name, type);
     }
 
+    /**
+     * Creates a new {@link LootContextParam} with the given name and type.
+     *
+     * @param name The name of the parameter
+     * @param type The type of the parameter
+     * @param <T> The type of the parameter
+     * @param builder A Consumer to build the parameter
+     * @return The new {@link LootContextParam}
+     */
     public static <T> LootContextParam<T> create(String name, Class<T> type, Consumer<Builder<T>> builder) {
         LootContextParam<T> param = new LootContextParam<>(name, type);
         builder.accept(new Builder<>(param));

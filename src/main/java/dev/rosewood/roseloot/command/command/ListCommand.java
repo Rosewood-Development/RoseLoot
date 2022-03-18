@@ -32,7 +32,7 @@ public class ListCommand extends RoseCommand {
             return;
         }
 
-        TreeBranch treeBranch = new TreeBranch();
+        TreeBranch treeBranch = new TreeBranch(lootTableManager);
         lootTables.forEach(x -> treeBranch.add(x.getName(), x));
         localeManager.sendMessage(context.getSender(), "command-list-header", StringPlaceholders.single("amount", lootTables.size()));
         treeBranch.traverse(context.getSender(), localeManager, 1);
@@ -63,10 +63,12 @@ public class ListCommand extends RoseCommand {
      */
     private static class TreeBranch {
 
+        private final LootTableManager lootTableManager;
         private final Map<String, TreeBranch> branches; // Name -> Branch
         private final Map<String, String> leaves; // Name -> Type
 
-        public TreeBranch() {
+        public TreeBranch(LootTableManager lootTableManager) {
+            this.lootTableManager = lootTableManager;
             this.branches = new TreeMap<>();
             this.leaves = new TreeMap<>();
         }
@@ -74,13 +76,13 @@ public class ListCommand extends RoseCommand {
         public void add(String name, LootTable lootTable) {
             int index = name.indexOf('/');
             if (index == -1) {
-                this.leaves.put(name, lootTable.getType().name());
+                this.leaves.put(name, this.lootTableManager.getLootTableTypeName(lootTable.getType()));
             } else {
                 String branchLocation = name.substring(0, index);
                 String branchName = name.substring(index + 1);
                 TreeBranch branch = this.branches.get(branchLocation);
                 if (branch == null) {
-                    branch = new TreeBranch();
+                    branch = new TreeBranch(this.lootTableManager);
                     this.branches.put(branchLocation, branch);
                 }
                 branch.add(branchName, lootTable);
