@@ -26,7 +26,7 @@ public class LootTable implements LootItemGenerator {
 
     @Override
     public List<LootItem<?>> generate(LootContext context) {
-
+        this.type.validateLootContext(context);
 
         if (!this.check(context))
             return Collections.emptyList();
