@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.Collections;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -25,6 +26,7 @@ public class PostLootGenerateEvent extends Event implements Cancellable {
     private OverwriteExisting overwriteExisting;
 
     public PostLootGenerateEvent(LootResult lootResult) {
+        super(!Bukkit.isPrimaryThread());
         this.lootResult = lootResult;
         this.dropItems = true;
         this.dropExperience = true;

@@ -6,13 +6,11 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class LootEntry implements LootItemGenerator {
 
-    private final boolean child;
     private final List<LootCondition> conditions;
     private final NumberProvider weight;
     private final NumberProvider quality;
@@ -20,8 +18,7 @@ public class LootEntry implements LootItemGenerator {
     private final ChildrenStrategy childrenStrategy;
     private final List<LootEntry> children;
 
-    public LootEntry(boolean child, List<LootCondition> conditions, NumberProvider weight, NumberProvider quality, List<LootItem<?>> lootItems, ChildrenStrategy childrenStrategy, List<LootEntry> children) {
-        this.child = child;
+    public LootEntry(List<LootCondition> conditions, NumberProvider weight, NumberProvider quality, List<LootItem<?>> lootItems, ChildrenStrategy childrenStrategy, List<LootEntry> children) {
         this.conditions = conditions;
         this.weight = weight;
         this.quality = quality;
@@ -32,9 +29,6 @@ public class LootEntry implements LootItemGenerator {
 
     @Override
     public List<LootItem<?>> generate(LootContext context) {
-        if (!this.child && !this.check(context))
-            return Collections.emptyList();
-
         List<LootItem<?>> generatedItems = new ArrayList<>(this.lootItems);
         if (this.children != null && this.childrenStrategy != null) {
             switch (this.childrenStrategy) {

@@ -156,7 +156,7 @@ public class LootTableManager extends Manager implements Listener {
                             continue;
                         }
 
-                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, lootConditionManager, poolKey, false);
+                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, lootConditionManager, poolKey);
 
                         lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, entries));
                     }
@@ -186,7 +186,7 @@ public class LootTableManager extends Manager implements Listener {
         }, 1);
     }
 
-    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, LootConditionManager lootConditionManager, String poolKey, boolean child) {
+    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, LootConditionManager lootConditionManager, String poolKey) {
         List<LootEntry> lootEntries = new ArrayList<>();
         for (String entryKey : entriesSection.getKeys(false)) {
             ConfigurationSection entrySection = entriesSection.getConfigurationSection(entryKey);
@@ -249,9 +249,9 @@ public class LootTableManager extends Manager implements Listener {
 
             LootEntry.ChildrenStrategy childrenStrategy = LootEntry.ChildrenStrategy.fromString(entrySection.getString("children-strategy", LootEntry.ChildrenStrategy.NORMAL.name()));
             ConfigurationSection childrenSection = entrySection.getConfigurationSection("children");
-            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, lootConditionManager, poolKey, true) : null;
+            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, lootConditionManager, poolKey) : null;
 
-            lootEntries.add(new LootEntry(child, entryConditions, weight, quality, lootItems, childrenStrategy, childEntries));
+            lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems, childrenStrategy, childEntries));
         }
 
         return lootEntries;
