@@ -11,6 +11,7 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -32,6 +33,11 @@ public class GenerateCommand extends RoseCommand {
         CommandSender sender = context.getSender();
         if (!(sender instanceof Player) && player == null) {
             localeManager.sendMessage(sender, "command-generate-requires-player");
+            return;
+        }
+
+        if (lootTable.getType() != LootTableTypes.LOOT_TABLE) {
+            localeManager.sendMessage(sender, "command-generate-invalid-loot-table-type");
             return;
         }
 

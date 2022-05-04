@@ -52,6 +52,7 @@ public class EnglishLocale implements Locale {
             this.put("#5", "Generate Command");
             this.put("command-generate-description", "Runs a loot table");
             this.put("command-generate-requires-player", "&cYou must specify a player when running this command through the console.");
+            this.put("command-generate-invalid-loot-table-type", "&cOnly loot tables of type LOOT_TABLE can be used with this command.");
             this.put("command-generate-success", "&eLoot was generated for &b%player%&e using &b%loottable%&e.");
 
             this.put("#6", "List Command");
