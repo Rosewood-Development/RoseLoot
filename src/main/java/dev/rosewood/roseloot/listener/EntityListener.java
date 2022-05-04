@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -41,6 +42,10 @@ public class EntityListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
+            return;
+
+        // Handle RoseStacker entity stack deaths in a different listener
+        if (RoseStackerHook.useCustomEntityDeathHandling() && RoseStackerHook.isEntityStacked(entity))
             return;
 
         Entity looter = null;
