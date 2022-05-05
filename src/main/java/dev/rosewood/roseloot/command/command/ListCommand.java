@@ -68,12 +68,12 @@ public class ListCommand extends RoseCommand {
 
         private final LootTableManager lootTableManager;
         private final Map<String, TreeBranch> branches; // Name -> Branch
-        private final Multimap<TreeBranchType, String> leaves; // Type -> Name
+        private final Multimap<String, String> leaves; // Type -> Name
 
         public TreeBranch(LootTableManager lootTableManager) {
             this.lootTableManager = lootTableManager;
             this.branches = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-            this.leaves = TreeMultimap.create(TreeBranchType::compareTo, String.CASE_INSENSITIVE_ORDER);
+            this.leaves = TreeMultimap.create(String.CASE_INSENSITIVE_ORDER, String.CASE_INSENSITIVE_ORDER);
         }
 
         public void add(String name, LootTable lootTable) {
@@ -81,7 +81,7 @@ public class ListCommand extends RoseCommand {
             if (index == -1) {
                 LootTableType type = lootTable.getType();
                 String typeName = this.lootTableManager.getLootTableTypeName(type);
-                this.leaves.put(new TreeBranchType(type, typeName), name);
+                this.leaves.put(typeName, name);
             } else {
                 String branchLocation = name.substring(0, index);
                 String branchName = name.substring(index + 1);
@@ -95,47 +95,19 @@ public class ListCommand extends RoseCommand {
         }
 
         public void traverse(CommandSender sender, LocaleManager localeManager, int depth) {
-            StringBuilder paddingBuilder = new StringBuilder();
             String spacer = localeManager.getLocaleMessage("command-list-hierarchy-spacer");
-            for (int i = 0; i < depth; i++)
-                paddingBuilder.append(spacer);
-            String padding = paddingBuilder.toString();
+            String padding = spacer.repeat(depth);
 
             // Print leaves
-            for (TreeBranchType type : this.leaves.keySet())
+            for (String type : this.leaves.keySet())
                 for (String name : this.leaves.get(type))
-                    localeManager.sendSimpleMessage(sender, "command-list-hierarchy-leaf", StringPlaceholders.builder("name", name).addPlaceholder("type", type.getName()).addPlaceholder("spacer", padding).build());
+                    localeManager.sendSimpleMessage(sender, "command-list-hierarchy-leaf", StringPlaceholders.builder("name", name).addPlaceholder("type", type).addPlaceholder("spacer", padding).build());
 
             // Print branches
             for (Map.Entry<String, TreeBranch> entry : this.branches.entrySet()) {
                 localeManager.sendSimpleMessage(sender, "command-list-hierarchy-branch", StringPlaceholders.builder("name", entry.getKey()).addPlaceholder("spacer", padding).build());
                 entry.getValue().traverse(sender, localeManager, depth + 1);
             }
-        }
-
-    }
-
-    private static class TreeBranchType implements Comparable<TreeBranchType> {
-
-        private final LootTableType type;
-        private final String name;
-
-        public TreeBranchType(LootTableType type, String name) {
-            this.type = type;
-            this.name = name;
-        }
-
-        public LootTableType getType() {
-            return this.type;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        @Override
-        public int compareTo(ListCommand.TreeBranchType o) {
-            return this.name.compareToIgnoreCase(o.name);
         }
 
     }
