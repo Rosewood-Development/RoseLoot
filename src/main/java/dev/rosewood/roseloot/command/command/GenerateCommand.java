@@ -43,6 +43,7 @@ public class GenerateCommand extends RoseCommand {
 
         Player target = player == null ? (Player) sender : player;
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(target))
+                .put(LootContextParams.ORIGIN, target.getLocation())
                 .put(LootContextParams.LOOTER, target)
                 .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
