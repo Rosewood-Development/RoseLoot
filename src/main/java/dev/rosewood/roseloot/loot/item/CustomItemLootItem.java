@@ -1,18 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.hook.items.EcoItemProvider;
-import dev.rosewood.roseloot.hook.items.ExecutableItemProvider;
-import dev.rosewood.roseloot.hook.items.ItemBridgeItemProvider;
-import dev.rosewood.roseloot.hook.items.ItemEditItemProvider;
-import dev.rosewood.roseloot.hook.items.ItemProvider;
-import dev.rosewood.roseloot.hook.items.ItemsAdderItemProvider;
-import dev.rosewood.roseloot.hook.items.ItemsXLItemProvider;
-import dev.rosewood.roseloot.hook.items.KnokkoCustomItemProvider;
-import dev.rosewood.roseloot.hook.items.MMOItemProvider;
-import dev.rosewood.roseloot.hook.items.OraxenItemProvider;
-import dev.rosewood.roseloot.hook.items.SlimefunItemProvider;
-import dev.rosewood.roseloot.hook.items.UberItemProvider;
+import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.manager.LootConditionManager;
@@ -92,37 +81,6 @@ public class CustomItemLootItem extends ItemLootItem {
         }
 
         return new CustomItemLootItem(itemStack, amount, maxAmount, amountModifiers, enchantmentBonus);
-    }
-
-    public enum CustomItemPlugin {
-        ECOITEMS(new EcoItemProvider()),
-        MMOITEMS(new MMOItemProvider()),
-        ITEMBRIDGE(new ItemBridgeItemProvider()),
-        EXECUTABLEITEMS(new ExecutableItemProvider()),
-        ITEMSADDER(new ItemsAdderItemProvider()),
-        ITEMSXL(new ItemsXLItemProvider()),
-        ORAXEN(new OraxenItemProvider()),
-        KNOKKOCUSTOMITEMS(new KnokkoCustomItemProvider()),
-        ITEMEDIT(new ItemEditItemProvider()),
-        UBERITEMS(new UberItemProvider()),
-        SLIMEFUN(new SlimefunItemProvider());
-
-        private final ItemProvider itemProvider;
-
-        CustomItemPlugin(ItemProvider itemProvider) {
-            this.itemProvider = itemProvider;
-        }
-
-        public ItemStack resolveItem(String id) {
-            return this.itemProvider.getItem(id);
-        }
-
-        public static CustomItemPlugin fromString(String name) {
-            for (CustomItemPlugin value : values())
-                if (value.name().equalsIgnoreCase(name))
-                    return value;
-            return null;
-        }
     }
 
 }

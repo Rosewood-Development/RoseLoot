@@ -1,20 +1,17 @@
 package dev.rosewood.roseloot.hook.items;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-public class SlimefunItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class SlimefunItemProvider extends ItemProvider {
 
     public SlimefunItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("Slimefun");
+        super("Slimefun");
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
         SlimefunItem item = SlimefunItem.getById(id);
@@ -22,6 +19,18 @@ public class SlimefunItemProvider implements ItemProvider {
             return null;
 
         return item.getItem().clone();
+    }
+
+    @Override
+    public String getItemId(ItemStack item) {
+        if (!this.isEnabled())
+            return null;
+
+        SlimefunItem slimefunItem = SlimefunItem.getByItem(item);
+        if (slimefunItem == null)
+            return null;
+
+        return slimefunItem.getId();
     }
 
 }

@@ -1,20 +1,17 @@
 package dev.rosewood.roseloot.hook.items;
 
 import dev.lone.itemsadder.api.CustomStack;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemsAdderItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class ItemsAdderItemProvider extends ItemProvider {
 
     public ItemsAdderItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("ItemsAdder");
+        super("ItemsAdder");
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
         CustomStack customStack = CustomStack.getInstance(id);
@@ -22,6 +19,18 @@ public class ItemsAdderItemProvider implements ItemProvider {
             return null;
 
         return customStack.getItemStack();
+    }
+
+    @Override
+    public String getItemId(ItemStack item) {
+        if (!this.isEnabled())
+            return null;
+
+        CustomStack customStack = CustomStack.byItemStack(item);
+        if (customStack == null)
+            return null;
+
+        return customStack.getId();
     }
 
 }

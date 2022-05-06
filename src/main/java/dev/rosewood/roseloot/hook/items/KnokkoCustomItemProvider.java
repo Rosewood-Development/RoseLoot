@@ -1,23 +1,28 @@
 package dev.rosewood.roseloot.hook.items;
 
 import nl.knokko.customitems.plugin.CustomItemsApi;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-public class KnokkoCustomItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class KnokkoCustomItemProvider extends ItemProvider {
 
     public KnokkoCustomItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("CustomItems");
+        super("CustomItems");
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
         return CustomItemsApi.createItemStack(id, 1);
+    }
+
+    @Override
+    public String getItemId(ItemStack item) {
+        if (!this.isEnabled())
+            return null;
+
+        return CustomItemsApi.getItemName(item);
     }
 
 }

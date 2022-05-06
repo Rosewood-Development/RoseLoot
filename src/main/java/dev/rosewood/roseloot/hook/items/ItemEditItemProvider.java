@@ -1,20 +1,17 @@
 package dev.rosewood.roseloot.hook.items;
 
 import emanondev.itemedit.ItemEdit;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemEditItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class ItemEditItemProvider extends ItemProvider {
 
     public ItemEditItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("ItemEdit");
+        super("ItemEdit", false);
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
         return ItemEdit.get().getServerStorage().getItem(id);

@@ -1,26 +1,35 @@
 package dev.rosewood.roseloot.hook.items;
 
 import com.jojodmo.itembridge.ItemBridge;
-import org.bukkit.Bukkit;
+import com.jojodmo.itembridge.ItemBridgeKey;
 import org.bukkit.inventory.ItemStack;
 
 /**
  * Supports CustomItems and any other plugins that hook with the ItemBridge API.
  */
-public class ItemBridgeItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class ItemBridgeItemProvider extends ItemProvider {
 
     public ItemBridgeItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("ItemBridge");
+        super("ItemBridge");
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
         return ItemBridge.getItemStack(id);
     }
 
+    @Override
+    public String getItemId(ItemStack item) {
+        if (!this.isEnabled())
+            return null;
+
+        ItemBridgeKey key = ItemBridge.getItemKey(item);
+        if (key == null)
+            return null;
+
+        return key.toString();
+    }
 }

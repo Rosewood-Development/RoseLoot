@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
 import dev.rosewood.roseloot.loot.condition.CompoundLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.StringLootCondition;
 import dev.rosewood.roseloot.loot.condition.tags.AboveBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.AdvancementCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BelowBlockTypeCondition;
@@ -33,7 +34,6 @@ import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
-import dev.rosewood.roseloot.loot.condition.tags.PermissionCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Ageable;
@@ -72,12 +73,14 @@ public class LootConditionManager extends Manager implements Listener {
     private static final String PACKAGE_PATH = "dev.rosewood.roseloot.loot.condition.tags.entity";
     private final Map<String, Constructor<? extends LootCondition>> registeredConditionConstructors;
     private final Map<String, Predicate<LootContext>> registeredConditionPredicates;
+    private final Map<String, BiPredicate<LootContext, String>> registeredConditionStringPredicates;
 
     public LootConditionManager(RosePlugin rosePlugin) {
         super(rosePlugin);
 
         this.registeredConditionConstructors = new HashMap<>();
         this.registeredConditionPredicates = new HashMap<>();
+        this.registeredConditionStringPredicates = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(this, rosePlugin);
     }
 
@@ -88,7 +91,10 @@ public class LootConditionManager extends Manager implements Listener {
             Bukkit.getPluginManager().callEvent(event);
             this.registeredConditionConstructors.putAll(event.getRegisteredLootConditionConstructors());
             this.registeredConditionPredicates.putAll(event.getRegisteredConditionPredicates());
-            RoseLoot.getInstance().getLogger().info("Registered " + (this.registeredConditionConstructors.size() + this.registeredConditionPredicates.size()) + " loot table conditions.");
+            this.registeredConditionStringPredicates.putAll(event.getRegisteredConditionStringPredicates());
+
+            int numRegistered = this.registeredConditionConstructors.size() + this.registeredConditionPredicates.size() + this.registeredConditionStringPredicates.size();
+            RoseLoot.getInstance().getLogger().info("Registered " + numRegistered + " loot table conditions.");
         }, 1);
     }
 
@@ -96,6 +102,7 @@ public class LootConditionManager extends Manager implements Listener {
     public void disable() {
         this.registeredConditionConstructors.clear();
         this.registeredConditionPredicates.clear();
+        this.registeredConditionStringPredicates.clear();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -134,7 +141,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition.class);
         event.registerLootCondition("open-water", context -> context.get(LootContextParams.FISH_HOOK).filter(FishHook::isInOpenWater).isPresent());
         event.registerLootCondition("patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
-        event.registerLootCondition("permission", PermissionCondition.class);
+        event.registerLootCondition("permission", (context, value) -> context.get(LootContextParams.LOOTER).filter(x -> x.hasPermission(value)).isPresent());
         event.registerLootCondition("placeholder", PlaceholderCondition.class);
         event.registerLootCondition("potion-effect", PotionEffectCondition.class);
         event.registerLootCondition("required-tool", RequiredToolCondition.class);
@@ -188,6 +195,10 @@ public class LootConditionManager extends Manager implements Listener {
             Predicate<LootContext> predicate = this.registeredConditionPredicates.get(tagPrefix);
             if (predicate != null)
                 return new BooleanLootCondition(tag, predicate);
+
+            BiPredicate<LootContext, String> stringPredicate = this.registeredConditionStringPredicates.get(tagPrefix);
+            if (stringPredicate != null)
+                return new StringLootCondition(tag, stringPredicate);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.hook.conditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
+import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -24,6 +25,11 @@ public class HookConditionListener implements Listener {
             if (pluginManager.isPluginEnabled(pluginName))
                 for (ConditionStorage conditionStorage : LOOT_CONDITIONS.get(pluginName))
                     event.registerLootCondition(conditionStorage.getConditionName(), conditionStorage.getConditionClass());
+
+        // Register conditions for custom item plugins
+        for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
+            if (customItemPlugin.isEnabled())
+                event.registerLootCondition(customItemPlugin.name().toLowerCase() + "-type", customItemPlugin.getLootConditionPredicate());
     }
 
     private static class ConditionStorage {

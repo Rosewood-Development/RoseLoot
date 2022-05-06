@@ -1,23 +1,36 @@
 package dev.rosewood.roseloot.hook.items;
 
-import com.ssomar.executableitems.api.ExecutableItemsAPI;
-import org.bukkit.Bukkit;
+import com.ssomar.score.api.executableitems.ExecutableItemsAPI;
+import com.ssomar.score.api.executableitems.config.ExecutableItemInterface;
+import java.util.Optional;
 import org.bukkit.inventory.ItemStack;
 
-public class ExecutableItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class ExecutableItemProvider extends ItemProvider {
 
     public ExecutableItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("ExecutableItems");
+        super("ExecutableItems");
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
-        return ExecutableItemsAPI.getExecutableItem(id);
+        return ExecutableItemsAPI.getExecutableItemsManager()
+                .getExecutableItem(id)
+                .map(x -> x.buildItem(1, Optional.empty()))
+                .orElse(null);
+    }
+
+    @Override
+    public String getItemId(ItemStack item) {
+        if (!this.isEnabled())
+            return null;
+
+        return ExecutableItemsAPI.getExecutableItemsManager()
+                .getExecutableItem(item)
+                .map(ExecutableItemInterface::getId)
+                .orElse(null);
     }
 
 }

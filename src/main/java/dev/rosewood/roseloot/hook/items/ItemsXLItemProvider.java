@@ -2,20 +2,17 @@ package dev.rosewood.roseloot.hook.items;
 
 import de.erethon.caliburn.CaliburnAPI;
 import de.erethon.caliburn.item.ExItem;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemsXLItemProvider implements ItemProvider {
-
-    private final boolean enabled;
+public class ItemsXLItemProvider extends ItemProvider {
 
     public ItemsXLItemProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("ItemsXL");
+        super("ItemsXL");
     }
 
     @Override
     public ItemStack getItem(String id) {
-        if (!this.enabled)
+        if (!this.isEnabled())
             return null;
 
         ExItem exItem = CaliburnAPI.getInstance().getExItem(id);
@@ -23,6 +20,18 @@ public class ItemsXLItemProvider implements ItemProvider {
             return null;
 
         return exItem.toItemStack();
+    }
+
+    @Override
+    public String getItemId(ItemStack item) {
+        if (!this.isEnabled())
+            return null;
+
+        ExItem exItem = CaliburnAPI.getInstance().getExItem(item);
+        if (exItem == null)
+            return null;
+
+        return exItem.getId();
     }
 
 }

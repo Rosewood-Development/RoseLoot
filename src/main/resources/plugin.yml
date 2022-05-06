@@ -17,6 +17,7 @@ softdepend:
   - MMOItems
   - ItemBridge
   - ExecutableItems
+  - SCore
   - ItemsAdder
   - ItemsXL
   - Oraxen
