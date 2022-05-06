@@ -95,8 +95,11 @@ public class ListCommand extends RoseCommand {
         }
 
         public void traverse(CommandSender sender, LocaleManager localeManager, int depth) {
+            StringBuilder paddingBuilder = new StringBuilder();
             String spacer = localeManager.getLocaleMessage("command-list-hierarchy-spacer");
-            String padding = spacer.repeat(depth);
+            for (int i = 0; i < depth; i++)
+                paddingBuilder.append(spacer);
+            String padding = paddingBuilder.toString();
 
             // Print leaves
             for (String type : this.leaves.keySet())
