@@ -45,7 +45,7 @@ public class EntityListener implements Listener {
             return;
 
         // Handle RoseStacker entity stack deaths in a different listener
-        if (RoseStackerHook.useCustomEntityDeathHandling() && RoseStackerHook.isEntityStacked(entity))
+        if (RoseStackerHook.useCustomEntityDeathHandling() && RoseStackerHook.isEntireEntityStackDying(entity))
             return;
 
         Entity looter = null;

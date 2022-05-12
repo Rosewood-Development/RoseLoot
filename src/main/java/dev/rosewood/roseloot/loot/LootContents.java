@@ -79,6 +79,15 @@ public class LootContents {
     }
 
     /**
+     * @return the extra loot items which aren't an item or experience drop
+     */
+    public List<LootItem<?>> getExtras() {
+        return this.contents.stream()
+                .filter(x -> x instanceof TriggerableLootItem)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Triggers the execution for anything that isn't an item or experience drop
      *
      * @param location The Location to execute the rest of the drops at
