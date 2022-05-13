@@ -22,8 +22,8 @@ public class FireworkLootItem implements TriggerableLootItem<FireworkLootItem.Fi
 
     private final FireworkInstance fireworkInstance;
 
-    public FireworkLootItem(FireworkInstance explosionInstance) {
-        this.fireworkInstance = explosionInstance;
+    public FireworkLootItem(FireworkInstance fireworkInstance) {
+        this.fireworkInstance = fireworkInstance;
     }
 
     @Override
@@ -121,9 +121,9 @@ public class FireworkLootItem implements TriggerableLootItem<FireworkLootItem.Fi
         }
 
         /**
-         * Triggers the stored explosion state
+         * Triggers the stored firework state
          *
-         * @param location The Location to trigger the explosion at
+         * @param location The Location to trigger the firework at
          */
         public void trigger(Location location) {
             World world = location.getWorld();
@@ -144,9 +144,9 @@ public class FireworkLootItem implements TriggerableLootItem<FireworkLootItem.Fi
         }
 
         /**
-         * Merges another ExlosionInstance with this one using the higher values between the two
+         * Merges another FireworkInstance with this one using the higher values between the two
          *
-         * @param other The other ExplosionState
+         * @param other The other FireworkInstance
          */
         public void combineWith(FireworkInstance other) {
             this.powers.addAll(other.powers);

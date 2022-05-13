@@ -72,7 +72,7 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
         }
 
         /**
-         * Merges another ExlosionInstance with this one using the higher values between the two
+         * Merges another ExplosionInstance with this one using the higher values between the two
          *
          * @param other The other ExplosionState
          */

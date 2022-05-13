@@ -31,6 +31,7 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
 import dev.rosewood.roseloot.loot.item.MessageLootItem;
 import dev.rosewood.roseloot.loot.item.ParticleLootItem;
+import dev.rosewood.roseloot.loot.item.PotionEffectLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
@@ -285,6 +286,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("message", MessageLootItem::fromSection);
         event.registerLootItem("particle", ParticleLootItem::fromSection);
         event.registerLootItem("firework", FireworkLootItem::fromSection);
+        event.registerLootItem("potion_effect", PotionEffectLootItem::fromSection);
     }
 
     /**

@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 group = 'dev.rosewood'
-version = '1.0.0-RC-1'
+version = '1.0.0-RC-2'
 
 compileJava {
     options.compilerArgs += ['-parameters']
