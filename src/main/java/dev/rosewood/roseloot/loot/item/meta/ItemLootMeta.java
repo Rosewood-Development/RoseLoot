@@ -363,7 +363,7 @@ public class ItemLootMeta {
         if (lore != null) {
             stringBuilder.append("lore:\n");
             for (String line : itemMeta.getLore())
-                stringBuilder.append("  - '").append(LootUtils.decolorize(line)).append("'");
+                stringBuilder.append("  - '").append(LootUtils.decolorize(line)).append("'\n");
         }
 
         Set<ItemFlag> itemFlags = itemMeta.getItemFlags();

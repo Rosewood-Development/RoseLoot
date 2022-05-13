@@ -53,6 +53,7 @@ public final class LootUtils {
 
     public static final Random RANDOM = new Random();
     private static final String SPAWN_REASON_METADATA_NAME = "spawn_reason";
+    private static final String REGEX_DECOLORIZE_HEX = "&x&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])";
     public static final Map<String, Color> FIREWORK_COLORS = new HashMap<String, Color>() {{
         this.put("WHITE", Color.WHITE);
         this.put("SILVER", Color.SILVER);
@@ -264,7 +265,7 @@ public final class LootUtils {
     public static String decolorize(String string) {
         if (string == null || string.isEmpty())
             return string;
-        return string.replace(ChatColor.COLOR_CHAR, '&');
+        return string.replace(ChatColor.COLOR_CHAR, '&').replaceAll(REGEX_DECOLORIZE_HEX, "#$1$2$3$4$5$6");
     }
 
     public static String getToMaximumDecimals(double value, int decimals) {
