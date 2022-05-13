@@ -49,7 +49,8 @@ public class FireworkEffectItemLootMeta extends ItemLootMeta {
         for (String color : fadeColors) {
             if (color.startsWith("#")) {
                 try {
-                    builder.withColor(Color.fromRGB(java.awt.Color.decode(color).getRGB()));
+                    java.awt.Color awtColor = java.awt.Color.decode(color);
+                    builder.withFade(Color.fromRGB(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue()));
                 } catch (NumberFormatException ignored) { }
             } else {
                 Color value = LootUtils.FIREWORK_COLORS.get(color.toUpperCase());

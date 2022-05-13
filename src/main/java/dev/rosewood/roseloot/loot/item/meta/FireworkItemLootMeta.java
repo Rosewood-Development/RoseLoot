@@ -18,7 +18,7 @@ public class FireworkItemLootMeta extends ItemLootMeta {
     public FireworkItemLootMeta(ConfigurationSection section) {
         super(section);
 
-        if (section.isInt("power")) this.power = LootUtils.clamp(section.getInt("power"), 0, 128);
+        if (section.isInt("power")) this.power = LootUtils.clamp(section.getInt("power"), 0, 127);
 
         ConfigurationSection fireworkEffectSection = section.getConfigurationSection("firework-effects");
         if (fireworkEffectSection != null) {
