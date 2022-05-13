@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.hook.conditions.HookConditionListener;
 import dev.rosewood.roseloot.listener.AdvancementListener;
 import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
+import dev.rosewood.roseloot.listener.FireworkDamageListener;
 import dev.rosewood.roseloot.listener.FishingListener;
 import dev.rosewood.roseloot.listener.LootGenerateListener;
 import dev.rosewood.roseloot.listener.PiglinBarterListener;
@@ -46,7 +47,7 @@ public class RoseLoot extends RosePlugin {
     @Override
     public void enable() {
         if (NMSUtil.getVersionNumber() < 16)
-            this.getLogger().severe(this.getDescription().getName() + " best supports 1.16 servers and newer. If you try to use part of the plugin that is not available for your current server version, expect to see some errors.");
+            this.getLogger().severe(this.getDescription().getName() + " best supports 1.16.5 servers and newer. If you try to use part of the plugin that is not available for your current server version, expect to see some errors.");
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new BlockListener(this), this);
@@ -55,6 +56,7 @@ public class RoseLoot extends RosePlugin {
         pluginManager.registerEvents(new AdvancementListener(this), this);
         pluginManager.registerEvents(new VoucherListener(this), this);
         pluginManager.registerEvents(new HookConditionListener(), this);
+        pluginManager.registerEvents(new FireworkDamageListener(), this);
         if (NMSUtil.getVersionNumber() >= 15)
             pluginManager.registerEvents(new LootGenerateListener(this), this);
         if (RoseStackerHook.isEnabled())

@@ -25,6 +25,7 @@ import dev.rosewood.roseloot.loot.item.EconomyLootItem;
 import dev.rosewood.roseloot.loot.item.EntityEquipmentLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem;
+import dev.rosewood.roseloot.loot.item.FireworkLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
@@ -178,7 +179,7 @@ public class LootTableManager extends Manager implements Listener {
 
                     this.lootTables.put(type, new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting));
                 } catch (Exception e) {
-                    this.failToLoad(file, null);
+                    this.failToLoad(file, e.getMessage());
                 }
             }
 
@@ -283,6 +284,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("voucher", VoucherLootItem::fromSection);
         event.registerLootItem("message", MessageLootItem::fromSection);
         event.registerLootItem("particle", ParticleLootItem::fromSection);
+        event.registerLootItem("firework", FireworkLootItem::fromSection);
     }
 
     /**
@@ -344,6 +346,8 @@ public class LootTableManager extends Manager implements Listener {
     }
 
     public LootTableType getLootTableType(String name) {
+        if (name == null)
+            return null;
         return this.lootTableTypes.get(name.toUpperCase());
     }
 

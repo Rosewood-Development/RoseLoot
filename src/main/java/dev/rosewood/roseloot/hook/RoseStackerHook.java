@@ -27,10 +27,7 @@ public class RoseStackerHook {
             return false;
 
         StackedEntity stackedEntity = RoseStackerAPI.getInstance().getStackedEntity(entity);
-        if (stackedEntity == null)
-            return false;
-
-        if (stackedEntity.getStackSize() > 1)
+        if (stackedEntity == null || stackedEntity.getStackSize() > 1)
             return false;
 
         // This whole section was copy/pasted from RoseStacker
