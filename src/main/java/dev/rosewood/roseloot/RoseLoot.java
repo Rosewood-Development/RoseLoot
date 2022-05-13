@@ -39,7 +39,7 @@ public class RoseLoot extends RosePlugin {
     }
 
     public RoseLoot() {
-        super(-1, 12626, ConfigurationManager.class, null, LocaleManager.class, CommandManager.class);
+        super(101979, 12626, ConfigurationManager.class, null, LocaleManager.class, CommandManager.class);
 
         instance = this;
     }
