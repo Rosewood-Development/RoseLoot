@@ -12,6 +12,7 @@ import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
@@ -30,10 +31,12 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 public class EntityListener implements Listener {
 
+    private final RosePlugin rosePlugin;
     private final LootTableManager lootTableManager;
     private Reference<Player> lastShearer;
 
     public EntityListener(RosePlugin rosePlugin) {
+        this.rosePlugin = rosePlugin;
         this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
         this.lastShearer = new WeakReference<>(null);
     }
@@ -73,7 +76,12 @@ public class EntityListener implements Listener {
         event.getDrops().addAll(lootContents.getItems());
         event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
 
-        lootContents.triggerExtras(entity.getLocation());
+        Runnable task = () -> lootContents.triggerExtras(entity.getLocation());
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(this.rosePlugin, task);
+        } else {
+            task.run();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

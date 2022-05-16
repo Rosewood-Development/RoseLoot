@@ -38,12 +38,12 @@ permissions:
   roseloot.reload:
     description: Allows running the reload command
     default: op
-  roseloot.test:
-    description: Allows running the test command
-    default: op
   roseloot.generate:
     description: Allows running the generate command
     default: op
   roseloot.copy:
     description: Allows running the copy command
+    default: op
+  roseloot.list:
+    description: Allows running the list command
     default: op
