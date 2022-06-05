@@ -28,6 +28,7 @@ softdepend:
   - Slimefun
   - MythicMobs
   - RoseStacker
+  - RealisticSeasons
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

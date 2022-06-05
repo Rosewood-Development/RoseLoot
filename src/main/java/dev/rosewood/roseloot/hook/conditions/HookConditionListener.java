@@ -17,6 +17,8 @@ public class HookConditionListener implements Listener {
         LOOT_CONDITIONS.put("MythicMobs", new ConditionStorage("mythicmobs-type", MythicMobsTypeCondition.class));
         LOOT_CONDITIONS.put("EcoBosses", new ConditionStorage("ecobosses-type", EcoBossesTypeCondition.class));
         LOOT_CONDITIONS.put("RoseStacker", new ConditionStorage("rosestacker-stacked-entity", RoseStackerStackedEntityCondition.class));
+        LOOT_CONDITIONS.put("RealisticSeasons", new ConditionStorage("realisticseasons-season", RealisticSeasonsSeasonCondition.class));
+        LOOT_CONDITIONS.put("RealisticSeasons", new ConditionStorage("realisticseasons-event", RealisticSeasonsEventCondition.class));
     }
 
     @EventHandler
