@@ -31,7 +31,7 @@ public class HookConditionListener implements Listener {
 
         // Register conditions for custom item plugins
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
-            if (customItemPlugin.isEnabled())
+            if (customItemPlugin.isEnabled() && customItemPlugin.supportsIdLookup())
                 event.registerLootCondition(customItemPlugin.name().toLowerCase() + "-type", customItemPlugin.getLootConditionPredicate());
     }
 
