@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.hook.conditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
+import dev.rosewood.roseloot.hook.biomes.CustomBiomePlugin;
 import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import org.bukkit.Bukkit;
@@ -33,6 +34,11 @@ public class HookConditionListener implements Listener {
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
             if (customItemPlugin.isEnabled() && customItemPlugin.supportsIdLookup())
                 event.registerLootCondition(customItemPlugin.name().toLowerCase() + "-type", customItemPlugin.getLootConditionPredicate());
+
+        // Register conditions for custom biome plugins
+        for (CustomBiomePlugin customBiomePlugin : CustomBiomePlugin.values())
+            if (customBiomePlugin.isEnabled())
+                event.registerLootCondition(customBiomePlugin.name().toLowerCase() + "-biome", customBiomePlugin.getLootConditionPredicate());
     }
 
     private static class ConditionStorage {
