@@ -576,11 +576,26 @@ public final class VanillaLootTableConverter {
                 causeMapping.put("is_projectile", Collections.singletonList("projectile"));
                 causeMapping.put("is_lightning", Collections.singletonList("lightning"));
                 for (Map.Entry<String, JsonElement> entry : damagePredicate.entrySet()) {
-                    JsonElement element = entry.getValue();
-                    if (element.getAsBoolean()) {
-                        List<String> mappedValues = causeMapping.get(entry.getKey());
-                        if (mappedValues != null)
-                            causes.addAll(mappedValues);
+                    if (causeMapping.containsKey(entry.getKey())) {
+                        JsonElement element = entry.getValue();
+                        if (element.getAsBoolean()) {
+                            List<String> mappedValues = causeMapping.get(entry.getKey());
+                            if (mappedValues != null)
+                                causes.addAll(mappedValues);
+                        }
+                    } else if (entry.getKey().equalsIgnoreCase("source_entity")) {
+                        JsonObject object = entry.getValue().getAsJsonObject();
+                        String entityType = object.get("type").getAsString().replace("minecraft:", "");
+                        if (entityType.equals("frog")) {
+                            if (object.has("type_specific")) {
+                                String variant = object.get("type_specific").getAsJsonObject().get("variant").getAsString().replace("minecraft:", "");
+                                stringBuilder.append("killer-frog-variant:").append(variant);
+                            } else {
+                                stringBuilder.append("looter-entity-type:frog");
+                            }
+                        } else {
+                            RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:damage_source_properties source_entity type: " + entityType + " | " + path);
+                        }
                     }
                 }
                 if (!causes.isEmpty()) {
@@ -596,7 +611,21 @@ public final class VanillaLootTableConverter {
                 break;
             case "minecraft:entity_properties":
                 JsonObject propertiesPredicate = json.get("predicate").getAsJsonObject();
-                if (propertiesPredicate.has("type")) {
+                if (propertiesPredicate.has("type_specific")) {
+                    JsonObject typeSpecificObject = propertiesPredicate.get("type_specific").getAsJsonObject();
+                    String entityType = typeSpecificObject.get("type").getAsString().replace("minecraft:", "");
+                    if (entityType.equals("slime")) {
+                        stringBuilder.append("slime-size:1");
+                    } else if (entityType.equals("fishing_hook")) {
+                        if (typeSpecificObject.get("in_open_water").getAsBoolean()) {
+                            stringBuilder.append("open-water");
+                        } else {
+                            stringBuilder.append("!open-water");
+                        }
+                    } else {
+                        RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type_specific value: " + entityType + " | " + path);
+                    }
+                } else if (propertiesPredicate.has("type")) {
                     String entityType = propertiesPredicate.get("type").getAsString().replace("minecraft:", "");
                     entityType = fixEntityNames(entityType);
 
