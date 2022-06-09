@@ -10,6 +10,7 @@ public enum CustomItemPlugin {
     MMOITEMS(new MMOItemProvider()),
     ITEMBRIDGE(new ItemBridgeItemProvider()),
     EXECUTABLEITEMS(new ExecutableItemProvider()),
+    EXECUTABLEBLOCKS(new ExecutableBlockProvider()),
     ITEMSADDER(new ItemsAdderItemProvider()),
     ITEMSXL(new ItemsXLItemProvider()),
     ORAXEN(new OraxenItemProvider()),
