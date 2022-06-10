@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -21,7 +22,7 @@ public class LootConditionRegistrationEvent extends Event {
 
     private final Map<String, Constructor<? extends LootCondition>> registeredConditionConstructors;
     private final Map<String, Predicate<LootContext>> registeredConditionPredicates;
-    private final Map<String, BiPredicate<LootContext, String>> registeredConditionStringPredicates;
+    private final Map<String, BiPredicate<LootContext, List<String>>> registeredConditionStringPredicates;
 
     public LootConditionRegistrationEvent() {
         this.registeredConditionConstructors = new HashMap<>();
@@ -49,7 +50,7 @@ public class LootConditionRegistrationEvent extends Event {
      * @return an unmodifiable map of registered LootCondition string predicates
      */
     @NotNull
-    public Map<String, BiPredicate<LootContext, String>> getRegisteredConditionStringPredicates() {
+    public Map<String, BiPredicate<LootContext, List<String>>> getRegisteredConditionStringPredicates() {
         return Collections.unmodifiableMap(this.registeredConditionStringPredicates);
     }
 
@@ -96,7 +97,7 @@ public class LootConditionRegistrationEvent extends Event {
      * @param predicate The predicate of the LootCondition
      * @return true if registering the new LootCondition overwrote a different LootCondition with the same name, false otherwise
      */
-    public boolean registerLootCondition(@NotNull String name, @NotNull BiPredicate<LootContext, String> predicate) {
+    public boolean registerLootCondition(@NotNull String name, @NotNull BiPredicate<LootContext, @NotNull List<String>> predicate) {
         String tagName = name.toLowerCase();
         return this.registeredConditionStringPredicates.put(tagName, predicate) != null
                 || this.registeredConditionPredicates.remove(tagName) != null
@@ -111,7 +112,9 @@ public class LootConditionRegistrationEvent extends Event {
      */
     public boolean unregisterLootCondition(@NotNull String name) {
         String tagName = name.toLowerCase();
-        return this.registeredConditionConstructors.remove(tagName) != null || this.registeredConditionPredicates.remove(tagName) != null;
+        return this.registeredConditionConstructors.remove(tagName) != null
+                || this.registeredConditionPredicates.remove(tagName) != null
+                || this.registeredConditionStringPredicates.remove(tagName) != null;
     }
 
     @Override

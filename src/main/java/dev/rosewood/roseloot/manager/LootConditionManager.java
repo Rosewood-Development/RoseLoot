@@ -73,7 +73,7 @@ public class LootConditionManager extends Manager implements Listener {
     private static final String PACKAGE_PATH = "dev.rosewood.roseloot.loot.condition.tags.entity";
     private final Map<String, Constructor<? extends LootCondition>> registeredConditionConstructors;
     private final Map<String, Predicate<LootContext>> registeredConditionPredicates;
-    private final Map<String, BiPredicate<LootContext, String>> registeredConditionStringPredicates;
+    private final Map<String, BiPredicate<LootContext, List<String>>> registeredConditionStringPredicates;
 
     public LootConditionManager(RosePlugin rosePlugin) {
         super(rosePlugin);
@@ -141,7 +141,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition.class);
         event.registerLootCondition("open-water", context -> context.get(LootContextParams.FISH_HOOK).filter(FishHook::isInOpenWater).isPresent());
         event.registerLootCondition("patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
-        event.registerLootCondition("permission", (context, value) -> context.get(LootContextParams.LOOTER).filter(x -> x.hasPermission(value)).isPresent());
+        event.registerLootCondition("permission", (context, values) -> context.get(LootContextParams.LOOTER).filter(x -> values.stream().anyMatch(x::hasPermission)).isPresent());
         event.registerLootCondition("placeholder", PlaceholderCondition.class);
         event.registerLootCondition("potion-effect", PotionEffectCondition.class);
         event.registerLootCondition("required-tool", RequiredToolCondition.class);
@@ -196,7 +196,7 @@ public class LootConditionManager extends Manager implements Listener {
             if (predicate != null)
                 return new BooleanLootCondition(tag, predicate);
 
-            BiPredicate<LootContext, String> stringPredicate = this.registeredConditionStringPredicates.get(tagPrefix);
+            BiPredicate<LootContext, List<String>> stringPredicate = this.registeredConditionStringPredicates.get(tagPrefix);
             if (stringPredicate != null)
                 return new StringLootCondition(tag, stringPredicate);
         } catch (Exception e) {

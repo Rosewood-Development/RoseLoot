@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.hook.biomes;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.List;
 import java.util.function.BiPredicate;
 import org.bukkit.Location;
 
@@ -23,10 +24,10 @@ public enum CustomBiomePlugin {
         return this.biomeProvider.getBiomeName(location);
     }
 
-    public BiPredicate<LootContext, String> getLootConditionPredicate() {
-        return (context, value) -> context.get(LootContextParams.ORIGIN)
+    public BiPredicate<LootContext, List<String>> getLootConditionPredicate() {
+        return (context, values) -> context.get(LootContextParams.ORIGIN)
                 .map(this::resolveBiome)
-                .filter(x -> x.equalsIgnoreCase(value))
+                .filter(x -> values.stream().anyMatch(x::equalsIgnoreCase))
                 .isPresent();
     }
 

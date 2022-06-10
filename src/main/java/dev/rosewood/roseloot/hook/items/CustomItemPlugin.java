@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.hook.items;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import java.util.List;
 import java.util.function.BiPredicate;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,10 +42,10 @@ public enum CustomItemPlugin {
         return this.itemProvider.supportsIdLookup();
     }
 
-    public BiPredicate<LootContext, String> getLootConditionPredicate() {
-        return (context, value) -> context.getItemUsed()
+    public BiPredicate<LootContext, List<String>> getLootConditionPredicate() {
+        return (context, values) -> context.getItemUsed()
                 .map(this::resolveItemId)
-                .filter(x -> x.equalsIgnoreCase(value))
+                .filter(x -> values.stream().anyMatch(x::equalsIgnoreCase))
                 .isPresent();
     }
 
