@@ -9,9 +9,10 @@ public enum OverwriteExisting {
 
     public static OverwriteExisting combine(OverwriteExisting first, OverwriteExisting second) {
         if (first == ALL || second == ALL || (first == ITEMS && second == EXPERIENCE) || (first == EXPERIENCE && second == ITEMS)) return ALL;
-        if ((first == ITEMS && second == NONE) || (first == NONE && second == ITEMS)) return ITEMS;
-        if ((first == EXPERIENCE && second == NONE) || (first == NONE && second == EXPERIENCE)) return EXPERIENCE;
-        return NONE;
+        if ((first == ITEMS && second == ITEMS) || (first == ITEMS && second == NONE) || (first == NONE && second == ITEMS)) return ITEMS;
+        if ((first == EXPERIENCE && second == EXPERIENCE) || (first == EXPERIENCE && second == NONE) || (first == NONE && second == EXPERIENCE)) return EXPERIENCE;
+        if (first == NONE && second == NONE) return NONE;
+        throw new IllegalStateException("Unexpected OverwriteExisting combination: " + first + ", " + second);
     }
 
     public static OverwriteExisting fromString(String name) {
