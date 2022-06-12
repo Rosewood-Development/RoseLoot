@@ -248,6 +248,11 @@ public final class EnchantingUtils {
             public int getMaxCost(int level) { return this.getMinCost(level) + 15; }
             public boolean isDiscoverable() { return false; }
         },
+        SWIFT_SNEAK(Rarity.VERY_RARE) {
+            public int getMinCost(int level) { return level * 25; }
+            public int getMaxCost(int level) { return this.getMinCost(level) + 50; }
+            public boolean isDiscoverable() { return false; }
+        },
         SHARPNESS(Rarity.COMMON) {
             public int getMinCost(int level) { return 1 + (level - 1) * 11; }
             public int getMaxCost(int level) { return this.getMinCost(level) + 20; }

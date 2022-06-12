@@ -18,6 +18,7 @@ softdepend:
   - MMOItems
   - ItemBridge
   - ExecutableItems
+  - ExecutableBlocks
   - SCore
   - ItemsAdder
   - ItemsXL
@@ -29,6 +30,7 @@ softdepend:
   - MythicMobs
   - RoseStacker
   - RealisticSeasons
+  - Terra
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
