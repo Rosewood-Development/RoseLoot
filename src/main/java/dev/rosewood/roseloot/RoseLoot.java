@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FireworkDamageListener;
 import dev.rosewood.roseloot.listener.FishingListener;
+import dev.rosewood.roseloot.listener.HarvestBlockListener;
 import dev.rosewood.roseloot.listener.LootGenerateListener;
 import dev.rosewood.roseloot.listener.PiglinBarterListener;
 import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
@@ -59,6 +60,8 @@ public class RoseLoot extends RosePlugin {
         pluginManager.registerEvents(new FireworkDamageListener(), this);
         if (NMSUtil.getVersionNumber() >= 15)
             pluginManager.registerEvents(new LootGenerateListener(this), this);
+        if (NMSUtil.getVersionNumber() >= 16)
+            pluginManager.registerEvents(new HarvestBlockListener(this), this);
         if (RoseStackerHook.isEnabled())
             pluginManager.registerEvents(new RoseStackerEntityDeathListener(this), this);
 
