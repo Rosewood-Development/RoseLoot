@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 group = 'dev.rosewood'
-version = '1.0.3'
+version = '1.0.4'
 
 compileJava {
     options.compilerArgs += ['-parameters']
@@ -57,7 +57,7 @@ dependencies {
         exclude group: 'org.spigotmc'
     }
 
-    api 'dev.rosewood:rosegarden:1.1.0.37-SNAPSHOT'
+    api 'dev.rosewood:rosegarden:1.1.0.38-SNAPSHOT'
 }
 
 shadowJar {
