@@ -10,7 +10,10 @@ import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -18,6 +21,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -25,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
@@ -64,7 +69,20 @@ public class BlockListener implements Listener {
 
         // Drop items and experience
         Location dropLocation = block.getLocation();
-        lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
+        List<Item> droppedItems = new ArrayList<>();
+        lootContents.getItems().forEach(x -> droppedItems.add(block.getWorld().dropItemNaturally(dropLocation, x)));
+
+        // Simulate a BlockDropItemEvent for each item dropped for better custom enchantment plugin support if enabled
+        if (!droppedItems.isEmpty() && Setting.SIMULATE_BLOCKDROPITEMEVENT.getBoolean()) {
+            List<Item> eventItems = new ArrayList<>(droppedItems);
+            BlockDropItemEvent blockDropItemEvent = new BlockDropItemEvent(block, block.getState(), player, eventItems);
+            Bukkit.getPluginManager().callEvent(blockDropItemEvent);
+            if (!blockDropItemEvent.isCancelled()) {
+                droppedItems.stream().filter(x -> !eventItems.contains(x)).forEach(Entity::remove);
+            } else {
+                droppedItems.forEach(Entity::remove);
+            }
+        }
 
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
 
