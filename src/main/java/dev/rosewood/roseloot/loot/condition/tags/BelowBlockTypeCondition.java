@@ -3,8 +3,10 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -34,6 +36,14 @@ public class BelowBlockTypeCondition extends LootCondition {
 
         for (String value : values) {
             try {
+                if (value.startsWith("#")) {
+                    Set<Material> tagBlocks = LootUtils.getTags(value.substring(1), Material.class, "blocks");
+                    if (tagBlocks != null) {
+                        this.blockTypes.addAll(tagBlocks);
+                        continue;
+                    }
+                }
+
                 Material blockMaterial = Material.matchMaterial(value);
                 if (blockMaterial != null && blockMaterial.isBlock())
                     this.blockTypes.add(blockMaterial);

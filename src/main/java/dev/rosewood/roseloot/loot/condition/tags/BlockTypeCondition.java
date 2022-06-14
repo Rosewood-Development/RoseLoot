@@ -33,9 +33,9 @@ public class BlockTypeCondition extends LootCondition {
         for (String value : values) {
             try {
                 if (value.startsWith("#")) {
-                    Set<Material> tagEntities = LootUtils.getTags(value.substring(1), Material.class, "blocks");
-                    if (tagEntities != null) {
-                        this.blockTypes.addAll(tagEntities);
+                    Set<Material> tagBlocks = LootUtils.getTags(value.substring(1), Material.class, "blocks");
+                    if (tagBlocks != null) {
+                        this.blockTypes.addAll(tagBlocks);
                         continue;
                     }
                 }
