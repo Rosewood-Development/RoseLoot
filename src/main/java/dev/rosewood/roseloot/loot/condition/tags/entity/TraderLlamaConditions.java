@@ -45,7 +45,7 @@ public class TraderLlamaConditions extends EntityConditions {
             for (String value : values) {
                 try {
                     Material decorMaterial = Material.matchMaterial(value);
-                    if (decorMaterial != null && decorMaterial.isBlock())
+                    if (decorMaterial != null)
                         this.decorMaterials.add(decorMaterial);
                 } catch (Exception ignored) { }
             }

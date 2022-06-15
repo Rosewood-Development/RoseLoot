@@ -47,7 +47,7 @@ public class DroppedItemCondition extends LootCondition {
                 }
 
                 Material blockMaterial = Material.matchMaterial(value);
-                if (blockMaterial != null && blockMaterial.isBlock())
+                if (blockMaterial != null)
                     this.materials.add(blockMaterial);
             } catch (Exception ignored) { }
         }
