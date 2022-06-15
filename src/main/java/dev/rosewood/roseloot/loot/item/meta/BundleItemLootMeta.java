@@ -59,7 +59,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
             for (int i = 0; i < contents.size(); i++) {
                 ItemStack item = contents.get(i);
                 stringBuilder.append("  ").append(i).append(":\n");
-                stringBuilder.append("    ").append(ItemLootItem.toSection(item).replaceAll(Pattern.quote("\n"), "\n    ").trim()).append('\n');
+                stringBuilder.append("    ").append(ItemLootItem.toSection(item, true).replaceAll(Pattern.quote("\n"), "\n    ").trim()).append('\n');
             }
         }
     }

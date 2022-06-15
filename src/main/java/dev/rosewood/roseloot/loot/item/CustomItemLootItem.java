@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.hook.NBTAPIHook;
 import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -18,13 +19,16 @@ public class CustomItemLootItem extends ItemLootItem {
 
     private final ItemStack itemStack;
 
-    public CustomItemLootItem(ItemStack itemStack, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, EnchantmentBonus enchantmentBonus) {
-        super(itemStack.getType(), amount, maxAmount, amountModifiers, null, enchantmentBonus, false);
+    public CustomItemLootItem(ItemStack itemStack, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, EnchantmentBonus enchantmentBonus, String nbt) {
+        super(itemStack.getType(), amount, maxAmount, amountModifiers, null, enchantmentBonus, false, nbt);
         this.itemStack = itemStack;
     }
 
     protected ItemStack getCreationItem(LootContext context) {
-        return this.itemStack;
+        ItemStack clone = this.itemStack.clone();
+        if (this.nbt != null && !this.nbt.isEmpty())
+            NBTAPIHook.mergeItemNBT(clone, this.nbt);
+        return clone;
     }
 
     public static CustomItemLootItem fromSection(ConfigurationSection section) {
@@ -80,7 +84,8 @@ public class CustomItemLootItem extends ItemLootItem {
             }
         }
 
-        return new CustomItemLootItem(itemStack, amount, maxAmount, amountModifiers, enchantmentBonus);
+        String nbt = section.getString("nbt");
+        return new CustomItemLootItem(itemStack, amount, maxAmount, amountModifiers, enchantmentBonus, nbt);
     }
 
 }

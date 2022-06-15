@@ -378,7 +378,7 @@ public class ItemLootMeta {
         if (!itemMeta.getEnchants().isEmpty() && material != Material.ENCHANTED_BOOK) {
             stringBuilder.append("enchantments:\n");
             for (Map.Entry<Enchantment, Integer> entry : itemMeta.getEnchants().entrySet())
-                stringBuilder.append("  ").append(entry.getKey().getKey().getKey()).append(": ").append(entry.getValue());
+                stringBuilder.append("  ").append(entry.getKey().getKey().getKey()).append(": ").append(entry.getValue()).append('\n');
         }
 
         Multimap<Attribute, AttributeModifier> attributes = itemMeta.getAttributeModifiers();
@@ -388,11 +388,11 @@ public class ItemLootMeta {
             for (Attribute attribute : attributes.keySet()) {
                 for (AttributeModifier modifier : attributes.get(attribute)) {
                     stringBuilder.append("  ").append(i++).append(":\n");
-                    stringBuilder.append("    ").append("name: ").append('\'').append(attribute.getKey().getKey()).append('\'');
+                    stringBuilder.append("    ").append("name: ").append('\'').append(attribute.getKey().getKey()).append("'\n");
                     stringBuilder.append("    ").append("amount: ").append(modifier.getAmount()).append('\n');
-                    stringBuilder.append("    ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append('\'');
+                    stringBuilder.append("    ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append("'\n");
                     if (modifier.getSlot() != null)
-                        stringBuilder.append("    ").append("slot: ").append(modifier.getSlot().name().toLowerCase()).append('\'');
+                        stringBuilder.append("    ").append("slot: ").append(modifier.getSlot().name().toLowerCase()).append("'\n");
                 }
             }
         }

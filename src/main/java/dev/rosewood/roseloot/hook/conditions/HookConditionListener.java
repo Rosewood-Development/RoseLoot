@@ -4,6 +4,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.hook.biomes.CustomBiomePlugin;
+import dev.rosewood.roseloot.hook.conditions.nbt.NBTBlockCondition;
+import dev.rosewood.roseloot.hook.conditions.nbt.NBTEntityCondition;
+import dev.rosewood.roseloot.hook.conditions.nbt.NBTItemCondition;
+import dev.rosewood.roseloot.hook.conditions.nbt.NBTLooterCondition;
 import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import org.bukkit.Bukkit;
@@ -20,6 +24,10 @@ public class HookConditionListener implements Listener {
         LOOT_CONDITIONS.put("RoseStacker", new ConditionStorage("rosestacker-stacked-entity", RoseStackerStackedEntityCondition.class));
         LOOT_CONDITIONS.put("RealisticSeasons", new ConditionStorage("realisticseasons-season", RealisticSeasonsSeasonCondition.class));
         LOOT_CONDITIONS.put("RealisticSeasons", new ConditionStorage("realisticseasons-event", RealisticSeasonsEventCondition.class));
+        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-block", NBTBlockCondition.class));
+        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-entity", NBTEntityCondition.class));
+        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-item", NBTItemCondition.class));
+        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-looter", NBTLooterCondition.class));
     }
 
     @EventHandler

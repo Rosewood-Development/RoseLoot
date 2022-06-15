@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.hook.NBTAPIHook;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,8 +33,9 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
     protected final List<AmountModifier> amountModifiers;
     protected final EnchantmentBonus enchantmentBonus;
     protected final boolean smeltIfBurning;
+    protected final String nbt;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
+    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
@@ -40,10 +43,11 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         this.itemLootMeta = itemLootMeta;
         this.enchantmentBonus = enchantmentBonus;
         this.smeltIfBurning = smeltIfBurning;
+        this.nbt = nbt;
     }
 
     protected ItemLootItem() {
-        this(null, null, null, null, null, null, false);
+        this(null, null, null, null, null, null, false, null);
     }
 
     protected ItemStack getCreationItem(LootContext context) {
@@ -62,7 +66,12 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
                 }
             }
         }
-        return this.itemLootMeta.apply(new ItemStack(item), context);
+
+        ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(item), context);
+        if (this.nbt != null && !this.nbt.isEmpty())
+            NBTAPIHook.mergeItemNBT(itemStack, this.nbt);
+
+        return itemStack;
     }
 
     @Override
@@ -156,17 +165,22 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
+        String nbt = section.getString("nbt");
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new ItemLootItem(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
+        return new ItemLootItem(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }
 
-    public static String toSection(ItemStack itemStack) {
+    public static String toSection(ItemStack itemStack, boolean keepVanillaNBT) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("item: ").append(itemStack.getType().name().toLowerCase()).append('\n');
         stringBuilder.append("amount: ").append(itemStack.getAmount()).append('\n');
 
         ItemLootMeta.applyProperties(itemStack, stringBuilder);
+
+        String customNBT = NBTAPIHook.getCustomNBTString(itemStack, keepVanillaNBT);
+        if (customNBT != null && customNBT.trim().length() > 2)
+            stringBuilder.append("nbt: '").append(customNBT.replaceAll(Pattern.quote("'"), "''")).append("'").append('\n');
 
         return stringBuilder.toString();
     }

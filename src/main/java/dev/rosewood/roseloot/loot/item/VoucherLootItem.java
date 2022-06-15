@@ -19,8 +19,8 @@ public class VoucherLootItem extends ItemLootItem {
 
     private final String lootTable;
 
-    public VoucherLootItem(String lootTable, Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
-        super(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
+    public VoucherLootItem(String lootTable, Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+        super(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
         this.lootTable = lootTable;
     }
 
@@ -83,8 +83,9 @@ public class VoucherLootItem extends ItemLootItem {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
+        String nbt = section.getString("nbt");
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new VoucherLootItem(lootTable, item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
+        return new VoucherLootItem(lootTable, item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }
 
 }

@@ -60,7 +60,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
 
         if (!itemMeta.getStoredEnchants().isEmpty()) {
             stringBuilder.append("enchantments:\n");
-            for (Map.Entry<Enchantment, Integer> entry : itemMeta.getEnchants().entrySet())
+            for (Map.Entry<Enchantment, Integer> entry : itemMeta.getStoredEnchants().entrySet())
                 stringBuilder.append("  ").append(entry.getKey().getKey().getKey()).append(": ").append(entry.getValue());
         }
     }

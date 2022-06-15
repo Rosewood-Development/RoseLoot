@@ -23,8 +23,8 @@ public class TagLootItem extends ItemLootItem {
 
     private final Tag<Material> tag;
 
-    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning) {
-        super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
+    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+        super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
         this.tag = tag;
     }
 
@@ -91,8 +91,9 @@ public class TagLootItem extends ItemLootItem {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
+        String nbt = section.getString("nbt");
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(Iterators.get(tag.getValues().iterator(), 0), section);
-        return new TagLootItem(tag, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning);
+        return new TagLootItem(tag, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }
 
 }

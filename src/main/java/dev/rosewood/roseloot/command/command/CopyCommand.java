@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.RoseCommand;
 import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
+import dev.rosewood.rosegarden.command.framework.annotation.Optional;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.manager.LocaleManager;
@@ -25,7 +26,7 @@ public class CopyCommand extends RoseCommand {
     }
 
     @RoseExecutable
-    public void execute(CommandContext context) {
+    public void execute(CommandContext context, @Optional Boolean keepVanillaNBT) {
         LocaleManager localeManager = this.rosePlugin.getManager(LocaleManager.class);
 
         ItemStack itemStack = ((Player) context.getSender()).getInventory().getItemInMainHand();
@@ -34,7 +35,10 @@ public class CopyCommand extends RoseCommand {
             return;
         }
 
-        String entry = ItemLootItem.toSection(itemStack);
+        if (keepVanillaNBT == null)
+            keepVanillaNBT = false;
+
+        String entry = ItemLootItem.toSection(itemStack, keepVanillaNBT);
         ComponentBuilder builder = new ComponentBuilder()
                 .append(TextComponent.fromLegacyText(localeManager.getLocaleMessage("prefix")))
                 .append(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-copy-success")))
