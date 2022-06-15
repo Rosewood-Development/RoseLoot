@@ -129,6 +129,9 @@ public class ItemLootMeta {
             List<EnchantmentData> enchantments = new ArrayList<>();
             for (String enchantmentName : enchantmentsSection.getKeys(false)) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
+                if (enchantment == null)
+                    continue;
+
                 NumberProvider levelProvider = NumberProvider.fromSection(enchantmentsSection, enchantmentName, 1);
                 enchantments.add(new EnchantmentData(enchantment, levelProvider));
             }
@@ -372,7 +375,7 @@ public class ItemLootMeta {
         } else if (!itemFlags.isEmpty()) {
             stringBuilder.append("hide-flags:\n");
             for (ItemFlag itemFlag : itemFlags)
-                stringBuilder.append(itemFlag.name().toLowerCase()).append('\n');
+                stringBuilder.append("  - '").append(itemFlag.name().toLowerCase()).append("'\n");
         }
 
         if (!itemMeta.getEnchants().isEmpty() && material != Material.ENCHANTED_BOOK) {

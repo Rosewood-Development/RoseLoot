@@ -23,13 +23,20 @@ public final class EnchantingUtils {
     }
 
     /**
-     * Gets an Enchantment by its vanilla name
+     * Gets an Enchantment by its registered key
      *
      * @param name The name of the enchantment
      * @return The Enchantment, or null if not found
      */
     public static Enchantment getEnchantmentByName(String name) {
-        return Enchantment.getByKey(NamespacedKey.fromString(name.toLowerCase()));
+        Enchantment byKey = Enchantment.getByKey(NamespacedKey.fromString(name.toLowerCase()));
+        if (byKey != null)
+            return byKey;
+
+        return Arrays.stream(Enchantment.values())
+                .filter(x -> x.getKey().getKey().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
