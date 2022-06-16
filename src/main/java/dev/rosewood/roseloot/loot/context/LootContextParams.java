@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("deprecation")
 public final class LootContextParams {
 
     public static final LootContextParam<Location> ORIGIN = create("origin", Location.class, builder ->

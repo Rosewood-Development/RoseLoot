@@ -58,13 +58,7 @@ public class PotionEffectLootItem implements TriggerableLootItem<PotionEffectLoo
         return new PotionEffectLootItem(new PotionEffectInstance(customEffects));
     }
 
-    public static class PotionEffectInstance {
-
-        private final List<PotionItemLootMeta.PotionEffectData> effects;
-
-        public PotionEffectInstance(List<PotionItemLootMeta.PotionEffectData> effects) {
-            this.effects = effects;
-        }
+    public record PotionEffectInstance(List<PotionItemLootMeta.PotionEffectData> effects) {
 
         /**
          * Triggers the stored explosion state

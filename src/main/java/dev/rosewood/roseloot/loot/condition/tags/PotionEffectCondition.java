@@ -20,7 +20,7 @@ public class PotionEffectCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         Optional<LivingEntity> looter = context.getAs(LootContextParams.LOOTER, LivingEntity.class);
-        if (!looter.isPresent())
+        if (looter.isEmpty())
             return false;
 
         for (PotionEffect potionEffect : looter.get().getActivePotionEffects())

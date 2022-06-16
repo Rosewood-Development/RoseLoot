@@ -42,7 +42,6 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -100,7 +99,7 @@ public class LootTableManager extends Manager implements Listener {
 
             VanillaLootTableConverter.convert(examplesDirectory);
 
-            List<File> files = LootUtils.listFiles(directory, Arrays.asList("examples", "disabled"), Collections.singletonList("yml"));
+            List<File> files = LootUtils.listFiles(directory, List.of("examples", "disabled"), List.of("yml"));
             for (File file : files) {
                 try {
                     ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);

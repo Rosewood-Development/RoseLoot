@@ -3,14 +3,13 @@ package dev.rosewood.roseloot.hook;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
-import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 public class NBTAPIHook {
 
-    private static final List<String> VANILLA_ITEM_NBT_KEYS = Arrays.asList(
+    private static final List<String> VANILLA_ITEM_NBT_KEYS = List.of(
             "id", "Count", "Damage", "Enchantments", "EntityTag", "display", "AttributeModifiers", "Unbreakable",
             "SkullOwner", "HideFlags", "author", "pages", "title", "generation", "Fireworks", "Flight", "RepairCost",
             "Variant", "BlockEntityTag", "Items", "tag", "StoredEnchantments", "Explosion", "Type", "Recipes",

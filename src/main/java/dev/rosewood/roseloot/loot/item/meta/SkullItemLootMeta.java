@@ -31,7 +31,6 @@ public class SkullItemLootMeta extends ItemLootMeta {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         super.apply(itemStack, context);
 

@@ -21,13 +21,13 @@ public class BlockDataCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         Optional<Block> block = context.get(LootContextParams.LOOTED_BLOCK);
-        if (!block.isPresent())
+        if (block.isEmpty())
             return false;
 
         BlockData blockData = block.get().getBlockData();
         String blockDataString = blockData.getAsString(false);
         blockDataString = blockDataString.substring(blockDataString.indexOf('[') + 1, blockDataString.lastIndexOf(']')).replaceAll(" ", "").toLowerCase(); // Remove [] and all spaces
-        List<String> dataValues = Arrays.asList(blockDataString.split(","));
+        List<String> dataValues = List.of(blockDataString.split(","));
         return this.blockData.stream().anyMatch(dataValues::contains);
     }
 

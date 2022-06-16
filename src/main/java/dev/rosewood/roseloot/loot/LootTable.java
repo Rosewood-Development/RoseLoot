@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.table.LootTableType;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ public class LootTable implements LootItemGenerator {
         this.type.validateLootContext(context);
 
         if (!this.check(context))
-            return Collections.emptyList();
+            return List.of();
         return this.pools.stream().flatMap(x -> x.generate(context).stream()).collect(Collectors.toList());
     }
 

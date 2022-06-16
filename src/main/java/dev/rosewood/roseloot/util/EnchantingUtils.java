@@ -59,7 +59,7 @@ public final class EnchantingUtils {
                 return itemStack;
 
             for (EnchantmentInstance enchantment : enchantments)
-                meta.addStoredEnchant(enchantment.getEnchantment().asSpigot(), enchantment.getLevel(), true);
+                meta.addStoredEnchant(enchantment.enchantment().asSpigot(), enchantment.level(), true);
 
             itemStack.setItemMeta(meta);
         } else {
@@ -68,7 +68,7 @@ public final class EnchantingUtils {
                 return itemStack;
 
             for (EnchantmentInstance enchantment : enchantments)
-                meta.addEnchant(enchantment.getEnchantment().asSpigot(), enchantment.getLevel(), true);
+                meta.addEnchant(enchantment.enchantment().asSpigot(), enchantment.level(), true);
 
             itemStack.setItemMeta(meta);
         }
@@ -87,7 +87,7 @@ public final class EnchantingUtils {
         level = LootUtils.clamp(Math.round((float) level + (float) level * offset), 1, Integer.MAX_VALUE);
         RandomCollection<EnchantmentInstance> possibleEnchantments = new RandomCollection<>();
         for (EnchantmentInstance instance : getAvailableEnchantmentResults(itemStack, level, treasure, uncapped))
-            possibleEnchantments.add(instance.getEnchantment().getWeight(), instance);
+            possibleEnchantments.add(instance.enchantment().getWeight(), instance);
 
         if (!possibleEnchantments.isEmpty()) {
             enchantments.add(possibleEnchantments.removeNext());
@@ -125,83 +125,25 @@ public final class EnchantingUtils {
     }
 
     private static void filterCompatibleEnchantments(RandomCollection<EnchantmentInstance> enchantments, EnchantmentInstance enchantment) {
-        enchantments.removeIf(x -> x.getEnchantment().asSpigot().conflictsWith(enchantment.getEnchantment().asSpigot()));
+        enchantments.removeIf(x -> x.enchantment().asSpigot().conflictsWith(enchantment.enchantment().asSpigot()));
     }
 
     private static int getEnchantmentValue(Material material) {
-        switch (material) {
-            case WOODEN_SHOVEL:
-            case WOODEN_PICKAXE:
-            case WOODEN_AXE:
-            case WOODEN_HOE:
-            case WOODEN_SWORD:
-            case LEATHER_HELMET:
-            case LEATHER_CHESTPLATE:
-            case LEATHER_LEGGINGS:
-            case LEATHER_BOOTS:
-            case NETHERITE_HELMET:
-            case NETHERITE_CHESTPLATE:
-            case NETHERITE_LEGGINGS:
-            case NETHERITE_BOOTS:
-            case NETHERITE_SHOVEL:
-            case NETHERITE_PICKAXE:
-            case NETHERITE_AXE:
-            case NETHERITE_HOE:
-            case NETHERITE_SWORD:
-                return 15;
-            case STONE_SHOVEL:
-            case STONE_PICKAXE:
-            case STONE_AXE:
-            case STONE_HOE:
-            case STONE_SWORD:
-                return 5;
-            case CHAINMAIL_HELMET:
-            case CHAINMAIL_CHESTPLATE:
-            case CHAINMAIL_LEGGINGS:
-            case CHAINMAIL_BOOTS:
-                return 12;
-            case IRON_HELMET:
-            case IRON_CHESTPLATE:
-            case IRON_LEGGINGS:
-            case IRON_BOOTS:
-            case TURTLE_HELMET:
-                return 9;
-            case IRON_SHOVEL:
-            case IRON_PICKAXE:
-            case IRON_AXE:
-            case IRON_HOE:
-            case IRON_SWORD:
-                return 14;
-            case GOLDEN_HELMET:
-            case GOLDEN_CHESTPLATE:
-            case GOLDEN_LEGGINGS:
-            case GOLDEN_BOOTS:
-                return 25;
-            case GOLDEN_SHOVEL:
-            case GOLDEN_PICKAXE:
-            case GOLDEN_AXE:
-            case GOLDEN_HOE:
-            case GOLDEN_SWORD:
-                return 22;
-            case DIAMOND_HELMET:
-            case DIAMOND_CHESTPLATE:
-            case DIAMOND_LEGGINGS:
-            case DIAMOND_BOOTS:
-            case DIAMOND_SHOVEL:
-            case DIAMOND_PICKAXE:
-            case DIAMOND_AXE:
-            case DIAMOND_HOE:
-            case DIAMOND_SWORD:
-                return 10;
-            case ENCHANTED_BOOK:
-            case FISHING_ROD:
-            case TRIDENT:
-            case BOW:
-            case CROSSBOW:
-                return 1;
-            default:
-                return 0;
-        }
+        return switch (material) {
+            case WOODEN_SHOVEL, WOODEN_PICKAXE, WOODEN_AXE, WOODEN_HOE, WOODEN_SWORD, LEATHER_HELMET, LEATHER_CHESTPLATE,
+                    LEATHER_LEGGINGS, LEATHER_BOOTS, NETHERITE_HELMET, NETHERITE_CHESTPLATE, NETHERITE_LEGGINGS, NETHERITE_BOOTS,
+                    NETHERITE_SHOVEL, NETHERITE_PICKAXE, NETHERITE_AXE, NETHERITE_HOE, NETHERITE_SWORD -> 15;
+            case STONE_SHOVEL, STONE_PICKAXE, STONE_AXE, STONE_HOE, STONE_SWORD -> 5;
+            case CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS -> 12;
+            case IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, TURTLE_HELMET -> 9;
+            case IRON_SHOVEL, IRON_PICKAXE, IRON_AXE, IRON_HOE, IRON_SWORD -> 14;
+            case GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS -> 25;
+            case GOLDEN_SHOVEL, GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_HOE, GOLDEN_SWORD -> 22;
+            case DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS, DIAMOND_SHOVEL,
+                    DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_HOE, DIAMOND_SWORD -> 10;
+            case ENCHANTED_BOOK, FISHING_ROD, TRIDENT, BOW, CROSSBOW -> 1;
+            default -> 0;
+        };
     }
 
     // spigot please expose this thanks
@@ -429,24 +371,6 @@ public final class EnchantingUtils {
 
     }
 
-    private static class EnchantmentInstance {
-
-        private final EnchantmentInfo enchantment;
-        private final int level;
-
-        public EnchantmentInstance(EnchantmentInfo enchantment, int level) {
-            this.enchantment = enchantment;
-            this.level = level;
-        }
-
-        public EnchantmentInfo getEnchantment() {
-            return this.enchantment;
-        }
-
-        public int getLevel() {
-            return this.level;
-        }
-
-    }
+    private record EnchantmentInstance(EnchantmentInfo enchantment, int level) { }
 
 }

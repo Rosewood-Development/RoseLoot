@@ -12,6 +12,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
+@SuppressWarnings("deprecation")
 public class HelpCommand extends dev.rosewood.rosegarden.command.command.HelpCommand {
 
     private static final String WIKI_URL = "https://github.com/Rosewood-Development/RoseLoot/wiki/Loot-Tables-Overview";

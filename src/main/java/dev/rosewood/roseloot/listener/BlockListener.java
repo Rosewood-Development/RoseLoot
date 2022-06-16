@@ -167,12 +167,10 @@ public class BlockListener implements Listener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(event.getEntity().getWorld().getName())))
             return;
 
-        if (looter.getType() == EntityType.PRIMED_TNT) {
-            TNTPrimed tnt = (TNTPrimed) looter;
+        if (looter instanceof TNTPrimed tnt) {
             Entity source = tnt.getSource();
             if (source != null) {
-                if (source instanceof Projectile) {
-                    Projectile projectile = (Projectile) source;
+                if (source instanceof Projectile projectile) {
                     if (projectile.getShooter() instanceof Player)
                         looter = (Player) projectile.getShooter();
                 } else if (source.getType() == EntityType.PLAYER) {

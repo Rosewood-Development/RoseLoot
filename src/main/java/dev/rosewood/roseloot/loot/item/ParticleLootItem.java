@@ -56,25 +56,15 @@ public class ParticleLootItem implements TriggerableLootItem<ParticleSpawnData> 
         NumberProvider extra = NumberProvider.fromSection(section, "extra", 0.0);
         boolean longDistance = section.getBoolean("long-distance", false);
 
-        ParticleDataContainer data = null;
         String dataType = particle.getDataType().getSimpleName();
-        switch (dataType) {
-            case "DustOptions":
-                data = new DustOptionsContainer(section);
-                break;
-            case "ItemStack":
-                data = new ItemStackContainer(section);
-                break;
-            case "BlockData":
-                data = new BlockDataContainer(section);
-                break;
-            case "DustTransition":
-                data = new DustTransitionContainer(section);
-                break;
-            case "Vibration":
-                data = new VibrationContainer(section);
-                break;
-        }
+        ParticleDataContainer data = switch (dataType) {
+            case "DustOptions" -> new DustOptionsContainer(section);
+            case "ItemStack" -> new ItemStackContainer(section);
+            case "BlockData" -> new BlockDataContainer(section);
+            case "DustTransition" -> new DustTransitionContainer(section);
+            case "Vibration" -> new VibrationContainer(section);
+            default -> null;
+        };
 
         return new ParticleLootItem(new ParticleSpawnData(playerOnly, particle, amount, offsetX, offsetY, offsetZ, extra, longDistance, data));
     }
@@ -199,6 +189,7 @@ public class ParticleLootItem implements TriggerableLootItem<ParticleSpawnData> 
 
     }
 
+    @SuppressWarnings("removal")
     private static class VibrationContainer implements ParticleDataContainer {
 
         private final NumberProvider time;

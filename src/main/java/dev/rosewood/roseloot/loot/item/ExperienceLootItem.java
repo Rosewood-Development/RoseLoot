@@ -5,7 +5,6 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.bukkit.Material;
@@ -20,8 +19,8 @@ public class ExperienceLootItem implements LootItem<Integer> {
     private final List<NumberProvider> equipmentBonuses;
 
     public ExperienceLootItem(NumberProvider amount, NumberProvider equipmentBonus) {
-        this.amounts = new ArrayList<>(Collections.singletonList(amount));
-        this.equipmentBonuses = new ArrayList<>(Collections.singletonList(equipmentBonus));
+        this.amounts = new ArrayList<>(List.of(amount));
+        this.equipmentBonuses = new ArrayList<>(List.of(equipmentBonus));
     }
 
     @Override
@@ -49,10 +48,9 @@ public class ExperienceLootItem implements LootItem<Integer> {
 
     @Override
     public boolean combineWith(LootItem<?> lootItem) {
-        if (!(lootItem instanceof ExperienceLootItem))
+        if (!(lootItem instanceof ExperienceLootItem other))
             return false;
 
-        ExperienceLootItem other = (ExperienceLootItem) lootItem;
         this.amounts.addAll(other.amounts);
         this.equipmentBonuses.addAll(other.equipmentBonuses);
         return true;

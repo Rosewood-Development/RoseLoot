@@ -11,7 +11,6 @@ import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.bukkit.Bukkit;
@@ -36,7 +35,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
     @Override
     public List<LootItem<?>> create(LootContext context) {
         if (this.invalid)
-            return Collections.emptyList();
+            return List.of();
 
         if (this.lootTable == null && this.vanillaLootTable == null) {
             RosePlugin rosePlugin = RoseLoot.getInstance();
@@ -49,7 +48,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
                 if (this.vanillaLootTable == null) {
                     this.invalid = true;
                     rosePlugin.getLogger().warning("Could not find loot table specified: " + this.lootTableName);
-                    return Collections.emptyList();
+                    return List.of();
                 }
             }
         }
@@ -58,7 +57,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
             RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
                     "This loot table will be empty and log this error message until fixed.");
             this.running = false;
-            return Collections.emptyList();
+            return List.of();
         }
 
         this.running = true;
@@ -79,8 +78,8 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
 
             try {
                 Optional<Location> origin = context.get(LootContextParams.ORIGIN);
-                if (!origin.isPresent())
-                    return Collections.emptyList();
+                if (origin.isEmpty())
+                    return List.of();
 
                 org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())
                         .lootedEntity(context.get(LootContextParams.LOOTED_ENTITY).orElse(null))
@@ -89,12 +88,12 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
                         .luck((float) context.getLuckLevel())
                         .build();
 
-                lootItems = Collections.singletonList(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
+                lootItems = List.of(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
             } catch (Exception e) {
                 RoseLoot.getInstance().getLogger().warning("Failed to generate loot from vanilla loot table: [" + this.vanillaLootTable.getKey() + "]. Reason: " + e.getMessage());
                 if (e.getMessage().contains("<parameter minecraft:tool>"))
                     RoseLoot.getInstance().getLogger().warning("Vanilla fishing loot tables cannot currently run properly. Please provide RoseLoot versions of the vanilla fishing loot tables instead if you wish to use them.");
-                lootItems = Collections.emptyList();
+                lootItems = List.of();
             }
         }
         this.running = false;
@@ -113,7 +112,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         private final Collection<ItemStack> items;
 
         public VanillaItemLootItem(Collection<ItemStack> items) {
-            super(null, NumberProvider.constant(-1), NumberProvider.constant(-1), Collections.emptyList(), null, null, false, null);
+            super(null, NumberProvider.constant(-1), NumberProvider.constant(-1), List.of(), null, null, false, null);
             this.items = items;
         }
 

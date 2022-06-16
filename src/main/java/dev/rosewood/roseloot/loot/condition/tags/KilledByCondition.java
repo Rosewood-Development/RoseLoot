@@ -29,7 +29,7 @@ public class KilledByCondition extends LootCondition {
             return this.entityTypes.contains(EntityType.PLAYER);
 
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (!lootedEntity.isPresent())
+        if (lootedEntity.isEmpty())
             return false;
 
         LivingEntity entity = lootedEntity.get();

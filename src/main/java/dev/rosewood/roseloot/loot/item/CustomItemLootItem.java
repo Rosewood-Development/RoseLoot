@@ -73,7 +73,7 @@ public class CustomItemLootItem extends ItemLootItem {
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
         EnchantmentBonus enchantmentBonus = null;
         if (enchantmentBonusSection != null) {
-            EnchantmentBonus.BonusFormula formula = EnchantmentBonus.BonusFormula.fromString(enchantmentBonusSection.getString("formula", EnchantmentBonus.BonusFormula.UNIFORM.name()));
+            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);

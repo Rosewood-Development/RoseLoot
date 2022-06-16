@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+@SuppressWarnings("deprecation")
 public class BookItemLootMeta extends ItemLootMeta {
 
     private String title;

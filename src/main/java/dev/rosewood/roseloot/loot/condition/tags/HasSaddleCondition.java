@@ -17,7 +17,7 @@ public class HasSaddleCondition extends LootCondition {
     @Override
     protected boolean checkInternal(LootContext context) {
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (!lootedEntity.isPresent())
+        if (lootedEntity.isEmpty())
             return false;
 
         LivingEntity entity = lootedEntity.get();

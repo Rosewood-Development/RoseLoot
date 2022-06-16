@@ -55,7 +55,7 @@ public class MapItemLootMeta extends ItemLootMeta {
         }
 
         Optional<Location> origin = context.get(LootContextParams.ORIGIN);
-        if (!origin.isPresent())
+        if (origin.isEmpty())
             return itemStack;
 
         World world = origin.get().getWorld();

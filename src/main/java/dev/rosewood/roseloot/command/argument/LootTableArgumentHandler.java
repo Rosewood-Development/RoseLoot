@@ -7,7 +7,6 @@ import dev.rosewood.rosegarden.command.framework.RoseCommandArgumentInfo;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.manager.LootTableManager;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTab
 
         List<LootTable> lootTables = this.rosePlugin.getManager(LootTableManager.class).getLootTables();
         if (lootTables.isEmpty())
-            return Collections.singletonList("<no loaded loot tables>");
+            return List.of("<no loaded loot tables>");
 
         return lootTables.stream()
                 .map(LootTable::getName)

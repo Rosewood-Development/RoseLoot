@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -37,7 +36,7 @@ public class EcoBossesTypeCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.types = new ArrayList<>(Arrays.asList(values));
+        this.types = new ArrayList<>(List.of(values));
         return !this.types.isEmpty();
     }
 

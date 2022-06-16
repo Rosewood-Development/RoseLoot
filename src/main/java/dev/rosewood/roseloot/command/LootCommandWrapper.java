@@ -2,8 +2,6 @@ package dev.rosewood.roseloot.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class LootCommandWrapper extends RoseCommandWrapper {
@@ -19,12 +17,12 @@ public class LootCommandWrapper extends RoseCommandWrapper {
 
     @Override
     public List<String> getDefaultAliases() {
-        return Arrays.asList("roseloot", "rl");
+        return List.of("roseloot", "rl");
     }
 
     @Override
     public List<String> getCommandPackages() {
-        return Collections.singletonList("dev.rosewood.roseloot.command.command");
+        return List.of("dev.rosewood.roseloot.command.command");
     }
 
     @Override

@@ -21,7 +21,7 @@ public class FeatureCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         Optional<Location> origin = context.get(LootContextParams.ORIGIN);
-        if (!origin.isPresent())
+        if (origin.isEmpty())
             return false;
 
         for (StructureType structureType : this.features)

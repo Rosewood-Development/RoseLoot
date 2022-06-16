@@ -110,24 +110,16 @@ public class EntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDropItem(EntityDropItemEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity))
+        if (!(event.getEntity() instanceof LivingEntity entity))
             return;
 
-        LivingEntity entity = (LivingEntity) event.getEntity();
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
             return;
 
-        Player shearer;
-        switch (entity.getType()) {
-            case SHEEP:
-            case SNOWMAN:
-            case MUSHROOM_COW:
-                shearer = this.lastShearer.get();
-                break;
-            default:
-                shearer = null;
-                break;
-        }
+        Player shearer = switch (entity.getType()) {
+            case SHEEP, SNOWMAN, MUSHROOM_COW -> this.lastShearer.get();
+            default -> null;
+        };
 
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(shearer))
                 .put(LootContextParams.ORIGIN, entity.getLocation())

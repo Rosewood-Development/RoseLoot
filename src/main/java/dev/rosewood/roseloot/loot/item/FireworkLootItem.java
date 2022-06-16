@@ -5,7 +5,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -115,7 +114,7 @@ public class FireworkLootItem implements TriggerableLootItem<FireworkLootItem.Fi
         private final List<FireworkEffect> effects;
 
         public FireworkInstance(NumberProvider power, boolean dealDamage, List<FireworkEffect> effects) {
-            this.powers = new ArrayList<>(Collections.singletonList(power));
+            this.powers = new ArrayList<>(List.of(power));
             this.dealDamage = dealDamage;
             this.effects = effects;
         }

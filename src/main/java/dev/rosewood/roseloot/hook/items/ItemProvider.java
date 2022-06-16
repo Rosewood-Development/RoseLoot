@@ -9,22 +9,12 @@ public abstract class ItemProvider {
     private final boolean supportsIdLookup;
 
     public ItemProvider(String pluginName, boolean supportsIdLookup) {
-        this.enabled = this.checkEnabled(pluginName);
+        this.enabled = Bukkit.getPluginManager().isPluginEnabled(pluginName);
         this.supportsIdLookup = supportsIdLookup;
     }
 
     public ItemProvider(String pluginName) {
         this(pluginName, true);
-    }
-
-    /**
-     * Checks if the plugin for this provider is enabled
-     *
-     * @param pluginName The name of the plugin to check
-     * @return true if the plugin is enabled, false otherwise
-     */
-    protected boolean checkEnabled(String pluginName) {
-        return Bukkit.getPluginManager().isPluginEnabled(pluginName);
     }
 
     /**

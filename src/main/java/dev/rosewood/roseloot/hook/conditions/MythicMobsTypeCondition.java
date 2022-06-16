@@ -7,7 +7,6 @@ import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.bukkit.entity.Entity;
@@ -41,7 +40,7 @@ public class MythicMobsTypeCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (!lootedEntity.isPresent())
+        if (lootedEntity.isEmpty())
             return false;
 
         LivingEntity entity = lootedEntity.get();
@@ -67,7 +66,7 @@ public class MythicMobsTypeCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.types = new ArrayList<>(Arrays.asList(values));
+        this.types = new ArrayList<>(List.of(values));
         return !this.types.isEmpty();
     }
 

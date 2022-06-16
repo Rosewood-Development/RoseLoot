@@ -26,7 +26,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -54,7 +53,7 @@ public final class LootUtils {
     public static final Random RANDOM = new Random();
     private static final String SPAWN_REASON_METADATA_NAME = "spawn_reason";
     private static final String REGEX_DECOLORIZE_HEX = "&x&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])";
-    public static final Map<String, Color> FIREWORK_COLORS = new HashMap<String, Color>() {{
+    public static final Map<String, Color> FIREWORK_COLORS = new HashMap<>() {{
         this.put("WHITE", Color.WHITE);
         this.put("SILVER", Color.SILVER);
         this.put("GRAY", Color.GRAY);
@@ -129,10 +128,9 @@ public final class LootUtils {
      */
     public static void damageTool(ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (!(itemMeta instanceof Damageable))
+        if (!(itemMeta instanceof Damageable damageable))
             return;
 
-        Damageable damageable = (Damageable) itemMeta;
         damageable.setDamage(damageable.getDamage() + 1);
         itemStack.setItemMeta((ItemMeta) damageable);
     }
@@ -226,25 +224,22 @@ public final class LootUtils {
         if (entity instanceof LivingEntity && ((LivingEntity) entity).getKiller() != null)
             return ((LivingEntity) entity).getKiller();
 
-        if (entity instanceof TNTPrimed) {
+        if (entity instanceof TNTPrimed tntPrimed) {
             // Propagate the igniter of the tnt up the stack
-            TNTPrimed tntPrimed = (TNTPrimed) entity;
             Entity tntSource = tntPrimed.getSource();
             if (tntSource != null)
                 entity = tntSource;
         }
 
-        if (entity instanceof Projectile) {
+        if (entity instanceof Projectile projectile) {
             // Check for the projectile type first, if not fall back to the shooter
-            Projectile projectile = (Projectile) entity;
             ProjectileSource source = projectile.getShooter();
             if (source instanceof Entity)
                 entity = (Entity) source;
         }
 
-        if (entity instanceof Tameable) {
+        if (entity instanceof Tameable tameable) {
             // Propagate to the tamed entity's owner (if they're online)
-            Tameable tameable = (Tameable) entity;
             AnimalTamer tamer = tameable.getOwner();
             if (tamer != null) {
                 Player player = Bukkit.getPlayer(tamer.getUniqueId());
@@ -295,10 +290,8 @@ public final class LootUtils {
      * @return The luck level of the LivingEntity
      */
     public static double getEntityLuck(Entity entity, boolean includeFishingLuck) {
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity livingEntity))
             return 0;
-
-        LivingEntity livingEntity = (LivingEntity) entity;
 
         double luck = 0;
         AttributeInstance attribute = livingEntity.getAttribute(Attribute.GENERIC_LUCK);
@@ -344,11 +337,10 @@ public final class LootUtils {
             case BLOCK_EXPLOSION:
                 return ExplosionType.BLOCK;
             case ENTITY_EXPLOSION:
-                if (event instanceof EntityDamageByEntityEvent) {
-                    EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
+                if (event instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
                     Entity damager = entityDamageByEntityEvent.getDamager();
-                    if (damager.getType() == EntityType.CREEPER)
-                        return ((Creeper) damager).isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
+                    if (damager instanceof Creeper creeper)
+                        return creeper.isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
                 }
                 return ExplosionType.ENTITY;
             default:

@@ -36,7 +36,7 @@ public class HookConditionListener implements Listener {
         for (String pluginName : LOOT_CONDITIONS.keys())
             if (pluginManager.isPluginEnabled(pluginName))
                 for (ConditionStorage conditionStorage : LOOT_CONDITIONS.get(pluginName))
-                    event.registerLootCondition(conditionStorage.getConditionName(), conditionStorage.getConditionClass());
+                    event.registerLootCondition(conditionStorage.conditionName(), conditionStorage.conditionClass());
 
         // Register conditions for custom item plugins
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
@@ -49,30 +49,6 @@ public class HookConditionListener implements Listener {
                 event.registerLootCondition(customBiomePlugin.name().toLowerCase() + "-biome", customBiomePlugin.getLootConditionPredicate());
     }
 
-    private static class ConditionStorage {
-
-        private final String conditionName;
-        private final Class<? extends LootCondition> conditionClass;
-
-        private ConditionStorage(String conditionName, Class<? extends LootCondition> conditionClass) {
-            this.conditionName = conditionName;
-            this.conditionClass = conditionClass;
-        }
-
-        /**
-         * @return The name of the condition
-         */
-        public String getConditionName() {
-            return this.conditionName;
-        }
-
-        /**
-         * @return The class of the condition
-         */
-        public Class<? extends LootCondition> getConditionClass() {
-            return this.conditionClass;
-        }
-
-    }
+    private record ConditionStorage(String conditionName, Class<? extends LootCondition> conditionClass) { }
 
 }

@@ -8,7 +8,6 @@ import dev.rosewood.roseloot.hook.economy.VaultEconomyProvider;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -21,7 +20,7 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     public EconomyLootItem(EconomyPlugin plugin, NumberProvider amounts) {
         this.plugin = plugin;
-        this.amounts = new ArrayList<>(Collections.singletonList(amounts));
+        this.amounts = new ArrayList<>(List.of(amounts));
     }
 
     @Override
@@ -33,11 +32,7 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     @Override
     public boolean combineWith(LootItem<?> lootItem) {
-        if (!(lootItem instanceof EconomyLootItem))
-            return false;
-
-        EconomyLootItem other = (EconomyLootItem) lootItem;
-        if (this.plugin != other.plugin)
+        if (!(lootItem instanceof EconomyLootItem other) || this.plugin != other.plugin)
             return false;
 
         this.amounts.addAll(other.amounts);

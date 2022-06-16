@@ -8,17 +8,7 @@ public abstract class BiomeProvider {
     private final boolean enabled;
 
     public BiomeProvider(String pluginName) {
-        this.enabled = this.checkEnabled(pluginName);
-    }
-
-    /**
-     * Checks if the plugin for this provider is enabled
-     *
-     * @param pluginName The name of the plugin to check
-     * @return true if the plugin is enabled, false otherwise
-     */
-    protected boolean checkEnabled(String pluginName) {
-        return Bukkit.getPluginManager().isPluginEnabled(pluginName);
+        this.enabled = Bukkit.getPluginManager().isPluginEnabled(pluginName);
     }
 
     /**

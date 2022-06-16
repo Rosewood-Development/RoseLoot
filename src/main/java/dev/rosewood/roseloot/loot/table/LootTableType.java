@@ -3,7 +3,6 @@ package dev.rosewood.roseloot.loot.table;
 import com.google.common.collect.Sets;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,7 +49,7 @@ public class LootTableType {
      * @return a new LootTableType builder which accepts all parameters
      */
     public static LootTableType unrestricted() {
-        return new LootTableType(Collections.emptySet(), Collections.emptySet(), true);
+        return new LootTableType(Set.of(), Set.of(), true);
     }
 
     public static class Builder {

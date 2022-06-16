@@ -53,25 +53,12 @@ public class SoundLootItem implements TriggerableLootItem<SoundInstance> {
         return new SoundLootItem(soundInstance);
     }
 
-    public static class SoundInstance {
-
-        private final String sound;
-        private final SoundCategory category;
-        private final float volume, pitch;
-        private final boolean playerOnly;
-
-        public SoundInstance(String sound, SoundCategory category, float volume, float pitch, boolean playerOnly) {
-            this.sound = sound;
-            this.category = category;
-            this.volume = volume;
-            this.pitch = pitch;
-            this.playerOnly = playerOnly;
-        }
+    public record SoundInstance(String sound, SoundCategory category, float volume, float pitch, boolean playerOnly) {
 
         /**
          * Triggers the stored sound
          *
-         * @param player The Player to trigger the sound for if playerOnly is true
+         * @param player   The Player to trigger the sound for if playerOnly is true
          * @param location The Location to trigger the sound at
          */
         public void trigger(Player player, Location location) {

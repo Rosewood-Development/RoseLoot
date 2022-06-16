@@ -20,7 +20,6 @@ import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
-import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -84,7 +83,7 @@ public class RoseLoot extends RosePlugin {
 
     @Override
     protected List<Class<? extends Manager>> getManagerLoadPriority() {
-        return Arrays.asList(
+        return List.of(
                 LootConditionManager.class,
                 LootTableManager.class
         );

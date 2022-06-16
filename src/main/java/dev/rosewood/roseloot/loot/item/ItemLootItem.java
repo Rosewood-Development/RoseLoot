@@ -57,12 +57,9 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
             while (recipesIterator.hasNext()) {
                 Recipe recipe = recipesIterator.next();
-                if (recipe instanceof FurnaceRecipe) {
-                    FurnaceRecipe furnaceRecipe = (FurnaceRecipe) recipe;
-                    if (furnaceRecipe.getInput().getType() == item) {
-                        item = furnaceRecipe.getResult().getType();
-                        break;
-                    }
+                if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item) {
+                    item = furnaceRecipe.getResult().getType();
+                    break;
                 }
             }
         }
@@ -84,7 +81,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             if (!amountModifier.check(context))
                 break;
 
-            if (amountModifier.isAdditive()) {
+            if (amountModifier.additive()) {
                 amount += amountModifier.getValue();
             } else {
                 amount = amountModifier.getValue();
@@ -153,7 +150,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
         ItemLootItem.EnchantmentBonus enchantmentBonus = null;
         if (enchantmentBonusSection != null) {
-            EnchantmentBonus.BonusFormula formula = EnchantmentBonus.BonusFormula.fromString(enchantmentBonusSection.getString("formula", EnchantmentBonus.BonusFormula.UNIFORM.name()));
+            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
                 Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
@@ -185,17 +182,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         return stringBuilder.toString();
     }
 
-    public static class AmountModifier {
-
-        private final List<LootCondition> conditions;
-        private final NumberProvider value;
-        private final boolean add;
-
-        public AmountModifier(List<LootCondition> conditions, NumberProvider value, boolean add) {
-            this.conditions = conditions;
-            this.value = value;
-            this.add = add;
-        }
+    public record AmountModifier(List<LootCondition> conditions, NumberProvider value, boolean additive) {
 
         public boolean check(LootContext context) {
             return this.conditions.stream().allMatch(x -> x.check(context));
@@ -205,29 +192,13 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
             return this.value.getInteger();
         }
 
-        public boolean isAdditive() {
-            return this.add;
-        }
-
     }
 
-    public static class EnchantmentBonus {
-
-        private final BonusFormula formula;
-        private final Enchantment enchantment;
-        private final NumberProvider bonus;
-        private final NumberProvider probability;
-
-        public EnchantmentBonus(BonusFormula formula, Enchantment enchantment, NumberProvider bonus, NumberProvider probability) {
-            this.formula = formula;
-            this.enchantment = enchantment;
-            this.bonus = bonus;
-            this.probability = probability;
-        }
+    public record EnchantmentBonus(BonusFormula formula, Enchantment enchantment, NumberProvider bonus, NumberProvider probability) {
 
         public int getBonusAmount(LootContext context, int originalAmount) {
             Optional<ItemStack> itemUsed = context.getItemUsed();
-            if (!itemUsed.isPresent())
+            if (itemUsed.isEmpty())
                 return 0;
 
             int level = itemUsed.get().getEnchantmentLevel(this.enchantment);
@@ -236,38 +207,36 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
             int bonus = 0;
             switch (this.formula) {
-                case UNIFORM:
-                    bonus += LootUtils.randomInRange(0, this.bonus.getInteger() * level);
-                    break;
-                case BINOMIAL:
+                case UNIFORM -> bonus += LootUtils.randomInRange(0, this.bonus.getInteger() * level);
+                case BINOMIAL -> {
                     int n = level + this.bonus.getInteger();
                     double p = this.probability.getDouble();
                     for (int i = 0; i < n; i++)
                         if (LootUtils.checkChance(p))
                             bonus++;
-                    break;
-                case ORE_DROPS:
+                }
+                case ORE_DROPS -> {
                     int multiplier = LootUtils.RANDOM.nextInt(level + 2) - 1;
                     if (multiplier > 0)
                         bonus += originalAmount * multiplier;
-                    break;
+                }
             }
             return bonus;
         }
 
-        public enum BonusFormula {
-            UNIFORM,
-            BINOMIAL, // Requires an extra probability parameter
-            ORE_DROPS;
+    }
 
-            public static BonusFormula fromString(String name) {
-                for (BonusFormula value : values())
-                    if (value.name().toLowerCase().equals(name))
-                        return value;
-                return UNIFORM;
-            }
+    public enum BonusFormula {
+        UNIFORM,
+        BINOMIAL, // Requires an extra probability parameter
+        ORE_DROPS;
+
+        public static BonusFormula fromString(String name) {
+            for (BonusFormula value : values())
+                if (value.name().toLowerCase().equals(name))
+                    return value;
+            return UNIFORM;
         }
-
     }
 
 }

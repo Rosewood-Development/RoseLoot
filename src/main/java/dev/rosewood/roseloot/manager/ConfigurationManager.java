@@ -5,12 +5,12 @@ import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.config.RoseSetting;
 import dev.rosewood.rosegarden.manager.AbstractConfigurationManager;
 import dev.rosewood.roseloot.RoseLoot;
-import java.util.Collections;
+import java.util.List;
 
 public class ConfigurationManager extends AbstractConfigurationManager {
 
     public enum Setting implements RoseSetting {
-        DISABLED_WORLDS("disabled-worlds", Collections.singletonList("disabled_world_name"), "A list of worlds that the plugin is disabled in"),
+        DISABLED_WORLDS("disabled-worlds", List.of("disabled_world_name"), "A list of worlds that the plugin is disabled in"),
         ALLOW_BLOCK_EXPLOSION_LOOT("allow-block-explosion-loot", false, "If enabled, blocks destroyed by explosions will run loot tables", "You can use the condition 'explosion' to check for an explosion", "Avoid using item based conditions for explosions, you may get unexpected results", "WARNING: Do not trigger an explosion from a loot table triggered by an explosion.", "         It will likely cause an infinite loop and crash your server."),
         SIMULATE_BLOCKDROPITEMEVENT("simulate-blockdropitemevent", false, "Should the BlockBreakItemEvent be simulated for custom item drops from blocks?", "May be required for some plugins that add items to the player's inventory automatically", "This may cause issues with some stacker plugins");
 

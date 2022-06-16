@@ -19,7 +19,7 @@ public class LightLevelCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         Optional<Block> originBlock = context.get(LootContextParams.ORIGIN).map(Location::getBlock);
-        if (!originBlock.isPresent())
+        if (originBlock.isEmpty())
             return false;
 
         int light = originBlock.get().getLightLevel();

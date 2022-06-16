@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,6 +59,7 @@ public final class VanillaLootTableConverter {
             if (inputStream == null)
                 return;
 
+            @SuppressWarnings("deprecation")
             JsonElement json = new JsonParser().parse(new InputStreamReader(inputStream));
 
             destination.getParentFile().mkdirs();
@@ -256,24 +255,13 @@ public final class VanillaLootTableConverter {
         // Charged creeper drops
         if (path.startsWith("entities/")) {
             String entityType = path.substring(path.indexOf("/") + 1);
-            String skullItem;
-            switch (entityType) {
-                case "zombie":
-                    skullItem = "zombie_head";
-                    break;
-                case "creeper":
-                    skullItem = "creeper_head";
-                    break;
-                case "skeleton":
-                    skullItem = "skeleton_skull";
-                    break;
-                case "wither_skeleton":
-                    skullItem = "wither_skeleton_skull";
-                    break;
-                default:
-                    skullItem = null;
-                    break;
-            }
+            String skullItem = switch (entityType) {
+                case "zombie" -> "zombie_head";
+                case "creeper" -> "creeper_head";
+                case "skeleton" -> "skeleton_skull";
+                case "wither_skeleton" -> "wither_skeleton_skull";
+                default -> null;
+            };
 
             if (skullItem != null) {
                 writer.write(poolIndex + ":");
@@ -325,62 +313,47 @@ public final class VanillaLootTableConverter {
 
             String type = entry.get("type").getAsString();
             switch (type) {
-                case "minecraft:item":
+                case "minecraft:item" -> {
                     writer.write("items:");
                     writer.increaseIndentation();
-
                     writer.write("0:");
                     writer.increaseIndentation();
-
                     writer.write("type: item");
                     writer.write("item: " + entry.get("name").getAsString().substring("minecraft:".length()));
-
                     writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
-
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
-                    break;
-                case "minecraft:tag":
+                }
+                case "minecraft:tag" -> {
                     writer.write("items:");
                     writer.increaseIndentation();
-
                     writer.write("0:");
                     writer.increaseIndentation();
-
                     writer.write("type: tag");
                     writer.write("tag: " + entry.get("name").getAsString().substring("minecraft:".length()));
-
                     writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
-
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
-                    break;
-                case "minecraft:loot_table":
+                }
+                case "minecraft:loot_table" -> {
                     writer.write("items:");
                     writer.increaseIndentation();
-
                     writer.write("0:");
                     writer.increaseIndentation();
-
                     writer.write("type: loot_table");
                     writer.write("value: " + entry.get("name").getAsString().substring("minecraft:".length()));
-
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
-                    break;
-                case "minecraft:alternatives":
+                }
+                case "minecraft:alternatives" -> {
                     writer.write("children-strategy: first_passing");
                     JsonArray children = entry.get("children").getAsJsonArray();
                     writeEntries(path, "children", writer, children);
-                    break;
-                case "minecraft:empty":
-                    writer.write("items: {}");
-                    break;
-                default:
-                    RoseLoot.getInstance().getLogger().warning("Unhandled item type: " + type + " | " + path);
-                    break;
+                }
+                case "minecraft:empty" -> writer.write("items: {}");
+                default -> RoseLoot.getInstance().getLogger().warning("Unhandled item type: " + type + " | " + path);
             }
 
             writer.decreaseIndentation();
@@ -416,14 +389,14 @@ public final class VanillaLootTableConverter {
             }
 
             switch (type) {
-                case "minecraft:uniform":
+                case "minecraft:uniform" -> {
                     writeNumberProvider("min", "min", writer, object, 0.0, multiplier);
                     writeNumberProvider("max", "max", writer, object, 0.0, multiplier);
-                    break;
-                case "minecraft:binomial":
+                }
+                case "minecraft:binomial" -> {
                     writeNumberProvider("n", "n", writer, object, 0.0, multiplier);
                     writeNumberProvider("p", "p", writer, object, 0.0, multiplier);
-                    break;
+                }
             }
             writer.decreaseIndentation();
         } else if (element.isJsonPrimitive()) {
@@ -567,14 +540,14 @@ public final class VanillaLootTableConverter {
                 JsonObject damagePredicate = json.get("predicate").getAsJsonObject();
                 List<String> causes = new ArrayList<>();
                 Map<String, List<String>> causeMapping = new HashMap<>();
-                causeMapping.put("bypasses_armor", Collections.singletonList("suffocation"));
-                causeMapping.put("bypasses_invulnerability", Arrays.asList("void", "custom"));
-                causeMapping.put("bypasses_magic", Collections.singletonList("starvation"));
-                causeMapping.put("is_explosion", Arrays.asList("block_explosion", "entity_explosion"));
-                causeMapping.put("is_fire", Arrays.asList("fire", "fire_tick"));
-                causeMapping.put("is_magic", Collections.singletonList("magic"));
-                causeMapping.put("is_projectile", Collections.singletonList("projectile"));
-                causeMapping.put("is_lightning", Collections.singletonList("lightning"));
+                causeMapping.put("bypasses_armor", List.of("suffocation"));
+                causeMapping.put("bypasses_invulnerability", List.of("void", "custom"));
+                causeMapping.put("bypasses_magic", List.of("starvation"));
+                causeMapping.put("is_explosion", List.of("block_explosion", "entity_explosion"));
+                causeMapping.put("is_fire", List.of("fire", "fire_tick"));
+                causeMapping.put("is_magic", List.of("magic"));
+                causeMapping.put("is_projectile", List.of("projectile"));
+                causeMapping.put("is_lightning", List.of("lightning"));
                 for (Map.Entry<String, JsonElement> entry : damagePredicate.entrySet()) {
                     if (causeMapping.containsKey(entry.getKey())) {
                         JsonElement element = entry.getValue();
@@ -807,25 +780,13 @@ public final class VanillaLootTableConverter {
                 case "minecraft:exploration_map":
                     byte zoom = function.get("zoom").getAsByte();
                     boolean skipExistingChunks = function.get("skip_existing_chunks").getAsBoolean();
-                    MapView.Scale scale;
-                    switch (zoom) {
-                        case 0:
-                            scale = MapView.Scale.CLOSEST;
-                            break;
-                        case 1:
-                            scale = MapView.Scale.CLOSE;
-                            break;
-                        case 3:
-                            scale = MapView.Scale.FAR;
-                            break;
-                        case 4:
-                            scale = MapView.Scale.FARTHEST;
-                            break;
-                        case 2:
-                        default:
-                            scale = MapView.Scale.NORMAL;
-                            break;
-                    }
+                    MapView.Scale scale = switch (zoom) {
+                        case 0 -> MapView.Scale.CLOSEST;
+                        case 1 -> MapView.Scale.CLOSE;
+                        case 3 -> MapView.Scale.FAR;
+                        case 4 -> MapView.Scale.FARTHEST;
+                        default -> MapView.Scale.NORMAL;
+                    };
                     writer.write("destination: mansion");
                     writer.write("scale: " + scale.name().toLowerCase());
                     writer.write("search-radius: 50");
@@ -933,14 +894,11 @@ public final class VanillaLootTableConverter {
 
     private static String fixEntityNames(String entityType) {
         // Apply replacements for spigot enums that are wrong
-        switch (entityType) {
-            case "snow_golem":
-                return entityType = "snowman";
-            case "mooshroom":
-                return entityType = "mushroom_cow";
-            default:
-                return entityType;
-        }
+        return switch (entityType) {
+            case "snow_golem" -> "snowman";
+            case "mooshroom" -> "mushroom_cow";
+            default -> entityType;
+        };
     }
 
     private static class IndentedFileWriter {
@@ -972,17 +930,7 @@ public final class VanillaLootTableConverter {
 
     }
 
-    private static class AmountModifierData {
-
-        private final List<String> conditions;
-        private final JsonObject parent;
-        private final boolean add;
-
-        public AmountModifierData(List<String> conditions, JsonObject parent, boolean add) {
-            this.conditions = conditions;
-            this.parent = parent;
-            this.add = add;
-        }
+    private record AmountModifierData(List<String> conditions, JsonObject parent, boolean add) {
 
         public void write(IndentedFileWriter writer) throws IOException {
             if (this.conditions.isEmpty()) {

@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ExplosionLootItem.ExplosionInstance;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -53,7 +52,7 @@ public class ExplosionLootItem implements TriggerableLootItem<ExplosionInstance>
         private boolean breakBlocks;
 
         public ExplosionInstance(NumberProvider power, boolean fire, boolean breakBlocks) {
-            this.powers = new ArrayList<>(Collections.singletonList(power));
+            this.powers = new ArrayList<>(List.of(power));
             this.fire = fire;
             this.breakBlocks = breakBlocks;
         }

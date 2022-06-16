@@ -92,47 +92,30 @@ public abstract class NBTCondition extends LootCondition {
     }
 
     private String getListValue(NBTCompound compound, NBTType type, String key, int index) {
-        switch (type) {
-            case NBTTagInt:
-                return compound.getIntegerList(key).get(index).toString();
-            case NBTTagLong:
-                return compound.getLongList(key).get(index).toString();
-            case NBTTagFloat:
-                return compound.getFloatList(key).get(index).toString();
-            case NBTTagDouble:
-                return compound.getDoubleList(key).get(index).toString();
-            case NBTTagIntArray:
-                return Arrays.toString(compound.getIntArrayList(key).get(index));
-            case NBTTagString:
-                return compound.getStringList(key).get(index);
-            default:
-                return null;
-        }
+        return switch (type) {
+            case NBTTagInt -> compound.getIntegerList(key).get(index).toString();
+            case NBTTagLong -> compound.getLongList(key).get(index).toString();
+            case NBTTagFloat -> compound.getFloatList(key).get(index).toString();
+            case NBTTagDouble -> compound.getDoubleList(key).get(index).toString();
+            case NBTTagIntArray -> Arrays.toString(compound.getIntArrayList(key).get(index));
+            case NBTTagString -> compound.getStringList(key).get(index);
+            default -> null;
+        };
     }
 
     private String getValue(NBTCompound compound, NBTType type, String key) {
-        switch (type) {
-            case NBTTagByte:
-                return compound.getByte(key).toString();
-            case NBTTagShort:
-                return compound.getShort(key).toString();
-            case NBTTagInt:
-                return compound.getInteger(key).toString();
-            case NBTTagLong:
-                return compound.getLong(key).toString();
-            case NBTTagFloat:
-                return compound.getFloat(key).toString();
-            case NBTTagDouble:
-                return compound.getDouble(key).toString();
-            case NBTTagByteArray:
-                return Arrays.toString(compound.getByteArray(key));
-            case NBTTagIntArray:
-                return Arrays.toString(compound.getIntArray(key));
-            case NBTTagString:
-                return compound.getString(key);
-            default:
-                return null;
-        }
+        return switch (type) {
+            case NBTTagByte -> compound.getByte(key).toString();
+            case NBTTagShort -> compound.getShort(key).toString();
+            case NBTTagInt -> compound.getInteger(key).toString();
+            case NBTTagLong -> compound.getLong(key).toString();
+            case NBTTagFloat -> compound.getFloat(key).toString();
+            case NBTTagDouble -> compound.getDouble(key).toString();
+            case NBTTagByteArray -> Arrays.toString(compound.getByteArray(key));
+            case NBTTagIntArray -> Arrays.toString(compound.getIntArray(key));
+            case NBTTagString -> compound.getString(key);
+            default -> null;
+        };
     }
 
 }

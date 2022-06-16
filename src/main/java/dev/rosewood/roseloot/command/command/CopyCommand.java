@@ -8,7 +8,6 @@ import dev.rosewood.rosegarden.command.framework.annotation.Optional;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.manager.LocaleManager;
-import java.util.Collections;
 import java.util.List;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -19,6 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("deprecation")
 public class CopyCommand extends RoseCommand {
 
     public CopyCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
@@ -54,7 +54,7 @@ public class CopyCommand extends RoseCommand {
 
     @Override
     protected List<String> getDefaultAliases() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     @Override

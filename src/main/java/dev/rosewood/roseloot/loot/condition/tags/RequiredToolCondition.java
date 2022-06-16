@@ -2,7 +2,6 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +15,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public class RequiredToolCondition extends LootCondition {
 
-    private final static List<String> TOOL_TYPES = Arrays.asList("shovel", "pickaxe", "axe", "hoe", "sword", "shears");
-    private final static Map<String, Integer> TOOL_QUALITY = new HashMap<String, Integer>() {{
+    private final static List<String> TOOL_TYPES = List.of("shovel", "pickaxe", "axe", "hoe", "sword", "shears");
+    private final static Map<String, Integer> TOOL_QUALITY = new HashMap<>() {{
         this.put("wood", 1);
         this.put("wooden", 1);
         this.put("stone", 2);
@@ -39,7 +38,7 @@ public class RequiredToolCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         Optional<ItemStack> itemUsed = context.getItemUsed();
-        if (!itemUsed.isPresent())
+        if (itemUsed.isEmpty())
             return false;
 
         String toolName = itemUsed.get().getType().name().toLowerCase();

@@ -6,7 +6,6 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class LootPool implements LootItemGenerator {
     @Override
     public List<LootItem<?>> generate(LootContext context) {
         if (!this.check(context))
-            return Collections.emptyList();
+            return List.of();
 
         List<LootItem<?>> lootItems = new ArrayList<>();
         List<LootEntry> unweightedEntries = new ArrayList<>();

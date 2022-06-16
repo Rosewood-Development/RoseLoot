@@ -15,7 +15,6 @@ import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -60,7 +59,7 @@ public class GenerateCommand extends RoseCommand {
 
     @Override
     protected List<String> getDefaultAliases() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     @Override

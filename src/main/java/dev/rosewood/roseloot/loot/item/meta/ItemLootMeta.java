@@ -10,8 +10,6 @@ import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,7 +62,7 @@ public class ItemLootMeta {
         if (section.isList("lore")) {
             this.lore = section.getStringList("lore");
         } else if (section.isString("lore")) {
-            this.lore = Collections.singletonList(section.getString("lore"));
+            this.lore = List.of(section.getString("lore"));
         }
 
         if (section.contains("durability")) {
@@ -96,7 +94,7 @@ public class ItemLootMeta {
 
         if (section.isBoolean("hide-flags")) {
             if (section.getBoolean("hide-flags"))
-                this.hideFlags = Arrays.asList(ItemFlag.values());
+                this.hideFlags = List.of(ItemFlag.values());
         } else if (section.isList("hide-flags")) {
             List<String> flagNames = section.getStringList("hide-flags");
             List<ItemFlag> hideFlags = new ArrayList<>();
@@ -213,6 +211,7 @@ public class ItemLootMeta {
      * @param context The LootContext
      * @return The same ItemStack
      */
+    @SuppressWarnings("deprecation")
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null)
@@ -244,21 +243,20 @@ public class ItemLootMeta {
 
             if (this.enchantments != null) {
                 for (EnchantmentData enchantmentData : this.enchantments) {
-                    int level = enchantmentData.getLevel().getInteger();
+                    int level = enchantmentData.level().getInteger();
                     if (level > 0)
-                        itemMeta.addEnchant(enchantmentData.getEnchantment(), level, true);
+                        itemMeta.addEnchant(enchantmentData.enchantment(), level, true);
                 }
             }
         }
 
         if (this.attributes != null) {
             Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
-            this.attributes.forEach(x -> attributes.put(x.getAttribute(), x.toAttributeModifier()));
+            this.attributes.forEach(x -> attributes.put(x.attribute(), x.toAttributeModifier()));
             itemMeta.setAttributeModifiers(attributes);
         }
 
-        if (itemMeta instanceof Damageable && this.minDurability != null) {
-            Damageable damageable = (Damageable) itemMeta;
+        if (itemMeta instanceof Damageable damageable && this.minDurability != null) {
             int max = itemStack.getType().getMaxDurability();
             if (this.maxDurability == null) {
                 // Set fixed durability value
@@ -300,46 +298,25 @@ public class ItemLootMeta {
         if (Tag.ITEMS_BANNERS.isTagged(material))
             return new BannerItemLootMeta(section);
 
-        switch (material) {
-            case WRITABLE_BOOK:
-            case WRITTEN_BOOK:
-                return new BookItemLootMeta(section);
-            case ENCHANTED_BOOK:
-                return new EnchantmentStorageItemLootMeta(section);
-            case FIREWORK_STAR:
-                return new FireworkEffectItemLootMeta(section);
-            case FIREWORK_ROCKET:
-                return new FireworkItemLootMeta(section);
-            case KNOWLEDGE_BOOK:
-                return new KnowledgeBookItemLootMeta(section);
-            case LEATHER_HELMET:
-            case LEATHER_CHESTPLATE:
-            case LEATHER_LEGGINGS:
-            case LEATHER_BOOTS:
-            case LEATHER_HORSE_ARMOR:
-                return new LeatherArmorItemLootMeta(section);
-            case POTION:
-            case SPLASH_POTION:
-            case LINGERING_POTION:
-            case TIPPED_ARROW:
-                return new PotionItemLootMeta(section);
-            case PLAYER_HEAD:
-                return new SkullItemLootMeta(section);
-            case SUSPICIOUS_STEW:
-                return new SuspiciousStewItemLootMeta(section);
-            case TROPICAL_FISH_BUCKET:
-                return new TropicalFishBucketItemLootMeta(section);
-            case AXOLOTL_BUCKET:
-                return new AxolotlBucketItemLootMeta(section);
-            case BUNDLE:
-                return new BundleItemLootMeta(section);
-            case MAP:
-                return new MapItemLootMeta(section);
-            default:
-                return new ItemLootMeta(section);
-        }
+        return switch (material) {
+            case WRITABLE_BOOK, WRITTEN_BOOK -> new BookItemLootMeta(section);
+            case ENCHANTED_BOOK -> new EnchantmentStorageItemLootMeta(section);
+            case FIREWORK_STAR -> new FireworkEffectItemLootMeta(section);
+            case FIREWORK_ROCKET -> new FireworkItemLootMeta(section);
+            case KNOWLEDGE_BOOK -> new KnowledgeBookItemLootMeta(section);
+            case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, LEATHER_HORSE_ARMOR -> new LeatherArmorItemLootMeta(section);
+            case POTION, SPLASH_POTION, LINGERING_POTION, TIPPED_ARROW -> new PotionItemLootMeta(section);
+            case PLAYER_HEAD -> new SkullItemLootMeta(section);
+            case SUSPICIOUS_STEW -> new SuspiciousStewItemLootMeta(section);
+            case TROPICAL_FISH_BUCKET -> new TropicalFishBucketItemLootMeta(section);
+            case AXOLOTL_BUCKET -> new AxolotlBucketItemLootMeta(section);
+            case BUNDLE -> new BundleItemLootMeta(section);
+            case MAP -> new MapItemLootMeta(section);
+            default -> new ItemLootMeta(section);
+        };
     }
 
+    @SuppressWarnings("deprecation")
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
         Material material = itemStack.getType();
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -350,17 +327,11 @@ public class ItemLootMeta {
         if (itemMeta.hasCustomModelData()) stringBuilder.append("custom-model-data: ").append(itemMeta.getCustomModelData()).append('\n');
         if (itemMeta.isUnbreakable()) stringBuilder.append("unbreakable: true\n");
 
-        if (itemMeta instanceof Repairable) {
-            Repairable repairable = (Repairable) itemMeta;
-            if (repairable.hasRepairCost())
-                stringBuilder.append("repair-cost: ").append(repairable.getRepairCost()).append('\n');
-        }
+        if (itemMeta instanceof Repairable repairable && repairable.hasRepairCost())
+            stringBuilder.append("repair-cost: ").append(repairable.getRepairCost()).append('\n');
 
-        if (itemMeta instanceof Damageable) {
-            Damageable damageable = (Damageable) itemMeta;
-            if (damageable.hasDamage())
-                stringBuilder.append("durability: ").append(itemStack.getType().getMaxDurability() - damageable.getDamage()).append('\n');
-        }
+        if (itemMeta instanceof Damageable damageable && damageable.hasDamage())
+            stringBuilder.append("durability: ").append(itemStack.getType().getMaxDurability() - damageable.getDamage()).append('\n');
 
         List<String> lore = itemMeta.getLore();
         if (lore != null) {
@@ -404,73 +375,23 @@ public class ItemLootMeta {
             BannerItemLootMeta.applyProperties(itemStack, stringBuilder);
 
         switch (material) {
-            case WRITABLE_BOOK:
-            case WRITTEN_BOOK:
-                BookItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case ENCHANTED_BOOK:
-                EnchantmentStorageItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case FIREWORK_STAR:
-                FireworkEffectItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case FIREWORK_ROCKET:
-                FireworkItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case KNOWLEDGE_BOOK:
-                KnowledgeBookItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case LEATHER_HELMET:
-            case LEATHER_CHESTPLATE:
-            case LEATHER_LEGGINGS:
-            case LEATHER_BOOTS:
-            case LEATHER_HORSE_ARMOR:
-                LeatherArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case POTION:
-            case SPLASH_POTION:
-            case LINGERING_POTION:
-            case TIPPED_ARROW:
-                PotionItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case PLAYER_HEAD:
-                SkullItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case SUSPICIOUS_STEW:
-                SuspiciousStewItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case TROPICAL_FISH_BUCKET:
-                TropicalFishBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case AXOLOTL_BUCKET:
-                AxolotlBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case BUNDLE:
-                BundleItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
-            case MAP:
-                MapItemLootMeta.applyProperties(itemStack, stringBuilder);
-                break;
+            case WRITABLE_BOOK, WRITTEN_BOOK -> BookItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case ENCHANTED_BOOK -> EnchantmentStorageItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case FIREWORK_STAR -> FireworkEffectItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case FIREWORK_ROCKET -> FireworkItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case KNOWLEDGE_BOOK -> KnowledgeBookItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS, LEATHER_HORSE_ARMOR -> LeatherArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case POTION, SPLASH_POTION, LINGERING_POTION, TIPPED_ARROW -> PotionItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case PLAYER_HEAD -> SkullItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case SUSPICIOUS_STEW -> SuspiciousStewItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case TROPICAL_FISH_BUCKET -> TropicalFishBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case AXOLOTL_BUCKET -> AxolotlBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case BUNDLE -> BundleItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case MAP -> MapItemLootMeta.applyProperties(itemStack, stringBuilder);
         }
     }
 
-    private static class AttributeData {
-
-        private final Attribute attribute;
-        private final NumberProvider amount;
-        private final AttributeModifier.Operation operation;
-        private final EquipmentSlot slot;
-
-        private AttributeData(Attribute attribute, NumberProvider amount, AttributeModifier.Operation operation, EquipmentSlot slot) {
-            this.attribute = attribute;
-            this.amount = amount;
-            this.operation = operation;
-            this.slot = slot;
-        }
-
-        public Attribute getAttribute() {
-            return this.attribute;
-        }
+    private record AttributeData(Attribute attribute, NumberProvider amount, AttributeModifier.Operation operation, EquipmentSlot slot) {
 
         public AttributeModifier toAttributeModifier() {
             return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(), this.operation, this.slot);
@@ -478,24 +399,6 @@ public class ItemLootMeta {
 
     }
 
-    protected static class EnchantmentData {
-
-        private final Enchantment enchantment;
-        private final NumberProvider level;
-
-        public EnchantmentData(Enchantment enchantment, NumberProvider level) {
-            this.enchantment = enchantment;
-            this.level = level;
-        }
-
-        public Enchantment getEnchantment() {
-            return this.enchantment;
-        }
-
-        public NumberProvider getLevel() {
-            return this.level;
-        }
-
-    }
+    protected record EnchantmentData(Enchantment enchantment, NumberProvider level) { }
 
 }

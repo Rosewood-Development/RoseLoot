@@ -12,7 +12,6 @@ import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -48,7 +47,7 @@ public class ListCommand extends RoseCommand {
 
     @Override
     protected List<String> getDefaultAliases() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     @Override
@@ -95,11 +94,8 @@ public class ListCommand extends RoseCommand {
         }
 
         public void traverse(CommandSender sender, LocaleManager localeManager, int depth) {
-            StringBuilder paddingBuilder = new StringBuilder();
             String spacer = localeManager.getLocaleMessage("command-list-hierarchy-spacer");
-            for (int i = 0; i < depth; i++)
-                paddingBuilder.append(spacer);
-            String padding = paddingBuilder.toString();
+            String padding = spacer.repeat(depth);
 
             // Print leaves
             for (String type : this.leaves.keySet())

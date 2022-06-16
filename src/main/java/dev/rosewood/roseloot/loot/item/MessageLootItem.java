@@ -40,60 +40,13 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
         return new MessageLootItem(messageType, message, fadeIn, duration, fadeOut);
     }
 
-    public static class StoredChatMessage {
-
-        private final MessageType messageType;
-        private final String message;
-        private final int fadeIn, duration, fadeOut;
-
-        public StoredChatMessage(MessageType messageType, String message, int fadeIn, int duration, int fadeOut) {
-            this.messageType = messageType;
-            this.message = message;
-            this.fadeIn = fadeIn;
-            this.duration = duration;
-            this.fadeOut = fadeOut;
-        }
-
-        /**
-         * @return the message type to send
-         */
-        public MessageType getMessageType() {
-            return this.messageType;
-        }
-
-        /**
-         * @return the message that is being sent
-         */
-        public String getText() {
-            return this.message;
-        }
-
-        /**
-         * @return the fade in time in ticks
-         */
-        public int getFadeIn() {
-            return this.fadeIn;
-        }
-
-        /**
-         * @return the duration of the message in ticks
-         */
-        public int getDuration() {
-            return this.duration;
-        }
-
-        /**
-         * @return the fade out time in ticks
-         */
-        public int getFadeOut() {
-            return this.fadeOut;
-        }
+    public record StoredChatMessage(MessageType messageType, String text, int fadeIn, int duration, int fadeOut) {
 
         /**
          * Sends the chat message to a player
          *
          * @param context the loot context
-         * @param player the player to send the message to
+         * @param player  the player to send the message to
          */
         public void invoke(LootContext context, Player player) {
             this.messageType.invoke(context, player, this);
@@ -101,12 +54,13 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
 
     }
 
+    @SuppressWarnings("deprecation")
     public enum MessageType {
-        CHAT_RAW((context, player, message) -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(context.applyPlaceholders(message.getText())))),
-        CHAT((context, player, message) -> player.sendMessage(context.formatText(message.getText()))),
-        HOTBAR((context, player, message) -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(context.formatText(message.getText())))),
-        TITLE((context, player, message) -> player.sendTitle(context.formatText(message.getText()), null, message.getFadeIn(), message.getDuration(), message.getFadeOut())),
-        SUBTITLE((context, player, message) -> player.sendTitle(null, context.formatText(message.getText()), message.getFadeIn(), message.getDuration(), message.getFadeOut()));
+        CHAT_RAW((context, player, message) -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(context.applyPlaceholders(message.text())))),
+        CHAT((context, player, message) -> player.sendMessage(context.formatText(message.text()))),
+        HOTBAR((context, player, message) -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(context.formatText(message.text())))),
+        TITLE((context, player, message) -> player.sendTitle(context.formatText(message.text()), null, message.fadeIn(), message.duration(), message.fadeOut())),
+        SUBTITLE((context, player, message) -> player.sendTitle(null, context.formatText(message.text()), message.fadeIn(), message.duration(), message.fadeOut()));
 
         private final TriConsumer<LootContext, Player, StoredChatMessage> consumer;
 

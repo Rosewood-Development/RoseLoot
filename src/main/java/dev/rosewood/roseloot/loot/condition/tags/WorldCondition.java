@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -28,7 +27,7 @@ public class WorldCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.worlds = new ArrayList<>(Arrays.asList(values));
+        this.worlds = new ArrayList<>(List.of(values));
         return !this.worlds.isEmpty();
     }
 
