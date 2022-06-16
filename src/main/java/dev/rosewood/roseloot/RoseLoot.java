@@ -15,6 +15,8 @@ import dev.rosewood.roseloot.listener.LootGenerateListener;
 import dev.rosewood.roseloot.listener.PiglinBarterListener;
 import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
 import dev.rosewood.roseloot.listener.VoucherListener;
+import dev.rosewood.roseloot.listener.paper.NewerPaperListener;
+import dev.rosewood.roseloot.listener.paper.PaperListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
@@ -61,6 +63,11 @@ public class RoseLoot extends RosePlugin {
             pluginManager.registerEvents(new LootGenerateListener(this), this);
         if (NMSUtil.getVersionNumber() >= 16)
             pluginManager.registerEvents(new HarvestBlockListener(this), this);
+        if (NMSUtil.isPaper()) {
+            pluginManager.registerEvents(new PaperListener(this), this);
+            if (NMSUtil.getVersionNumber() >= 17)
+                pluginManager.registerEvents(new NewerPaperListener(this), this);
+        }
         if (RoseStackerHook.isEnabled())
             pluginManager.registerEvents(new RoseStackerEntityDeathListener(this), this);
 
