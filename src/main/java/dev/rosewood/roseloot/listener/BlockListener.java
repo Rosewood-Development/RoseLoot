@@ -16,6 +16,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -31,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class BlockListener implements Listener {
@@ -87,6 +89,36 @@ public class BlockListener implements Listener {
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
 
         lootContents.triggerExtras(dropLocation);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onLeavesDecay(LeavesDecayEvent event) {
+        Block block = event.getBlock();
+        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
+            return;
+
+        LootContext lootContext = LootContext.builder()
+                .put(LootContextParams.ORIGIN, block.getLocation())
+                .put(LootContextParams.LOOTED_BLOCK, block)
+                .build();
+        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootContents lootContents = lootResult.getLootContents();
+
+        // Overwrite existing drops if applicable
+        if (lootResult.shouldOverwriteItems()) {
+            event.setCancelled(true);
+            block.setType(Material.AIR);
+        }
+
+        // Drop items and experience
+        Location dropLocation = block.getLocation();
+        lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
+
+        int experience = lootContents.getExperience();
+        if (experience > 0)
+            block.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
+
+        lootContents.triggerExtras(block.getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
