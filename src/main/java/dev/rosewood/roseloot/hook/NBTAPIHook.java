@@ -20,7 +20,7 @@ public class NBTAPIHook {
     public static boolean isEnabled() {
         if (enabled != null)
             return enabled;
-        return enabled = Bukkit.getPluginManager().isPluginEnabled("NBTAPI");
+        return enabled = Bukkit.getPluginManager().getPlugin("NBTAPI") != null;
     }
 
     /**

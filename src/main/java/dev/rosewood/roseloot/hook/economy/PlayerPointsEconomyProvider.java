@@ -12,7 +12,7 @@ public class PlayerPointsEconomyProvider implements EconomyProvider {
     private PlayerPointsAPI economy;
 
     public PlayerPointsEconomyProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("PlayerPoints");
+        this.enabled = Bukkit.getPluginManager().getPlugin("PlayerPoints") != null;
         if (this.enabled)
             this.economy = PlayerPoints.getInstance().getAPI();
     }

@@ -11,7 +11,7 @@ public class VaultEconomyProvider implements EconomyProvider {
     private Economy economy;
 
     public VaultEconomyProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("Vault");
+        this.enabled = Bukkit.getPluginManager().getPlugin("Vault") != null;
         if (this.enabled) {
             RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
             if (rsp != null)

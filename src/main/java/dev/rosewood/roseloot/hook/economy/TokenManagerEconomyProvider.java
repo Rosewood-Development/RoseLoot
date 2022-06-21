@@ -10,7 +10,7 @@ public class TokenManagerEconomyProvider implements EconomyProvider {
     private final boolean enabled;
 
     public TokenManagerEconomyProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("TokenManager");
+        this.enabled = Bukkit.getPluginManager().getPlugin("TokenManager") != null;
     }
 
     @Override

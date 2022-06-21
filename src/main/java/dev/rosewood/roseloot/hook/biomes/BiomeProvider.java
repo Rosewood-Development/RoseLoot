@@ -8,7 +8,7 @@ public abstract class BiomeProvider {
     private final boolean enabled;
 
     public BiomeProvider(String pluginName) {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled(pluginName);
+        this.enabled = Bukkit.getPluginManager().getPlugin(pluginName) != null;
     }
 
     /**

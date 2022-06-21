@@ -9,7 +9,7 @@ public abstract class ItemProvider {
     private final boolean supportsIdLookup;
 
     public ItemProvider(String pluginName, boolean supportsIdLookup) {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled(pluginName);
+        this.enabled = Bukkit.getPluginManager().getPlugin(pluginName) != null;
         this.supportsIdLookup = supportsIdLookup;
     }
 

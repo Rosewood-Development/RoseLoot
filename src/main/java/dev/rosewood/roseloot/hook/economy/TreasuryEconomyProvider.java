@@ -18,7 +18,7 @@ public class TreasuryEconomyProvider implements EconomyProvider {
     private me.lokka30.treasury.api.economy.EconomyProvider economyProvider;
 
     public TreasuryEconomyProvider() {
-        this.enabled = Bukkit.getPluginManager().isPluginEnabled("Treasury");
+        this.enabled = Bukkit.getPluginManager().getPlugin("Treasury") != null;
         if (this.enabled)
             this.economyProvider = ServiceRegistry.INSTANCE.serviceFor(me.lokka30.treasury.api.economy.EconomyProvider.class)
                     .map(Service::get)

@@ -54,7 +54,7 @@ public class SkullItemLootMeta extends ItemLootMeta {
                 offlinePlayer = Bukkit.getOfflinePlayer(this.owner);
             }
             itemMeta.setOwningPlayer(offlinePlayer);
-        } else if (this.hdbId != null && Bukkit.getPluginManager().isPluginEnabled("HeadDatabase")) {
+        } else if (this.hdbId != null && Bukkit.getPluginManager().getPlugin("HeadDatabase") != null) {
             SkullUtils.setSkullTexture(itemMeta, new me.arcaniax.hdb.api.HeadDatabaseAPI().getBase64(this.hdbId));
         }
 
@@ -71,7 +71,7 @@ public class SkullItemLootMeta extends ItemLootMeta {
         OfflinePlayer owner = itemMeta.getOwningPlayer();
         if (owner != null) {
             stringBuilder.append("owner: '").append(owner.getUniqueId()).append("'\n");
-        } else if (Bukkit.getPluginManager().isPluginEnabled("HeadDatabase")) {
+        } else if (Bukkit.getPluginManager().getPlugin("HeadDatabase") != null) {
             String texture = new me.arcaniax.hdb.api.HeadDatabaseAPI().getBase64(itemStack);
             if (texture != null)
                 stringBuilder.append("texture: '").append(texture).append("'\n");

@@ -15,7 +15,7 @@ public class RoseStackerHook {
     public static boolean isEnabled() {
         if (enabled != null)
             return enabled;
-        return enabled = Bukkit.getPluginManager().isPluginEnabled("RoseStacker");
+        return enabled = Bukkit.getPluginManager().getPlugin("RoseStacker") != null;
     }
 
     public static boolean useCustomEntityDeathHandling() {
@@ -27,7 +27,7 @@ public class RoseStackerHook {
             return false;
 
         StackedEntity stackedEntity = RoseStackerAPI.getInstance().getStackedEntity(entity);
-        if (stackedEntity == null || stackedEntity.getStackSize() > 1)
+        if (stackedEntity == null || stackedEntity.getStackSize() <= 1)
             return false;
 
         // This whole section was copy/pasted from RoseStacker

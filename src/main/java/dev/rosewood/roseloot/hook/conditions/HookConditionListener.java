@@ -34,7 +34,7 @@ public class HookConditionListener implements Listener {
     public void onLootConditionRegistration(LootConditionRegistrationEvent event) {
         PluginManager pluginManager = Bukkit.getPluginManager();
         for (String pluginName : LOOT_CONDITIONS.keys())
-            if (pluginManager.isPluginEnabled(pluginName))
+            if (pluginManager.getPlugin(pluginName) != null)
                 for (ConditionStorage conditionStorage : LOOT_CONDITIONS.get(pluginName))
                     event.registerLootCondition(conditionStorage.conditionName(), conditionStorage.conditionClass());
 
