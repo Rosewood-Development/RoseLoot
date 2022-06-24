@@ -175,9 +175,11 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         ItemLootMeta.applyProperties(itemStack, stringBuilder);
 
-        String customNBT = NBTAPIHook.getCustomNBTString(itemStack, keepVanillaNBT);
-        if (customNBT != null && customNBT.trim().length() > 2)
-            stringBuilder.append("nbt: '").append(customNBT.replaceAll(Pattern.quote("'"), "''")).append("'").append('\n');
+        if (NBTAPIHook.isEnabled()) {
+            String customNBT = NBTAPIHook.getCustomNBTString(itemStack, keepVanillaNBT);
+            if (customNBT != null && customNBT.trim().length() > 2)
+                stringBuilder.append("nbt: '").append(customNBT.replaceAll(Pattern.quote("'"), "''")).append("'").append('\n');
+        }
 
         return stringBuilder.toString();
     }

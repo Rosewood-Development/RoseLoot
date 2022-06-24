@@ -33,10 +33,9 @@ public class KilledByCondition extends LootCondition {
             return false;
 
         LivingEntity entity = lootedEntity.get();
-        if (!(entity.getLastDamageCause() instanceof EntityDamageByEntityEvent))
+        if (!(entity.getLastDamageCause() instanceof EntityDamageByEntityEvent event))
             return false;
 
-        EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) entity.getLastDamageCause();
         Entity damager = LootUtils.propagateKiller(event.getDamager());
         return this.entityTypes.contains(damager.getType());
     }

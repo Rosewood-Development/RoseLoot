@@ -85,8 +85,8 @@ public class LootEntry implements LootItemGenerator {
      * @param context The LootContext
      * @return the weight of this entry
      */
-    public int getWeight(LootContext context) {
-        return (int) Math.floor(this.weight.getInteger() + this.quality.getInteger() * context.getLuckLevel());
+    public double getWeight(LootContext context) {
+        return this.weight.getDouble() + this.quality.getDouble() * context.getLuckLevel();
     }
 
     /**
