@@ -17,8 +17,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Keyed;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -43,6 +47,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.Vector;
 
 public final class LootUtils {
 
@@ -74,13 +79,23 @@ public final class LootUtils {
     }};
 
     /**
-     * Checks if a chance between 0 and 100 passes
+     * Checks if a chance between 0-1 passes
      *
      * @param chance The chance
      * @return true if the chance passed, otherwise false
      */
     public static boolean checkChance(double chance) {
         return RANDOM.nextDouble() <= chance;
+    }
+
+    /**
+     * Check if a durability decrease by 1 should be ignored
+     *
+     * @param level The level of the unbreaking enchantment
+     * @return true if a durability decrease by 1 should be ignored, false otherwise
+     */
+    public static boolean shouldIgnoreDurabilityDecrease(int level) {
+        return RANDOM.nextInt(level + 1) > 0;
     }
 
     /**
@@ -347,4 +362,27 @@ public final class LootUtils {
                 return null;
         }
     }
+
+    /**
+     * Plays the item break animation and sound to a player
+     *
+     * @param player The player to play the animation to
+     * @param itemStack The item to play the animation with
+     */
+    public static void playItemBreakAnimation(Player player, ItemStack itemStack) {
+        player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, SoundCategory.NEUTRAL, 0.8f, 0.8f + RANDOM.nextFloat() * 0.4f);
+        Location location = player.getLocation();
+        for (int i = 0; i < 5; i++) {
+            Vector offset = new Vector((RANDOM.nextDouble() - 0.5) * 0.1, RANDOM.nextDouble() * 0.1 + 0.1, 0.0)
+                    .rotateAroundX(-Math.toRadians(location.getPitch()))
+                    .rotateAroundY(-Math.toRadians(location.getYaw()))
+                    .add(new Vector(0, 0.05, 0));
+            Vector position = new Vector((RANDOM.nextDouble() - 0.5) * 0.3, -RANDOM.nextDouble() * 0.6 - 0.3, 0.6)
+                    .rotateAroundX(-Math.toRadians(location.getPitch()))
+                    .rotateAroundY(-Math.toRadians(location.getYaw()))
+                    .add(new Vector(player.getLocation().getX(), player.getLocation().getY() + player.getEyeHeight(), player.getLocation().getZ()));
+            player.spawnParticle(Particle.ITEM_CRACK, position.toLocation(location.getWorld()), 1, offset.getX(), offset.getY(), offset.getZ(), 0, itemStack);
+        }
+    }
+
 }

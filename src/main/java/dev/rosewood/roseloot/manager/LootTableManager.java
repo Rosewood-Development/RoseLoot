@@ -19,6 +19,7 @@ import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.ChangeToolDurabilityLootItem;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.CustomItemLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
@@ -286,6 +287,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("particle", ParticleLootItem::fromSection);
         event.registerLootItem("firework", FireworkLootItem::fromSection);
         event.registerLootItem("potion_effect", PotionEffectLootItem::fromSection);
+        event.registerLootItem("change_tool_durability", ChangeToolDurabilityLootItem::fromSection);
     }
 
     /**
