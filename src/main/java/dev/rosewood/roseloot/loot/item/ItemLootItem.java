@@ -175,7 +175,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
 
         ItemLootMeta.applyProperties(itemStack, stringBuilder);
 
-        if (NBTAPIHook.isEnabled()) {
+        if (Bukkit.getPluginManager().isPluginEnabled("NBTAPI")) {
             String customNBT = NBTAPIHook.getCustomNBTString(itemStack, keepVanillaNBT);
             if (customNBT != null && customNBT.trim().length() > 2)
                 stringBuilder.append("nbt: '").append(customNBT.replaceAll(Pattern.quote("'"), "''")).append("'").append('\n');
