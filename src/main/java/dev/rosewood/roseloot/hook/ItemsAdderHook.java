@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.hook;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 
 public class ItemsAdderHook {
 
@@ -14,16 +15,15 @@ public class ItemsAdderHook {
         return enabled = Bukkit.getPluginManager().getPlugin("ItemsAdder") != null;
     }
 
-    public static boolean offsetItemDurability(ItemStack itemStack, int amount) {
+    public static int getDamage(ItemStack itemStack, Damageable damageable) {
         if (!isEnabled())
-            return false;
+            return damageable.getDamage();
 
         CustomStack customStack = CustomStack.byItemStack(itemStack);
         if (customStack == null || !customStack.hasCustomDurability())
-            return false;
+            return damageable.getDamage();
 
-        customStack.setDurability(customStack.getDurability() + amount);
-        return true;
+        return customStack.getMaxDurability() - customStack.getDurability();
     }
 
 }

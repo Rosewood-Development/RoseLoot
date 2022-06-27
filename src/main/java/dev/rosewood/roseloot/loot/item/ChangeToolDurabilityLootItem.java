@@ -45,14 +45,14 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem<ChangeT
             return;
 
         Player player = context.getLootingPlayer().orElse(null);
-        if (damageable.getDamage() >= itemStack.getType().getMaxDurability() - 1) {
-            itemStack.setAmount(0);
-            if (player != null)
-                LootUtils.playItemBreakAnimation(player, itemStack);
-        }
-
-        if (this.durabilityChangeInstance.applyDurability(player, itemStack, damageable, itemMeta.getEnchantLevel(Enchantment.DURABILITY)))
+        if (this.durabilityChangeInstance.applyDurability(player, itemStack, damageable, itemMeta.getEnchantLevel(Enchantment.DURABILITY))) {
             itemStack.setItemMeta(itemMeta);
+            if (damageable.getDamage() >= itemStack.getType().getMaxDurability() - 1) {
+                if (player != null)
+                    LootUtils.playItemBreakAnimation(player, itemStack);
+                itemStack.setAmount(0);
+            }
+        }
     }
 
     public static ChangeToolDurabilityLootItem fromSection(ConfigurationSection section) {
@@ -73,54 +73,46 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem<ChangeT
          * @return true if the ItemMeta needs to be applied, false otherwise
          */
         public boolean applyDurability(Player player, ItemStack itemStack, Damageable damageable, int unbreakingLevel) {
-            int change = this.amount.getInteger();
-            if (change == 0)
+            int originalDamage = -this.amount.getInteger();
+            if (originalDamage == 0)
                 return false;
 
-            if (change < 0) {
-                if (!this.ignoreUnbreaking || unbreakingLevel <= 0) {
-                    // Limit the amount of change to prevent hanging the main thread calculating the unbreaking enchantment
-                    change = Math.min(-change, 10000);
-                    int totalDamage = 0;
-                    for (int i = 0; i < change; i++)
-                        if (!LootUtils.shouldIgnoreDurabilityDecrease(unbreakingLevel))
-                            totalDamage++;
+            // Only allow repairing up to the tool's maximum durability to prevent issues with custom item plugins
+            int currentDamage = ItemsAdderHook.getDamage(itemStack, damageable);
+            if (currentDamage + originalDamage <= 0)
+                originalDamage = -currentDamage;
 
-                    if (!ItemsAdderHook.offsetItemDurability(itemStack, -totalDamage)) {
-                        if (player != null)
-                            totalDamage = this.firePlayerItemDamageEvent(player, itemStack, totalDamage, totalDamage);
-                        damageable.setDamage(damageable.getDamage() + totalDamage);
-                        return true;
-                    }
+            int actualDamage;
+            if (originalDamage > 0 && !this.ignoreUnbreaking && unbreakingLevel > 0) {
+                actualDamage = 0;
+                int iterations = Math.min(originalDamage, 10000);
+                for (int i = 0; i < iterations; i++)
+                    if (!LootUtils.shouldIgnoreDurabilityDecrease(unbreakingLevel))
+                        actualDamage++;
+            } else {
+                actualDamage = originalDamage;
+            }
+
+            if (actualDamage == 0)
+                return false;
+
+            if (player != null) {
+                PlayerItemDamageEvent event;
+                if (NMSUtil.isPaper()) {
+                    event = new PlayerItemDamageEvent(player, itemStack, actualDamage, originalDamage);
                 } else {
-                    change = -change;
-                    if (!ItemsAdderHook.offsetItemDurability(itemStack, -change)) {
-                        if (player != null)
-                            change = -this.firePlayerItemDamageEvent(player, itemStack, change, change);
-                        damageable.setDamage(damageable.getDamage() + change);
-                        return true;
-                    }
+                    event = new PlayerItemDamageEvent(player, itemStack, actualDamage);
                 }
-            } else {
-                if (!ItemsAdderHook.offsetItemDurability(itemStack, change)) {
-                    damageable.setDamage(damageable.getDamage() - change);
-                    return true;
-                }
-            }
-            return false;
-        }
 
-        private int firePlayerItemDamageEvent(Player player, ItemStack itemStack, int damage, int originalDamage) {
-            if (NMSUtil.isPaper()) {
-                PlayerItemDamageEvent event = new PlayerItemDamageEvent(player, itemStack, damage, originalDamage);
                 Bukkit.getPluginManager().callEvent(event);
-                return event.isCancelled() ? 0 : event.getDamage();
-            } else {
-                @SuppressWarnings("deprecation")
-                PlayerItemDamageEvent event = new PlayerItemDamageEvent(player, itemStack, damage);
-                Bukkit.getPluginManager().callEvent(event);
-                return event.isCancelled() ? 0 : event.getDamage();
+                if (event.isCancelled())
+                    return false;
+
+                actualDamage = event.getDamage();
             }
+
+            damageable.setDamage(damageable.getDamage() + actualDamage);
+            return true;
         }
 
     }
