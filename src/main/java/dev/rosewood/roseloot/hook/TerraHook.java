@@ -13,7 +13,13 @@ public class TerraHook {
 
     public static String getBiomeID(org.bukkit.World world, Location location) {
         World terraWorld = BukkitAdapter.adapt(world);
+        if (terraWorld.getGenerator() == null || terraWorld.getBiomeProvider() == null)
+            return null;
+
         Biome terraBiome = terraWorld.getBiomeProvider().getBiome(BukkitAdapter.adapt(location), terraWorld.getSeed());
+        if (terraBiome == null)
+            return null;
+
         return terraBiome.getID();
     }
 
