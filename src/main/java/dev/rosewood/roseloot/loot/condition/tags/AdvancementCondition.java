@@ -3,11 +3,13 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.NamespacedKey;
 
 public class AdvancementCondition extends LootCondition {
 
-    private NamespacedKey advancementKey;
+    private List<NamespacedKey> advancementKeys;
 
     public AdvancementCondition(String tag) {
         super(tag);
@@ -16,21 +18,21 @@ public class AdvancementCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         return context.get(LootContextParams.ADVANCEMENT_KEY)
-                .filter(this.advancementKey::equals)
+                .filter(this.advancementKeys::contains)
                 .isPresent();
     }
 
     @Override
     public boolean parseValues(String[] values) {
-        if (values.length != 1)
-            return false;
+        this.advancementKeys = new ArrayList<>();
 
-        try {
-            this.advancementKey = NamespacedKey.fromString(values[0]);
-            return true;
-        } catch (Exception e) {
-            return false;
+        for (String value : values) {
+            try {
+                this.advancementKeys.add(NamespacedKey.fromString(value));
+            } catch (Exception ignored) { }
         }
+
+        return !this.advancementKeys.isEmpty();
     }
 
 }
