@@ -22,7 +22,10 @@ public final class LootContextParams {
 
     public static final LootContextParam<Location> ORIGIN = create("origin", Location.class, builder ->
             builder.withPlaceholders((x, y) -> {
-                Optional.ofNullable(x.getWorld()).ifPresent(world -> y.add("world", world.getName()));
+                Optional.ofNullable(x.getWorld()).ifPresent(world -> {
+                    y.add("world", world.getName());
+                    y.add("world_time_ticks", world.getTime());
+                });
                 y.add("x", LootUtils.getToMaximumDecimals(x.getX(), 2));
                 y.add("y", LootUtils.getToMaximumDecimals(x.getY(), 2));
                 y.add("z", LootUtils.getToMaximumDecimals(x.getZ(), 2));
