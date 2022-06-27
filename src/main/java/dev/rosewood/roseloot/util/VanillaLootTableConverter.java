@@ -11,17 +11,24 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.loot.LootTables;
 import org.bukkit.map.MapView;
 
+@SuppressWarnings("deprecation")
 public final class VanillaLootTableConverter {
 
     private static final String[] HEADER = new String[] {
@@ -34,8 +41,8 @@ public final class VanillaLootTableConverter {
             "# ###################################################################################### #"
     };
 
-    public static void convert(File directory) {
-        File vanillaDirectory = new File(directory, "vanilla");
+    public static void convertVanilla(File destination) {
+        File vanillaDirectory = new File(destination, "vanilla");
         vanillaDirectory.mkdirs();
 
         for (LootTables lootTables : LootTables.values()) {
@@ -43,14 +50,36 @@ public final class VanillaLootTableConverter {
                 continue;
 
             String path = lootTables.getKey().getKey();
-            handle(vanillaDirectory, path);
+            handleVanilla(vanillaDirectory, path);
         }
 
         for (Material material : Material.values())
-            handle(vanillaDirectory, "blocks/" + material.name().toLowerCase());
+            handleVanilla(vanillaDirectory, "blocks/" + material.name().toLowerCase());
     }
 
-    private static void handle(File directory, String path) {
+    public static void convertDirectory(File directory, File destination) {
+        try {
+            Files.walk(Paths.get(directory.getPath())).filter(Files::isRegularFile).forEach(path -> {
+                File file = path.toFile();
+                if (!file.getName().endsWith(".json"))
+                    return;
+
+                String pathString = file.getPath().replace(directory.getPath(), "");
+                pathString = pathString.substring(1, pathString.length() - 5);
+
+                try (InputStream inputStream = Files.newInputStream(path, StandardOpenOption.READ)) {
+                    File destinationFile = new File(destination, pathString + ".yml");
+                    handleInputStream(destinationFile, inputStream, pathString, false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void handleVanilla(File directory, String path) {
         File destination = new File(directory, path + ".yml");
         if (destination.exists())
             return;
@@ -59,39 +88,43 @@ public final class VanillaLootTableConverter {
             if (inputStream == null)
                 return;
 
-            @SuppressWarnings("deprecation")
-            JsonElement json = new JsonParser().parse(new InputStreamReader(inputStream));
+            handleInputStream(destination, inputStream, path, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-            destination.getParentFile().mkdirs();
-            destination.createNewFile();
+    private static void handleInputStream(File destination, InputStream inputStream, String path, boolean includeWarning) throws IOException {
+        JsonElement json = new JsonParser().parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-            try (FileWriter fileWriter = new FileWriter(destination)) {
-                IndentedFileWriter writer = new IndentedFileWriter(fileWriter);
+        destination.getParentFile().mkdirs();
+        destination.createNewFile();
 
-                // Write warning header
+        try (FileWriter fileWriter = new FileWriter(destination, StandardCharsets.UTF_8)) {
+            IndentedFileWriter writer = new IndentedFileWriter(fileWriter);
+
+            // Write warning header
+            if (includeWarning)
                 for (String headerLine : HEADER)
                     writer.write(headerLine);
 
-                if (path.startsWith("entities") && !path.equals("entities/sheep")) {
-                    writeEntityHeader(path, writer);
-                } else if (path.startsWith("blocks")) {
-                    writeBlockHeader(path, writer);
-                } else if (path.equals("gameplay/fishing")) {
-                    writeFishingHeader(path, writer);
-                } else if (path.startsWith("chests")) {
-                    writeContainerHeader(path, writer);
-                } else if (path.equals("gameplay/piglin_bartering")) {
-                    writePiglinBarteringHeader(path, writer);
-                } else if (path.equals("gameplay/cat_morning_gift") || path.startsWith("gameplay/hero_of_the_village")) {
-                    writeEntityDropsHeader(path, writer);
-                } else {
-                    writeLootTableHeader(path, writer);
-                }
-
-                writeTableContents(path, writer, json.getAsJsonObject());
+            if (path.startsWith("entities") && !path.equals("entities/sheep")) {
+                writeEntityHeader(path, writer);
+            } else if (path.startsWith("blocks")) {
+                writeBlockHeader(path, writer);
+            } else if (path.equals("gameplay/fishing")) {
+                writeFishingHeader(path, writer);
+            } else if (path.startsWith("chests")) {
+                writeContainerHeader(path, writer);
+            } else if (path.equals("gameplay/piglin_bartering")) {
+                writePiglinBarteringHeader(path, writer);
+            } else if (path.equals("gameplay/cat_morning_gift") || path.startsWith("gameplay/hero_of_the_village")) {
+                writeEntityDropsHeader(path, writer);
+            } else {
+                writeLootTableHeader(path, writer);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            writeTableContents(path, writer, json.getAsJsonObject());
         }
     }
 
@@ -349,6 +382,16 @@ public final class VanillaLootTableConverter {
                 }
                 case "minecraft:alternatives" -> {
                     writer.write("children-strategy: first_passing");
+                    JsonArray children = entry.get("children").getAsJsonArray();
+                    writeEntries(path, "children", writer, children);
+                }
+                case "minecraft:group" -> {
+                    writer.write("children-strategy: normal");
+                    JsonArray children = entry.get("children").getAsJsonArray();
+                    writeEntries(path, "children", writer, children);
+                }
+                case "minecraft:sequence" -> {
+                    writer.write("children-strategy: sequential");
                     JsonArray children = entry.get("children").getAsJsonArray();
                     writeEntries(path, "children", writer, children);
                 }
@@ -646,6 +689,15 @@ public final class VanillaLootTableConverter {
                             }
                         }
                     }
+                } else if (locationPredicate.has("dimension")) {
+                    String vanillaDimension = locationPredicate.get("dimension").getAsString();
+                    String dimension = switch (vanillaDimension) {
+                        case "minecraft:overworld" -> "normal";
+                        case "minecraft:the_nether" -> "nether";
+                        case "minecraft:the_end" -> "the_end";
+                        default -> "custom";
+                    };
+                    stringBuilder.append("dimension:").append(dimension);
                 }
                 break;
             case "minecraft:survives_explosion":
@@ -771,9 +823,22 @@ public final class VanillaLootTableConverter {
                     }
                     writer.decreaseIndentation();
                     break;
+                case "minecraft:set_enchantments":
+                    JsonObject enchantments = function.get("enchantments").getAsJsonObject();
+                    writer.write("enchantments:");
+                    writer.increaseIndentation();
+                    for (String enchantmentName : enchantments.keySet()) {
+                        int enchantmentLevel = enchantments.get(enchantmentName).getAsInt();
+                        writer.write(enchantmentName.replace("minecraft:", "") + ": " + enchantmentLevel);
+                    }
+                    writer.decreaseIndentation();
+                    break;
                 case "minecraft:set_name":
-                    // Unsupported due to a lack of Spigot API support for setting an item's name to a translation key
+                    // Somewhat unsupported due to a lack of Spigot API support for setting an item's name to a translation key
                     // This is currently only used for buried treasure maps generated in chests
+                    String displayName = LootUtils.decolorize(new TextComponent(ComponentSerializer.parse(function.get("name").toString())).toLegacyText());
+                    writer.write("display-name: '" + displayName.replaceAll(Pattern.quote("'"), "''") + "'");
+
                     // JsonObject nameObject = function.get("name").getAsJsonObject();
                     // writer.write("display-name: #" + nameObject.get("translate").getAsString().substring("minecraft:".length()));
                     break;
@@ -802,7 +867,8 @@ public final class VanillaLootTableConverter {
                         potionTypeNbt = potionTypeNbt.substring(potionTypeNbt.lastIndexOf(":") + 1, potionTypeNbt.lastIndexOf("\""));
                         writer.write("potion-type: " + potionTypeNbt);
                     } else {
-                        RoseLoot.getInstance().getLogger().warning("minecraft:set_nbt unhandled: " + path);
+                        String tag = function.get("tag").getAsString().replaceAll(Pattern.quote("\\\""), "\"").replaceAll(Pattern.quote("'"), "''");
+                        writer.write("nbt: '" + tag + "'");
                     }
                     break;
                 case "minecraft:copy_nbt":
@@ -825,8 +891,8 @@ public final class VanillaLootTableConverter {
                     } else {
                         writer.write("random-enchantments:");
                         writer.increaseIndentation();
-                        JsonArray enchantments = enchantmentsElement.getAsJsonArray();
-                        for (JsonElement enchantmentElement : enchantments) {
+                        JsonArray randomEnchantments = enchantmentsElement.getAsJsonArray();
+                        for (JsonElement enchantmentElement : randomEnchantments) {
                             String enchantment = enchantmentElement.getAsString().substring("minecraft:".length());
                             writer.write("- " + enchantment);
                         }

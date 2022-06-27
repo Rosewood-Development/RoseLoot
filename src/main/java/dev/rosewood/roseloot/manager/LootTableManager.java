@@ -97,7 +97,7 @@ public class LootTableManager extends Manager implements Listener {
             if (!readme.exists())
                 this.rosePlugin.saveResource("loottables/README.txt", false);
 
-            VanillaLootTableConverter.convert(examplesDirectory);
+            VanillaLootTableConverter.convertVanilla(examplesDirectory);
 
             List<File> files = LootUtils.listFiles(directory, List.of("examples", "disabled"), List.of("yml"));
             for (File file : files) {

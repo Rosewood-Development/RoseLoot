@@ -35,8 +35,9 @@ public class LootContents {
      */
     public void add(List<LootItem<?>> lootItems) {
         // Turn LootTableLootItems into a List<LootItem<?>> and add them to the stored contents
+        // Continue doing this until we have no more LootTableLootItems to process
         lootItems.stream()
-                .flatMap(x -> x instanceof LootTableLootItem ? ((LootTableLootItem) x).create(this.context).stream() : Stream.of(x))
+                .flatMap(x -> x instanceof LootTableLootItem ? this.recursivelyCreateLootTableLootItems((LootTableLootItem) x).stream() : Stream.of(x))
                 .forEach(this.contents::add);
 
         // Attempt to merge LootItems
@@ -48,6 +49,18 @@ public class LootContents {
                     this.contents.remove(j--);
             }
         }
+    }
+
+    private List<LootItem<?>> recursivelyCreateLootTableLootItems(LootTableLootItem lootTableLootItem) {
+        List<LootItem<?>> lootItems = new ArrayList<>();
+        for (LootItem<?> lootItem : lootTableLootItem.create(this.context)) {
+            if (lootItem instanceof LootTableLootItem) {
+                lootItems.addAll(this.recursivelyCreateLootTableLootItems((LootTableLootItem) lootItem));
+            } else {
+                lootItems.add(lootItem);
+            }
+        }
+        return lootItems;
     }
 
     /**
