@@ -137,20 +137,6 @@ public final class LootUtils {
     }
 
     /**
-     * Reduces a tool's durability by 1 if applicable
-     *
-     * @param itemStack The tool
-     */
-    public static void damageTool(ItemStack itemStack) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (!(itemMeta instanceof Damageable damageable))
-            return;
-
-        damageable.setDamage(damageable.getDamage() + 1);
-        itemStack.setItemMeta((ItemMeta) damageable);
-    }
-
-    /**
      * Sets the spawn reason for the given LivingEntity.
      * Does not overwrite an existing spawn reason.
      *
