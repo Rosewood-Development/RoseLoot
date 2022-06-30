@@ -367,7 +367,7 @@ public class LootTableManager extends Manager implements Listener {
 
     public LootTable getLootTable(String name) {
         return this.lootTables.values().stream()
-                .filter(x -> x.getName().equals(name))
+                .filter(x -> x.getName().equals(name) || x.getName().replace(' ', '_').equals(name))
                 .findFirst()
                 .orElse(null);
     }

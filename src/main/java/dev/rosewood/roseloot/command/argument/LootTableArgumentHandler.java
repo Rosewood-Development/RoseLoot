@@ -34,7 +34,7 @@ public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTab
             return List.of("<no loaded loot tables>");
 
         return lootTables.stream()
-                .map(LootTable::getName)
+                .map(x -> x.getName().replace(' ', '_'))
                 .collect(Collectors.toList());
     }
 
