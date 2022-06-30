@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.manager;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.ClassUtils;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.ExplosionType;
@@ -44,6 +45,7 @@ import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
+import dev.rosewood.roseloot.loot.condition.tags.paper.MoonPhaseCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.lang.reflect.Constructor;
@@ -156,6 +158,10 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("vanilla-loot-table", VanillaLootTableCondition.class);
         event.registerLootCondition("weather", WeatherCondition.class);
         event.registerLootCondition("world", WorldCondition.class);
+
+        if (NMSUtil.isPaper()) {
+            event.registerLootCondition("moon-phase", MoonPhaseCondition.class);
+        }
 
         List<Class<EntityConditions>> classes = ClassUtils.getClassesOf(RoseLoot.getInstance(), PACKAGE_PATH, EntityConditions.class);
         List<String> ignoredLoading = new ArrayList<>();
