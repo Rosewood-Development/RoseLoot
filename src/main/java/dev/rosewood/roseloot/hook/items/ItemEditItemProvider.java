@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.hook.items;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
 import emanondev.itemedit.ItemEdit;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,7 +11,7 @@ public class ItemEditItemProvider extends ItemProvider {
     }
 
     @Override
-    public ItemStack getItem(String id) {
+    public ItemStack getItem(LootContext context, String id) {
         if (!this.isEnabled())
             return null;
 

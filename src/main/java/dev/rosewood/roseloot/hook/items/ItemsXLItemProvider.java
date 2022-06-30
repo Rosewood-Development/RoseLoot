@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.hook.items;
 
 import de.erethon.caliburn.CaliburnAPI;
 import de.erethon.caliburn.item.ExItem;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemsXLItemProvider extends ItemProvider {
@@ -11,7 +12,7 @@ public class ItemsXLItemProvider extends ItemProvider {
     }
 
     @Override
-    public ItemStack getItem(String id) {
+    public ItemStack getItem(LootContext context, String id) {
         if (!this.isEnabled())
             return null;
 

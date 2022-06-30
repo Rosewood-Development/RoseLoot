@@ -93,7 +93,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
         amount = Math.min(amount, this.maxAmount.getInteger());
         
         ItemStack creationItem = this.getCreationItem(context);
-        if (amount > 0) {
+        if (creationItem != null && amount > 0) {
             int maxStackSize = creationItem.getMaxStackSize();
             while (amount > maxStackSize) {
                 amount -= maxStackSize;

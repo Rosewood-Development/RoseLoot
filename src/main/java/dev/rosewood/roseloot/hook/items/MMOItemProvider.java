@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.hook.items;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.Type;
@@ -13,7 +14,7 @@ public class MMOItemProvider extends ItemProvider {
     }
 
     @Override
-    public ItemStack getItem(String id) {
+    public ItemStack getItem(LootContext context, String id) {
         if (!this.isEnabled())
             return null;
 

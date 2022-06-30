@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.hook.items;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,10 +35,11 @@ public abstract class ItemProvider {
     /**
      * Gets the ItemStack for the given item ID.
      *
+     * @param context The LootContext
      * @param id The item ID to look up
      * @return The ItemStack for the given item ID, or null if no item with the ID could be found
      */
-    public abstract ItemStack getItem(String id);
+    public abstract ItemStack getItem(LootContext context, String id);
 
     /**
      * Gets the item ID for the given ItemStack.

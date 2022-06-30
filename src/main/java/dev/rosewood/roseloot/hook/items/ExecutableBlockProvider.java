@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.hook.items;
 
 import com.ssomar.score.api.executableblocks.ExecutableBlocksAPI;
-import java.util.Optional;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.inventory.ItemStack;
 
 public class ExecutableBlockProvider extends ItemProvider {
@@ -11,13 +11,13 @@ public class ExecutableBlockProvider extends ItemProvider {
     }
 
     @Override
-    public ItemStack getItem(String id) {
+    public ItemStack getItem(LootContext context, String id) {
         if (!this.isEnabled())
             return null;
 
         return ExecutableBlocksAPI.getExecutableBlocksManager()
                 .getExecutableBlock(id)
-                .map(x -> x.buildItem(1, Optional.empty()))
+                .map(x -> x.buildItem(1, context.getLootingPlayer()))
                 .orElse(null);
     }
 

@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.hook.items;
 
 import com.willfp.eco.core.items.CustomItem;
 import com.willfp.eco.core.items.Items;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,7 +16,7 @@ public class EcoItemProvider extends ItemProvider {
     }
 
     @Override
-    public ItemStack getItem(String id) {
+    public ItemStack getItem(LootContext context, String id) {
         if (!this.isEnabled())
             return null;
 

@@ -10,25 +10,31 @@ import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class CustomItemLootItem extends ItemLootItem {
 
-    private final ItemStack itemStack;
+    private final CustomItemPlugin customItemPlugin;
+    private final String itemId;
 
-    public CustomItemLootItem(ItemStack itemStack, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, EnchantmentBonus enchantmentBonus, String nbt) {
-        super(itemStack.getType(), amount, maxAmount, amountModifiers, null, enchantmentBonus, false, nbt);
-        this.itemStack = itemStack;
+    public CustomItemLootItem(CustomItemPlugin customItemPlugin, String itemId, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, EnchantmentBonus enchantmentBonus, String nbt) {
+        super(null, amount, maxAmount, amountModifiers, null, enchantmentBonus, false, nbt);
+        this.customItemPlugin = customItemPlugin;
+        this.itemId = itemId;
     }
 
     protected ItemStack getCreationItem(LootContext context) {
-        ItemStack clone = this.itemStack.clone();
+        ItemStack itemStack = this.customItemPlugin.resolveItem(context, this.itemId);
+        if (itemStack == null) {
+            RoseLoot.getInstance().getLogger().warning("Failed to resolve item [" + this.itemId + "] from [" + this.customItemPlugin.name().toLowerCase() + "]");
+            return null;
+        }
+
         if (this.nbt != null && !this.nbt.isEmpty())
-            NBTAPIHook.mergeItemNBT(clone, this.nbt);
-        return clone;
+            NBTAPIHook.mergeItemNBT(itemStack, this.nbt);
+        return itemStack;
     }
 
     public static CustomItemLootItem fromSection(ConfigurationSection section) {
@@ -40,10 +46,6 @@ public class CustomItemLootItem extends ItemLootItem {
             return null;
 
         if (itemId == null)
-            return null;
-
-        ItemStack itemStack = customItemPlugin.resolveItem(itemId);
-        if (itemStack == null || itemStack.getType() == Material.AIR)
             return null;
 
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
@@ -85,7 +87,7 @@ public class CustomItemLootItem extends ItemLootItem {
         }
 
         String nbt = section.getString("nbt");
-        return new CustomItemLootItem(itemStack, amount, maxAmount, amountModifiers, enchantmentBonus, nbt);
+        return new CustomItemLootItem(customItemPlugin, itemId, amount, maxAmount, amountModifiers, enchantmentBonus, nbt);
     }
 
 }

@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.hook.items;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.inventory.ItemStack;
 import thirtyvirus.uber.UberItem;
 import thirtyvirus.uber.UberItems;
@@ -12,7 +13,7 @@ public class UberItemProvider extends ItemProvider {
     }
 
     @Override
-    public ItemStack getItem(String id) {
+    public ItemStack getItem(LootContext context, String id) {
         if (!this.isEnabled())
             return null;
 

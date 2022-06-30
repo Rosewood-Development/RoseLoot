@@ -30,8 +30,8 @@ public enum CustomItemPlugin {
         return this.itemProvider.isEnabled();
     }
 
-    public ItemStack resolveItem(String id) {
-        return this.itemProvider.getItem(id);
+    public ItemStack resolveItem(LootContext context, String id) {
+        return this.itemProvider.getItem(context, id);
     }
 
     public String resolveItemId(ItemStack itemStack) {
