@@ -236,9 +236,11 @@ public class ItemLootMeta {
                             possibleEnchantments.add(enchantment);
                 }
 
-                Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
-                int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
-                itemMeta.addEnchant(enchantment, level, true);
+                if (!possibleEnchantments.isEmpty()) {
+                    Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
+                    int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
+                    itemMeta.addEnchant(enchantment, level, true);
+                }
             }
 
             if (this.enchantments != null) {
