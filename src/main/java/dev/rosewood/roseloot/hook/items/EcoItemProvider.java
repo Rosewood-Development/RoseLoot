@@ -6,9 +6,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * EcoItems support is added through reflection since it requires Java 17, and we want to keep compatibility with Java 8.
- */
 public class EcoItemProvider extends ItemProvider {
 
     public EcoItemProvider() {

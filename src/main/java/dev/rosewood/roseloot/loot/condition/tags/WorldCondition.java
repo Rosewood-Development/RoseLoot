@@ -6,7 +6,6 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
-import org.bukkit.World;
 
 public class WorldCondition extends LootCondition {
 
@@ -20,7 +19,7 @@ public class WorldCondition extends LootCondition {
     public boolean checkInternal(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getWorld)
-                .map(World::getName)
+                .map(x -> x.getName()) // Not using World::getName because it was changed to WorldInfo::getName which doesn't exist pre-1.17
                 .filter(x -> this.worlds.stream().anyMatch(y -> y.equalsIgnoreCase(x)))
                 .isPresent();
     }
