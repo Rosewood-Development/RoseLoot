@@ -1,10 +1,12 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.StructureType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,15 +70,23 @@ public class MapItemLootMeta extends ItemLootMeta {
         int searchRadius = this.searchRadius != null ? this.searchRadius : 50;
         boolean skipKnownStructures = this.skipKnownStructures != null ? this.skipKnownStructures : true;
 
-        ItemStack explorerMap = Bukkit.createExplorerMap(world, origin.get(), this.destination, searchRadius, skipKnownStructures);
-        MapMeta itemMeta = (MapMeta) explorerMap.getItemMeta();
-        if (itemMeta != null) {
-            MapView mapView = itemMeta.getMapView();
-            if (mapView != null) {
-                mapView.setScale(scale);
-                explorerMap.setItemMeta(itemMeta);
+        ItemStack explorerMap = null;
+        try {
+            explorerMap = Bukkit.createExplorerMap(world, origin.get(), this.destination, searchRadius, skipKnownStructures);
+            MapMeta itemMeta = (MapMeta) explorerMap.getItemMeta();
+            if (itemMeta != null) {
+                MapView mapView = itemMeta.getMapView();
+                if (mapView != null) {
+                    mapView.setScale(scale);
+                    explorerMap.setItemMeta(itemMeta);
+                }
             }
+        } catch (Exception e) {
+            RoseLoot.getInstance().getLogger().warning("Failed to apply map item loot meta to item stack. Likely unable to find structure.");
         }
+
+        if (explorerMap == null)
+            explorerMap = new ItemStack(Material.MAP);
 
         return super.apply(explorerMap, context);
     }
