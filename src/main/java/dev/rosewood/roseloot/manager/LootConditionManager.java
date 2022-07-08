@@ -59,6 +59,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Breedable;
 import org.bukkit.entity.ChestedHorse;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Raider;
@@ -141,6 +142,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("killed-by", KilledByCondition.class);
         event.registerLootCondition("light-level", LightLevelCondition.class);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition.class);
+        event.registerLootCondition("on-ground", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(Entity::isOnGround).isPresent());
         event.registerLootCondition("open-water", context -> context.get(LootContextParams.FISH_HOOK).filter(FishHook::isInOpenWater).isPresent());
         event.registerLootCondition("patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
         event.registerLootCondition("permission", (context, values) -> context.get(LootContextParams.LOOTER).filter(x -> values.stream().anyMatch(x::hasPermission)).isPresent());
@@ -153,6 +155,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("spawner-type", SpawnerTypeCondition.class);
         event.registerLootCondition("spawn-reason", SpawnReasonCondition.class);
         event.registerLootCondition("tamed", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Tameable.class).filter(Tameable::isTamed).isPresent());
+        event.registerLootCondition("tamed-pet-owner", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Tameable.class).map(Tameable::getOwner).flatMap(x -> context.get(LootContextParams.LOOTER).filter(y -> x.getUniqueId().equals(y.getUniqueId()))).isPresent());
         event.registerLootCondition("temperature", TemperatureCondition.class);
         event.registerLootCondition("trading", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Merchant.class).filter(Merchant::isTrading).isPresent());
         event.registerLootCondition("vanilla-loot-table", VanillaLootTableCondition.class);
