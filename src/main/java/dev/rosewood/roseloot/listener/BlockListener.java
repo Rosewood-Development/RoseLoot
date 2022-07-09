@@ -91,8 +91,11 @@ public class BlockListener implements Listener {
         lootContents.triggerExtras(dropLocation);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
+        if (event instanceof LootedLeavesDecayEvent)
+            return;
+
         Block block = event.getBlock();
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
@@ -106,6 +109,14 @@ public class BlockListener implements Listener {
 
         // Overwrite existing drops if applicable
         if (lootResult.shouldOverwriteItems()) {
+            if (Setting.SIMULATE_LEAVESDECAYEVENT.getBoolean()) {
+                LootedLeavesDecayEvent lootedEvent = new LootedLeavesDecayEvent(block);
+                Bukkit.getPluginManager().callEvent(lootedEvent);
+                if (lootedEvent.isCancelled()) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
             event.setCancelled(true);
             block.setType(Material.AIR);
         }
@@ -207,6 +218,14 @@ public class BlockListener implements Listener {
 
             lootContents.triggerExtras(dropLocation);
         }
+    }
+
+    private static class LootedLeavesDecayEvent extends LeavesDecayEvent {
+
+        public LootedLeavesDecayEvent(Block block) {
+            super(block);
+        }
+
     }
 
 }
