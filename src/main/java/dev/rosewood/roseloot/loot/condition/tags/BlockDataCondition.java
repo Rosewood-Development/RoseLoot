@@ -26,6 +26,9 @@ public class BlockDataCondition extends LootCondition {
 
         BlockData blockData = block.get().getBlockData();
         String blockDataString = blockData.getAsString(false);
+        if (!blockDataString.contains("[") || !blockDataString.contains("]"))
+            return false;
+
         blockDataString = blockDataString.substring(blockDataString.indexOf('[') + 1, blockDataString.lastIndexOf(']')).replaceAll(" ", "").toLowerCase(); // Remove [] and all spaces
         List<String> dataValues = List.of(blockDataString.split(","));
         return this.blockData.stream().anyMatch(dataValues::contains);
