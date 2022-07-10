@@ -53,4 +53,9 @@ public class AboveBlockTypeCondition extends LootCondition {
         return !this.blockTypes.isEmpty();
     }
 
+    @Override
+    public String getDeprecationReplacement() {
+        return "relative-block-type";
+    }
+
 }

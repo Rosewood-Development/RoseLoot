@@ -674,9 +674,9 @@ public final class VanillaLootTableConverter {
                                 offsetY = json.get("offsetY").getAsInt();
 
                             if (offsetY == 1) {
-                                stringBuilder.append("above-block-type:");
+                                stringBuilder.append("relative-block-type:north,");
                             } else if (offsetY == -1) {
-                                stringBuilder.append("below-block-type:");
+                                stringBuilder.append("relative-block-type:south,");
                             } else {
                                 stringBuilder.append("block-type:");
                             }

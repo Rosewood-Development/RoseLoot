@@ -1,11 +1,13 @@
 package dev.rosewood.roseloot.loot.condition;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 
 public abstract class LootCondition {
 
     private final String tag;
     private final boolean inverted;
+    private boolean printedDeprecationWarning;
 
     /**
      * @param tag The tag, including both prefix and values
@@ -46,6 +48,12 @@ public abstract class LootCondition {
 
         if (!this.parseValues(values))
             throw new IllegalArgumentException(String.format("Invalid tag arguments for %s", prefix));
+
+        String replacement = this.getDeprecationReplacement();
+        if (replacement != null && !this.printedDeprecationWarning) {
+            this.printedDeprecationWarning = true;
+            RoseLoot.getInstance().getLogger().warning(String.format("Loot condition deprecation warning: [%s] will be removed in the future, use [%s] instead", prefix, replacement));
+        }
     }
 
     /**
@@ -84,6 +92,13 @@ public abstract class LootCondition {
     @Override
     public String toString() {
         return this.tag;
+    }
+
+    /**
+     * @return The deprecation replacement condition, or null if there is no replacement
+     */
+    public String getDeprecationReplacement() {
+        return null;
     }
 
 }

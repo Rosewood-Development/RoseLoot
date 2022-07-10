@@ -4,19 +4,24 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-public class BelowBlockTypeCondition extends LootCondition {
+/**
+ * relative-block-type:north,stone
+ * value 1: The relative block to check
+ * value 2+: A block type
+ */
+public class RelativeBlockTypeCondition extends LootCondition {
 
-    private List<Material> blockTypes;
+    private BlockFace blockFace;
+    private Set<Material> blockTypes;
 
-    public BelowBlockTypeCondition(String tag) {
+    public RelativeBlockTypeCondition(String tag) {
         super(tag);
     }
 
@@ -24,7 +29,7 @@ public class BelowBlockTypeCondition extends LootCondition {
     public boolean checkInternal(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getBlock)
-                .map(x -> x.getRelative(BlockFace.DOWN))
+                .map(x -> x.getRelative(this.blockFace))
                 .map(Block::getType)
                 .filter(this.blockTypes::contains)
                 .isPresent();
@@ -32,10 +37,20 @@ public class BelowBlockTypeCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.blockTypes = new ArrayList<>();
+        if (values.length < 2)
+            return false;
 
-        for (String value : values) {
+        try {
+            this.blockFace = BlockFace.valueOf(values[0].toUpperCase());
+        } catch (Exception e) {
+            return false;
+        }
+
+        this.blockTypes = EnumSet.noneOf(Material.class);
+
+        for (int i = 1; i < values.length; i++) {
             try {
+                String value = values[i];
                 if (value.startsWith("#")) {
                     Set<Material> tagBlocks = LootUtils.getTags(value.substring(1), Material.class, "blocks");
                     if (tagBlocks != null) {
@@ -51,11 +66,6 @@ public class BelowBlockTypeCondition extends LootCondition {
         }
 
         return !this.blockTypes.isEmpty();
-    }
-
-    @Override
-    public String getDeprecationReplacement() {
-        return "relative-block-type";
     }
 
 }
