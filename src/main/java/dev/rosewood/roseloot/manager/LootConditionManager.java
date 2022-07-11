@@ -212,8 +212,12 @@ public class LootConditionManager extends Manager implements Listener {
             BiPredicate<LootContext, List<String>> stringPredicate = this.registeredConditionStringPredicates.get(tagPrefix);
             if (stringPredicate != null)
                 return new StringLootCondition(tag, stringPredicate);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException e) {
+            if (e.getCause() instanceof IllegalArgumentException iae) {
+                RoseLoot.getInstance().getLogger().warning("Failed to parse condition [" + tag + "] due to invalid values: " + iae.getMessage());
+            } else {
+                e.printStackTrace();
+            }
         }
         return null;
     }
