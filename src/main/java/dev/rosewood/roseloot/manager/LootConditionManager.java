@@ -19,6 +19,7 @@ import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
+import dev.rosewood.roseloot.loot.condition.tags.CooldownCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DimensionCondition;
@@ -124,6 +125,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("chance", ChanceCondition.class);
         event.registerLootCondition("charged-explosion", context -> context.get(LootContextParams.EXPLOSION_TYPE).filter(x -> x == ExplosionType.CHARGED_ENTITY).isPresent());
         event.registerLootCondition("chested", context -> context.getAs(LootContextParams.LOOTED_ENTITY, ChestedHorse.class).filter(ChestedHorse::isCarryingChest).isPresent());
+        event.registerLootCondition("cooldown", CooldownCondition.class);
         event.registerLootCondition("custom-model-data", CustomModelDataCondition.class);
         event.registerLootCondition("death-cause", DeathCauseCondition.class);
         event.registerLootCondition("dimension", DimensionCondition.class);

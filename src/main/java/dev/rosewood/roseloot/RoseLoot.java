@@ -19,6 +19,7 @@ import dev.rosewood.roseloot.listener.paper.NewerPaperListener;
 import dev.rosewood.roseloot.listener.paper.PaperListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.CooldownManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
@@ -92,7 +93,8 @@ public class RoseLoot extends RosePlugin {
     protected List<Class<? extends Manager>> getManagerLoadPriority() {
         return List.of(
                 LootConditionManager.class,
-                LootTableManager.class
+                LootTableManager.class,
+                CooldownManager.class
         );
     }
 
