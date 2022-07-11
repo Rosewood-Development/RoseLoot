@@ -25,10 +25,15 @@ public class LootTable implements LootItemGenerator {
 
     @Override
     public List<LootItem<?>> generate(LootContext context) {
+        return this.generate(context, false);
+    }
+
+    public List<LootItem<?>> generate(LootContext context, boolean ignoreChecks) {
         this.type.validateLootContext(context);
 
-        if (!this.check(context))
+        if (!ignoreChecks && !this.check(context))
             return List.of();
+
         return this.pools.stream().flatMap(x -> x.generate(context).stream()).collect(Collectors.toList());
     }
 
@@ -52,13 +57,10 @@ public class LootTable implements LootItemGenerator {
     }
 
     /**
-     * Checks if the original loot for the given context should be overwritten
-     *
-     * @param context The LootContext
-     * @return true if this LootTable should overwrite the existing context's loot, false otherwise
+     * @return the overwrite-existing value defined in the LootTable
      */
-    public OverwriteExisting getOverwriteExistingValue(LootContext context) {
-        return this.conditions.stream().allMatch(x -> x.check(context)) ? this.overwriteExisting : OverwriteExisting.NONE;
+    public OverwriteExisting getOverwriteExistingValue() {
+        return this.overwriteExisting;
     }
 
 }

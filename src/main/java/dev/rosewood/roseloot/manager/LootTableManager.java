@@ -301,8 +301,12 @@ public class LootTableManager extends Manager implements Listener {
         LootContents lootContents = new LootContents(lootContext);
         OverwriteExisting overwriteExisting = OverwriteExisting.NONE;
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
-            lootContents.add(lootTable.generate(lootContext));
-            overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue(lootContext));
+            boolean passesConditions = lootTable.check(lootContext);
+            if (!passesConditions)
+                continue;
+
+            lootContents.add(lootTable.generate(lootContext, true));
+            overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue());
         }
 
         return this.callEvent(new LootResult(lootContext, lootContents, overwriteExisting));
