@@ -57,6 +57,8 @@ public class ParticleLootItem implements TriggerableLootItem {
             case "BlockData" -> new BlockDataContainer(section);
             case "DustTransition" -> new DustTransitionContainer(section);
             case "Vibration" -> new VibrationContainer(section);
+            case "Integer" -> new IntegerContainer(section);
+            case "Float" -> new FloatContainer(section);
             default -> null;
         };
 
@@ -199,6 +201,34 @@ public class ParticleLootItem implements TriggerableLootItem {
 
     }
 
+    private static class IntegerContainer implements ParticleDataContainer {
 
+        private final NumberProvider value;
+
+        public IntegerContainer(ConfigurationSection section) {
+            this.value = NumberProvider.fromSection(section, "delay", 0);
+        }
+
+        @Override
+        public Object buildData(Location location) {
+            return this.value.getInteger();
+        }
+
+    }
+
+    private static class FloatContainer implements ParticleDataContainer {
+
+        private final NumberProvider value;
+
+        public FloatContainer(ConfigurationSection section) {
+            this.value = NumberProvider.fromSection(section, "rotation", 0);
+        }
+
+        @Override
+        public Object buildData(Location location) {
+            return (float) this.value.getDouble();
+        }
+
+    }
 
 }
