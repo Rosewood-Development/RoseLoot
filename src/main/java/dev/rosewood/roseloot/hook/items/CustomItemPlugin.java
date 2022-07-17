@@ -7,7 +7,11 @@ import org.bukkit.inventory.ItemStack;
 
 public enum CustomItemPlugin {
 
-    ECOITEMS(new EcoItemProvider()),
+    /**
+     * @deprecated Use {@code ECO} instead.
+     */
+    @Deprecated ECOITEMS(new EcoItemProvider()),
+    ECO(new EcoItemProvider()),
     MMOITEMS(new MMOItemProvider()),
     ITEMBRIDGE(new ItemBridgeItemProvider()),
     EXECUTABLEITEMS(new ExecutableItemProvider()),
