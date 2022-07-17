@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class LootTableTypes {
 
-    private static final Map<String, LootTableType> DEFAULT_LOOT_TABLE_TYPES = new HashMap<>();
+    private static final Map<String, LootTableType> LOOT_TABLE_TYPES = new HashMap<>();
 
     public static final LootTableType ENTITY = register("ENTITY", builder ->
             builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_ENTITY)
@@ -37,19 +37,19 @@ public class LootTableTypes {
     public static final LootTableType LOOT_TABLE = register("LOOT_TABLE", LootTableType.unrestricted());
 
     public static Map<String, LootTableType> values() {
-        return Collections.unmodifiableMap(DEFAULT_LOOT_TABLE_TYPES);
+        return Collections.unmodifiableMap(LOOT_TABLE_TYPES);
     }
 
-    private static LootTableType register(String name, LootTableType lootTableType) {
-        DEFAULT_LOOT_TABLE_TYPES.put(name, lootTableType);
+    public static LootTableType register(String name, LootTableType lootTableType) {
+        LOOT_TABLE_TYPES.put(name, lootTableType);
         return lootTableType;
     }
 
-    private static LootTableType register(String name, Consumer<LootTableType.Builder> builderConsumer) {
+    public static LootTableType register(String name, Consumer<LootTableType.Builder> builderConsumer) {
         LootTableType.Builder builder = LootTableType.builder();
         builderConsumer.accept(builder);
         LootTableType lootTableType = builder.build();
-        DEFAULT_LOOT_TABLE_TYPES.put(name, lootTableType);
+        LOOT_TABLE_TYPES.put(name, lootTableType);
         return lootTableType;
     }
 

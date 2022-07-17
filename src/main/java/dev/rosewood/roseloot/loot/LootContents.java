@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
-import dev.rosewood.roseloot.loot.item.ItemLootItem;
+import dev.rosewood.roseloot.loot.item.ExperienceGenerativeLootItem;
+import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
-import dev.rosewood.roseloot.loot.item.LootTableLootItem;
+import dev.rosewood.roseloot.loot.item.RecursiveLootItem;
 import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 public class LootContents {
 
     private final LootContext context;
-    private final List<LootItem<?>> contents;
+    private final List<LootItem> contents;
 
     public LootContents(LootContext context) {
         this.context = context;
@@ -33,29 +33,29 @@ public class LootContents {
      *
      * @param lootItems The LootItems to add
      */
-    public void add(List<LootItem<?>> lootItems) {
-        // Turn LootTableLootItems into a List<LootItem<?>> and add them to the stored contents
-        // Continue doing this until we have no more LootTableLootItems to process
+    public void add(List<LootItem> lootItems) {
+        // Turn GenerativeLootItem into a List<LootItem> and add them to the stored contents
+        // Continue doing this until we have no more GenerativeLootItem to process
         lootItems.stream()
-                .flatMap(x -> x instanceof LootTableLootItem ? this.recursivelyCreateLootTableLootItems((LootTableLootItem) x).stream() : Stream.of(x))
+                .flatMap(x -> x instanceof RecursiveLootItem ? this.recursivelyCreateGenerativeLootItems((RecursiveLootItem) x).stream() : Stream.of(x))
                 .forEach(this.contents::add);
 
         // Attempt to merge LootItems
         for (int i = 0; i < this.contents.size(); i++) {
-            LootItem<?> item = this.contents.get(i);
+            LootItem item = this.contents.get(i);
             for (int j = i + 1; j < this.contents.size(); j++) {
-                LootItem<?> other = this.contents.get(j);
+                LootItem other = this.contents.get(j);
                 if (item.combineWith(other))
                     this.contents.remove(j--);
             }
         }
     }
 
-    private List<LootItem<?>> recursivelyCreateLootTableLootItems(LootTableLootItem lootTableLootItem) {
-        List<LootItem<?>> lootItems = new ArrayList<>();
-        for (LootItem<?> lootItem : lootTableLootItem.create(this.context)) {
-            if (lootItem instanceof LootTableLootItem) {
-                lootItems.addAll(this.recursivelyCreateLootTableLootItems((LootTableLootItem) lootItem));
+    private List<LootItem> recursivelyCreateGenerativeLootItems(RecursiveLootItem recursiveLootItem) {
+        List<LootItem> lootItems = new ArrayList<>();
+        for (LootItem lootItem : recursiveLootItem.generate(this.context)) {
+            if (lootItem instanceof RecursiveLootItem) {
+                lootItems.addAll(this.recursivelyCreateGenerativeLootItems((RecursiveLootItem) lootItem));
             } else {
                 lootItems.add(lootItem);
             }
@@ -71,9 +71,9 @@ public class LootContents {
      */
     public List<ItemStack> getItems() {
         return this.contents.stream()
-                .filter(x -> x instanceof ItemLootItem)
-                .map(x -> (ItemLootItem) x)
-                .flatMap(x -> x.create(this.context).stream())
+                .filter(x -> x instanceof ItemGenerativeLootItem)
+                .map(x -> (ItemGenerativeLootItem) x)
+                .flatMap(x -> x.generate(this.context).stream())
                 .collect(Collectors.toList());
     }
 
@@ -85,18 +85,19 @@ public class LootContents {
      */
     public int getExperience() {
         return this.contents.stream()
-                .filter(x -> x instanceof ExperienceLootItem)
-                .map(x -> (ExperienceLootItem) x)
-                .mapToInt(x -> x.create(this.context))
+                .filter(x -> x instanceof ExperienceGenerativeLootItem)
+                .map(x -> (ExperienceGenerativeLootItem) x)
+                .mapToInt(x -> x.generate(this.context))
                 .sum();
     }
 
     /**
      * @return the extra loot items which aren't an item or experience drop
      */
-    public List<LootItem<?>> getExtras() {
+    public List<TriggerableLootItem> getExtras() {
         return this.contents.stream()
                 .filter(x -> x instanceof TriggerableLootItem)
+                .map(x -> (TriggerableLootItem) x)
                 .collect(Collectors.toList());
     }
 
@@ -108,7 +109,7 @@ public class LootContents {
     public void triggerExtras(Location location) {
         this.contents.stream()
                 .filter(x -> x instanceof TriggerableLootItem)
-                .forEach(x -> ((TriggerableLootItem<?>) x).trigger(this.context, location));
+                .forEach(x -> ((TriggerableLootItem) x).trigger(this.context, location));
     }
 
     /**
@@ -122,14 +123,14 @@ public class LootContents {
      * Removes all ItemLootItems from the contents
      */
     public void removeItems() {
-        this.contents.removeIf(x -> x instanceof ItemLootItem);
+        this.contents.removeIf(x -> x instanceof ItemGenerativeLootItem);
     }
 
     /**
      * Removes all ExperienceLootItems from the contents
      */
     public void removeExperience() {
-        this.contents.removeIf(x -> x instanceof ExperienceLootItem);
+        this.contents.removeIf(x -> x instanceof ExperienceGenerativeLootItem);
     }
 
     /**

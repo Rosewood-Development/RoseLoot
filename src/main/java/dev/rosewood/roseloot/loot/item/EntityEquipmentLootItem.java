@@ -37,7 +37,7 @@ public class EntityEquipmentLootItem extends ItemLootItem {
     }
 
     @Override
-    public List<ItemStack> create(LootContext context) {
+    public List<ItemStack> generate(LootContext context) {
         List<ItemStack> droppedEquipment = new ArrayList<>();
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
         if (lootedEntity.isEmpty())

@@ -60,7 +60,7 @@ public class LootTableManager extends Manager implements Listener {
 
     private final BiMap<String, LootTableType> lootTableTypes;
     private final Multimap<LootTableType, LootTable> lootTables;
-    private final Map<String, Function<ConfigurationSection, LootItem<?>>> registeredLootItemFunctions;
+    private final Map<String, Function<ConfigurationSection, LootItem>> registeredLootItemFunctions;
 
     public LootTableManager(RosePlugin rosePlugin) {
         super(rosePlugin);
@@ -218,7 +218,7 @@ public class LootTableManager extends Manager implements Listener {
             NumberProvider quality = NumberProvider.fromSection(entrySection, "quality", 0);
 
             ConfigurationSection itemsSection = entrySection.getConfigurationSection("items");
-            List<LootItem<?>> lootItems = new ArrayList<>();
+            List<LootItem> lootItems = new ArrayList<>();
             if (itemsSection != null) {
                 for (String itemKey : itemsSection.getKeys(false)) {
                     ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
@@ -233,13 +233,13 @@ public class LootTableManager extends Manager implements Listener {
                         continue;
                     }
 
-                    Function<ConfigurationSection, LootItem<?>> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
+                    Function<ConfigurationSection, LootItem> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
                     if (lootItemFunction == null) {
                         this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
                         continue;
                     }
 
-                    LootItem<?> lootItem = lootItemFunction.apply(itemSection);
+                    LootItem lootItem = lootItemFunction.apply(itemSection);
                     if (lootItem == null) {
                         this.issueLoading(file, "Invalid item for pool/entry [pool: " + poolKey + ", entry: " + entryKey + ", item: " + itemKey + "]");
                         continue;

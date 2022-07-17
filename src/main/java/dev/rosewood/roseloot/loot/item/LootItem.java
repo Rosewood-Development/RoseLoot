@@ -1,19 +1,17 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.context.LootContext;
-
 /**
- * @param <T> The type created by this LootItem
+ * Represents an item that can generate loot.
+ * <br>
+ * For implementation, see the following interfaces:
+ * <ul>
+ *     <li>{@link ItemGenerativeLootItem} to generate items to drop</li>
+ *     <li>{@link ExperienceGenerativeLootItem} to generate experience to drop.</li>
+ *     <li>{@link TriggerableLootItem} to trigger something to happen.</li>
+ *     <li>{@link RecursiveLootItem} to generate additional LootItems.</li>
+ * </ul>
  */
-public interface LootItem<T> {
-
-    /**
-     * Creates the contents produced by this LootItem
-     *
-     * @param context The LootContext
-     * @return the created contents
-     */
-    T create(LootContext context);
+public sealed interface LootItem permits ItemGenerativeLootItem, ExperienceGenerativeLootItem, TriggerableLootItem, RecursiveLootItem {
 
     /**
      * Attempts to combine another LootItem into this LootItem.
@@ -22,7 +20,7 @@ public interface LootItem<T> {
      * @param lootItem The LootItem to attempt to merge with
      * @return true if a combination has occurred, otherwise false if nothing happened
      */
-    default boolean combineWith(LootItem<?> lootItem) {
+    default boolean combineWith(LootItem lootItem) {
         return false;
     }
 

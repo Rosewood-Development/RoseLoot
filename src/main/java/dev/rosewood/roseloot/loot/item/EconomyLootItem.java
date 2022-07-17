@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class EconomyLootItem implements TriggerableLootItem<Double> {
+public class EconomyLootItem implements TriggerableLootItem {
 
     private final EconomyPlugin plugin;
     private final List<NumberProvider> amounts;
@@ -24,14 +24,7 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
     }
 
     @Override
-    public Double create(LootContext context) {
-        double amount = this.amounts.stream().mapToDouble(NumberProvider::getDouble).sum();
-        context.getPlaceholders().add("economy_amount", amount);
-        return amount;
-    }
-
-    @Override
-    public boolean combineWith(LootItem<?> lootItem) {
+    public boolean combineWith(LootItem lootItem) {
         if (!(lootItem instanceof EconomyLootItem other) || this.plugin != other.plugin)
             return false;
 
@@ -41,7 +34,9 @@ public class EconomyLootItem implements TriggerableLootItem<Double> {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, this.create(context)));
+        double amount = this.amounts.stream().mapToDouble(NumberProvider::getDouble).sum();
+        context.getPlaceholders().add("economy_amount", amount);
+        context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount));
     }
 
     public static EconomyLootItem fromSection(ConfigurationSection section) {

@@ -3,10 +3,13 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Location;
 
-public interface TriggerableLootItem<T> extends LootItem<T> {
+/**
+ * Represents a LootItem that can trigger its contents.
+ */
+public non-sealed interface TriggerableLootItem extends LootItem {
 
     /**
-     * Triggers the LootItem to run using the contents created by {@link LootItem#create(LootContext)}
+     * Triggers the LootItem to trigger its contents
      *
      * @param context The LootContext
      * @param location The Location to trigger at

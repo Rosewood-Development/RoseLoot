@@ -25,8 +25,8 @@ public class VoucherLootItem extends ItemLootItem {
     }
 
     @Override
-    public List<ItemStack> create(LootContext context) {
-        List<ItemStack> items = super.create(context);
+    public List<ItemStack> generate(LootContext context) {
+        List<ItemStack> items = super.generate(context);
         items.forEach(x -> VoucherUtils.setVoucherData(x, this.lootTable));
         return items;
     }

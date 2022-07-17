@@ -1,7 +1,8 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.util.TriConsumer;
+import dev.rosewood.roseloot.util.NumberProvider;
+import java.util.Optional;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -9,22 +10,35 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class MessageLootItem implements TriggerableLootItem<MessageLootItem.StoredChatMessage> {
+@SuppressWarnings("deprecation")
+public class MessageLootItem implements TriggerableLootItem {
 
-    private final StoredChatMessage storedChatMessage;
+    private final MessageType messageType;
+    private final String message;
+    private final NumberProvider fadeIn, duration, fadeOut;
 
-    public MessageLootItem(MessageType messageType, String message, Integer fadeIn, Integer duration, Integer fadeOut) {
-        this.storedChatMessage = new StoredChatMessage(messageType, message, fadeIn, duration, fadeOut);
-    }
-
-    @Override
-    public StoredChatMessage create(LootContext context) {
-        return this.storedChatMessage;
+    public MessageLootItem(MessageType messageType, String message, NumberProvider fadeIn, NumberProvider duration, NumberProvider fadeOut) {
+        this.messageType = messageType;
+        this.message = message;
+        this.fadeIn = fadeIn;
+        this.duration = duration;
+        this.fadeOut = fadeOut;
     }
 
     @Override
     public void trigger(LootContext context, Location location) {
-        context.getLootingPlayer().ifPresent(x -> this.storedChatMessage.invoke(context, x));
+        Optional<Player> lootingPlayer = context.getLootingPlayer();
+        if (lootingPlayer.isEmpty())
+            return;
+
+        Player player = lootingPlayer.get();
+        switch (this.messageType) {
+            case CHAT_RAW -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(context.applyPlaceholders(this.message)));
+            case CHAT -> player.sendMessage(context.formatText(this.message));
+            case HOTBAR -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(context.formatText(this.message)));
+            case TITLE -> player.sendTitle(context.formatText(this.message), null, this.fadeIn.getInteger(), this.duration.getInteger(), this.fadeOut.getInteger());
+            case SUBTITLE -> player.sendTitle(null, context.formatText(this.message), this.fadeIn.getInteger(), this.duration.getInteger(), this.fadeOut.getInteger());
+        }
     }
 
     public static MessageLootItem fromSection(ConfigurationSection section) {
@@ -33,44 +47,19 @@ public class MessageLootItem implements TriggerableLootItem<MessageLootItem.Stor
             return null;
 
         String message = section.getString("value");
-        int fadeIn = section.getInt("fade-in", 20);
-        int duration = section.getInt("duration", 20);
-        int fadeOut = section.getInt("fade-out", 20);
+        NumberProvider fadeIn = NumberProvider.fromSection(section, "fade-in", 20);
+        NumberProvider duration = NumberProvider.fromSection(section, "duration", 20);
+        NumberProvider fadeOut = NumberProvider.fromSection(section, "fade-out", 20);
 
         return new MessageLootItem(messageType, message, fadeIn, duration, fadeOut);
     }
 
-    public record StoredChatMessage(MessageType messageType, String text, int fadeIn, int duration, int fadeOut) {
-
-        /**
-         * Sends the chat message to a player
-         *
-         * @param context the loot context
-         * @param player  the player to send the message to
-         */
-        public void invoke(LootContext context, Player player) {
-            this.messageType.invoke(context, player, this);
-        }
-
-    }
-
-    @SuppressWarnings("deprecation")
     public enum MessageType {
-        CHAT_RAW((context, player, message) -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(context.applyPlaceholders(message.text())))),
-        CHAT((context, player, message) -> player.sendMessage(context.formatText(message.text()))),
-        HOTBAR((context, player, message) -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(context.formatText(message.text())))),
-        TITLE((context, player, message) -> player.sendTitle(context.formatText(message.text()), null, message.fadeIn(), message.duration(), message.fadeOut())),
-        SUBTITLE((context, player, message) -> player.sendTitle(null, context.formatText(message.text()), message.fadeIn(), message.duration(), message.fadeOut()));
-
-        private final TriConsumer<LootContext, Player, StoredChatMessage> consumer;
-
-        MessageType(TriConsumer<LootContext, Player, StoredChatMessage> consumer) {
-            this.consumer = consumer;
-        }
-
-        public void invoke(LootContext context, Player player, StoredChatMessage message) {
-            this.consumer.accept(context, player, message);
-        }
+        CHAT_RAW,
+        CHAT,
+        HOTBAR,
+        TITLE,
+        SUBTITLE;
 
         public static MessageType fromString(String name) {
             for (MessageType value : values())

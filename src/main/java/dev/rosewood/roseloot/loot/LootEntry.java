@@ -14,11 +14,11 @@ public class LootEntry implements LootItemGenerator {
     private final List<LootCondition> conditions;
     private final NumberProvider weight;
     private final NumberProvider quality;
-    private final List<LootItem<?>> lootItems;
+    private final List<LootItem> lootItems;
     private final ChildrenStrategy childrenStrategy;
     private final List<LootEntry> children;
 
-    public LootEntry(List<LootCondition> conditions, NumberProvider weight, NumberProvider quality, List<LootItem<?>> lootItems, ChildrenStrategy childrenStrategy, List<LootEntry> children) {
+    public LootEntry(List<LootCondition> conditions, NumberProvider weight, NumberProvider quality, List<LootItem> lootItems, ChildrenStrategy childrenStrategy, List<LootEntry> children) {
         this.conditions = conditions;
         this.weight = weight;
         this.quality = quality;
@@ -28,8 +28,8 @@ public class LootEntry implements LootItemGenerator {
     }
 
     @Override
-    public List<LootItem<?>> generate(LootContext context) {
-        List<LootItem<?>> generatedItems = new ArrayList<>(this.lootItems);
+    public List<LootItem> generate(LootContext context) {
+        List<LootItem> generatedItems = new ArrayList<>(this.lootItems);
         if (this.children != null && this.childrenStrategy != null) {
             switch (this.childrenStrategy) {
                 case NORMAL:

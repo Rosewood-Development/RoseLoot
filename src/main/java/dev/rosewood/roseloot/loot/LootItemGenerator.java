@@ -12,7 +12,7 @@ public interface LootItemGenerator {
      * @param context The LootContext
      * @return generated LootItems
      */
-    List<LootItem<?>> generate(LootContext context);
+    List<LootItem> generate(LootContext context);
 
     /**
      * Checks if this generator passes conditions

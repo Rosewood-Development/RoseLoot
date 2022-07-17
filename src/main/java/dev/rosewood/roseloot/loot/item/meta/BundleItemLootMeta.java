@@ -40,7 +40,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
             return itemStack;
 
         for (ItemLootItem lootItem : this.lootItems)
-            for (ItemStack item : lootItem.create(context))
+            for (ItemStack item : lootItem.generate(context))
                 itemMeta.addItem(item);
 
         itemStack.setItemMeta(itemMeta);

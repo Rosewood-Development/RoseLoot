@@ -8,7 +8,6 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
+public class LootTableLootItem implements RecursiveLootItem {
 
     private final String lootTableName;
     private boolean invalid;
@@ -33,7 +32,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
     }
 
     @Override
-    public List<LootItem<?>> create(LootContext context) {
+    public List<LootItem> generate(LootContext context) {
         if (this.invalid)
             return List.of();
 
@@ -61,7 +60,7 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         }
 
         this.running = true;
-        List<LootItem<?>> lootItems;
+        List<LootItem> lootItems;
         if (this.lootTable != null) {
             lootItems = this.lootTable.generate(context);
         } else {
@@ -107,17 +106,16 @@ public class LootTableLootItem implements LootItem<List<LootItem<?>>> {
         return new LootTableLootItem(section.getString("value"));
     }
 
-    private static class VanillaItemLootItem extends ItemLootItem {
+    private static class VanillaItemLootItem implements ItemGenerativeLootItem {
 
         private final Collection<ItemStack> items;
 
         public VanillaItemLootItem(Collection<ItemStack> items) {
-            super(null, NumberProvider.constant(-1), NumberProvider.constant(-1), List.of(), null, null, false, null);
             this.items = items;
         }
 
         @Override
-        public List<ItemStack> create(LootContext context) {
+        public List<ItemStack> generate(LootContext context) {
             return new ArrayList<>(this.items);
         }
 

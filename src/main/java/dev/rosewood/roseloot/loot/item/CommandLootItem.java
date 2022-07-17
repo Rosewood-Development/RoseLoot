@@ -8,17 +8,12 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class CommandLootItem implements TriggerableLootItem<String> {
+public class CommandLootItem implements TriggerableLootItem {
 
     private final String command;
 
     public CommandLootItem(String command) {
         this.command = command;
-    }
-
-    @Override
-    public String create(LootContext context) {
-        return this.command;
     }
 
     @Override

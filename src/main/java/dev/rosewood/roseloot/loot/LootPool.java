@@ -23,11 +23,11 @@ public class LootPool implements LootItemGenerator {
     }
 
     @Override
-    public List<LootItem<?>> generate(LootContext context) {
+    public List<LootItem> generate(LootContext context) {
         if (!this.check(context))
             return List.of();
 
-        List<LootItem<?>> lootItems = new ArrayList<>();
+        List<LootItem> lootItems = new ArrayList<>();
         List<LootEntry> unweightedEntries = new ArrayList<>();
         RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
         for (LootEntry entry : this.entries) {

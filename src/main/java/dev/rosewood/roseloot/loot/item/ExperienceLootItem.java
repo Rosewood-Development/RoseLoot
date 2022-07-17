@@ -13,7 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 
-public class ExperienceLootItem implements LootItem<Integer> {
+public class ExperienceLootItem implements ExperienceGenerativeLootItem {
 
     private final List<NumberProvider> amounts;
     private final List<NumberProvider> equipmentBonuses;
@@ -24,7 +24,7 @@ public class ExperienceLootItem implements LootItem<Integer> {
     }
 
     @Override
-    public Integer create(LootContext context) {
+    public int generate(LootContext context) {
         int amount = this.amounts.stream().mapToInt(NumberProvider::getInteger).sum();
 
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
@@ -47,7 +47,7 @@ public class ExperienceLootItem implements LootItem<Integer> {
     }
 
     @Override
-    public boolean combineWith(LootItem<?> lootItem) {
+    public boolean combineWith(LootItem lootItem) {
         if (!(lootItem instanceof ExperienceLootItem other))
             return false;
 

@@ -11,22 +11,17 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffectType;
 
-public class PotionEffectLootItem implements TriggerableLootItem<PotionEffectLootItem.PotionEffectInstance> {
+public class PotionEffectLootItem implements TriggerableLootItem {
 
-    private final PotionEffectInstance potionEffectInstance;
+    private final List<PotionItemLootMeta.PotionEffectData> effects;
 
-    public PotionEffectLootItem(PotionEffectInstance potionEffectInstance) {
-        this.potionEffectInstance = potionEffectInstance;
-    }
-
-    @Override
-    public PotionEffectInstance create(LootContext context) {
-        return this.potionEffectInstance;
+    public PotionEffectLootItem(List<PotionItemLootMeta.PotionEffectData> effects) {
+        this.effects = effects;
     }
 
     @Override
     public void trigger(LootContext context, Location location) {
-        context.getAs(LootContextParams.LOOTER, LivingEntity.class).ifPresent(x -> this.create(context).trigger(x));
+        context.getAs(LootContextParams.LOOTER, LivingEntity.class).ifPresent(x -> this.effects.forEach(effect -> x.addPotionEffect(effect.toPotionEffect())));
     }
 
     public static PotionEffectLootItem fromSection(ConfigurationSection section) {
@@ -55,20 +50,7 @@ public class PotionEffectLootItem implements TriggerableLootItem<PotionEffectLoo
                 customEffects.add(new PotionItemLootMeta.PotionEffectData(effect, duration, amplifier, ambient, particles, icon));
             }
         }
-        return new PotionEffectLootItem(new PotionEffectInstance(customEffects));
-    }
-
-    public record PotionEffectInstance(List<PotionItemLootMeta.PotionEffectData> effects) {
-
-        /**
-         * Triggers the stored explosion state
-         *
-         * @param target The LivingEntity to apply the potion effects to
-         */
-        public void trigger(LivingEntity target) {
-            this.effects.forEach(x -> target.addPotionEffect(x.toPotionEffect()));
-        }
-
+        return new PotionEffectLootItem(customEffects);
     }
 
 }

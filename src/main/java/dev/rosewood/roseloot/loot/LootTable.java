@@ -24,11 +24,11 @@ public class LootTable implements LootItemGenerator {
     }
 
     @Override
-    public List<LootItem<?>> generate(LootContext context) {
+    public List<LootItem> generate(LootContext context) {
         return this.generate(context, false);
     }
 
-    public List<LootItem<?>> generate(LootContext context, boolean ignoreChecks) {
+    public List<LootItem> generate(LootContext context, boolean ignoreChecks) {
         this.type.validateLootContext(context);
 
         if (!ignoreChecks && !this.check(context))

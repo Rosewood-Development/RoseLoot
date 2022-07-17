@@ -17,7 +17,7 @@ public class LootItemTypeRegistrationEvent extends Event {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
-    private final Map<String, Function<ConfigurationSection, LootItem<?>>> registeredLootItemsTypes;
+    private final Map<String, Function<ConfigurationSection, LootItem>> registeredLootItemsTypes;
 
     public LootItemTypeRegistrationEvent() {
         this.registeredLootItemsTypes = new HashMap<>();
@@ -27,7 +27,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @return an unmodifiable map of registered LootItem types
      */
     @NotNull
-    public Map<String, Function<ConfigurationSection, LootItem<?>>> getRegisteredLootItemsTypes() {
+    public Map<String, Function<ConfigurationSection, LootItem>> getRegisteredLootItemsTypes() {
         return Collections.unmodifiableMap(this.registeredLootItemsTypes);
     }
 
@@ -38,7 +38,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @param function The function to read a ConfigurationSection and output a LootItem
      * @return true if registering the new LootItem type overwrote a different LootItem type with the same name, false otherwise
      */
-    public boolean registerLootItem(@NotNull String name, @NotNull Function<ConfigurationSection, LootItem<?>> function) {
+    public boolean registerLootItem(@NotNull String name, @NotNull Function<ConfigurationSection, LootItem> function) {
         return this.registeredLootItemsTypes.put(name.toUpperCase(), function) == null;
     }
 

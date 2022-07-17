@@ -24,7 +24,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
-public class ItemLootItem implements LootItem<List<ItemStack>> {
+public class ItemLootItem implements ItemGenerativeLootItem {
 
     protected Material item;
     protected final ItemLootMeta itemLootMeta;
@@ -72,7 +72,7 @@ public class ItemLootItem implements LootItem<List<ItemStack>> {
     }
 
     @Override
-    public List<ItemStack> create(LootContext context) {
+    public List<ItemStack> generate(LootContext context) {
         List<ItemStack> generatedItems = new ArrayList<>();
 
         int amount = this.amount.getInteger();

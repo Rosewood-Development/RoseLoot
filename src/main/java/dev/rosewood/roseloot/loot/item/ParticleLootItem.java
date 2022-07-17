@@ -2,7 +2,6 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
-import dev.rosewood.roseloot.loot.item.ParticleLootItem.ParticleSpawnData;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import java.util.Arrays;
@@ -16,17 +15,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class ParticleLootItem implements TriggerableLootItem<ParticleSpawnData> {
+public class ParticleLootItem implements TriggerableLootItem {
 
     private final ParticleSpawnData particleSpawnData;
 
     public ParticleLootItem(ParticleSpawnData particleSpawnData) {
         this.particleSpawnData = particleSpawnData;
-    }
-
-    @Override
-    public ParticleSpawnData create(LootContext context) {
-        return this.particleSpawnData;
     }
 
     @Override
@@ -36,7 +30,7 @@ public class ParticleLootItem implements TriggerableLootItem<ParticleSpawnData> 
                 .orElseGet(() -> context.get(LootContextParams.LOOTED_BLOCK).map(block -> block.getLocation().add(0.5, 0.5, 0.5))
                 .orElse(location));
 
-        this.create(context).trigger(context.getLootingPlayer().orElse(null), targetLocation);
+        this.particleSpawnData.trigger(context.getLootingPlayer().orElse(null), targetLocation);
     }
 
     public static ParticleLootItem fromSection(ConfigurationSection section) {
@@ -204,5 +198,7 @@ public class ParticleLootItem implements TriggerableLootItem<ParticleSpawnData> 
         }
 
     }
+
+
 
 }
