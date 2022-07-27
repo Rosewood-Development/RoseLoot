@@ -2,14 +2,16 @@ package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.inventory.ItemStack;
 
-public class LootEntry implements LootItemGenerator {
+public class LootEntry implements CheckedLootItemGenerator {
 
     private final List<LootCondition> conditions;
     private final NumberProvider weight;
@@ -72,6 +74,17 @@ public class LootEntry implements LootItemGenerator {
         }
 
         return generatedItems;
+    }
+
+    @Override
+    public List<ItemStack> getAllItems() {
+        List<ItemStack> items = new ArrayList<>();
+        if (this.children != null)
+            items.addAll(this.children.stream().map(CheckedLootItemGenerator::getAllItems).flatMap(List::stream).collect(Collectors.toList()));
+        for (LootItem lootItem : this.lootItems)
+            if (lootItem instanceof ItemLootItem itemLootItem)
+                items.addAll(itemLootItem.getAllItems());
+        return items;
     }
 
     @Override

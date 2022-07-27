@@ -6,8 +6,9 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.inventory.ItemStack;
 
-public class LootTable implements LootItemGenerator {
+public class LootTable implements CheckedLootItemGenerator {
 
     private final String name;
     private final LootTableType type;
@@ -35,6 +36,13 @@ public class LootTable implements LootItemGenerator {
             return List.of();
 
         return this.pools.stream().flatMap(x -> x.generate(context).stream()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ItemStack> getAllItems() {
+        return this.pools.stream().map(CheckedLootItemGenerator::getAllItems)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
     @Override

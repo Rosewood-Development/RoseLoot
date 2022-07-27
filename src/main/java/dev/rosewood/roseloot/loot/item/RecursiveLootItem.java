@@ -1,19 +1,17 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.LootItemGenerator;
 import java.util.List;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Represents a LootItem that generates additional LootItems.
  */
-public non-sealed interface RecursiveLootItem extends LootItem {
+public non-sealed interface RecursiveLootItem extends LootItem, LootItemGenerator<LootItem> {
 
-    /**
-     * Generates additional LootItems.
-     *
-     * @param context The LootContext
-     * @return The LootItems to drop
-     */
-    List<LootItem> generate(LootContext context);
+    @Override
+    default List<ItemStack> getAllItems() {
+        return List.of();
+    }
 
 }

@@ -116,6 +116,11 @@ public class LootTableLootItem implements RecursiveLootItem {
 
         @Override
         public List<ItemStack> generate(LootContext context) {
+            return this.getAllItems();
+        }
+
+        @Override
+        public List<ItemStack> getAllItems() {
             return new ArrayList<>(this.items);
         }
 

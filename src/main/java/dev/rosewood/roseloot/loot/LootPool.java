@@ -8,8 +8,9 @@ import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.inventory.ItemStack;
 
-public class LootPool implements LootItemGenerator {
+public class LootPool implements CheckedLootItemGenerator {
 
     private final List<LootCondition> conditions;
     private final NumberProvider rolls, bonusRolls;
@@ -51,6 +52,13 @@ public class LootPool implements LootItemGenerator {
         }
 
         return lootItems;
+    }
+
+    @Override
+    public List<ItemStack> getAllItems() {
+        return this.entries.stream().map(CheckedLootItemGenerator::getAllItems)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
     @Override

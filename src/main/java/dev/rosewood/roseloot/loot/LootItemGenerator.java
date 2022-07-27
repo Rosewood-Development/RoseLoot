@@ -1,25 +1,22 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.LootItem;
 import java.util.List;
+import org.bukkit.inventory.ItemStack;
 
-public interface LootItemGenerator {
-
-    /**
-     * Generates LootItems with the given LootContext
-     *
-     * @param context The LootContext
-     * @return generated LootItems
-     */
-    List<LootItem> generate(LootContext context);
+public interface LootItemGenerator<T> {
 
     /**
-     * Checks if this generator passes conditions
+     * Generates contents with the given LootContext
      *
      * @param context The LootContext
-     * @return true if conditions pass, false otherwise
+     * @return generated contents
      */
-    boolean check(LootContext context);
+    List<T> generate(LootContext context);
+
+    /**
+     * @return all items that can possibly be generated
+     */
+    List<ItemStack> getAllItems();
 
 }

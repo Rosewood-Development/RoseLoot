@@ -52,14 +52,16 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     protected ItemStack getCreationItem(LootContext context) {
         Material item = this.item;
-        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
-            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
-            while (recipesIterator.hasNext()) {
-                Recipe recipe = recipesIterator.next();
-                if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item) {
-                    item = furnaceRecipe.getResult().getType();
-                    break;
+        if (context != null) {
+            Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+            if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
+                Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
+                while (recipesIterator.hasNext()) {
+                    Recipe recipe = recipesIterator.next();
+                    if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item) {
+                        item = furnaceRecipe.getResult().getType();
+                        break;
+                    }
                 }
             }
         }
@@ -91,7 +93,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         if (this.enchantmentBonus != null)
             amount += this.enchantmentBonus.getBonusAmount(context, amount);
         amount = Math.min(amount, this.maxAmount.getInteger());
-        
+
         ItemStack creationItem = this.getCreationItem(context);
         if (creationItem != null && amount > 0) {
             int maxStackSize = creationItem.getMaxStackSize();
@@ -110,6 +112,32 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         }
 
         context.getPlaceholders().add("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
+
+        return generatedItems;
+    }
+
+    @Override
+    public List<ItemStack> getAllItems() {
+        List<ItemStack> generatedItems = new ArrayList<>();
+
+        int amount = Math.min(this.amount.getInteger(), this.maxAmount.getInteger());
+
+        ItemStack creationItem = this.getCreationItem(null);
+        if (creationItem != null && amount > 0) {
+            int maxStackSize = creationItem.getMaxStackSize();
+            while (amount > maxStackSize) {
+                amount -= maxStackSize;
+                ItemStack clone = creationItem.clone();
+                clone.setAmount(maxStackSize);
+                generatedItems.add(clone);
+            }
+
+            if (amount > 0) {
+                ItemStack clone = creationItem.clone();
+                clone.setAmount(amount);
+                generatedItems.add(clone);
+            }
+        }
 
         return generatedItems;
     }

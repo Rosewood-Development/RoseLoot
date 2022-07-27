@@ -45,7 +45,13 @@ public class BookItemLootMeta extends ItemLootMeta {
 
         if (this.title != null) itemMeta.setTitle(this.title);
         if (this.author != null) itemMeta.setAuthor(this.author);
-        if (this.pages != null && !this.pages.isEmpty()) itemMeta.spigot().setPages(this.pages.stream().map(context::formatText).map(TextComponent::fromLegacyText).collect(Collectors.toList()));
+        if (this.pages != null && !this.pages.isEmpty()) {
+            if (context == null) {
+                itemMeta.spigot().setPages(this.pages.stream().map(TextComponent::fromLegacyText).collect(Collectors.toList()));
+            } else {
+                itemMeta.spigot().setPages(this.pages.stream().map(context::formatText).map(TextComponent::fromLegacyText).collect(Collectors.toList()));
+            }
+        }
         if (this.generation != null) itemMeta.setGeneration(this.generation);
 
         itemStack.setItemMeta(itemMeta);

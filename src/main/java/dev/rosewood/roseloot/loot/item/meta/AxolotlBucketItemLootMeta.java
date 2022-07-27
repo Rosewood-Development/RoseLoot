@@ -37,11 +37,13 @@ public class AxolotlBucketItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        Optional<Axolotl> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, Axolotl.class);
-        if (this.copyLooted && lootedEntity.isPresent()) {
-            itemMeta.setVariant(lootedEntity.get().getVariant());
-        } else if (this.variant != null) {
-            itemMeta.setVariant(this.variant);
+        if (context != null) {
+            Optional<Axolotl> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, Axolotl.class);
+            if (this.copyLooted && lootedEntity.isPresent()) {
+                itemMeta.setVariant(lootedEntity.get().getVariant());
+            } else if (this.variant != null) {
+                itemMeta.setVariant(this.variant);
+            }
         }
 
         itemStack.setItemMeta(itemMeta);
