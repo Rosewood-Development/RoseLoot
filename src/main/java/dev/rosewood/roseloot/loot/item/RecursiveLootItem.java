@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.LootItemGenerator;
+import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 public non-sealed interface RecursiveLootItem extends LootItem, LootItemGenerator<LootItem> {
 
     @Override
-    default List<ItemStack> getAllItems() {
+    default List<ItemStack> getAllItems(LootContext context) {
         return List.of();
     }
 

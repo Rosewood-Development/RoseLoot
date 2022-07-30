@@ -77,13 +77,13 @@ public class LootEntry implements CheckedLootItemGenerator {
     }
 
     @Override
-    public List<ItemStack> getAllItems() {
+    public List<ItemStack> getAllItems(LootContext context) {
         List<ItemStack> items = new ArrayList<>();
         if (this.children != null)
-            items.addAll(this.children.stream().map(CheckedLootItemGenerator::getAllItems).flatMap(List::stream).collect(Collectors.toList()));
+            items.addAll(this.children.stream().flatMap(x -> x.getAllItems(context).stream()).collect(Collectors.toList()));
         for (LootItem lootItem : this.lootItems)
             if (lootItem instanceof ItemLootItem itemLootItem)
-                items.addAll(itemLootItem.getAllItems());
+                items.addAll(itemLootItem.getAllItems(context));
         return items;
     }
 

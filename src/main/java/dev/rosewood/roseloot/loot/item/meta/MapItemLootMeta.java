@@ -51,7 +51,7 @@ public class MapItemLootMeta extends ItemLootMeta {
     @Override
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         // Just keep this as a default map if a destination is not specified
-        if (this.destination == null || context == null) {
+        if (this.destination == null) {
             super.apply(itemStack, context);
             return itemStack;
         }

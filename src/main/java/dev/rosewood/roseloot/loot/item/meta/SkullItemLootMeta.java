@@ -38,8 +38,8 @@ public class SkullItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        Optional<Player> lootedPlayer = context == null ? Optional.empty() : context.get(LootContextParams.LOOTED_ENTITY).map(x -> x instanceof Player ? (Player) x : null);
-        Optional<Player> lootingPlayer = context == null ? Optional.empty() : context.getLootingPlayer();
+        Optional<Player> lootedPlayer = context.get(LootContextParams.LOOTED_ENTITY).map(x -> x instanceof Player ? (Player) x : null);
+        Optional<Player> lootingPlayer = context.getLootingPlayer();
         if (this.copyLooted && lootedPlayer.isPresent()) {
             itemMeta.setOwningPlayer(lootedPlayer.get());
         } else if (this.copyLooter && lootingPlayer.isPresent()) {

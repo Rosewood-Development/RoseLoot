@@ -217,8 +217,8 @@ public class ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (context != null && this.displayName != null) itemMeta.setDisplayName(context.formatText(this.displayName));
-        if (context != null && this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).collect(Collectors.toList()));
+        if (this.displayName != null) itemMeta.setDisplayName(context.formatText(this.displayName));
+        if (this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).collect(Collectors.toList()));
         if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
@@ -275,19 +275,17 @@ public class ItemLootMeta {
         if (this.repairCost != null && itemMeta instanceof Repairable)
             ((Repairable) itemMeta).setRepairCost(this.repairCost);
 
-        if (context != null) {
-            Optional<Block> lootedBlock = context.get(LootContextParams.LOOTED_BLOCK);
-            if (lootedBlock.isPresent() && lootedBlock.get().getType() == itemStack.getType()) {
-                Block block = lootedBlock.get();
-                if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta)
-                    ((BlockStateMeta) itemMeta).setBlockState(block.getState());
+        Optional<Block> lootedBlock = context.get(LootContextParams.LOOTED_BLOCK);
+        if (lootedBlock.isPresent() && lootedBlock.get().getType() == itemStack.getType()) {
+            Block block = lootedBlock.get();
+            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta)
+                ((BlockStateMeta) itemMeta).setBlockState(block.getState());
 
-                if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta)
-                    ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
+            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta)
+                ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
 
-                if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable)
-                    itemMeta.setDisplayName(((Nameable) block.getState()).getCustomName());
-            }
+            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable)
+                itemMeta.setDisplayName(((Nameable) block.getState()).getCustomName());
         }
 
         itemStack.setItemMeta(itemMeta);

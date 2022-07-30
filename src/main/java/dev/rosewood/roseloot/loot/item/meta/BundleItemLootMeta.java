@@ -39,15 +39,9 @@ public class BundleItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (context != null) {
-            for (ItemLootItem lootItem : this.lootItems)
-                for (ItemStack item : lootItem.generate(context))
-                    itemMeta.addItem(item);
-        } else {
-            for (ItemLootItem lootItem : this.lootItems)
-                for (ItemStack item : lootItem.getAllItems())
-                    itemMeta.addItem(item);
-        }
+        for (ItemLootItem lootItem : this.lootItems)
+            for (ItemStack item : lootItem.generate(context))
+                itemMeta.addItem(item);
 
         itemStack.setItemMeta(itemMeta);
 

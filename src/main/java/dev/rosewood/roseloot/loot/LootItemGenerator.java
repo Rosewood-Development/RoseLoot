@@ -15,8 +15,11 @@ public interface LootItemGenerator<T> {
     List<T> generate(LootContext context);
 
     /**
+     * Gets all items that can be generated from this LootItemGenerator
+     *
+     * @param context The LootContext
      * @return all items that can possibly be generated
      */
-    List<ItemStack> getAllItems();
+    List<ItemStack> getAllItems(LootContext context);
 
 }

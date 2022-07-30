@@ -52,16 +52,14 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     protected ItemStack getCreationItem(LootContext context) {
         Material item = this.item;
-        if (context != null) {
-            Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-            if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
-                Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
-                while (recipesIterator.hasNext()) {
-                    Recipe recipe = recipesIterator.next();
-                    if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item) {
-                        item = furnaceRecipe.getResult().getType();
-                        break;
-                    }
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
+            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
+            while (recipesIterator.hasNext()) {
+                Recipe recipe = recipesIterator.next();
+                if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item) {
+                    item = furnaceRecipe.getResult().getType();
+                    break;
                 }
             }
         }
@@ -117,12 +115,12 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     }
 
     @Override
-    public List<ItemStack> getAllItems() {
+    public List<ItemStack> getAllItems(LootContext context) {
         List<ItemStack> generatedItems = new ArrayList<>();
 
         int amount = Math.min(this.amount.getInteger(), this.maxAmount.getInteger());
 
-        ItemStack creationItem = this.getCreationItem(null);
+        ItemStack creationItem = this.getCreationItem(context);
         if (creationItem != null && amount > 0) {
             int maxStackSize = creationItem.getMaxStackSize();
             while (amount > maxStackSize) {

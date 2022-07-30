@@ -55,10 +55,8 @@ public class LootPool implements CheckedLootItemGenerator {
     }
 
     @Override
-    public List<ItemStack> getAllItems() {
-        return this.entries.stream().map(CheckedLootItemGenerator::getAllItems)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+    public List<ItemStack> getAllItems(LootContext context) {
+        return this.entries.stream().flatMap(x -> x.getAllItems(context).stream()).collect(Collectors.toList());
     }
 
     @Override

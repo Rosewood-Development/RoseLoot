@@ -60,14 +60,12 @@ public class TropicalFishBucketItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (context != null) {
-            Optional<TropicalFish> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, TropicalFish.class);
-            if (this.copyLooted && lootedEntity.isPresent()) {
-                TropicalFish fish = lootedEntity.get();
-                itemMeta.setBodyColor(fish.getBodyColor());
-                itemMeta.setPattern(fish.getPattern());
-                itemMeta.setPatternColor(fish.getPatternColor());
-            }
+        Optional<TropicalFish> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, TropicalFish.class);
+        if (this.copyLooted && lootedEntity.isPresent()) {
+            TropicalFish fish = lootedEntity.get();
+            itemMeta.setBodyColor(fish.getBodyColor());
+            itemMeta.setPattern(fish.getPattern());
+            itemMeta.setPatternColor(fish.getPatternColor());
         }
 
         if (this.bodyColor != null) itemMeta.setBodyColor(this.bodyColor);

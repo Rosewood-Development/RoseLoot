@@ -8,6 +8,8 @@ import dev.rosewood.rosegarden.command.framework.annotation.Optional;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
+import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import java.util.List;
 import org.bukkit.command.CommandSender;
@@ -31,7 +33,13 @@ public class GiveItemsCommand extends RoseCommand {
         }
 
         Player target = player == null ? (Player) sender : player;
-        List<ItemStack> items = lootTable.getAllItems();
+
+        LootContext lootContext = LootContext.builder()
+                .put(LootContextParams.ORIGIN, target.getLocation())
+                .put(LootContextParams.LOOTER, target)
+                .build();
+
+        List<ItemStack> items = lootTable.getAllItems(lootContext);
         if (items.isEmpty()) {
             localeManager.sendMessage(sender, "command-giveitems-empty");
             return;
