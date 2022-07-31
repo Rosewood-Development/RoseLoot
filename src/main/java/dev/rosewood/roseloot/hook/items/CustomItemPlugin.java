@@ -47,6 +47,10 @@ public enum CustomItemPlugin {
         return this.itemProvider.supportsIdLookup();
     }
 
+    public String getConditionSuffix() {
+        return this.itemProvider.getConditionSuffix();
+    }
+
     public BiPredicate<LootContext, List<String>> getLootConditionPredicate() {
         return (context, values) -> context.getItemUsed()
                 .map(this::resolveItemId)

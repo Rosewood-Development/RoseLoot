@@ -26,4 +26,9 @@ public class MythicMobsItemProvider extends ItemProvider {
         return MythicBukkit.inst().getItemManager().getMythicTypeFromItem(item);
     }
 
+    @Override
+    public String getConditionSuffix() {
+        return "-item";
+    }
+
 }

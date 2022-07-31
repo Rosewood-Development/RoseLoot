@@ -41,7 +41,7 @@ public class HookConditionListener implements Listener {
         // Register conditions for custom item plugins
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
             if (customItemPlugin.isEnabled() && customItemPlugin.supportsIdLookup())
-                event.registerLootCondition(customItemPlugin.name().toLowerCase() + "-type", customItemPlugin.getLootConditionPredicate());
+                event.registerLootCondition(customItemPlugin.name().toLowerCase() + customItemPlugin.getConditionSuffix() + "-type", customItemPlugin.getLootConditionPredicate());
 
         // Register conditions for custom biome plugins
         for (CustomBiomePlugin customBiomePlugin : CustomBiomePlugin.values())

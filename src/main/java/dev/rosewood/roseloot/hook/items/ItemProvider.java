@@ -51,4 +51,11 @@ public abstract class ItemProvider {
         return null;
     }
 
+    /**
+     * @return a suffix to be added to the condition name
+     */
+    public String getConditionSuffix() {
+        return "";
+    }
+
 }
