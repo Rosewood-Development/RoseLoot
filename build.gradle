@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'dev.rosewood'
-version = '1.1.7'
+version = '1.1.8'
 
 java {
     toolchain {
@@ -54,7 +54,7 @@ dependencies {
     compileOnly 'com.github.emanondev:ItemEdit:2.18'
     compileOnly 'thirtyvirus.uber:uberitems:2.6'
     compileOnly 'com.github.Slimefun:Slimefun4:RC-30'
-    compileOnly 'io.lumine:Mythic-Dist:5.0.1-SNAPSHOT'
+    compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
     compileOnly 'com.willfp:eco:6.24.0'
     compileOnly 'dev.rosewood:rosestacker:1.4.7'
     compileOnly 'me.casperge:realisticseasons:8.1.3'

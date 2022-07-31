@@ -13,6 +13,7 @@ public enum CustomItemPlugin {
     @Deprecated ECOITEMS(new EcoItemProvider()),
     ECO(new EcoItemProvider()),
     MMOITEMS(new MMOItemProvider()),
+    MYTHICMOBS(new MythicMobsItemProvider()),
     ITEMBRIDGE(new ItemBridgeItemProvider()),
     EXECUTABLEITEMS(new ExecutableItemProvider()),
     EXECUTABLEBLOCKS(new ExecutableBlockProvider()),
