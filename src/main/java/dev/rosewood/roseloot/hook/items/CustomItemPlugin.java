@@ -23,7 +23,8 @@ public enum CustomItemPlugin {
     KNOKKOCUSTOMITEMS(new KnokkoCustomItemProvider()),
     ITEMEDIT(new ItemEditItemProvider()),
     UBERITEMS(new UberItemProvider()),
-    SLIMEFUN(new SlimefunItemProvider());
+    SLIMEFUN(new SlimefunItemProvider()),
+    CUSTOMCRAFTING(new CustomCraftingItemProvider());
 
     private final ItemProvider itemProvider;
 
