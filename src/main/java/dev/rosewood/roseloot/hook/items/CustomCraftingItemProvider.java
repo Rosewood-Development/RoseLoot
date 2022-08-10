@@ -3,7 +3,7 @@ package dev.rosewood.roseloot.hook.items;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.regex.Pattern;
 import me.wolfyscript.customcrafting.CustomCrafting;
-import me.wolfyscript.customcrafting.recipes.CustomRecipe;
+import me.wolfyscript.utilities.api.inventory.custom_items.CustomItem;
 import me.wolfyscript.utilities.util.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,11 +22,11 @@ public class CustomCraftingItemProvider extends ItemProvider {
         if (pieces.length != 2)
             return null;
 
-        CustomRecipe<?> recipe = CustomCrafting.inst().getRegistries().getRecipes().get(new NamespacedKey(pieces[0], pieces[1]));
-        if (recipe == null)
+        CustomItem customItem = CustomCrafting.inst().getApi().getRegistries().getCustomItems().get(new NamespacedKey(pieces[0], pieces[1]));
+        if (customItem == null)
             return null;
 
-        return recipe.getResult().getItemStack();
+        return customItem.create(1);
     }
 
 }
