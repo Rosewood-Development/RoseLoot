@@ -11,6 +11,7 @@ import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.LootTableTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.PostLootGenerateEvent;
+import dev.rosewood.roseloot.hook.MMOCoreHook;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootEntry;
 import dev.rosewood.roseloot.loot.LootPool;
@@ -30,6 +31,7 @@ import dev.rosewood.roseloot.loot.item.FireworkLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.LootTableLootItem;
+import dev.rosewood.roseloot.loot.item.MMOCoreExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.MessageLootItem;
 import dev.rosewood.roseloot.loot.item.ParticleLootItem;
 import dev.rosewood.roseloot.loot.item.PotionEffectLootItem;
@@ -288,6 +290,9 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("firework", FireworkLootItem::fromSection);
         event.registerLootItem("potion_effect", PotionEffectLootItem::fromSection);
         event.registerLootItem("change_tool_durability", ChangeToolDurabilityLootItem::fromSection);
+
+        if (MMOCoreHook.isEnabled())
+            event.registerLootItem("mmocore_experience", MMOCoreExperienceLootItem::fromSection);
     }
 
     /**
