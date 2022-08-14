@@ -36,6 +36,7 @@ import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.LuckChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RelativeBlockTypeCondition;
@@ -145,6 +146,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("killed-by", KilledByCondition.class);
         event.registerLootCondition("light-level", LightLevelCondition.class);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition.class);
+        event.registerLootCondition("luck-chance", LuckChanceCondition.class);
         event.registerLootCondition("on-ground", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(Entity::isOnGround).isPresent());
         event.registerLootCondition("open-water", context -> context.get(LootContextParams.FISH_HOOK).filter(FishHook::isInOpenWater).isPresent());
         event.registerLootCondition("patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
