@@ -40,6 +40,7 @@ import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
+import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
@@ -338,6 +339,9 @@ public class LootTableManager extends Manager implements Listener {
      * @return The LootResult after the event has been called
      */
     private LootResult callEvent(LootResult lootResult) {
+        if (!Setting.CALL_POSTLOOTGENERATEEVENT.getBoolean())
+            return lootResult;
+
         PostLootGenerateEvent event = new PostLootGenerateEvent(lootResult);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())

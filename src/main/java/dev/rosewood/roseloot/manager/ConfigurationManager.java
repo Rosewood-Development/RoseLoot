@@ -13,7 +13,8 @@ public class ConfigurationManager extends AbstractConfigurationManager {
         DISABLED_WORLDS("disabled-worlds", List.of("disabled_world_name"), "A list of worlds that the plugin is disabled in"),
         ALLOW_BLOCK_EXPLOSION_LOOT("allow-block-explosion-loot", false, "If enabled, blocks destroyed by explosions will run loot tables", "You can use the condition 'explosion' to check for an explosion", "Avoid using item based conditions for explosions, you may get unexpected results", "WARNING: Do not trigger an explosion from a loot table triggered by an explosion.", "         It will likely cause an infinite loop and crash your server."),
         SIMULATE_BLOCKDROPITEMEVENT("simulate-blockdropitemevent", false, "Should the BlockBreakItemEvent be simulated for custom item drops from blocks?", "May be required for some plugins that add items to the player's inventory automatically", "This may cause issues with some stacker plugins"),
-        SIMULATE_LEAVESDECAYEVENT("simulate-leavesdecayevent", false, "Should the LeavesDecayEvent be simulated for custom item drops from leaves?", "May be required for some plugins that listen to the event");
+        SIMULATE_LEAVESDECAYEVENT("simulate-leavesdecayevent", false, "Should the LeavesDecayEvent be simulated for custom item drops from leaves?", "May be required for some plugins that listen to the event"),
+        CALL_POSTLOOTGENERATEEVENT("call-postlootgenerateevent", false, "Should the PostLootGenerateEvent be called after loot tables are run?", "You may need to enable this if you're using a plugin that uses the RoseLoot API");
 
         private final String key;
         private final Object defaultValue;
