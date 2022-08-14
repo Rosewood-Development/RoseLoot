@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -17,11 +18,13 @@ public class LootContext {
 
     private final Map<LootContextParam<?>, Object> paramStorage;
     private final double luck;
+    private Map<Enchantment, Integer> cachedEnchantmentLevels;
     private final LootPlaceholders placeholders;
 
-    private LootContext(double luck) {
+    private LootContext(double luck, Map<Enchantment, Integer> cachedEnchantmentLevels) {
         this.paramStorage = new LinkedHashMap<>();
         this.luck = luck;
+        this.cachedEnchantmentLevels = cachedEnchantmentLevels;
         this.placeholders = new LootPlaceholders();
 
         this.addContextPlaceholders();
@@ -107,6 +110,25 @@ public class LootContext {
     }
 
     /**
+     * Gets the enchantment level for the given Enchantment for the ItemStack used by the looter
+     *
+     * @param enchantment The Enchantment level to get
+     * @return the enchantment level, or 0 if the ItemStack or Enchantment is not present
+     */
+    @NotNull
+    public int getEnchantmentLevel(Enchantment enchantment) {
+        if (this.cachedEnchantmentLevels == null)
+            this.getItemUsed().ifPresent(x -> this.cachedEnchantmentLevels = x.getEnchantments());
+
+        if (this.cachedEnchantmentLevels != null) {
+            Integer value = this.cachedEnchantmentLevels.get(enchantment);
+            return value == null ? 0 : value;
+        }
+
+        return 0;
+    }
+
+    /**
      * @return the luck level for this context, used for bonus rolls
      */
     public double getLuckLevel() {
@@ -161,6 +183,14 @@ public class LootContext {
     }
 
     /**
+     * @return a new LootContext builder with a specific luck level and cached enchantment levels
+     */
+    @NotNull
+    public static Builder builder(double luck, Map<Enchantment, Integer> enchantmentLevels) {
+        return new Builder(luck, enchantmentLevels);
+    }
+
+    /**
      * @return a new LootContext builder with a luck level of 0
      */
     @NotNull
@@ -173,7 +203,11 @@ public class LootContext {
         private final LootContext context;
 
         private Builder(double luck) {
-            this.context = new LootContext(luck);
+            this.context = new LootContext(luck, null);
+        }
+
+        private Builder(double luck, Map<Enchantment, Integer> enchantmentLevels) {
+            this.context = new LootContext(luck, enchantmentLevels);
         }
 
         /**

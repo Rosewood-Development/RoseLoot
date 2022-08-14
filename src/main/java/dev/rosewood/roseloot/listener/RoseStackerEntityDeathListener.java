@@ -14,11 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class RoseStackerEntityDeathListener implements Listener {
 
@@ -40,12 +42,19 @@ public class RoseStackerEntityDeathListener implements Listener {
         if (mainEntity.getLastDamageCause() instanceof EntityDamageByEntityEvent)
             looter = ((EntityDamageByEntityEvent) mainEntity.getLastDamageCause()).getDamager();
 
+        Map<Enchantment, Integer> enchantmentLevels = null;
+        if (looter != null) {
+            ItemStack itemUsed = LootUtils.getEntityItemUsed(looter);
+            if (itemUsed != null)
+                enchantmentLevels = itemUsed.getEnchantments();
+        }
+
         List<LootContents> extras = new ArrayList<>();
         for (Map.Entry<LivingEntity, EntityStackMultipleDeathEvent.EntityDrops> entry : event.getEntityDrops().entrySet()) {
             LivingEntity entity = entry.getKey();
             EntityStackMultipleDeathEvent.EntityDrops drops = entry.getValue();
 
-            LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter))
+            LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter), enchantmentLevels)
                     .put(LootContextParams.ORIGIN, entity.getLocation())
                     .put(LootContextParams.LOOTER, looter)
                     .put(LootContextParams.LOOTED_ENTITY, entity)

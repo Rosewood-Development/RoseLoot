@@ -8,7 +8,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -32,14 +31,7 @@ public final class LootContextParams {
             }));
     public static final LootContextParam<Boolean> HAS_EXISTING_ITEMS = create("has_existing_items", Boolean.class);
     public static final LootContextParam<Entity> LOOTER = create("looter", Entity.class, builder ->
-            builder.withPlayer(x -> x instanceof Player ? (Player) x : null).withItemUsed(x -> {
-                if (!(x instanceof LivingEntity)) return null;
-                return Optional.ofNullable(((LivingEntity) x).getEquipment()).map(equipment -> {
-                    if (equipment.getItemInMainHand().getType() != Material.AIR) return equipment.getItemInMainHand();
-                    if (equipment.getItemInOffHand().getType() != Material.AIR) return equipment.getItemInOffHand();
-                    return null;
-                }).orElse(null);
-            }));
+            builder.withPlayer(x -> x instanceof Player ? (Player) x : null).withItemUsed(LootUtils::getEntityItemUsed));
     public static final LootContextParam<LivingEntity> LOOTED_ENTITY = create("looted_entity", LivingEntity.class, builder ->
             builder.withPlayer(LivingEntity::getKiller).withPlaceholders((x, y) -> {
                 y.add("entity_type", x.getType().name().toLowerCase());

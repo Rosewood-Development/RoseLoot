@@ -40,8 +40,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -321,6 +319,29 @@ public final class LootUtils {
      */
     public static double getEntityLuck(Entity entity) {
         return getEntityLuck(entity, false);
+    }
+
+    /**
+     * Gets the item used by an entity
+     *
+     * @param entity The entity to get the item from
+     * @return The item used by the entity
+     */
+    public static ItemStack getEntityItemUsed(Entity entity) {
+        if (!(entity instanceof LivingEntity livingEntity))
+            return null;
+
+        EntityEquipment equipment = livingEntity.getEquipment();
+        if (equipment == null)
+            return null;
+
+        if (equipment.getItemInMainHand().getType() != Material.AIR)
+            return equipment.getItemInMainHand();
+
+        if (equipment.getItemInOffHand().getType() != Material.AIR)
+            return equipment.getItemInOffHand();
+
+        return null;
     }
 
     /**
