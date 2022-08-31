@@ -23,6 +23,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ChangeToolDurabilityLootItem;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.CustomItemLootItem;
+import dev.rosewood.roseloot.loot.item.DiscordWebhookLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
 import dev.rosewood.roseloot.loot.item.EntityEquipmentLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
@@ -292,6 +293,7 @@ public class LootTableManager extends Manager implements Listener {
         event.registerLootItem("potion_effect", PotionEffectLootItem::fromSection);
         event.registerLootItem("change_tool_durability", ChangeToolDurabilityLootItem::fromSection);
         event.registerLootItem("random_number", RandomNumberLootItem::fromSection);
+        event.registerLootItem("discord_webhook", DiscordWebhookLootItem::fromSection);
 
         if (MMOCoreHook.isEnabled())
             event.registerLootItem("mmocore_experience", MMOCoreExperienceLootItem::fromSection);
