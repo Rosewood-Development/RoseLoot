@@ -225,11 +225,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     public record EnchantmentBonus(BonusFormula formula, Enchantment enchantment, NumberProvider bonus, NumberProvider probability) {
 
         public int getBonusAmount(LootContext context, int originalAmount) {
-            Optional<ItemStack> itemUsed = context.getItemUsed();
-            if (itemUsed.isEmpty())
-                return 0;
-
-            int level = itemUsed.get().getEnchantmentLevel(this.enchantment);
+            int level = context.getEnchantmentLevel(this.enchantment);
             if (level <= 0)
                 return 0;
 

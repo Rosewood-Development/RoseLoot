@@ -120,10 +120,8 @@ public class LootContext {
         if (this.cachedEnchantmentLevels == null)
             this.getItemUsed().ifPresent(x -> this.cachedEnchantmentLevels = x.getEnchantments());
 
-        if (this.cachedEnchantmentLevels != null) {
-            Integer value = this.cachedEnchantmentLevels.get(enchantment);
-            return value == null ? 0 : value;
-        }
+        if (this.cachedEnchantmentLevels != null)
+            return this.cachedEnchantmentLevels.getOrDefault(enchantment, 0);
 
         return 0;
     }
