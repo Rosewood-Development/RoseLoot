@@ -8,7 +8,6 @@ import dev.rosewood.roseloot.loot.item.RecursiveLootItem;
 import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bukkit.Location;
 import org.bukkit.entity.ExperienceOrb;
@@ -74,7 +73,7 @@ public class LootContents {
                 .filter(x -> x instanceof ItemGenerativeLootItem)
                 .map(x -> (ItemGenerativeLootItem) x)
                 .flatMap(x -> x.generate(this.context).stream())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -98,7 +97,7 @@ public class LootContents {
         return this.contents.stream()
                 .filter(x -> x instanceof TriggerableLootItem)
                 .map(x -> (TriggerableLootItem) x)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

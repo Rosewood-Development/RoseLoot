@@ -7,7 +7,6 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.bukkit.inventory.ItemStack;
 
 public class LootPool implements CheckedLootItemGenerator {
@@ -48,7 +47,7 @@ public class LootPool implements CheckedLootItemGenerator {
         for (int i = 0; i < numRolls; i++) {
             if (!randomEntries.isEmpty())
                 lootItems.addAll(randomEntries.next().generate(context));
-            lootItems.addAll(unweightedEntries.stream().flatMap(x -> x.generate(context).stream()).collect(Collectors.toList()));
+            lootItems.addAll(unweightedEntries.stream().flatMap(x -> x.generate(context).stream()).toList());
         }
 
         return lootItems;
@@ -56,7 +55,7 @@ public class LootPool implements CheckedLootItemGenerator {
 
     @Override
     public List<ItemStack> getAllItems(LootContext context) {
-        return this.entries.stream().flatMap(x -> x.getAllItems(context).stream()).collect(Collectors.toList());
+        return this.entries.stream().flatMap(x -> x.getAllItems(context).stream()).toList();
     }
 
     @Override

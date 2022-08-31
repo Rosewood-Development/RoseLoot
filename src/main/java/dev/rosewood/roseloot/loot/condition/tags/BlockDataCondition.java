@@ -6,7 +6,6 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
@@ -36,7 +35,7 @@ public class BlockDataCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.blockData = Arrays.stream(values).map(String::toLowerCase).collect(Collectors.toList());
+        this.blockData = Arrays.stream(values).map(String::toLowerCase).toList();
         return !this.blockData.isEmpty();
     }
 

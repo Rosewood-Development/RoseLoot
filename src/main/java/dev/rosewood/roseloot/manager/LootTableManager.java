@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -390,7 +389,7 @@ public class LootTableManager extends Manager implements Listener {
     public List<LootTable> getLootTables() {
         return this.lootTables.values().stream()
                 .sorted(Comparator.comparing(LootTable::getName))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void issueLoading(File file, String reason) {

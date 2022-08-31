@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.casperge.realisticseasons.api.SeasonsAPI;
 import me.casperge.realisticseasons.season.Season;
@@ -32,7 +31,7 @@ public class RealisticSeasonsSeasonCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.seasons = Stream.of(values).map(String::toLowerCase).collect(Collectors.toList());
+        this.seasons = Stream.of(values).map(String::toLowerCase).toList();
         return !this.seasons.isEmpty();
     }
 

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -347,7 +346,7 @@ public final class EnchantingUtils {
         }
 
         public static List<EnchantmentInfo> getAvailableValues() {
-            return Arrays.stream(values()).filter(x -> x.asSpigot() != null).collect(Collectors.toList());
+            return Arrays.stream(values()).filter(x -> x.asSpigot() != null).toList();
         }
 
     }

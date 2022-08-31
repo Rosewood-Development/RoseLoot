@@ -8,7 +8,6 @@ import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTable> {
 
@@ -35,7 +34,7 @@ public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTab
 
         return lootTables.stream()
                 .map(x -> x.getName().replace(' ', '_'))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

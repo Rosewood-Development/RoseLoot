@@ -3,7 +3,6 @@ package dev.rosewood.roseloot.loot.item.meta;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +45,7 @@ public class BookItemLootMeta extends ItemLootMeta {
         if (this.title != null) itemMeta.setTitle(this.title);
         if (this.author != null) itemMeta.setAuthor(this.author);
         if (this.pages != null && !this.pages.isEmpty())
-            itemMeta.spigot().setPages(this.pages.stream().map(context::formatText).map(TextComponent::fromLegacyText).collect(Collectors.toList()));
+            itemMeta.spigot().setPages(this.pages.stream().map(context::formatText).map(TextComponent::fromLegacyText).toList());
         if (this.generation != null) itemMeta.setGeneration(this.generation);
 
         itemStack.setItemMeta(itemMeta);

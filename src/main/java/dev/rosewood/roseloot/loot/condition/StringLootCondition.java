@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 public class StringLootCondition extends LootCondition {
 
@@ -23,7 +22,7 @@ public class StringLootCondition extends LootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        this.values = Arrays.stream(values).map(String::toLowerCase).collect(Collectors.toList());
+        this.values = Arrays.stream(values).map(String::toLowerCase).toList();
         return !this.values.isEmpty();
     }
 

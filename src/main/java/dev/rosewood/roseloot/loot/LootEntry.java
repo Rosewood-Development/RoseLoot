@@ -8,7 +8,6 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.bukkit.inventory.ItemStack;
 
 public class LootEntry implements CheckedLootItemGenerator {
@@ -52,7 +51,7 @@ public class LootEntry implements CheckedLootItemGenerator {
 
                     if (!randomEntries.isEmpty())
                         generatedItems.addAll(randomEntries.next().generate(context));
-                    generatedItems.addAll(unweightedEntries.stream().flatMap(x -> x.generate(context).stream()).collect(Collectors.toList()));
+                    generatedItems.addAll(unweightedEntries.stream().flatMap(x -> x.generate(context).stream()).toList());
                     break;
                 case SEQUENTIAL:
                     for (LootEntry child : this.children) {
@@ -80,7 +79,7 @@ public class LootEntry implements CheckedLootItemGenerator {
     public List<ItemStack> getAllItems(LootContext context) {
         List<ItemStack> items = new ArrayList<>();
         if (this.children != null)
-            items.addAll(this.children.stream().flatMap(x -> x.getAllItems(context).stream()).collect(Collectors.toList()));
+            items.addAll(this.children.stream().flatMap(x -> x.getAllItems(context).stream()).toList());
         for (LootItem lootItem : this.lootItems)
             if (lootItem instanceof ItemLootItem itemLootItem)
                 items.addAll(itemLootItem.getAllItems(context));

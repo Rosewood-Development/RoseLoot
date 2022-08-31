@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.NamespacedKey;
@@ -218,7 +217,7 @@ public class ItemLootMeta {
             return itemStack;
 
         if (this.displayName != null) itemMeta.setDisplayName(context.formatText(this.displayName));
-        if (this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).collect(Collectors.toList()));
+        if (this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).toList());
         if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));

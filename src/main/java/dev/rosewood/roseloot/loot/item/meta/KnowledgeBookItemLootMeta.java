@@ -4,7 +4,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -33,7 +32,7 @@ public class KnowledgeBookItemLootMeta extends ItemLootMeta {
             this.recipes = section.getStringList("recipes").stream()
                     .map(String::toLowerCase)
                     .map(NamespacedKey::minecraft)
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
 
