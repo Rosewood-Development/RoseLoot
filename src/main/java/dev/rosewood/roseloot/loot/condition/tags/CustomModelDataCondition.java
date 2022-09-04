@@ -19,6 +19,7 @@ public class CustomModelDataCondition extends LootCondition {
     public boolean checkInternal(LootContext context) {
         return context.getItemUsed()
                 .map(ItemStack::getItemMeta)
+                .filter(ItemMeta::hasCustomModelData)
                 .map(ItemMeta::getCustomModelData)
                 .filter(this.customModelDataValues::contains)
                 .isPresent();
