@@ -5,11 +5,13 @@ import dev.rosewood.roseloot.util.NumberProvider;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class RandomNumberLootItem implements TriggerableLootItem {
+public class RandomNumberLootItem implements AutoTriggerableLootItem {
 
+    private final String id;
     private final NumberProvider numberProvider;
 
-    public RandomNumberLootItem(NumberProvider numberProvider) {
+    public RandomNumberLootItem(String id, NumberProvider numberProvider) {
+        this.id = id;
         this.numberProvider = numberProvider;
     }
 
@@ -18,13 +20,19 @@ public class RandomNumberLootItem implements TriggerableLootItem {
         double doubleValue = this.numberProvider.getDouble();
         int intValue = (int) Math.round(doubleValue);
 
-        context.getPlaceholders().add("random_number_int", intValue);
-        context.getPlaceholders().add("random_number_double", intValue);
+        if (this.id.isBlank()) {
+            context.getPlaceholders().add("random_number_int", intValue);
+            context.getPlaceholders().add("random_number_double", doubleValue);
+        } else {
+            context.getPlaceholders().add("random_number_" + this.id + "_int", intValue);
+            context.getPlaceholders().add("random_number_" + this.id + "_double", doubleValue);
+        }
     }
 
     public static RandomNumberLootItem fromSection(ConfigurationSection section) {
+        String id = section.getString("id", "");
         NumberProvider number = NumberProvider.fromSection(section, "number", 0);
-        return new RandomNumberLootItem(number);
+        return new RandomNumberLootItem(id, number);
     }
 
 }

@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.AutoTriggerableLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
@@ -36,7 +37,7 @@ public class LootContents {
         // Turn GenerativeLootItem into a List<LootItem> and add them to the stored contents
         // Continue doing this until we have no more GenerativeLootItem to process
         lootItems.stream()
-                .flatMap(x -> x instanceof RecursiveLootItem ? this.recursivelyCreateGenerativeLootItems((RecursiveLootItem) x).stream() : Stream.of(x))
+                .flatMap(x -> x instanceof RecursiveLootItem recursiveLootItem ? this.recursivelyCreateGenerativeLootItems(recursiveLootItem).stream() : Stream.of(x))
                 .forEach(this.contents::add);
 
         // Attempt to merge LootItems
@@ -48,13 +49,22 @@ public class LootContents {
                     this.contents.remove(j--);
             }
         }
+
+        // Automatically trigger and remove AutoTriggerableLootItem
+        this.contents.removeIf(x -> {
+            if (x instanceof AutoTriggerableLootItem lootItem) {
+                lootItem.trigger(this.context);
+                return true;
+            }
+            return false;
+        });
     }
 
     private List<LootItem> recursivelyCreateGenerativeLootItems(RecursiveLootItem recursiveLootItem) {
         List<LootItem> lootItems = new ArrayList<>();
         for (LootItem lootItem : recursiveLootItem.generate(this.context)) {
-            if (lootItem instanceof RecursiveLootItem) {
-                lootItems.addAll(this.recursivelyCreateGenerativeLootItems((RecursiveLootItem) lootItem));
+            if (lootItem instanceof RecursiveLootItem generated) {
+                lootItems.addAll(this.recursivelyCreateGenerativeLootItems(generated));
             } else {
                 lootItems.add(lootItem);
             }
