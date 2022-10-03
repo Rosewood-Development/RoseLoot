@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Statistic;
 import org.bukkit.entity.FishHook;
@@ -48,7 +49,7 @@ public class FishingListener implements Listener {
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.FISHING, lootContext);
         LootContents lootContents = lootResult.getLootContents();
 
-        List<ItemStack> items = lootContents.getItems();
+        List<ItemStack> items = new ArrayList<>(lootContents.getItems());
         if (lootResult.shouldOverwriteItems()) {
             // Manually change the item on the hook to the first item in the loot contents
             if (items.isEmpty()) {
