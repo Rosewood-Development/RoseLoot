@@ -10,8 +10,8 @@ public enum CustomItemPlugin {
     /**
      * @deprecated Use {@code ECO} instead.
      */
-    @Deprecated ECOITEMS(new EcoItemProvider()),
-    ECO(new EcoItemProvider()),
+    @Deprecated ECOITEMS(new EcoItemProvider(true)),
+    ECO(new EcoItemProvider(false)),
     MMOITEMS(new MMOItemProvider()),
     MYTHICMOBS(new MythicMobsItemProvider()),
     ITEMBRIDGE(new ItemBridgeItemProvider()),

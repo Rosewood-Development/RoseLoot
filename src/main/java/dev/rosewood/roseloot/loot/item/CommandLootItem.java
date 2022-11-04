@@ -24,7 +24,7 @@ public class CommandLootItem implements TriggerableLootItem {
 
         Optional<Player> player = context.getLootingPlayer();
         if (!this.command.contains("%player%") || player.isPresent())
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.getPlaceholders().apply(this.command));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.applyPlaceholders(this.command));
     }
 
     public static CommandLootItem fromSection(ConfigurationSection section) {
