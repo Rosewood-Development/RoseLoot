@@ -33,6 +33,7 @@ public class NewerPaperListener implements Listener {
         LootContext lootContext = LootContext.builder()
                 .put(LootContextParams.ORIGIN, block.getLocation())
                 .put(LootContextParams.LOOTED_BLOCK, block)
+                .put(LootContextParams.REPLACED_BLOCK_DATA, event.getSource().getBlockData())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);

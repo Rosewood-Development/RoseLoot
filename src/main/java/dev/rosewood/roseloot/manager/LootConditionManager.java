@@ -40,6 +40,7 @@ import dev.rosewood.roseloot.loot.condition.tags.LuckChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RelativeBlockTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.ReplacedBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
@@ -156,6 +157,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("relative-block-type", RelativeBlockTypeCondition.class);
         event.registerLootCondition("required-tool", RequiredToolCondition.class);
         event.registerLootCondition("required-tool-type", RequiredToolTypeCondition.class);
+        event.registerLootCondition("replaced-block-type", ReplacedBlockTypeCondition.class);
         event.registerLootCondition("sitting", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Sittable.class).filter(Sittable::isSitting).isPresent());
         event.registerLootCondition("sleeping", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(LivingEntity::isSleeping).isPresent());
         event.registerLootCondition("spawner-type", SpawnerTypeCondition.class);

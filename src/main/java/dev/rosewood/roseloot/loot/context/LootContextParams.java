@@ -10,6 +10,7 @@ import java.util.function.Function;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
@@ -39,6 +40,8 @@ public final class LootContextParams {
             }));
     public static final LootContextParam<Block> LOOTED_BLOCK = create("looted_block", Block.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("block_type", x.getType().name().toLowerCase())));
+    public static final LootContextParam<BlockData> REPLACED_BLOCK_DATA = create("replaced_block_data", BlockData.class, builder ->
+            builder.withPlaceholders((x, y) -> y.add("replaced_block_type", x.getMaterial().name().toLowerCase())));
     public static final LootContextParam<FishHook> FISH_HOOK = create("fish_hook", FishHook.class);
     public static final LootContextParam<ItemStack> INPUT_ITEM = create("input_item", ItemStack.class);
     public static final LootContextParam<NamespacedKey> VANILLA_LOOT_TABLE_KEY = create("vanilla_loot_table_key", NamespacedKey.class, builder ->

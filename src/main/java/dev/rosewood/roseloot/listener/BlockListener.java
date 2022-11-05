@@ -190,7 +190,7 @@ public class BlockListener implements Listener {
             }
         }
 
-        ExplosionType explosionType = looter instanceof Creeper && ((Creeper) looter).isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
+        ExplosionType explosionType = looter instanceof Creeper creeper && creeper.isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
         Iterator<Block> iterator = event.blockList().iterator();
         while (iterator.hasNext()) {
             Block exploded = iterator.next();
