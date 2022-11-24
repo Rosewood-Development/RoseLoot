@@ -827,9 +827,9 @@ public final class VanillaLootTableConverter {
                     JsonObject enchantments = function.get("enchantments").getAsJsonObject();
                     writer.write("enchantments:");
                     writer.increaseIndentation();
-                    for (String enchantmentName : enchantments.keySet()) {
-                        int enchantmentLevel = enchantments.get(enchantmentName).getAsInt();
-                        writer.write(enchantmentName.replace("minecraft:", "") + ": " + enchantmentLevel);
+                    for (Map.Entry<String, JsonElement> entry : enchantments.entrySet()) {
+                        int enchantmentLevel = entry.getValue().getAsInt();
+                        writer.write(entry.getKey().replace("minecraft:", "") + ": " + enchantmentLevel);
                     }
                     writer.decreaseIndentation();
                     break;
