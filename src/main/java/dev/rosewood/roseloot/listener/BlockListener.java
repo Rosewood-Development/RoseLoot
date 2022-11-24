@@ -154,8 +154,10 @@ public class BlockListener implements Listener {
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
-            if (lootResult.shouldOverwriteItems())
+            if (lootResult.shouldOverwriteItems()) {
                 iterator.remove();
+                exploded.setType(Material.AIR);
+            }
 
             // Drop items and experience
             Location dropLocation = exploded.getLocation();
@@ -205,8 +207,10 @@ public class BlockListener implements Listener {
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
-            if (lootResult.shouldOverwriteItems())
+            if (lootResult.shouldOverwriteItems()) {
                 iterator.remove();
+                exploded.setType(Material.AIR);
+            }
 
             // Drop items and experience
             Location dropLocation = exploded.getLocation();
