@@ -14,7 +14,8 @@ public class RoseStackerStackedEntityCondition extends LootCondition {
     @Override
     public boolean checkInternal(LootContext context) {
         return context.get(LootContextParams.LOOTED_ENTITY)
-                .filter(entity -> RoseStackerAPI.getInstance().isEntityStacked(entity))
+                .map(entity -> RoseStackerAPI.getInstance().getStackedEntity(entity))
+                .filter(entity -> entity.getStackSize() > 1)
                 .isPresent();
     }
 
