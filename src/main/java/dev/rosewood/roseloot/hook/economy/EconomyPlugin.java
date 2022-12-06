@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.hook.economy;
 
+import dev.rosewood.roseloot.util.Lazy;
 import java.util.function.Supplier;
 import org.bukkit.OfflinePlayer;
 
@@ -10,37 +11,30 @@ public enum EconomyPlugin implements EconomyProvider {
     PLAYERPOINTS(PlayerPointsEconomyProvider::new),
     TOKENMANAGER(TokenManagerEconomyProvider::new);
 
-    private final Supplier<EconomyProvider> lazyLoader;
-    private EconomyProvider economyProvider;
+    private final Lazy<EconomyProvider> economyProvider;
 
     EconomyPlugin(Supplier<EconomyProvider> lazyLoader) {
-        this.lazyLoader = lazyLoader;
+        this.economyProvider = new Lazy<>(lazyLoader);
     }
 
     @Override
     public String formatCurrency(double amount) {
-        return this.load().formatCurrency(amount);
+        return this.economyProvider.get().formatCurrency(amount);
     }
 
     @Override
     public double checkBalance(OfflinePlayer offlinePlayer) {
-        return this.load().checkBalance(offlinePlayer);
+        return this.economyProvider.get().checkBalance(offlinePlayer);
     }
 
     @Override
     public void deposit(OfflinePlayer offlinePlayer, double amount) {
-        this.load().deposit(offlinePlayer, amount);
+        this.economyProvider.get().deposit(offlinePlayer, amount);
     }
 
     @Override
     public void withdraw(OfflinePlayer offlinePlayer, double amount) {
-        this.load().withdraw(offlinePlayer, amount);
-    }
-
-    private EconomyProvider load() {
-        if (this.economyProvider == null)
-            this.economyProvider = this.lazyLoader.get();
-        return this.economyProvider;
+        this.economyProvider.get().withdraw(offlinePlayer, amount);
     }
 
     public static EconomyPlugin fromString(String name) {

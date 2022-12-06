@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.hook.items;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.util.Lazy;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
@@ -23,31 +24,30 @@ public enum CustomItemPlugin {
     SLIMEFUN(SlimefunItemProvider::new),
     CUSTOMCRAFTING(CustomCraftingItemProvider::new);
 
-    private final Supplier<ItemProvider> lazyLoader;
-    private ItemProvider itemProvider;
+    private final Lazy<ItemProvider> itemProvider;
 
     CustomItemPlugin(Supplier<ItemProvider> lazyLoader) {
-        this.lazyLoader = lazyLoader;
+        this.itemProvider = new Lazy<>(lazyLoader);
     }
 
     public boolean isEnabled() {
-        return this.load().isEnabled();
+        return this.itemProvider.get().isEnabled();
     }
 
     public ItemStack resolveItem(LootContext context, String id) {
-        return this.load().getItem(context, id);
+        return this.itemProvider.get().getItem(context, id);
     }
 
     public String resolveItemId(ItemStack itemStack) {
-        return this.load().getItemId(itemStack);
+        return this.itemProvider.get().getItemId(itemStack);
     }
 
     public boolean supportsIdLookup() {
-        return this.load().supportsIdLookup();
+        return this.itemProvider.get().supportsIdLookup();
     }
 
     public String getConditionSuffix() {
-        return this.load().getConditionSuffix();
+        return this.itemProvider.get().getConditionSuffix();
     }
 
     public BiPredicate<LootContext, List<String>> getLootConditionPredicate() {
@@ -55,12 +55,6 @@ public enum CustomItemPlugin {
                 .map(this::resolveItemId)
                 .filter(x -> values.stream().anyMatch(x::equalsIgnoreCase))
                 .isPresent();
-    }
-
-    private ItemProvider load() {
-        if (this.itemProvider == null)
-            this.itemProvider = this.lazyLoader.get();
-        return this.itemProvider;
     }
 
     public static CustomItemPlugin fromString(String name) {
