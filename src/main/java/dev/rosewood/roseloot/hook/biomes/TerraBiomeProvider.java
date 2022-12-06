@@ -5,8 +5,8 @@ import org.bukkit.Location;
 
 public class TerraBiomeProvider extends BiomeProvider {
 
-    public TerraBiomeProvider(String pluginName) {
-        super(pluginName);
+    public TerraBiomeProvider() {
+        super("Terra");
     }
 
     @Override

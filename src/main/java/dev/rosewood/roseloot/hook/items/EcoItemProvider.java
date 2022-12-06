@@ -2,18 +2,14 @@ package dev.rosewood.roseloot.hook.items;
 
 import com.willfp.eco.core.items.CustomItem;
 import com.willfp.eco.core.items.Items;
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class EcoItemProvider extends ItemProvider {
 
-    public EcoItemProvider(boolean displayDeprecationWarning) {
+    public EcoItemProvider() {
         super("eco");
-
-        if (displayDeprecationWarning)
-            RoseLoot.getInstance().getLogger().warning("Using [ecoitems] as an item provider is deprecated and will be removed in the future. Please use [eco] instead.");
     }
 
     @Override

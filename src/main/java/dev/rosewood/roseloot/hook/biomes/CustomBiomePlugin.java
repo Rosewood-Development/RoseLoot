@@ -4,24 +4,26 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Supplier;
 import org.bukkit.Location;
 
 public enum CustomBiomePlugin {
 
-    TERRA(new TerraBiomeProvider("Terra"));
+    TERRA(TerraBiomeProvider::new);
 
-    private final BiomeProvider biomeProvider;
+    private final Supplier<BiomeProvider> lazyLoader;
+    private BiomeProvider biomeProvider;
 
-    CustomBiomePlugin(BiomeProvider biomeProvider) {
-        this.biomeProvider = biomeProvider;
+    CustomBiomePlugin(Supplier<BiomeProvider> lazyLoader) {
+        this.lazyLoader = lazyLoader;
     }
 
     public boolean isEnabled() {
-        return this.biomeProvider.isEnabled();
+        return this.load().isEnabled();
     }
 
     public String resolveBiome(Location location) {
-        return this.biomeProvider.getBiomeName(location);
+        return this.load().getBiomeName(location);
     }
 
     public BiPredicate<LootContext, List<String>> getLootConditionPredicate() {
@@ -29,6 +31,12 @@ public enum CustomBiomePlugin {
                 .map(this::resolveBiome)
                 .filter(x -> values.stream().anyMatch(x::equalsIgnoreCase))
                 .isPresent();
+    }
+
+    private BiomeProvider load() {
+        if (this.biomeProvider == null)
+            this.biomeProvider = this.lazyLoader.get();
+        return this.biomeProvider;
     }
 
     public static CustomBiomePlugin fromString(String name) {
