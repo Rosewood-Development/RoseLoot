@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'dev.rosewood'
-version = '1.1.14'
+version = '1.1.15'
 
 java {
     toolchain {
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
     compileOnly 'com.mojang:authlib:1.5.21'
     compileOnly 'org.jetbrains:annotations:23.0.0'
     compileOnly 'com.github.milkbowl:vault:1.7.3'
