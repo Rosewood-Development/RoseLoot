@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.table;
 
 import com.google.common.collect.Sets;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
 import java.util.HashSet;
@@ -12,11 +13,13 @@ public class LootTableType {
     private final Set<LootContextParam<?>> all;
     private final Set<LootContextParam<?>> required;
     private final boolean unrestricted;
+    private final Set<LootContextParam<?>> extraNotify;
 
     private LootTableType(Set<LootContextParam<?>> optional, Set<LootContextParam<?>> required, boolean unrestricted) {
         this.all = Sets.union(optional, required);
         this.required = required;
         this.unrestricted = unrestricted;
+        this.extraNotify = new HashSet<>();
     }
 
     /**
@@ -31,11 +34,16 @@ public class LootTableType {
 
         Set<LootContextParam<?>> missing = Sets.difference(this.required, context.getParams());
         if (!missing.isEmpty())
-            throw new IllegalArgumentException("Missing required parameters: " + missing.stream().map(LootContextParam::getName).collect(Collectors.joining(", ")));
+            throw new IllegalArgumentException("Missing required parameters: [" + missing.stream().map(LootContextParam::getName).collect(Collectors.joining(", ")) + "]");
 
-        Set<LootContextParam<?>> extra = Sets.difference(context.getParams(), this.all);
-        if (!extra.isEmpty())
-            throw new IllegalArgumentException("Extra parameters: " + extra.stream().map(LootContextParam::getName).collect(Collectors.joining(", ")));
+        Set<LootContextParam<?>> extra = new HashSet<>(Sets.difference(context.getParams(), this.all));
+        if (!extra.isEmpty()) {
+            Set<LootContextParam<?>> newExtra = new HashSet<>(Sets.difference(extra, this.extraNotify));
+            if (!newExtra.isEmpty()) {
+                this.extraNotify.addAll(newExtra);
+                RoseLoot.getInstance().getLogger().info("Loaded extra parameters in LootContext: [" + newExtra.stream().map(LootContextParam::getName).collect(Collectors.joining(", ")) + "]");
+            }
+        }
     }
 
     /**

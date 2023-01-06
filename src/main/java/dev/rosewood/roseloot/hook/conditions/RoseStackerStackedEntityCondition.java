@@ -1,9 +1,8 @@
 package dev.rosewood.roseloot.hook.conditions;
 
+import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
-import dev.rosewood.rosestacker.api.RoseStackerAPI;
 
 public class RoseStackerStackedEntityCondition extends LootCondition {
 
@@ -13,9 +12,8 @@ public class RoseStackerStackedEntityCondition extends LootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        return context.get(LootContextParams.LOOTED_ENTITY)
-                .map(entity -> RoseStackerAPI.getInstance().getStackedEntity(entity))
-                .filter(entity -> entity.getStackSize() > 1)
+        return context.get(RoseStackerEntityDeathListener.STACKED_ENTITY)
+                .filter(x -> x.getStackSize() > 1)
                 .isPresent();
     }
 

@@ -4,12 +4,14 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.rosestacker.event.EntityStackMultipleDeathEvent;
+import dev.rosewood.rosestacker.stack.StackedEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class RoseStackerEntityDeathListener implements Listener {
+
+    public static final LootContextParam<StackedEntity> STACKED_ENTITY = LootContextParams.create("rosestacker_stacked_entity", StackedEntity.class, builder ->
+            builder.withPlaceholders((x, y) -> y.add("rosestacker_entity_stack_size", x.getStackSize())));
 
     private final RosePlugin rosePlugin;
     private final LootTableManager lootTableManager;
@@ -58,6 +63,7 @@ public class RoseStackerEntityDeathListener implements Listener {
                     .put(LootContextParams.ORIGIN, entity.getLocation())
                     .put(LootContextParams.LOOTER, looter)
                     .put(LootContextParams.LOOTED_ENTITY, entity)
+                    .put(STACKED_ENTITY, event.getStack())
                     .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
                     .build();
