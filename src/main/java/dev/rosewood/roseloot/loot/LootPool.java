@@ -43,7 +43,7 @@ public class LootPool implements CheckedLootItemGenerator {
             }
         }
 
-        int numRolls = this.rolls.getInteger() + (int) Math.round(this.bonusRolls.getDouble() * context.getLuckLevel());
+        int numRolls = this.rolls.getInteger(context) + (int) Math.round(this.bonusRolls.getDouble(context) * context.getLuckLevel());
         for (int i = 0; i < numRolls; i++) {
             if (!randomEntries.isEmpty())
                 lootItems.addAll(randomEntries.next().generate(context));

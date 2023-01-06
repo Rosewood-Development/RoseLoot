@@ -35,7 +35,7 @@ public class ExplosionLootItem implements TriggerableLootItem {
     public void trigger(LootContext context, Location location) {
         World world = location.getWorld();
         if (world != null) {
-            int power = this.powers.stream().mapToInt(NumberProvider::getInteger).max().orElse(0);
+            int power = this.powers.stream().mapToInt(x -> x.getInteger(context)).max().orElse(0);
             world.createExplosion(location, power, this.fire, this.breakBlocks);
         }
     }

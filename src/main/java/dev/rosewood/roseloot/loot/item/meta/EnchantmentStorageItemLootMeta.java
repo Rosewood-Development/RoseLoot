@@ -41,7 +41,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
 
         if (this.enchantments != null) {
             for (EnchantmentData enchantmentData : this.enchantments) {
-                int level = enchantmentData.level().getInteger();
+                int level = enchantmentData.level().getInteger(context);
                 if (level > 0)
                     itemMeta.addStoredEnchant(enchantmentData.enchantment(), level, true);
             }

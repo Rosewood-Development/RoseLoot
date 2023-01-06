@@ -17,7 +17,7 @@ public class RandomNumberLootItem implements AutoTriggerableLootItem {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        double doubleValue = this.numberProvider.getDouble();
+        double doubleValue = this.numberProvider.getDouble(context);
         int intValue = (int) Math.round(doubleValue);
 
         if (this.id.isBlank()) {

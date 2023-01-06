@@ -44,7 +44,7 @@ public class FireworkLootItem implements TriggerableLootItem {
     public void trigger(LootContext context, Location location) {
         World world = location.getWorld();
         if (world != null) {
-            int power = Math.min(this.powers.stream().mapToInt(NumberProvider::getInteger).max().orElse(0), 127);
+            int power = Math.min(this.powers.stream().mapToInt(x -> x.getInteger(context)).max().orElse(0), 127);
             Firework firework = world.spawn(location, Firework.class, entity -> {
                 FireworkMeta meta = entity.getFireworkMeta();
                 if (power >= 0) meta.setPower(power);

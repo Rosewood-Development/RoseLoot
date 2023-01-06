@@ -35,8 +35,8 @@ public class MessageLootItem implements TriggerableLootItem {
                 case CHAT_RAW -> player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(context.applyPlaceholders(this.message)));
                 case CHAT -> player.sendMessage(context.formatText(this.message));
                 case HOTBAR -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(context.formatText(this.message)));
-                case TITLE -> player.sendTitle(context.formatText(this.message), null, this.fadeIn.getInteger(), this.duration.getInteger(), this.fadeOut.getInteger());
-                case SUBTITLE -> player.sendTitle(null, context.formatText(this.message), this.fadeIn.getInteger(), this.duration.getInteger(), this.fadeOut.getInteger());
+                case TITLE -> player.sendTitle(context.formatText(this.message), null, this.fadeIn.getInteger(context), this.duration.getInteger(context), this.fadeOut.getInteger(context));
+                case SUBTITLE -> player.sendTitle(null, context.formatText(this.message), this.fadeIn.getInteger(context), this.duration.getInteger(context), this.fadeOut.getInteger(context));
             }
         };
 

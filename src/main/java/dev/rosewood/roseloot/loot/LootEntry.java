@@ -98,7 +98,7 @@ public class LootEntry implements CheckedLootItemGenerator {
      * @return the weight of this entry
      */
     public double getWeight(LootContext context) {
-        return this.weight.getDouble() + this.quality.getDouble() * context.getLuckLevel();
+        return this.weight.getDouble(context) + this.quality.getDouble(context) * context.getLuckLevel();
     }
 
     /**

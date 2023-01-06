@@ -1,14 +1,15 @@
 package dev.rosewood.roseloot.util;
 
+import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class NumberProvider {
 
-    public int getInteger() {
-        return (int) Math.round(this.getDouble());
+    public int getInteger(LootContext context) {
+        return (int) Math.round(this.getDouble(context));
     }
 
-    public abstract double getDouble();
+    public abstract double getDouble(LootContext context);
 
     public static NumberProvider fromSection(ConfigurationSection section, String value, int defaultValue) {
         return fromSection(section, value, (double) defaultValue);
@@ -39,12 +40,18 @@ public abstract class NumberProvider {
             }
         } else if (section.contains(value)) {
             if (section.isString(value)) {
-                String percentage = section.getString(value, "");
-                if (percentage.endsWith("%")) {
-                    try {
-                        double percentageValue = Double.parseDouble(percentage.substring(0, percentage.length() - 1));
-                        return new ConstantNumberProvider(percentageValue / 100);
-                    } catch (NumberFormatException ignored) { }
+                String stringValue = section.getString(value, "");
+
+                if (stringValue.endsWith("%")) {
+                    if (stringValue.startsWith("%")) {
+                        // Placeholder! Try parsing it as a double
+                        return new PlaceholderNumberProvider(stringValue);
+                    } else {
+                        try {
+                            double percentageValue = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
+                            return new ConstantNumberProvider(percentageValue / 100);
+                        } catch (NumberFormatException ignored) { }
+                    }
                 }
             } else {
                 double doubleValue = section.getDouble(value, Double.MIN_VALUE);
@@ -73,7 +80,7 @@ public abstract class NumberProvider {
         }
 
         @Override
-        public double getDouble() {
+        public double getDouble(LootContext context) {
             return this.value;
         }
 
@@ -89,8 +96,8 @@ public abstract class NumberProvider {
         }
 
         @Override
-        public double getDouble() {
-            return LootUtils.randomInRange(this.min.getDouble(), this.max.getDouble());
+        public double getDouble(LootContext context) {
+            return LootUtils.randomInRange(this.min.getDouble(context), this.max.getDouble(context));
         }
 
     }
@@ -105,9 +112,9 @@ public abstract class NumberProvider {
         }
 
         @Override
-        public int getInteger() {
-            int n = this.n.getInteger();
-            double p = this.p.getDouble();
+        public int getInteger(LootContext context) {
+            int n = this.n.getInteger(context);
+            double p = this.p.getDouble(context);
             int successes = 0;
 
             for (int i = 0; i < n; i++)
@@ -118,8 +125,27 @@ public abstract class NumberProvider {
         }
 
         @Override
-        public double getDouble() {
-            return this.getInteger();
+        public double getDouble(LootContext context) {
+            return this.getInteger(context);
+        }
+
+    }
+
+    private static class PlaceholderNumberProvider extends NumberProvider {
+
+        private final String placeholder;
+
+        public PlaceholderNumberProvider(String placeholder) {
+            this.placeholder = placeholder;
+        }
+
+        @Override
+        public double getDouble(LootContext context) {
+            try {
+                return Double.parseDouble(context.applyPlaceholders(this.placeholder));
+            } catch (NumberFormatException e) {
+                return 0;
+            }
         }
 
     }

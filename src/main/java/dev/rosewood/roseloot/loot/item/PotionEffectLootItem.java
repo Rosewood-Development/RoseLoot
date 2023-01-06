@@ -21,7 +21,7 @@ public class PotionEffectLootItem implements TriggerableLootItem {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        context.getAs(LootContextParams.LOOTER, LivingEntity.class).ifPresent(x -> this.effects.forEach(effect -> x.addPotionEffect(effect.toPotionEffect())));
+        context.getAs(LootContextParams.LOOTER, LivingEntity.class).ifPresent(x -> this.effects.forEach(effect -> x.addPotionEffect(effect.toPotionEffect(context))));
     }
 
     public static PotionEffectLootItem fromSection(ConfigurationSection section) {

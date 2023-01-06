@@ -63,9 +63,9 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
             if (this.pickRandomEffect) {
                 List<Map.Entry<PotionItemLootMeta.PotionEffectData, Boolean>> possibleEffects = new ArrayList<>(this.customEffects.entrySet());
                 Map.Entry<PotionItemLootMeta.PotionEffectData, Boolean> effect = possibleEffects.get(LootUtils.RANDOM.nextInt(possibleEffects.size()));
-                itemMeta.addCustomEffect(effect.getKey().toPotionEffect(), effect.getValue());
+                itemMeta.addCustomEffect(effect.getKey().toPotionEffect(context), effect.getValue());
             } else {
-                this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(), y));
+                this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(context), y));
             }
         }
 

@@ -42,7 +42,7 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem {
             return;
 
         Player player = context.getLootingPlayer().orElse(null);
-        if (this.applyDurability(player, itemStack, damageable, itemMeta.getEnchantLevel(Enchantment.DURABILITY))) {
+        if (this.applyDurability(player, itemStack, damageable, itemMeta.getEnchantLevel(Enchantment.DURABILITY), context)) {
             itemStack.setItemMeta(itemMeta);
             if (damageable.getDamage() >= itemStack.getType().getMaxDurability() - 1) {
                 if (player != null)
@@ -59,11 +59,12 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem {
      * @param itemStack The item having its durability changed
      * @param damageable The damageable item meta to change the durability of
      * @param unbreakingLevel The level of unbreaking on the item
+     * @param context The LootContext
      * @return true if the ItemMeta needs to be applied, false otherwise
      */
     @SuppressWarnings("deprecation")
-    private boolean applyDurability(Player player, ItemStack itemStack, Damageable damageable, int unbreakingLevel) {
-        int originalDamage = -this.amount.getInteger();
+    private boolean applyDurability(Player player, ItemStack itemStack, Damageable damageable, int unbreakingLevel, LootContext context) {
+        int originalDamage = -this.amount.getInteger(context);
         if (originalDamage == 0)
             return false;
 

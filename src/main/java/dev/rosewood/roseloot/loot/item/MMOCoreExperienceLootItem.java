@@ -18,7 +18,7 @@ public class MMOCoreExperienceLootItem implements TriggerableLootItem {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        context.getLootingPlayer().ifPresent(x -> MMOCoreHook.giveExperience(x, this.profession, this.amount.getDouble()));
+        context.getLootingPlayer().ifPresent(x -> MMOCoreHook.giveExperience(x, this.profession, this.amount.getDouble(context)));
     }
 
     public static MMOCoreExperienceLootItem fromSection(ConfigurationSection section) {

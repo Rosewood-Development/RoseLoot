@@ -244,7 +244,7 @@ public class ItemLootMeta {
 
             if (this.enchantments != null) {
                 for (EnchantmentData enchantmentData : this.enchantments) {
-                    int level = enchantmentData.level().getInteger();
+                    int level = enchantmentData.level().getInteger(context);
                     if (level > 0)
                         itemMeta.addEnchant(enchantmentData.enchantment(), level, true);
                 }
@@ -253,7 +253,7 @@ public class ItemLootMeta {
 
         if (this.attributes != null) {
             Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
-            this.attributes.forEach(x -> attributes.put(x.attribute(), x.toAttributeModifier()));
+            this.attributes.forEach(x -> attributes.put(x.attribute(), x.toAttributeModifier(context)));
             itemMeta.setAttributeModifiers(attributes);
         }
 
@@ -290,7 +290,7 @@ public class ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         if (this.enchantmentLevel != null)
-            EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(), this.includeTreasureEnchantments, this.uncappedRandomEnchants);
+            EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, this.uncappedRandomEnchants);
 
         return itemStack;
     }
@@ -394,8 +394,8 @@ public class ItemLootMeta {
 
     private record AttributeData(Attribute attribute, NumberProvider amount, AttributeModifier.Operation operation, EquipmentSlot slot) {
 
-        public AttributeModifier toAttributeModifier() {
-            return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(), this.operation, this.slot);
+        public AttributeModifier toAttributeModifier(LootContext context) {
+            return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(context), this.operation, this.slot);
         }
 
     }

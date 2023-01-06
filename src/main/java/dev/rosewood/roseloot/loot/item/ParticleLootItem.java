@@ -30,7 +30,7 @@ public class ParticleLootItem implements TriggerableLootItem {
                 .orElseGet(() -> context.get(LootContextParams.LOOTED_BLOCK).map(block -> block.getLocation().add(0.5, 0.5, 0.5))
                 .orElse(location));
 
-        this.particleSpawnData.trigger(context.getLootingPlayer().orElse(null), targetLocation);
+        this.particleSpawnData.trigger(context.getLootingPlayer().orElse(null), targetLocation, context);
     }
 
     public static ParticleLootItem fromSection(ConfigurationSection section) {
@@ -85,20 +85,20 @@ public class ParticleLootItem implements TriggerableLootItem {
             this.dataContainer = dataContainer;
         }
 
-        public void trigger(Player player, Location location) {
-            int amount = this.amountProvider.getInteger();
-            double offsetX = this.offsetXProvider.getDouble();
-            double offsetY = this.offsetYProvider.getDouble();
-            double offsetZ = this.offsetZProvider.getDouble();
-            double extra = this.extraProvider.getDouble();
+        public void trigger(Player player, Location location, LootContext context) {
+            int amount = this.amountProvider.getInteger(context);
+            double offsetX = this.offsetXProvider.getDouble(context);
+            double offsetY = this.offsetYProvider.getDouble(context);
+            double offsetZ = this.offsetZProvider.getDouble(context);
+            double extra = this.extraProvider.getDouble(context);
 
             if (this.playerOnly) {
                 if (player != null)
-                    player.spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location));
+                    player.spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location, context));
             } else {
                 World world = location.getWorld();
                 if (world != null)
-                    world.spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location), this.longDistance);
+                    world.spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location, context), this.longDistance);
             }
         }
 
@@ -106,7 +106,7 @@ public class ParticleLootItem implements TriggerableLootItem {
 
     private interface ParticleDataContainer {
 
-        Object buildData(Location location);
+        Object buildData(Location location, LootContext context);
 
     }
 
@@ -122,12 +122,12 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
-            int r = LootUtils.clamp(this.red.getInteger(), 0, 255);
-            int g = LootUtils.clamp(this.green.getInteger(), 0, 255);
-            int b = LootUtils.clamp(this.blue.getInteger(), 0, 255);
+        public Object buildData(Location location, LootContext context) {
+            int r = LootUtils.clamp(this.red.getInteger(context), 0, 255);
+            int g = LootUtils.clamp(this.green.getInteger(context), 0, 255);
+            int b = LootUtils.clamp(this.blue.getInteger(context), 0, 255);
 
-            return new Particle.DustOptions(Color.fromRGB(r, g, b), (float) this.size.getDouble());
+            return new Particle.DustOptions(Color.fromRGB(r, g, b), (float) this.size.getDouble(context));
         }
 
     }
@@ -144,15 +144,15 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
-            int r = LootUtils.clamp(this.red.getInteger(), 0, 255);
-            int g = LootUtils.clamp(this.green.getInteger(), 0, 255);
-            int b = LootUtils.clamp(this.blue.getInteger(), 0, 255);
-            int r2 = LootUtils.clamp(this.redFade.getInteger(), 0, 255);
-            int g2 = LootUtils.clamp(this.greenFade.getInteger(), 0, 255);
-            int b2 = LootUtils.clamp(this.blueFade.getInteger(), 0, 255);
+        public Object buildData(Location location, LootContext context) {
+            int r = LootUtils.clamp(this.red.getInteger(context), 0, 255);
+            int g = LootUtils.clamp(this.green.getInteger(context), 0, 255);
+            int b = LootUtils.clamp(this.blue.getInteger(context), 0, 255);
+            int r2 = LootUtils.clamp(this.redFade.getInteger(context), 0, 255);
+            int g2 = LootUtils.clamp(this.greenFade.getInteger(context), 0, 255);
+            int b2 = LootUtils.clamp(this.blueFade.getInteger(context), 0, 255);
 
-            return new Particle.DustTransition(Color.fromRGB(r, g, b), Color.fromRGB(r2, g2, b2), (float) this.size.getDouble());
+            return new Particle.DustTransition(Color.fromRGB(r, g, b), Color.fromRGB(r2, g2, b2), (float) this.size.getDouble(context));
         }
 
     }
@@ -166,7 +166,7 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
+        public Object buildData(Location location, LootContext context) {
             return new ItemStack(this.material);
         }
 
@@ -179,7 +179,7 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
+        public Object buildData(Location location, LootContext context) {
             return this.material.createBlockData();
         }
 
@@ -195,8 +195,8 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
-            return new Vibration(location, new Vibration.Destination.BlockDestination(location.getBlock()), Math.max(this.time.getInteger(), 1));
+        public Object buildData(Location location, LootContext context) {
+            return new Vibration(location, new Vibration.Destination.BlockDestination(location.getBlock()), Math.max(this.time.getInteger(context), 1));
         }
 
     }
@@ -210,8 +210,8 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
-            return this.value.getInteger();
+        public Object buildData(Location location, LootContext context) {
+            return this.value.getInteger(context);
         }
 
     }
@@ -225,8 +225,8 @@ public class ParticleLootItem implements TriggerableLootItem {
         }
 
         @Override
-        public Object buildData(Location location) {
-            return (float) this.value.getDouble();
+        public Object buildData(Location location, LootContext context) {
+            return (float) this.value.getDouble(context);
         }
 
     }

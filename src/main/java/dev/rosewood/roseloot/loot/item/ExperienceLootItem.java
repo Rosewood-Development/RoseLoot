@@ -25,7 +25,7 @@ public class ExperienceLootItem implements ExperienceGenerativeLootItem {
 
     @Override
     public int generate(LootContext context) {
-        int amount = this.amounts.stream().mapToInt(NumberProvider::getInteger).sum();
+        int amount = this.amounts.stream().mapToInt(x -> x.getInteger(context)).sum();
 
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
         if (lootedEntity.isPresent() && !this.equipmentBonuses.isEmpty()) {
@@ -37,7 +37,7 @@ public class ExperienceLootItem implements ExperienceGenerativeLootItem {
 
                 for (int i = 0; i < equipmentAmount; i++)
                     for (NumberProvider equipmentBonus : this.equipmentBonuses)
-                        amount += equipmentBonus.getInteger();
+                        amount += equipmentBonus.getInteger(context);
             }
         }
 

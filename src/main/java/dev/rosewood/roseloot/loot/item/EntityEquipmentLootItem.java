@@ -54,12 +54,12 @@ public class EntityEquipmentLootItem extends ItemLootItem {
         if (equipment == null)
             return droppedEquipment;
 
-        double mainHandChance = this.mainHandDropChance != null ? this.mainHandDropChance.getDouble() : equipment.getItemInMainHandDropChance();
-        double offHandChance = this.offHandDropChance != null ? this.offHandDropChance.getDouble() : equipment.getItemInOffHandDropChance();
-        double helmetChance = this.helmetDropChance != null ? this.helmetDropChance.getDouble() : equipment.getHelmetDropChance();
-        double chestplateChance = this.chestplateDropChance != null ? this.chestplateDropChance.getDouble() : equipment.getChestplateDropChance();
-        double leggingsChance = this.leggingsDropChance != null ? this.leggingsDropChance.getDouble() : equipment.getLeggingsDropChance();
-        double bootsChance = this.bootsDropChance != null ? this.bootsDropChance.getDouble() : equipment.getBootsDropChance();
+        double mainHandChance = this.mainHandDropChance != null ? this.mainHandDropChance.getDouble(context) : equipment.getItemInMainHandDropChance();
+        double offHandChance = this.offHandDropChance != null ? this.offHandDropChance.getDouble(context) : equipment.getItemInOffHandDropChance();
+        double helmetChance = this.helmetDropChance != null ? this.helmetDropChance.getDouble(context) : equipment.getHelmetDropChance();
+        double chestplateChance = this.chestplateDropChance != null ? this.chestplateDropChance.getDouble(context) : equipment.getChestplateDropChance();
+        double leggingsChance = this.leggingsDropChance != null ? this.leggingsDropChance.getDouble(context) : equipment.getLeggingsDropChance();
+        double bootsChance = this.bootsDropChance != null ? this.bootsDropChance.getDouble(context) : equipment.getBootsDropChance();
 
         if (equipment.getItemInMainHand().getType() != Material.AIR && LootUtils.checkChance(mainHandChance))
             droppedEquipment.add(equipment.getItemInMainHand());

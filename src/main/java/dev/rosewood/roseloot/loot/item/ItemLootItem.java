@@ -75,22 +75,22 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     public List<ItemStack> generate(LootContext context) {
         List<ItemStack> generatedItems = new ArrayList<>();
 
-        int amount = this.amount.getInteger();
+        int amount = this.amount.getInteger(context);
 
         for (AmountModifier amountModifier : this.amountModifiers) {
             if (!amountModifier.check(context))
                 break;
 
             if (amountModifier.additive()) {
-                amount += amountModifier.getValue();
+                amount += amountModifier.getValue(context);
             } else {
-                amount = amountModifier.getValue();
+                amount = amountModifier.getValue(context);
             }
         }
 
         if (this.enchantmentBonus != null)
             amount += this.enchantmentBonus.getBonusAmount(context, amount);
-        amount = Math.min(amount, this.maxAmount.getInteger());
+        amount = Math.min(amount, this.maxAmount.getInteger(context));
 
         ItemStack creationItem = this.getCreationItem(context);
         if (creationItem != null && amount > 0) {
@@ -118,7 +118,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     public List<ItemStack> getAllItems(LootContext context) {
         List<ItemStack> generatedItems = new ArrayList<>();
 
-        int amount = Math.min(this.amount.getInteger(), this.maxAmount.getInteger());
+        int amount = Math.min(this.amount.getInteger(context), this.maxAmount.getInteger(context));
 
         ItemStack creationItem = this.getCreationItem(context);
         if (creationItem != null && amount > 0) {
@@ -216,8 +216,8 @@ public class ItemLootItem implements ItemGenerativeLootItem {
             return this.conditions.stream().allMatch(x -> x.check(context));
         }
 
-        public int getValue() {
-            return this.value.getInteger();
+        public int getValue(LootContext context) {
+            return this.value.getInteger(context);
         }
 
     }
@@ -231,10 +231,10 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
             int bonus = 0;
             switch (this.formula) {
-                case UNIFORM -> bonus += LootUtils.randomInRange(0, this.bonus.getInteger() * level);
+                case UNIFORM -> bonus += LootUtils.randomInRange(0, this.bonus.getInteger(context) * level);
                 case BINOMIAL -> {
-                    int n = level + this.bonus.getInteger();
-                    double p = this.probability.getDouble();
+                    int n = level + this.bonus.getInteger(context);
+                    double p = this.probability.getDouble(context);
                     for (int i = 0; i < n; i++)
                         if (LootUtils.checkChance(p))
                             bonus++;

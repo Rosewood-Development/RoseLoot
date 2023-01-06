@@ -84,7 +84,7 @@ public class PotionItemLootMeta extends ItemLootMeta {
 
         if (this.color != null) itemMeta.setColor(this.color);
         itemMeta.setBasePotionData(new PotionData(this.potionType, this.extended && this.potionType.isExtendable(), this.upgraded && this.potionType.isUpgradeable()));
-        if (this.customEffects != null) this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(), y));
+        if (this.customEffects != null) this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(context), y));
 
         itemStack.setItemMeta(itemMeta);
 
@@ -136,8 +136,8 @@ public class PotionItemLootMeta extends ItemLootMeta {
             this.icon = icon;
         }
 
-        public PotionEffect toPotionEffect() {
-            return new PotionEffect(this.potionEffectType, this.duration.getInteger(), this.amplifier.getInteger(), this.ambient, this.particles, this.icon);
+        public PotionEffect toPotionEffect(LootContext context) {
+            return new PotionEffect(this.potionEffectType, this.duration.getInteger(context), this.amplifier.getInteger(context), this.ambient, this.particles, this.icon);
         }
 
     }

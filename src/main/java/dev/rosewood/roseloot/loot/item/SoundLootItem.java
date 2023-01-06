@@ -29,11 +29,11 @@ public class SoundLootItem implements TriggerableLootItem {
     public void trigger(LootContext context, Location location) {
         Optional<Player> player = context.getLootingPlayer();
         if (this.playerOnly) {
-            player.ifPresent(value -> value.playSound(location, this.sound, this.category, (float) this.volume.getDouble(), (float) this.pitch.getDouble()));
+            player.ifPresent(value -> value.playSound(location, this.sound, this.category, (float) this.volume.getDouble(context), (float) this.pitch.getDouble(context)));
         } else {
             World world = location.getWorld();
             if (world != null)
-                world.playSound(location, this.sound, this.category, (float) this.volume.getDouble(), (float) this.pitch.getDouble());
+                world.playSound(location, this.sound, this.category, (float) this.volume.getDouble(context), (float) this.pitch.getDouble(context));
         }
     }
 
