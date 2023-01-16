@@ -1,22 +1,42 @@
-package dev.rosewood.roseloot.util;
+package dev.rosewood.roseloot.provider;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
-public abstract class NumberProvider {
+public interface NumberProvider {
 
-    public int getInteger(LootContext context) {
+    default int getInteger(LootContext context) {
         return (int) Math.round(this.getDouble(context));
     }
 
-    public abstract double getDouble(LootContext context);
+    double getDouble(LootContext context);
 
-    public static NumberProvider fromSection(ConfigurationSection section, String value, int defaultValue) {
+    static NumberProvider fromString(String string) {
+        if (string.endsWith("%")) {
+            if (string.startsWith("%")) {
+                return new PlaceholderNumberProvider(string);
+            } else {
+                try {
+                    double percentageValue = Double.parseDouble(string.substring(0, string.length() - 1));
+                    return new ConstantNumberProvider(percentageValue / 100);
+                } catch (NumberFormatException ignored) { }
+            }
+        }
+
+        try {
+            return new ConstantNumberProvider(Double.parseDouble(string));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    static NumberProvider fromSection(ConfigurationSection section, String value, int defaultValue) {
         return fromSection(section, value, (double) defaultValue);
     }
 
-    public static NumberProvider fromSection(ConfigurationSection section, String value, Double defaultValue) {
-        if (section == null || value == null || value.isEmpty()) {
+    static NumberProvider fromSection(ConfigurationSection section, String key, Double defaultValue) {
+        if (section == null || key == null || key.isEmpty()) {
             if (defaultValue == null) {
                 return null;
             } else {
@@ -24,8 +44,8 @@ public abstract class NumberProvider {
             }
         }
 
-        if (section.isConfigurationSection(value)) {
-            ConfigurationSection numberSection = section.getConfigurationSection(value);
+        if (section.isConfigurationSection(key)) {
+            ConfigurationSection numberSection = section.getConfigurationSection(key);
             if (numberSection == null)
                 return new ConstantNumberProvider(defaultValue);
 
@@ -38,9 +58,9 @@ public abstract class NumberProvider {
                 NumberProvider p = fromSection(numberSection, "p", defaultValue);
                 return new BinomialDistributionNumberProvider(n, p);
             }
-        } else if (section.contains(value)) {
-            if (section.isString(value)) {
-                String stringValue = section.getString(value, "");
+        } else if (section.contains(key)) {
+            if (section.isString(key)) {
+                String stringValue = section.getString(key, "");
 
                 if (stringValue.endsWith("%")) {
                     if (stringValue.startsWith("%")) {
@@ -54,7 +74,7 @@ public abstract class NumberProvider {
                     }
                 }
             } else {
-                double doubleValue = section.getDouble(value, Double.MIN_VALUE);
+                double doubleValue = section.getDouble(key, Double.MIN_VALUE);
                 if (doubleValue != Double.MIN_VALUE)
                     return new ConstantNumberProvider(doubleValue);
             }
@@ -63,19 +83,15 @@ public abstract class NumberProvider {
         if (defaultValue == null) {
             return null;
         } else {
-            return new ConstantNumberProvider(section.getDouble(value, defaultValue));
+            return new ConstantNumberProvider(section.getDouble(key, defaultValue));
         }
     }
 
-    public static NumberProvider constant(double value) {
-        return new ConstantNumberProvider(value);
-    }
-
-    private static class ConstantNumberProvider extends NumberProvider {
+    class ConstantNumberProvider implements NumberProvider {
 
         private final double value;
 
-        public ConstantNumberProvider(double value) {
+        private ConstantNumberProvider(double value) {
             this.value = value;
         }
 
@@ -86,11 +102,11 @@ public abstract class NumberProvider {
 
     }
 
-    private static class UniformDistributionNumberProvider extends NumberProvider {
+    class UniformDistributionNumberProvider implements NumberProvider {
 
         private final NumberProvider min, max;
 
-        public UniformDistributionNumberProvider(NumberProvider min, NumberProvider max) {
+        private UniformDistributionNumberProvider(NumberProvider min, NumberProvider max) {
             this.min = min;
             this.max = max;
         }
@@ -102,11 +118,11 @@ public abstract class NumberProvider {
 
     }
 
-    private static class BinomialDistributionNumberProvider extends NumberProvider {
+    class BinomialDistributionNumberProvider implements NumberProvider {
 
         private final NumberProvider n, p;
 
-        public BinomialDistributionNumberProvider(NumberProvider n, NumberProvider p) {
+        private BinomialDistributionNumberProvider(NumberProvider n, NumberProvider p) {
             this.n = n;
             this.p = p;
         }
@@ -131,11 +147,11 @@ public abstract class NumberProvider {
 
     }
 
-    private static class PlaceholderNumberProvider extends NumberProvider {
+    class PlaceholderNumberProvider implements NumberProvider {
 
         private final String placeholder;
 
-        public PlaceholderNumberProvider(String placeholder) {
+        private PlaceholderNumberProvider(String placeholder) {
             this.placeholder = placeholder;
         }
 

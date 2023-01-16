@@ -43,8 +43,21 @@ public class LootResult {
     }
 
     /**
+     * Checks if something with existing values should be overwritten
+     *
+     * @param type the type of existing value
+     * @return true if the existing value should be overwritten
+     */
+    public boolean doesOverwriteExisting(OverwriteExisting type) {
+        // TODO: Rewrite the system to store an EnumSet of OverwriteExisting values and remove the NONE and ALL values
+        // TODO: Doing this removes the need for the combine method and allows for more flexibility
+        return this.overwriteExisting == type || this.overwriteExisting == OverwriteExisting.ALL;
+    }
+
+    /**
      * @return true if this LootTable should overwrite items, false otherwise
      */
+    @Deprecated(forRemoval = true)
     public boolean shouldOverwriteItems() {
         return this.overwriteExisting == OverwriteExisting.ITEMS || this.overwriteExisting == OverwriteExisting.ALL;
     }
@@ -52,6 +65,7 @@ public class LootResult {
     /**
      * @return true if this LootTable should overwrite experience, false otherwise
      */
+    @Deprecated(forRemoval = true)
     public boolean shouldOverwriteExperience() {
         return this.overwriteExisting == OverwriteExisting.EXPERIENCE || this.overwriteExisting == OverwriteExisting.ALL;
     }

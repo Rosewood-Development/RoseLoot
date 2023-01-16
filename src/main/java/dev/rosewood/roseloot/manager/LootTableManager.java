@@ -44,7 +44,7 @@ import dev.rosewood.roseloot.loot.table.LootTableType;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
@@ -116,6 +116,7 @@ public class LootTableManager extends Manager implements Listener {
 
                     String overwriteExistingString = configuration.getString("overwrite-existing", "none");
                     OverwriteExisting overwriteExisting = OverwriteExisting.fromString(overwriteExistingString);
+                    boolean allowRecursion = configuration.getBoolean("allow-recursion", false);
 
                     List<LootCondition> conditions = new ArrayList<>();
                     List<String> conditionStrings = configuration.getStringList("conditions");
@@ -182,7 +183,7 @@ public class LootTableManager extends Manager implements Listener {
                         stringBuilder.append(piece);
                     }
 
-                    this.lootTables.put(type, new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting));
+                    this.lootTables.put(type, new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting, allowRecursion));
                 } catch (Exception e) {
                     this.failToLoad(file, e.getMessage());
                 }
@@ -314,7 +315,7 @@ public class LootTableManager extends Manager implements Listener {
             if (!passesConditions)
                 continue;
 
-            lootContents.add(lootTable.generate(lootContext, true));
+            lootTable.populate(lootContext, lootContents, true);
             overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue());
         }
 
@@ -330,7 +331,7 @@ public class LootTableManager extends Manager implements Listener {
      */
     public LootResult getLoot(LootTable lootTable, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
-        lootContents.add(lootTable.generate(lootContext));
+        lootTable.populate(lootContext, lootContents);
         return this.callEvent(new LootResult(lootContext, lootContents, OverwriteExisting.NONE));
     }
 

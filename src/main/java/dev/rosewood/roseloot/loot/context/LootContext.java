@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.context;
 import dev.rosewood.rosegarden.hook.PlaceholderAPIHook;
 import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
+import dev.rosewood.roseloot.loot.LootTable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,6 +21,7 @@ public class LootContext {
     private final double luck;
     private Map<Enchantment, Integer> cachedEnchantmentLevels;
     private final LootPlaceholders placeholders;
+    private LootTable currentLootTable;
 
     private LootContext(double luck, Map<Enchantment, Integer> cachedEnchantmentLevels) {
         this.paramStorage = new LinkedHashMap<>();
@@ -161,6 +163,23 @@ public class LootContext {
     @NotNull
     public String applyPlaceholders(String text) {
         return PlaceholderAPIHook.applyPlaceholders(this.getLootingPlayer().orElse(null), this.placeholders.apply(text));
+    }
+
+    /**
+     * @return the last LootTable to be used with this LootContext
+     */
+    @NotNull
+    public Optional<LootTable> getCurrentLootTable() {
+        return Optional.ofNullable(this.currentLootTable);
+    }
+
+    /**
+     * Sets the LootTable that is currently being generated
+     *
+     * @param lootTable the LootTable that is currently being generated
+     */
+    public void setCurrentLootTable(LootTable lootTable) {
+        this.currentLootTable = lootTable;
     }
 
     /**

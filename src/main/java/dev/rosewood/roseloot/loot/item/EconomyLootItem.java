@@ -2,7 +2,7 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.hook.economy.EconomyPlugin;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;

@@ -7,7 +7,7 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.util.EnchantingUtils;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;

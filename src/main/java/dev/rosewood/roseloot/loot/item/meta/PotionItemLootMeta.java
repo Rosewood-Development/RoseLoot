@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

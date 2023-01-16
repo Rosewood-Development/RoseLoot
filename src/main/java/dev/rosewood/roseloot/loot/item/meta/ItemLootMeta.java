@@ -7,7 +7,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
 import java.util.List;

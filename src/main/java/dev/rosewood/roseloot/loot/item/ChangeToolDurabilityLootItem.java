@@ -4,7 +4,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.hook.ItemsAdderHook;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

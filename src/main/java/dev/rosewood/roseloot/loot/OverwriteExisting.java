@@ -17,10 +17,12 @@ public enum OverwriteExisting {
 
     public static OverwriteExisting fromString(String name) {
         switch (name.toLowerCase()) {
-            case "true":
+            case "true" -> {
                 return ALL;
-            case "false":
+            }
+            case "false" -> {
                 return NONE;
+            }
         }
 
         for (OverwriteExisting value : values())

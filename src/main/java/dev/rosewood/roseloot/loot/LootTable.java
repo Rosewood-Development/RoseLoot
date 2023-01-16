@@ -2,39 +2,42 @@ package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
-public class LootTable implements CheckedLootItemGenerator {
+public class LootTable implements LootContentsPopulator {
 
     private final String name;
     private final LootTableType type;
     private final List<LootCondition> conditions;
     private final List<LootPool> pools;
     private final OverwriteExisting overwriteExisting;
+    private final boolean allowRecursion;
 
-    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, OverwriteExisting overwriteExisting) {
+    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, OverwriteExisting overwriteExisting, boolean allowRecursion) {
         this.name = name;
         this.type = type;
         this.conditions = conditions;
         this.pools = pools;
         this.overwriteExisting = overwriteExisting;
+        this.allowRecursion = allowRecursion;
     }
 
     @Override
-    public List<LootItem> generate(LootContext context) {
-        return this.generate(context, false);
+    public void populate(LootContext context, LootContents contents) {
+        this.populate(context, contents, false);
     }
 
-    public List<LootItem> generate(LootContext context, boolean ignoreChecks) {
+    public void populate(LootContext context, LootContents contents, boolean ignoreChecks) {
         this.type.validateLootContext(context);
 
-        if (!ignoreChecks && !this.check(context))
-            return List.of();
+        context.setCurrentLootTable(this);
 
-        return this.pools.stream().flatMap(x -> x.generate(context).stream()).toList();
+        if (!ignoreChecks && !this.check(context))
+            return;
+
+        this.pools.forEach(x -> x.populate(context, contents));
     }
 
     @Override
@@ -66,6 +69,13 @@ public class LootTable implements CheckedLootItemGenerator {
      */
     public OverwriteExisting getOverwriteExistingValue() {
         return this.overwriteExisting;
+    }
+
+    /**
+     * @return true if this LootTable allows recursion
+     */
+    public boolean allowsRecursion() {
+        return this.allowRecursion;
     }
 
 }

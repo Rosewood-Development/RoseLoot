@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -52,9 +53,10 @@ public class LootTableLootItem implements RecursiveLootItem {
             }
         }
 
-        if (this.running) {
+        if (this.running && !context.getCurrentLootTable().map(LootTable::allowsRecursion).orElse(false)) {
             RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
-                    "This loot table will be empty and log this error message until fixed.");
+                    "This loot table will be empty unless the recursion issue is fixed. If recursion was intentional, you can set `allow-recursion: true` " +
+                    "in the loot table file to allow it. Please note this can create the potential to crash your server if you create an infinite loop.");
             this.running = false;
             return List.of();
         }
@@ -62,7 +64,11 @@ public class LootTableLootItem implements RecursiveLootItem {
         this.running = true;
         List<LootItem> lootItems;
         if (this.lootTable != null) {
-            lootItems = this.lootTable.generate(context);
+            LootTable currentLootTable = context.getCurrentLootTable().orElse(null);
+            LootContents lootContents = new LootContents(context);
+            this.lootTable.populate(context, lootContents);
+            lootItems = lootContents.getContents();
+            context.setCurrentLootTable(currentLootTable);
         } else {
             int lootingModifier = 0;
             Optional<ItemStack> itemUsed = context.getItemUsed();

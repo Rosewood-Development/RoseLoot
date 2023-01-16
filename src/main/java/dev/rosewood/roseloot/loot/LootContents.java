@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.RecursiveLootItem;
 import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import org.bukkit.Location;
@@ -34,10 +35,10 @@ public class LootContents {
      * @param lootItems The LootItems to add
      */
     public void add(List<LootItem> lootItems) {
-        // Turn GenerativeLootItem into a List<LootItem> and add them to the stored contents
-        // Continue doing this until we have no more GenerativeLootItem to process
+        // Turn RecursiveLootItem into a List<LootItem> and add them to the stored contents
+        // Continue doing this until we have no more RecursiveLootItem to process
         lootItems.stream()
-                .flatMap(x -> x instanceof RecursiveLootItem recursiveLootItem ? this.recursivelyCreateGenerativeLootItems(recursiveLootItem).stream() : Stream.of(x))
+                .flatMap(x -> x instanceof RecursiveLootItem recursiveLootItem ? this.recursivelyGenerateLootItems(recursiveLootItem).stream() : Stream.of(x))
                 .forEach(this.contents::add);
 
         // Attempt to merge LootItems
@@ -60,16 +61,20 @@ public class LootContents {
         });
     }
 
-    private List<LootItem> recursivelyCreateGenerativeLootItems(RecursiveLootItem recursiveLootItem) {
+    private List<LootItem> recursivelyGenerateLootItems(RecursiveLootItem recursiveLootItem) {
         List<LootItem> lootItems = new ArrayList<>();
         for (LootItem lootItem : recursiveLootItem.generate(this.context)) {
             if (lootItem instanceof RecursiveLootItem generated) {
-                lootItems.addAll(this.recursivelyCreateGenerativeLootItems(generated));
+                lootItems.addAll(this.recursivelyGenerateLootItems(generated));
             } else {
                 lootItems.add(lootItem);
             }
         }
         return lootItems;
+    }
+
+    public List<LootItem> getContents() {
+        return Collections.unmodifiableList(this.contents);
     }
 
     /**

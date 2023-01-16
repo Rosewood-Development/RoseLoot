@@ -36,6 +36,7 @@ public final class LootContextParams {
     public static final LootContextParam<LivingEntity> LOOTED_ENTITY = create("looted_entity", LivingEntity.class, builder ->
             builder.withPlayer(LivingEntity::getKiller).withPlaceholders((x, y) -> {
                 y.add("entity_type", x.getType().name().toLowerCase());
+                y.add("entity_key", x.getType().getKey().getKey());
                 Optional.ofNullable(x.getCustomName()).ifPresent(name -> y.add("entity_name", name));
             }));
     public static final LootContextParam<Block> LOOTED_BLOCK = create("looted_block", Block.class, builder ->

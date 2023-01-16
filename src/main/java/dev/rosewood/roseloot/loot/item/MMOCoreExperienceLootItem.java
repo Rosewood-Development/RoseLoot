@@ -2,7 +2,7 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.hook.MMOCoreHook;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 

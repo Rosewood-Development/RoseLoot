@@ -4,18 +4,19 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
-public class LootEntry implements CheckedLootItemGenerator {
+public class LootEntry implements LootContentsPopulator {
 
     private final List<LootCondition> conditions;
     private final NumberProvider weight;
     private final NumberProvider quality;
     private final List<LootItem> lootItems;
+
     private final ChildrenStrategy childrenStrategy;
     private final List<LootEntry> children;
 
@@ -29,19 +30,20 @@ public class LootEntry implements CheckedLootItemGenerator {
     }
 
     @Override
-    public List<LootItem> generate(LootContext context) {
-        List<LootItem> generatedItems = new ArrayList<>(this.lootItems);
+    public void populate(LootContext context, LootContents contents) {
+        contents.add(this.lootItems);
+
         if (this.children != null && this.childrenStrategy != null) {
             switch (this.childrenStrategy) {
-                case NORMAL:
+                case NORMAL -> {
                     List<LootEntry> unweightedEntries = new ArrayList<>();
                     RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
                     for (LootEntry child : this.children) {
-                        if (!child.check(context))
-                            continue;
-
                         if (child.isWeighted()) {
-                            // If weighted, add to the random entries
+                            // If weighted, add to the random entries if it passes conditions
+                            if (!child.check(context))
+                                continue;
+
                             randomEntries.add(child.getWeight(context), child);
                         } else {
                             // Otherwise, generate it right away
@@ -50,29 +52,30 @@ public class LootEntry implements CheckedLootItemGenerator {
                     }
 
                     if (!randomEntries.isEmpty())
-                        generatedItems.addAll(randomEntries.next().generate(context));
-                    generatedItems.addAll(unweightedEntries.stream().flatMap(x -> x.generate(context).stream()).toList());
-                    break;
-                case SEQUENTIAL:
+                        randomEntries.next().populate(context, contents);
+
+                    for (LootEntry entry : unweightedEntries)
+                        if (entry.check(context))
+                            entry.populate(context, contents);
+                }
+                case SEQUENTIAL -> {
                     for (LootEntry child : this.children) {
                         if (!child.check(context))
                             break;
 
-                        generatedItems.addAll(child.generate(context));
+                        child.populate(context, contents);
                     }
-                    break;
-                case FIRST_PASSING:
+                }
+                case FIRST_PASSING -> {
                     for (LootEntry child : this.children) {
                         if (child.check(context)) {
-                            generatedItems.addAll(child.generate(context));
+                            child.populate(context, contents);
                             break;
                         }
                     }
-                    break;
+                }
             }
         }
-
-        return generatedItems;
     }
 
     @Override

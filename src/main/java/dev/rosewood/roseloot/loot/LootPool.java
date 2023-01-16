@@ -2,14 +2,15 @@ package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.LootItem;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.RandomCollection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.bukkit.inventory.ItemStack;
 
-public class LootPool implements CheckedLootItemGenerator {
+public class LootPool implements LootContentsPopulator {
 
     private final List<LootCondition> conditions;
     private final NumberProvider rolls, bonusRolls;
@@ -23,19 +24,18 @@ public class LootPool implements CheckedLootItemGenerator {
     }
 
     @Override
-    public List<LootItem> generate(LootContext context) {
+    public void populate(LootContext context, LootContents contents) {
         if (!this.check(context))
-            return List.of();
+            return;
 
-        List<LootItem> lootItems = new ArrayList<>();
         List<LootEntry> unweightedEntries = new ArrayList<>();
         RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
         for (LootEntry entry : this.entries) {
-            if (!entry.check(context))
-                continue;
-
             if (entry.isWeighted()) {
-                // If weighted, add to the random entries
+                // If weighted, add to the random entries if it passes conditions
+                if (!entry.check(context))
+                    continue;
+
                 randomEntries.add(entry.getWeight(context), entry);
             } else {
                 // Otherwise, generate it right away
@@ -43,14 +43,16 @@ public class LootPool implements CheckedLootItemGenerator {
             }
         }
 
+        Map<LootEntry, Boolean> checkedConditions = new HashMap<>();
         int numRolls = this.rolls.getInteger(context) + (int) Math.round(this.bonusRolls.getDouble(context) * context.getLuckLevel());
         for (int i = 0; i < numRolls; i++) {
             if (!randomEntries.isEmpty())
-                lootItems.addAll(randomEntries.next().generate(context));
-            lootItems.addAll(unweightedEntries.stream().flatMap(x -> x.generate(context).stream()).toList());
-        }
+                randomEntries.next().populate(context, contents);
 
-        return lootItems;
+            for (LootEntry entry : unweightedEntries)
+                if (checkedConditions.computeIfAbsent(entry, x -> x.check(context)))
+                    entry.populate(context, contents);
+        }
     }
 
     @Override

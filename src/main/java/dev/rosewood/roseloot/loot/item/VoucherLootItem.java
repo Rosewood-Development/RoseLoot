@@ -6,7 +6,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.util.EnchantingUtils;
-import dev.rosewood.roseloot.util.NumberProvider;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.VoucherUtils;
 import java.util.ArrayList;
 import java.util.List;
