@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
@@ -50,7 +51,7 @@ public class FishingListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         List<ItemStack> items = new ArrayList<>(lootContents.getItems());
-        if (lootResult.shouldOverwriteItems()) {
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
             // Manually change the item on the hook to the first item in the loot contents
             if (items.isEmpty()) {
                 itemCaught.remove();
@@ -61,7 +62,7 @@ public class FishingListener implements Listener {
             }
         }
 
-        if (lootResult.shouldOverwriteExperience())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
             event.setExpToDrop(0);
 
         // Drop items and experience

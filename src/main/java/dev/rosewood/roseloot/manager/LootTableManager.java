@@ -53,6 +53,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -92,10 +93,8 @@ public class LootTableManager extends Manager implements Listener {
 
             File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
             File examplesDirectory = new File(directory, "examples");
-            if (!examplesDirectory.exists()) {
+            if (!examplesDirectory.exists())
                 examplesDirectory.mkdirs();
-                // TODO: Create additional example files
-            }
 
             // Copy README.txt file if it doesn't already exist
             File readme = new File(directory, "README.txt");
@@ -114,8 +113,18 @@ public class LootTableManager extends Manager implements Listener {
                         continue;
                     }
 
-                    String overwriteExistingString = configuration.getString("overwrite-existing", "none");
-                    OverwriteExisting overwriteExisting = OverwriteExisting.fromString(overwriteExistingString);
+                    Set<OverwriteExisting> overwriteExisting;
+                    if (configuration.isString("overwrite-existing")) {
+                        String overwriteExistingString = configuration.getString("overwrite-existing", "none");
+                        overwriteExisting = switch (overwriteExistingString.toLowerCase()) {
+                            case "all", "true" -> OverwriteExisting.all();
+                            case "none", "false" -> OverwriteExisting.none();
+                            default -> OverwriteExisting.fromStrings(List.of(overwriteExistingString));
+                        };
+                    } else {
+                        overwriteExisting = OverwriteExisting.fromStrings(configuration.getStringList("overwrite-existing"));
+                    }
+
                     boolean allowRecursion = configuration.getBoolean("allow-recursion", false);
 
                     List<LootCondition> conditions = new ArrayList<>();
@@ -309,14 +318,14 @@ public class LootTableManager extends Manager implements Listener {
      */
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
-        OverwriteExisting overwriteExisting = OverwriteExisting.NONE;
+        Set<OverwriteExisting> overwriteExisting = OverwriteExisting.none();
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
             boolean passesConditions = lootTable.check(lootContext);
             if (!passesConditions)
                 continue;
 
             lootTable.populate(lootContext, lootContents, true);
-            overwriteExisting = OverwriteExisting.combine(overwriteExisting, lootTable.getOverwriteExistingValue());
+            overwriteExisting.addAll(lootTable.getOverwriteExistingValues());
         }
 
         return this.callEvent(new LootResult(lootContext, lootContents, overwriteExisting));
@@ -332,7 +341,7 @@ public class LootTableManager extends Manager implements Listener {
     public LootResult getLoot(LootTable lootTable, LootContext lootContext) {
         LootContents lootContents = new LootContents(lootContext);
         lootTable.populate(lootContext, lootContents);
-        return this.callEvent(new LootResult(lootContext, lootContents, OverwriteExisting.NONE));
+        return this.callEvent(new LootResult(lootContext, lootContents, OverwriteExisting.none()));
     }
 
     /**
@@ -349,7 +358,7 @@ public class LootTableManager extends Manager implements Listener {
         PostLootGenerateEvent event = new PostLootGenerateEvent(lootResult);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())
-            return new LootResult(lootResult.getLootContext(), new LootContents(lootResult.getLootContext()), OverwriteExisting.NONE);
+            return new LootResult(lootResult.getLootContext(), new LootContents(lootResult.getLootContext()), OverwriteExisting.none());
 
         if (!event.shouldDropItems())
             lootResult.getLootContents().removeItems();
@@ -360,7 +369,7 @@ public class LootTableManager extends Manager implements Listener {
         if (!event.shouldTriggerExtras())
             lootResult.getLootContents().removeExtraTriggers();
 
-        lootResult.setOverwriteExisting(event.getOverwriteExisting());
+        lootResult.setOverwriteExistingValues(event.getOverwriteExistingValues());
 
         return lootResult;
     }

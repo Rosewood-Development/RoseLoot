@@ -1,14 +1,17 @@
 package dev.rosewood.roseloot.loot;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
 
 public class LootResult {
 
     private final LootContext lootContext;
     private final LootContents lootContents;
-    private OverwriteExisting overwriteExisting;
+    private Set<OverwriteExisting> overwriteExisting;
 
-    public LootResult(LootContext lootContext, LootContents lootContents, OverwriteExisting overwriteExisting) {
+    public LootResult(LootContext lootContext, LootContents lootContents, Set<OverwriteExisting> overwriteExisting) {
         this.lootContext = lootContext;
         this.lootContents = lootContents;
         this.overwriteExisting = overwriteExisting;
@@ -29,17 +32,17 @@ public class LootResult {
     }
 
     /**
-     * @return the OverwriteExisting value
+     * @return the OverwriteExisting values
      */
-    public OverwriteExisting getOverwriteExisting() {
+    public Set<OverwriteExisting> getOverwriteExistingValues() {
         return this.overwriteExisting;
     }
 
     /**
-     * @param overwriteExisting the OverwriteExisting value to set
+     * @param overwriteExisting the OverwriteExisting values to set
      */
-    public void setOverwriteExisting(OverwriteExisting overwriteExisting) {
-        this.overwriteExisting = overwriteExisting;
+    public void setOverwriteExistingValues(Collection<OverwriteExisting> overwriteExisting) {
+        this.overwriteExisting = EnumSet.copyOf(overwriteExisting);
     }
 
     /**
@@ -49,25 +52,7 @@ public class LootResult {
      * @return true if the existing value should be overwritten
      */
     public boolean doesOverwriteExisting(OverwriteExisting type) {
-        // TODO: Rewrite the system to store an EnumSet of OverwriteExisting values and remove the NONE and ALL values
-        // TODO: Doing this removes the need for the combine method and allows for more flexibility
-        return this.overwriteExisting == type || this.overwriteExisting == OverwriteExisting.ALL;
-    }
-
-    /**
-     * @return true if this LootTable should overwrite items, false otherwise
-     */
-    @Deprecated(forRemoval = true)
-    public boolean shouldOverwriteItems() {
-        return this.overwriteExisting == OverwriteExisting.ITEMS || this.overwriteExisting == OverwriteExisting.ALL;
-    }
-
-    /**
-     * @return true if this LootTable should overwrite experience, false otherwise
-     */
-    @Deprecated(forRemoval = true)
-    public boolean shouldOverwriteExperience() {
-        return this.overwriteExisting == OverwriteExisting.EXPERIENCE || this.overwriteExisting == OverwriteExisting.ALL;
+        return this.overwriteExisting.contains(type);
     }
 
 }

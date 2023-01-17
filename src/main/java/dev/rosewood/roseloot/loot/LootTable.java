@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.inventory.ItemStack;
 
 public class LootTable implements LootContentsPopulator {
@@ -12,10 +13,10 @@ public class LootTable implements LootContentsPopulator {
     private final LootTableType type;
     private final List<LootCondition> conditions;
     private final List<LootPool> pools;
-    private final OverwriteExisting overwriteExisting;
+    private final Set<OverwriteExisting> overwriteExisting;
     private final boolean allowRecursion;
 
-    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, OverwriteExisting overwriteExisting, boolean allowRecursion) {
+    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, Set<OverwriteExisting> overwriteExisting, boolean allowRecursion) {
         this.name = name;
         this.type = type;
         this.conditions = conditions;
@@ -65,9 +66,9 @@ public class LootTable implements LootContentsPopulator {
     }
 
     /**
-     * @return the overwrite-existing value defined in the LootTable
+     * @return the overwrite-existing values defined in the LootTable
      */
-    public OverwriteExisting getOverwriteExistingValue() {
+    public Set<OverwriteExisting> getOverwriteExistingValues() {
         return this.overwriteExisting;
     }
 

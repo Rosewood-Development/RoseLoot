@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
@@ -42,7 +43,7 @@ public class PiglinBarterListener implements Listener {
 
         // Overwrite existing loot if applicable
         List<ItemStack> outputItems = event.getOutcome();
-        if (lootResult.shouldOverwriteItems())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
             outputItems.clear();
 
         // Set items and drop experience

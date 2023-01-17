@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -71,10 +72,10 @@ public class RoseStackerEntityDeathListener implements Listener {
             LootContents lootContents = lootResult.getLootContents();
 
             // Overwrite existing drops if applicable
-            if (lootResult.shouldOverwriteItems())
+            if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
                 drops.getDrops().clear();
 
-            if (lootResult.shouldOverwriteExperience())
+            if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
                 drops.setExperience(0);
 
             // Add items to drops and adjust experience

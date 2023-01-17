@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
@@ -66,10 +67,10 @@ public class EntityListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteItems())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
             event.getDrops().clear();
 
-        if (lootResult.shouldOverwriteExperience())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
             event.setDroppedExp(0);
 
         // Add items to drops and adjust experience
@@ -134,7 +135,7 @@ public class EntityListener implements Listener {
         Location dropLocation = event.getItemDrop().getLocation();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteItems())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
             event.setCancelled(true);
 
         // Add items to drops and spawn experience

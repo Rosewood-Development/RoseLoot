@@ -3,8 +3,11 @@ package dev.rosewood.roseloot.event;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -23,7 +26,7 @@ public class PostLootGenerateEvent extends Event implements Cancellable {
     private final LootResult lootResult;
     private boolean cancelled;
     private boolean dropItems, dropExperience, triggerExtras;
-    private OverwriteExisting overwriteExisting;
+    private Set<OverwriteExisting> overwriteExisting;
 
     public PostLootGenerateEvent(LootResult lootResult) {
         super(!Bukkit.isPrimaryThread());
@@ -31,7 +34,7 @@ public class PostLootGenerateEvent extends Event implements Cancellable {
         this.dropItems = true;
         this.dropExperience = true;
         this.triggerExtras = true;
-        this.overwriteExisting = lootResult.getOverwriteExisting();
+        this.overwriteExisting = lootResult.getOverwriteExistingValues();
     }
 
     /**
@@ -65,10 +68,10 @@ public class PostLootGenerateEvent extends Event implements Cancellable {
     }
 
     /**
-     * @return the OverwriteExisting result of the loot generation
+     * @return the OverwriteExisting values of the loot generation
      */
     @NotNull
-    public OverwriteExisting getOverwriteExisting() {
+    public Set<OverwriteExisting> getOverwriteExistingValues() {
         return this.overwriteExisting;
     }
 
@@ -94,12 +97,12 @@ public class PostLootGenerateEvent extends Event implements Cancellable {
     }
 
     /**
-     * Sets the OverwriteExisting state of the loot generation.
+     * Sets the OverwriteExisting values for the loot generation.
      *
-     * @param overwriteExisting the new OverwriteExisting state of the loot generation
+     * @param overwriteExisting the new OverwriteExisting values for the loot generation
      */
-    public void setOverwriteExisting(OverwriteExisting overwriteExisting) {
-        this.overwriteExisting = overwriteExisting;
+    public void setOverwriteExistingValues(Collection<OverwriteExisting> overwriteExisting) {
+        this.overwriteExisting = EnumSet.copyOf(overwriteExisting);
     }
 
     /**

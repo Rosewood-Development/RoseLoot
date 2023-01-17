@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
@@ -54,7 +55,7 @@ public class PaperListener implements Listener {
                 LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.HARVEST, lootContext);
                 LootContents lootContents = lootResult.getLootContents();
 
-                if (!lootResult.shouldOverwriteItems()) {
+                if (!lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
                     ItemStack clone = itemStack.clone();
                     clone.setAmount(1);
                     drops.add(clone);
@@ -91,7 +92,7 @@ public class PaperListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteItems()) {
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
             event.setCancelled(true);
             block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
             block.setBlockData(event.getNewState());

@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
@@ -63,10 +64,10 @@ public class BlockListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteItems())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
             event.setDropItems(false);
 
-        if (lootResult.shouldOverwriteExperience())
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
             event.setExpToDrop(0);
 
         // Drop items and experience
@@ -108,7 +109,7 @@ public class BlockListener implements Listener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
-        if (lootResult.shouldOverwriteItems()) {
+        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
             if (Setting.SIMULATE_LEAVESDECAYEVENT.getBoolean()) {
                 LootedLeavesDecayEvent lootedEvent = new LootedLeavesDecayEvent(block);
                 Bukkit.getPluginManager().callEvent(lootedEvent);
@@ -154,7 +155,7 @@ public class BlockListener implements Listener {
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
-            if (lootResult.shouldOverwriteItems()) {
+            if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
                 iterator.remove();
                 exploded.setType(Material.AIR);
             }
@@ -207,7 +208,7 @@ public class BlockListener implements Listener {
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
             LootContents lootContents = lootResult.getLootContents();
 
-            if (lootResult.shouldOverwriteItems()) {
+            if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
                 iterator.remove();
                 exploded.setType(Material.AIR);
             }
