@@ -13,6 +13,7 @@ import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -30,40 +31,69 @@ public class LootGenerateListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLootGenerate(LootGenerateEvent event) {
-        if (!(event.getInventoryHolder() instanceof Container))
-            return;
+        if (event.getInventoryHolder() instanceof Container container) {
+            Block block = container.getBlock();
+            if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
+                return;
 
-        Block block = ((Container) event.getInventoryHolder()).getBlock();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
-            return;
+            LivingEntity looter = null;
+            if (event.getEntity() instanceof LivingEntity)
+                looter = (LivingEntity) event.getEntity();
 
-        LivingEntity looter = null;
-        if (event.getEntity() instanceof LivingEntity)
-            looter = (LivingEntity) event.getEntity();
+            LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter))
+                    .put(LootContextParams.ORIGIN, block.getLocation())
+                    .put(LootContextParams.LOOTER, looter)
+                    .put(LootContextParams.LOOTED_BLOCK, block)
+                    .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
+                    .build();
+            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
+            LootContents lootContents = lootResult.getLootContents();
 
-        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter))
-                .put(LootContextParams.ORIGIN, block.getLocation())
-                .put(LootContextParams.LOOTER, looter)
-                .put(LootContextParams.LOOTED_BLOCK, block)
-                .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
-                .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
-        LootContents lootContents = lootResult.getLootContents();
+            // Overwrite existing loot if applicable
+            if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
+                event.getLoot().clear();
 
-        // Overwrite existing loot if applicable
-        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
-            event.getLoot().clear();
+            // Set items and drop experience
+            event.getLoot().addAll(lootResult.getLootContents().getItems());
 
-        // Set items and drop experience
-        event.getLoot().addAll(lootResult.getLootContents().getItems());
+            int experience = lootContents.getExperience();
+            if (experience > 0) {
+                Location location = looter == null ? block.getLocation() : looter.getLocation();
+                block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            }
 
-        int experience = lootContents.getExperience();
-        if (experience > 0) {
-            Location location = looter == null ? block.getLocation() : looter.getLocation();
-            block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            lootContents.triggerExtras(block.getLocation());
+        } else if (event.getInventoryHolder() instanceof Entity entity) {
+            if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
+                return;
+
+            LivingEntity looter = null;
+            if (event.getEntity() instanceof LivingEntity)
+                looter = (LivingEntity) event.getEntity();
+
+            LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter))
+                    .put(LootContextParams.ORIGIN, entity.getLocation())
+                    .put(LootContextParams.LOOTER, looter)
+                    .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
+                    .build();
+            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
+            LootContents lootContents = lootResult.getLootContents();
+
+            // Overwrite existing loot if applicable
+            if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
+                event.getLoot().clear();
+
+            // Set items and drop experience
+            event.getLoot().addAll(lootResult.getLootContents().getItems());
+
+            int experience = lootContents.getExperience();
+            if (experience > 0) {
+                Location location = looter == null ? entity.getLocation() : looter.getLocation();
+                entity.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            }
+
+            lootContents.triggerExtras(entity.getLocation());
         }
-
-        lootContents.triggerExtras(block.getLocation());
     }
 
 }

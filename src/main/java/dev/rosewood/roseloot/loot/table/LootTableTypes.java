@@ -23,8 +23,8 @@ public class LootTableTypes {
             builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTER).required(LootContextParams.FISH_HOOK)
                     .optional(LootContextParams.HAS_EXISTING_ITEMS));
     public static final LootTableType CONTAINER = register("CONTAINER", builder ->
-            builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_BLOCK).required(LootContextParams.VANILLA_LOOT_TABLE_KEY)
-                    .optional(LootContextParams.LOOTER).optional(LootContextParams.HAS_EXISTING_ITEMS));
+            builder.required(LootContextParams.ORIGIN).required(LootContextParams.VANILLA_LOOT_TABLE_KEY)
+                    .optional(LootContextParams.LOOTED_BLOCK).optional(LootContextParams.LOOTER).optional(LootContextParams.HAS_EXISTING_ITEMS));
     public static final LootTableType PIGLIN_BARTER = register("PIGLIN_BARTER", builder ->
             builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_ENTITY).required(LootContextParams.INPUT_ITEM)
                     .optional(LootContextParams.LOOTER).optional(LootContextParams.HAS_EXISTING_ITEMS));
