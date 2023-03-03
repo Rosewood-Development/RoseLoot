@@ -12,9 +12,7 @@ import dev.rosewood.roseloot.loot.condition.CompoundLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.StringLootCondition;
-import dev.rosewood.roseloot.loot.condition.tags.AboveBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.AdvancementCondition;
-import dev.rosewood.roseloot.loot.condition.tags.BelowBlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
@@ -114,10 +112,8 @@ public class LootConditionManager extends Manager implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLootConditionRegistration(LootConditionRegistrationEvent event) {
-        event.registerLootCondition("above-block-type", AboveBlockTypeCondition.class);
         event.registerLootCondition("advancement", AdvancementCondition.class);
         event.registerLootCondition("baby", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Ageable.class).filter(x -> !x.isAdult()).isPresent());
-        event.registerLootCondition("below-block-type", BelowBlockTypeCondition.class);
         event.registerLootCondition("biome", BiomeCondition.class);
         event.registerLootCondition("block-data", BlockDataCondition.class);
         event.registerLootCondition("block-type", BlockTypeCondition.class);
