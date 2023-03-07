@@ -30,6 +30,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -47,6 +48,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
+@SuppressWarnings("unchecked")
 public final class LootUtils {
 
     private LootUtils() {
@@ -75,6 +77,16 @@ public final class LootUtils {
         this.put("PURPLE", Color.PURPLE);
         this.put("ORANGE", Color.ORANGE);
     }};
+
+    public static final Map<Class<? extends LivingEntity>, EntityType> ENTITY_CLASS_TO_TYPE;
+    static {
+        ENTITY_CLASS_TO_TYPE = new HashMap<>();
+        for (EntityType entityType : EntityType.values()) {
+            Class<? extends Entity> entityClass = entityType.getEntityClass();
+            if (entityClass != null)
+                ENTITY_CLASS_TO_TYPE.put((Class<? extends LivingEntity>) entityType.getEntityClass(), entityType);
+        }
+    }
 
     /**
      * Checks if a chance between 0-1 passes
@@ -355,19 +367,15 @@ public final class LootUtils {
         if (event == null)
             return null;
 
-        switch (event.getCause()) {
-            case BLOCK_EXPLOSION:
-                return ExplosionType.BLOCK;
-            case ENTITY_EXPLOSION:
-                if (event instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-                    Entity damager = entityDamageByEntityEvent.getDamager();
-                    if (damager instanceof Creeper creeper)
-                        return creeper.isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
-                }
-                return ExplosionType.ENTITY;
-            default:
-                return null;
-        }
+        return switch (event.getCause()) {
+            case BLOCK_EXPLOSION -> ExplosionType.BLOCK;
+            case ENTITY_EXPLOSION -> {
+                if (event instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && entityDamageByEntityEvent.getDamager() instanceof Creeper creeper)
+                    yield creeper.isPowered() ? ExplosionType.CHARGED_ENTITY : ExplosionType.ENTITY;
+                yield ExplosionType.ENTITY;
+            }
+            default -> null;
+        };
     }
 
     /**

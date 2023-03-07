@@ -5,15 +5,27 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 
 public abstract class LootCondition {
 
-    private final String tag;
-    private final boolean inverted;
+    private String tag;
+    private boolean inverted;
     private boolean printedDeprecationWarning;
 
     /**
      * @param tag The tag, including both prefix and values
      * @param parse Whether or not the tag should be parsed
+     * @throws IllegalArgumentException if the tag is empty, null, or malformed
      */
-    protected LootCondition(String tag, boolean parse) {
+    protected LootCondition(String tag, boolean parse) throws IllegalArgumentException {
+        this.init(tag, parse);
+    }
+
+    /**
+     * @param tag The tag, including both prefix and values
+     */
+    public LootCondition(String tag) {
+        this(tag, true);
+    }
+
+    protected void init(String tag, boolean parse) throws IllegalArgumentException {
         if (tag == null || tag.trim().isEmpty())
             throw new IllegalArgumentException("Empty or null tag");
 
@@ -54,13 +66,6 @@ public abstract class LootCondition {
             this.printedDeprecationWarning = true;
             RoseLoot.getInstance().getLogger().warning(String.format("Loot condition deprecation warning: [%s] will be removed in the future, use [%s] instead", prefix, replacement));
         }
-    }
-
-    /**
-     * @param tag The tag, including both prefix and values
-     */
-    public LootCondition(String tag) {
-        this(tag, true);
     }
 
     /**

@@ -1,7 +1,5 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.hook.biomes.CustomBiomePlugin;
 import dev.rosewood.roseloot.hook.conditions.nbt.NBTBlockCondition;
@@ -10,6 +8,8 @@ import dev.rosewood.roseloot.hook.conditions.nbt.NBTItemCondition;
 import dev.rosewood.roseloot.hook.conditions.nbt.NBTLooterCondition;
 import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.StringLootCondition;
+import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,40 +17,46 @@ import org.bukkit.plugin.PluginManager;
 
 public class HookConditionListener implements Listener {
 
-    private static final Multimap<String, ConditionStorage> LOOT_CONDITIONS = ArrayListMultimap.create();
-    static {
-        LOOT_CONDITIONS.put("MythicMobs", new ConditionStorage("mythicmobs-type", MythicMobsTypeCondition.class));
-        LOOT_CONDITIONS.put("MythicMobs", new ConditionStorage("mythicmobs-entity", MythicMobsEntityCondition.class));
-        LOOT_CONDITIONS.put("EcoBosses", new ConditionStorage("ecobosses-type", EcoBossesTypeCondition.class));
-        LOOT_CONDITIONS.put("RoseStacker", new ConditionStorage("rosestacker-stacked-entity", RoseStackerStackedEntityCondition.class));
-        LOOT_CONDITIONS.put("RoseStacker", new ConditionStorage("rosestacker-primary-entity", RoseStackerPrimaryEntityCondition.class));
-        LOOT_CONDITIONS.put("RealisticSeasons", new ConditionStorage("realisticseasons-season", RealisticSeasonsSeasonCondition.class));
-        LOOT_CONDITIONS.put("RealisticSeasons", new ConditionStorage("realisticseasons-event", RealisticSeasonsEventCondition.class));
-        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-block", NBTBlockCondition.class));
-        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-entity", NBTEntityCondition.class));
-        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-item", NBTItemCondition.class));
-        LOOT_CONDITIONS.put("NBTAPI", new ConditionStorage("nbt-looter", NBTLooterCondition.class));
-    }
-
     @EventHandler
     public void onLootConditionRegistration(LootConditionRegistrationEvent event) {
         PluginManager pluginManager = Bukkit.getPluginManager();
-        for (String pluginName : LOOT_CONDITIONS.keys())
-            if (pluginManager.getPlugin(pluginName) != null)
-                for (ConditionStorage conditionStorage : LOOT_CONDITIONS.get(pluginName))
-                    event.registerLootCondition(conditionStorage.conditionName(), conditionStorage.conditionClass());
+
+        if (pluginManager.getPlugin("MythicMobs") != null) {
+            event.registerLootCondition("mythicmobs-type", MythicMobsTypeCondition::new);
+            event.registerLootCondition("mythicmobs-entity", MythicMobsEntityCondition::new);
+        }
+
+        if (pluginManager.getPlugin("EcoBosses") != null)
+            event.registerLootCondition("ecobosses-type", EcoBossesTypeCondition::new);
+
+        if (pluginManager.getPlugin("RoseStacker") != null) {
+            event.registerLootCondition("rosestacker-stacked-entity", RoseStackerStackedEntityCondition::new);
+            event.registerLootCondition("rosestacker-primary-entity", RoseStackerPrimaryEntityCondition::new);
+        }
+
+        if (pluginManager.getPlugin("RealisticSeasons") != null) {
+            event.registerLootCondition("realisticseasons-season", RealisticSeasonsSeasonCondition::new);
+            event.registerLootCondition("realisticseasons-event", RealisticSeasonsEventCondition::new);
+        }
+
+        if (pluginManager.getPlugin("NBTAPI") != null) {
+            event.registerLootCondition("nbt-block", NBTBlockCondition::new);
+            event.registerLootCondition("nbt-entity", NBTEntityCondition::new);
+            event.registerLootCondition("nbt-item", NBTItemCondition::new);
+            event.registerLootCondition("nbt-looter", NBTLooterCondition::new);
+        }
 
         // Register conditions for custom item plugins
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
             if (customItemPlugin.isEnabled() && customItemPlugin.supportsIdLookup())
-                event.registerLootCondition(customItemPlugin.name().toLowerCase() + customItemPlugin.getConditionSuffix() + "-type", customItemPlugin.getLootConditionPredicate());
+                event.registerLootCondition(customItemPlugin.name().toLowerCase() + customItemPlugin.getConditionSuffix() + "-type", tag -> new StringLootCondition(tag, customItemPlugin.getLootConditionPredicate()));
 
         // Register conditions for custom biome plugins
         for (CustomBiomePlugin customBiomePlugin : CustomBiomePlugin.values())
             if (customBiomePlugin.isEnabled())
-                event.registerLootCondition(customBiomePlugin.name().toLowerCase() + "-biome", customBiomePlugin.getLootConditionPredicate());
+                event.registerLootCondition(customBiomePlugin.name().toLowerCase() + "-biome", tag -> new StringLootCondition(tag, customBiomePlugin.getLootConditionPredicate()));
     }
 
-    private record ConditionStorage(String conditionName, Class<? extends LootCondition> conditionClass) { }
+    private record ConditionStorage(String conditionName, Function<String, LootCondition> conditionFunction) { }
 
 }
