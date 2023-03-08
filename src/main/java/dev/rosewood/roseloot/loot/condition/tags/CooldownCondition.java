@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.manager.CooldownManager;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
  * value 2: <player> or <global>
  * value 3: Time of the cooldown with a time suffix (s, m, h, d)
  */
-public class CooldownCondition extends LootCondition {
+public class CooldownCondition extends BaseLootCondition {
 
     private static final Pattern ENTIRE_DURATION_PATTERN = Pattern.compile("((\\d+)([smhd]))+");
     private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([smhd])");

@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-public class SpawnReasonCondition extends LootCondition {
+public class SpawnReasonCondition extends BaseLootCondition {
 
     private List<SpawnReason> spawnReasons;
 

@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
-public class BlockDataCondition extends LootCondition {
+public class BlockDataCondition extends BaseLootCondition {
 
     private List<String> blockData;
 

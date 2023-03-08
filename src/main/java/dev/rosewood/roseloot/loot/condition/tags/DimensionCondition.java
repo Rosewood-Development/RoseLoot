@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class DimensionCondition extends LootCondition {
+public class DimensionCondition extends BaseLootCondition {
 
     private List<World.Environment> dimensions;
 

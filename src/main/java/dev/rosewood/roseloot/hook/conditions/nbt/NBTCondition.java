@@ -2,12 +2,12 @@ package dev.rosewood.roseloot.hook.conditions.nbt;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTType;
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.condition.Operator;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.Arrays;
 
-public abstract class NBTCondition extends LootCondition {
+public abstract class NBTCondition extends BaseLootCondition {
 
     private String path, right;
     private Operator operator;

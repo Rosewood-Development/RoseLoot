@@ -1,7 +1,5 @@
 package dev.rosewood.roseloot.util;
 
-import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import java.io.File;
@@ -41,8 +39,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
@@ -154,14 +150,9 @@ public final class LootUtils {
      * @param spawnReason The spawn reason to set
      */
     public static void setEntitySpawnReason(LivingEntity entity, SpawnReason spawnReason) {
-        RosePlugin rosePlugin = RoseLoot.getInstance();
-        if (NMSUtil.getVersionNumber() > 13) {
-            PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
-            NamespacedKey key = new NamespacedKey(rosePlugin, SPAWN_REASON_METADATA_NAME);
-            dataContainer.set(key, PersistentDataType.STRING, spawnReason.name());
-        } else {
-            entity.setMetadata(SPAWN_REASON_METADATA_NAME, new FixedMetadataValue(rosePlugin, spawnReason.name()));
-        }
+        PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(RoseLoot.getInstance(), SPAWN_REASON_METADATA_NAME);
+        dataContainer.set(key, PersistentDataType.STRING, spawnReason.name());
     }
 
     /**
@@ -171,31 +162,18 @@ public final class LootUtils {
      * @return The SpawnReason, or SpawnReason.CUSTOM if none is saved
      */
     public static SpawnReason getEntitySpawnReason(LivingEntity entity) {
-        RosePlugin rosePlugin = RoseLoot.getInstance();
-        if (NMSUtil.getVersionNumber() > 13) {
-            String reason = entity.getPersistentDataContainer().get(new NamespacedKey(rosePlugin, SPAWN_REASON_METADATA_NAME), PersistentDataType.STRING);
-            SpawnReason spawnReason;
-            if (reason != null) {
-                try {
-                    spawnReason = SpawnReason.valueOf(reason);
-                } catch (Exception ex) {
-                    spawnReason = SpawnReason.CUSTOM;
-                }
-            } else {
+        String reason = entity.getPersistentDataContainer().get(new NamespacedKey(RoseLoot.getInstance(), SPAWN_REASON_METADATA_NAME), PersistentDataType.STRING);
+        SpawnReason spawnReason;
+        if (reason != null) {
+            try {
+                spawnReason = SpawnReason.valueOf(reason);
+            } catch (Exception ex) {
                 spawnReason = SpawnReason.CUSTOM;
             }
-            return spawnReason;
         } else {
-            List<MetadataValue> metaValues = entity.getMetadata(SPAWN_REASON_METADATA_NAME);
-            SpawnReason spawnReason = null;
-            for (MetadataValue meta : metaValues) {
-                try {
-                    spawnReason = SpawnReason.valueOf(meta.asString());
-                    break;
-                } catch (Exception ignored) { }
-            }
-            return spawnReason != null ? spawnReason : SpawnReason.CUSTOM;
+            spawnReason = SpawnReason.CUSTOM;
         }
+        return spawnReason;
     }
 
     public static List<File> listFiles(File current, List<String> excludedDirectories, List<String> extensions) {

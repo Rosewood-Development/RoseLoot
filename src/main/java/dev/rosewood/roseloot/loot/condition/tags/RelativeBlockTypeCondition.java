@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -16,7 +16,7 @@ import org.bukkit.block.BlockFace;
  * value 1: The relative block to check
  * value 2+: A block type
  */
-public class RelativeBlockTypeCondition extends LootCondition {
+public class RelativeBlockTypeCondition extends BaseLootCondition {
 
     private BlockFace blockFace;
     private Set<Material> blockTypes;

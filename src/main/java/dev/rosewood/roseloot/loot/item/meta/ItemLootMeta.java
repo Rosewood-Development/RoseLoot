@@ -2,12 +2,11 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import java.util.ArrayList;
 import java.util.List;
@@ -218,7 +217,7 @@ public class ItemLootMeta {
 
         if (this.displayName != null) itemMeta.setDisplayName(context.formatText(this.displayName));
         if (this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).toList());
-        if (this.customModelData != null && NMSUtil.getVersionNumber() > 13) itemMeta.setCustomModelData(this.customModelData);
+        if (this.customModelData != null) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
 

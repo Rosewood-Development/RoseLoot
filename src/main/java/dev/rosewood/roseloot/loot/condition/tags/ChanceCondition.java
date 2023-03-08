@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 
-public class ChanceCondition extends LootCondition {
+public class ChanceCondition extends BaseLootCondition {
 
     private double chance;
 

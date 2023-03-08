@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import io.lumine.mythic.bukkit.MythicBukkit;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import org.bukkit.entity.LivingEntity;
 
-public class MythicMobsTypeCondition extends LootCondition {
+public class MythicMobsTypeCondition extends BaseLootCondition {
 
     private List<String> types;
 

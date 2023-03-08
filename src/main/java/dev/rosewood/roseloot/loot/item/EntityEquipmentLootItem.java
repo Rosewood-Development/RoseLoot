@@ -2,8 +2,8 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
-import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

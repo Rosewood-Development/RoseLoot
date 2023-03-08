@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.condition.Operator;
 import dev.rosewood.roseloot.loot.context.LootContext;
 
-public class PlaceholderCondition extends LootCondition {
+public class PlaceholderCondition extends BaseLootCondition {
 
     private String left, right;
     private Operator operator;

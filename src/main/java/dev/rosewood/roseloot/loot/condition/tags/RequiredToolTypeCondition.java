@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class RequiredToolTypeCondition extends LootCondition {
+public class RequiredToolTypeCondition extends BaseLootCondition {
 
     private List<Material> toolTypes;
 

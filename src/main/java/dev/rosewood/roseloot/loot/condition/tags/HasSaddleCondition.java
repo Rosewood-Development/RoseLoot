@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Steerable;
 
-public class HasSaddleCondition extends LootCondition {
+public class HasSaddleCondition extends BaseLootCondition {
 
     public HasSaddleCondition(String tag) {
         super(tag);

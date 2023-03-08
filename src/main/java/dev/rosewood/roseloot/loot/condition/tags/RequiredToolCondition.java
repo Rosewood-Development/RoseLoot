@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
  * value 1: The tool type (shovel, pickaxe, axe, hoe, shears)
  * value 2 (optional): The minimum tool level (wood, stone/gold, iron, diamond, netherite)
  */
-public class RequiredToolCondition extends LootCondition {
+public class RequiredToolCondition extends BaseLootCondition {
 
     private final static List<String> TOOL_TYPES = List.of("shovel", "pickaxe", "axe", "hoe", "sword", "shears");
     private final static Map<String, Integer> TOOL_QUALITY = new HashMap<>() {{

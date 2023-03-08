@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  *
  * An enchantment level greater than the max index will use the max index instead
  */
-public class EnchantmentChanceTableCondition extends LootCondition {
+public class EnchantmentChanceTableCondition extends BaseLootCondition {
 
     private Enchantment enchantment;
     private List<Double> chances;

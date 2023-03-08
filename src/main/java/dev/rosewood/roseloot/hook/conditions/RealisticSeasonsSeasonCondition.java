@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.List;
@@ -9,7 +9,7 @@ import me.casperge.realisticseasons.api.SeasonsAPI;
 import me.casperge.realisticseasons.season.Season;
 import org.bukkit.Location;
 
-public class RealisticSeasonsSeasonCondition extends LootCondition {
+public class RealisticSeasonsSeasonCondition extends BaseLootCondition {
 
     private List<String> seasons;
 

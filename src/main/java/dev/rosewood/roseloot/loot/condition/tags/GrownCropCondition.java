@@ -1,12 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 
-public class GrownCropCondition extends LootCondition {
+public class GrownCropCondition extends BaseLootCondition {
 
     public GrownCropCondition(String tag) {
         super(tag);

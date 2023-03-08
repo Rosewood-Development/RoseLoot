@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
-public class EcoBossesTypeCondition extends LootCondition {
+public class EcoBossesTypeCondition extends BaseLootCondition {
 
     private final NamespacedKey bossKey;
     private List<String> types;

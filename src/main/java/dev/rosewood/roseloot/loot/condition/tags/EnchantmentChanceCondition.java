@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  * value 3: Extra chance to add for each level of the enchantment
  * value 4: The maximum number of levels to count towards increasing the percentage
  */
-public class EnchantmentChanceCondition extends LootCondition {
+public class EnchantmentChanceCondition extends BaseLootCondition {
 
     private double chance;
     private Enchantment enchantment;

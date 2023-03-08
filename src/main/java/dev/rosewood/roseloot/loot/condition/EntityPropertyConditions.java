@@ -216,7 +216,7 @@ public class EntityPropertyConditions {
 
     }
 
-    public static class EntityPropertyLootCondition<T extends Entity, V> extends LootCondition {
+    public static class EntityPropertyLootCondition<T extends Entity, V> extends BaseLootCondition {
 
         private final EntityProperties<T, V> properties;
         private final LootContextParam<? extends Entity> entityContext;

@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.util.nms.StructureUtils;
@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.bukkit.Location;
 import org.bukkit.StructureType;
 
-public class FeatureCondition extends LootCondition {
+public class FeatureCondition extends BaseLootCondition {
 
     private List<StructureType> features;
 

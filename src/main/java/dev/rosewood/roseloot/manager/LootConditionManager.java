@@ -49,7 +49,7 @@ import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.MoonPhaseCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -79,7 +79,7 @@ public class LootConditionManager extends Manager implements Listener {
     public LootConditionManager(RosePlugin rosePlugin) {
         super(rosePlugin);
 
-        this.registeredConditions = new HashMap<>();
+        this.registeredConditions = new LinkedHashMap<>();
         Bukkit.getPluginManager().registerEvents(this, rosePlugin);
     }
 

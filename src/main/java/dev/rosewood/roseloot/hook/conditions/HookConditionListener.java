@@ -7,7 +7,7 @@ import dev.rosewood.roseloot.hook.conditions.nbt.NBTEntityCondition;
 import dev.rosewood.roseloot.hook.conditions.nbt.NBTItemCondition;
 import dev.rosewood.roseloot.hook.conditions.nbt.NBTLooterCondition;
 import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.condition.StringLootCondition;
 import java.util.function.Function;
 import org.bukkit.Bukkit;
@@ -57,6 +57,6 @@ public class HookConditionListener implements Listener {
                 event.registerLootCondition(customBiomePlugin.name().toLowerCase() + "-biome", tag -> new StringLootCondition(tag, customBiomePlugin.getLootConditionPredicate()));
     }
 
-    private record ConditionStorage(String conditionName, Function<String, LootCondition> conditionFunction) { }
+    private record ConditionStorage(String conditionName, Function<String, BaseLootCondition> conditionFunction) { }
 
 }

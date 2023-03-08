@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.hook.conditions;
 
 import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 
-public class RoseStackerStackedEntityCondition extends LootCondition {
+public class RoseStackerStackedEntityCondition extends BaseLootCondition {
 
     public RoseStackerStackedEntityCondition(String tag) {
         super(tag);

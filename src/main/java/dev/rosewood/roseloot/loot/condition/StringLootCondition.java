@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-public class StringLootCondition extends LootCondition {
+public class StringLootCondition extends BaseLootCondition {
 
     private final BiPredicate<LootContext, List<String>> predicate;
     private List<String> values;

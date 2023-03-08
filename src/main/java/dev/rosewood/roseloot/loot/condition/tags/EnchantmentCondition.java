@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  * value 1: The enchantment
  * value 2: The minimum level of the enchantment
  */
-public class EnchantmentCondition extends LootCondition {
+public class EnchantmentCondition extends BaseLootCondition {
 
     private Enchantment enchantment;
     private int level;

@@ -1,14 +1,14 @@
 package dev.rosewood.roseloot.hook.conditions;
 
 import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.rosestacker.stack.StackedEntity;
 import java.util.Optional;
 import org.bukkit.entity.LivingEntity;
 
-public class RoseStackerPrimaryEntityCondition extends LootCondition {
+public class RoseStackerPrimaryEntityCondition extends BaseLootCondition {
 
     public RoseStackerPrimaryEntityCondition(String tag) {
         super(tag);

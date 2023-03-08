@@ -1,13 +1,13 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class CustomModelDataCondition extends LootCondition {
+public class CustomModelDataCondition extends BaseLootCondition {
 
     private List<Integer> customModelDataValues;
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class CompoundLootCondition extends LootCondition {
+public class CompoundLootCondition extends BaseLootCondition {
 
     private final List<LootCondition> conditions;
 

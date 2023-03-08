@@ -3,7 +3,7 @@ package dev.rosewood.roseloot.loot.condition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.function.Predicate;
 
-public class BooleanLootCondition extends LootCondition {
+public class BooleanLootCondition extends BaseLootCondition {
 
     private final Predicate<LootContext> predicate;
 

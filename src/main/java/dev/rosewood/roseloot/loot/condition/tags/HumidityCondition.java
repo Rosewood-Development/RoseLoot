@@ -1,12 +1,12 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-public class HumidityCondition extends LootCondition {
+public class HumidityCondition extends BaseLootCondition {
 
     private double humidity;
 

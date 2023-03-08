@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags.paper;
 
-import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import io.papermc.paper.world.MoonPhase;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
 
-public class MoonPhaseCondition extends LootCondition {
+public class MoonPhaseCondition extends BaseLootCondition {
 
     private List<MoonPhase> moonPhases;
 
