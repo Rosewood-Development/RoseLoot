@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.api.RoseLootAPI;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
@@ -159,6 +160,8 @@ public class LootConditionManager extends Manager implements Listener {
 
         EntityPropertyConditions.apply(event, "", LootContextParams.LOOTED_ENTITY);
         EntityPropertyConditions.apply(event, "killer-", LootContextParams.LOOTER);
+
+        RoseLootAPI.getInstance().getRegisteredCustomLootConditions().forEach(event::registerLootCondition);
     }
 
     private void registerBoolean(LootConditionRegistrationEvent event, String name, Predicate<LootContext> predicate) {
