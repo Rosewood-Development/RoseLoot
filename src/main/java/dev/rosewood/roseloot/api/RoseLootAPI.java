@@ -62,6 +62,7 @@ public final class RoseLootAPI {
     /**
      * @return An unmodifiable map of all LootConditions registered through this API
      */
+    @ApiStatus.Internal
     public Map<String, Function<String, LootCondition>> getRegisteredCustomLootConditions() {
         return Collections.unmodifiableMap(this.customRegisteredConditions);
     }
