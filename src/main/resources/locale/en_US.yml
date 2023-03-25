@@ -1,0 +1,62 @@
+# Plugin Message Prefix
+prefix: '&7[<g:#8A2387:#E94057:#F27121>{{PLUGIN_NAME}}&7] '
+
+# Generic Command Messages
+no-permission: '&cYou don''t have permission for that!'
+only-player: '&cThis command can only be executed by a player.'
+unknown-command: '&cUnknown command, use &b/%cmd% help &cfor more info.'
+unknown-command-error: '&cAn unknown error occurred; details have been printed to console. Please contact a server administrator.'
+invalid-subcommand: '&cInvalid subcommand.'
+invalid-argument: '&cInvalid argument: %message%.'
+invalid-argument-null: '&cInvalid argument: %name% was null.'
+missing-arguments: '&cMissing arguments, &b%amount% &crequired.'
+missing-arguments-extra: '&cMissing arguments, &b%amount%+ &crequired.'
+
+# Base Command Message
+base-command-color: '&e'
+base-command-help: '&eUse &b/%cmd% help &efor command information.'
+
+# Help Command
+command-help-description: 'Displays the help menu... You have arrived'
+command-help-title: '&eAvailable Commands:'
+command-help-list-description: '&8 - &d/%cmd% %subcmd% %args% &7- %desc%'
+command-help-list-description-no-args: '&8 - &d/%cmd% %subcmd% &7- %desc%'
+command-help-wiki: '&9&o&nClick here to learn how to create loot tables.'
+command-help-wiki-hover: '&7%url%'
+
+# Reload Command
+command-reload-description: 'Reloads the plugin'
+command-reload-reloaded: '&eConfiguration and locale files were reloaded.'
+
+# Generate Command
+command-generate-description: 'Runs a loot table'
+command-generate-requires-player: '&cYou must specify a player when running this command through the console.'
+command-generate-invalid-loot-table-type: '&cOnly loot tables of type LOOT_TABLE can be used with this command.'
+command-generate-success: '&eLoot was generated for &b%player%&e using &b%loottable%&e.'
+
+# List Command
+command-list-description: 'Display a list of active loot tables'
+command-list-none: '&eThere are no loot tables currently active.'
+command-list-header: '&eThere are &b%amount% &eloot tables currently active:'
+command-list-hierarchy-spacer: '  '
+command-list-hierarchy-branch: '%spacer%&3%name%/'
+command-list-hierarchy-leaf: '%spacer%&b%name% &8- &7%type%'
+
+# Copy Command
+command-copy-description: 'Get the item in your hand as a loot item'
+command-copy-success: '&eClick to copy the loot table entry to your clipboard.'
+command-copy-hover: '&7Click to copy'
+command-copy-no-item: '&cYou must be holding an item in your main hand to use this command.'
+
+# Give Items Command
+command-giveitems-description: 'Gives all items listed in a loot table'
+command-giveitems-requires-player: '&cYou must specify a player when running this command through the console.'
+command-giveitems-success: '&eLoot items were given to &b%player%&e using &b%loottable%&e.'
+command-giveitems-empty: '&eThere are no valid items in the loot table.'
+
+# Voucher Messages
+voucher-expired: '&cThis voucher has either expired or was improperly configured and can no longer be redeemed. Please contact a server administrator.'
+
+# Argument Handler Error Messages
+argument-handler-loot-table: 'LootTable [%input%] does not exist'
+argument-handler-player: 'No Player with the username [%input%] was found online'

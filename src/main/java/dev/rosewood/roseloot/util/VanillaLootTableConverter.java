@@ -293,6 +293,7 @@ public final class VanillaLootTableConverter {
                 case "creeper" -> "creeper_head";
                 case "skeleton" -> "skeleton_skull";
                 case "wither_skeleton" -> "wither_skeleton_skull";
+                case "piglin" -> "piglin_head";
                 default -> null;
             };
 

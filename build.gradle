@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'dev.rosewood'
-version = '1.1.17'
+version = '1.2.0-SNAPSHOT'
 
 java {
     toolchain {
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT'
     compileOnly 'com.mojang:authlib:1.5.21'
     compileOnly 'org.jetbrains:annotations:23.0.0'
     compileOnly 'com.github.milkbowl:vault:1.7.3'
@@ -69,7 +69,7 @@ dependencies {
         exclude group: 'org.spigotmc'
     }
 
-    api 'dev.rosewood:rosegarden:1.1.0.52-SNAPSHOT'
+    api 'dev.rosewood:rosegarden:1.2.0'
 }
 
 shadowJar {
