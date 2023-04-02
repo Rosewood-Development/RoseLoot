@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.listener;
 
+import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -56,33 +57,33 @@ public class RoseStackerEntityDeathListener implements Listener {
         }
 
         List<LootContents> extras = new ArrayList<>();
-        for (Map.Entry<LivingEntity, EntityStackMultipleDeathEvent.EntityDrops> entry : event.getEntityDrops().entrySet()) {
-            LivingEntity entity = entry.getKey();
-            EntityStackMultipleDeathEvent.EntityDrops drops = entry.getValue();
+        Multimap<LivingEntity, EntityStackMultipleDeathEvent.EntityDrops> stackDrops = event.getEntityDrops();
+        for (LivingEntity entity : stackDrops.keySet()) {
+            for (EntityStackMultipleDeathEvent.EntityDrops drops : event.getEntityDrops().get(entity)) {
+                LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter), enchantmentLevels)
+                        .put(LootContextParams.ORIGIN, entity.getLocation())
+                        .put(LootContextParams.LOOTER, looter)
+                        .put(LootContextParams.LOOTED_ENTITY, entity)
+                        .put(STACKED_ENTITY, event.getStack())
+                        .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
+                        .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
+                        .build();
+                LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
+                LootContents lootContents = lootResult.getLootContents();
 
-            LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(looter), enchantmentLevels)
-                    .put(LootContextParams.ORIGIN, entity.getLocation())
-                    .put(LootContextParams.LOOTER, looter)
-                    .put(LootContextParams.LOOTED_ENTITY, entity)
-                    .put(STACKED_ENTITY, event.getStack())
-                    .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
-                    .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
-                    .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
-            LootContents lootContents = lootResult.getLootContents();
+                // Overwrite existing drops if applicable
+                if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
+                    drops.getDrops().clear();
 
-            // Overwrite existing drops if applicable
-            if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
-                drops.getDrops().clear();
+                if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
+                    drops.setExperience(0);
 
-            if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
-                drops.setExperience(0);
+                // Add items to drops and adjust experience
+                drops.getDrops().addAll(lootContents.getItems());
+                drops.setExperience(drops.getExperience() + lootContents.getExperience());
 
-            // Add items to drops and adjust experience
-            drops.getDrops().addAll(lootContents.getItems());
-            drops.setExperience(drops.getExperience() + lootContents.getExperience());
-
-            extras.add(lootContents);
+                extras.add(lootContents);
+            }
         }
 
         Runnable task = () -> extras.forEach(x -> x.triggerExtras(mainEntity.getLocation()));
