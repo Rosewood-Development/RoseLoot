@@ -46,8 +46,8 @@ public class RoseStackerEntityDeathListener implements Listener {
             return;
 
         Entity looter = null;
-        if (mainEntity.getLastDamageCause() instanceof EntityDamageByEntityEvent)
-            looter = ((EntityDamageByEntityEvent) mainEntity.getLastDamageCause()).getDamager();
+        if (mainEntity.getLastDamageCause() instanceof EntityDamageByEntityEvent lastDamageCause)
+            looter = lastDamageCause.getDamager();
 
         Map<Enchantment, Integer> enchantmentLevels = null;
         if (looter != null) {

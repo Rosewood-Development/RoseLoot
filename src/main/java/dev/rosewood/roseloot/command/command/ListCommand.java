@@ -36,7 +36,7 @@ public class ListCommand extends RoseCommand {
 
         TreeBranch treeBranch = new TreeBranch(lootTableManager);
         lootTables.forEach(x -> treeBranch.add(x.getName(), x));
-        localeManager.sendMessage(context.getSender(), "command-list-header", StringPlaceholders.single("amount", lootTables.size()));
+        localeManager.sendMessage(context.getSender(), "command-list-header", StringPlaceholders.of("amount", lootTables.size()));
         treeBranch.traverse(context.getSender(), localeManager, 1);
     }
 
@@ -100,11 +100,11 @@ public class ListCommand extends RoseCommand {
             // Print leaves
             for (String type : this.leaves.keySet())
                 for (String name : this.leaves.get(type))
-                    localeManager.sendSimpleMessage(sender, "command-list-hierarchy-leaf", StringPlaceholders.builder("name", name).addPlaceholder("type", type).addPlaceholder("spacer", padding).build());
+                    localeManager.sendSimpleMessage(sender, "command-list-hierarchy-leaf", StringPlaceholders.of("name", name, "type", type, "spacer", padding));
 
             // Print branches
             for (Map.Entry<String, TreeBranch> entry : this.branches.entrySet()) {
-                localeManager.sendSimpleMessage(sender, "command-list-hierarchy-branch", StringPlaceholders.builder("name", entry.getKey()).addPlaceholder("spacer", padding).build());
+                localeManager.sendSimpleMessage(sender, "command-list-hierarchy-branch", StringPlaceholders.of("name", entry.getKey(), "spacer", padding));
                 entry.getValue().traverse(sender, localeManager, depth + 1);
             }
         }

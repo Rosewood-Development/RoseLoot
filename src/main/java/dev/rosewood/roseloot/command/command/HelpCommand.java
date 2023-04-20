@@ -30,11 +30,12 @@ public class HelpCommand extends dev.rosewood.rosegarden.command.command.HelpCom
             if (!command.hasHelp() || !command.canUse(context.getSender()))
                 continue;
 
-            StringPlaceholders stringPlaceholders = StringPlaceholders.builder("cmd", this.parent.getName())
-                    .addPlaceholder("subcmd", command.getName().toLowerCase())
-                    .addPlaceholder("args", command.getArgumentsString())
-                    .addPlaceholder("desc", localeManager.getLocaleMessage(command.getDescriptionKey()))
-                    .build();
+            StringPlaceholders stringPlaceholders = StringPlaceholders.of(
+                    "cmd", this.parent.getName(),
+                    "subcmd", command.getName().toLowerCase(),
+                    "args", command.getArgumentsString(),
+                    "desc", localeManager.getLocaleMessage(command.getDescriptionKey())
+            );
 
             localeManager.sendSimpleMessage(context.getSender(), "command-help-list-description" + (command.getNumParameters() == 0 ? "-no-args" : ""), stringPlaceholders);
         }
@@ -42,7 +43,7 @@ public class HelpCommand extends dev.rosewood.rosegarden.command.command.HelpCom
         if (context.getSender().hasPermission("roseloot.help.wiki")) {
             TextComponent link = new TextComponent(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-help-wiki")));
             link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, WIKI_URL));
-            link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-help-wiki-hover", StringPlaceholders.single("url", WIKI_URL))))));
+            link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-help-wiki-hover", StringPlaceholders.of("url", WIKI_URL))))));
             context.getSender().spigot().sendMessage(link);
         }
     }

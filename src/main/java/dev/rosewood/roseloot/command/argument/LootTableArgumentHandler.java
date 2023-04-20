@@ -20,7 +20,7 @@ public class LootTableArgumentHandler extends RoseCommandArgumentHandler<LootTab
         String input = argumentParser.next();
         LootTable value = this.rosePlugin.getManager(LootTableManager.class).getLootTable(input);
         if (value == null)
-            throw new HandledArgumentException("argument-handler-loot-table", StringPlaceholders.single("input", input));
+            throw new HandledArgumentException("argument-handler-loot-table", StringPlaceholders.of("input", input));
         return value;
     }
 

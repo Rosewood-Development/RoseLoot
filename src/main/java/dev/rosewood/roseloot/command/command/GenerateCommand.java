@@ -49,7 +49,7 @@ public class GenerateCommand extends RoseCommand {
         lootResult.getLootContents().dropForPlayer(target);
 
         if (silent == null || !silent)
-            localeManager.sendMessage(sender, "command-generate-success", StringPlaceholders.builder("player", target.getName()).addPlaceholder("loottable", lootTable.getName()).build());
+            localeManager.sendMessage(sender, "command-generate-success", StringPlaceholders.of("player", target.getName(), "loottable", lootTable.getName()));
     }
 
     @Override

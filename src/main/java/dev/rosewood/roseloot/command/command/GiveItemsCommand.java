@@ -48,7 +48,7 @@ public class GiveItemsCommand extends RoseCommand {
         target.getInventory().addItem(items.toArray(new ItemStack[0])).forEach((x, y) -> target.getWorld().dropItemNaturally(target.getLocation(), y));
 
         if (silent == null || !silent)
-            localeManager.sendMessage(sender, "command-giveitems-success", StringPlaceholders.builder("player", target.getName()).addPlaceholder("loottable", lootTable.getName()).build());
+            localeManager.sendMessage(sender, "command-giveitems-success", StringPlaceholders.of("player", target.getName(), "loottable", lootTable.getName()));
     }
 
     @Override
