@@ -6,10 +6,7 @@ import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * enchantment-chance-table:looting,5%,6.25%,8.33%,10%
@@ -29,15 +26,7 @@ public class EnchantmentChanceTableCondition extends BaseLootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Optional<ItemStack> item = context.getItemUsed();
-        if (item.isEmpty())
-            return LootUtils.checkChance(this.chances.get(0));
-
-        ItemMeta meta = item.get().getItemMeta();
-        if (meta == null)
-            return LootUtils.checkChance(this.chances.get(0));
-
-        int chanceIndex = Math.min(meta.getEnchantLevel(this.enchantment), this.chances.size() - 1);
+        int chanceIndex = Math.min(context.getEnchantmentLevel(this.enchantment), this.chances.size() - 1);
         double chance = this.chances.get(chanceIndex);
 
         return LootUtils.checkChance(chance);

@@ -318,6 +318,9 @@ public final class LootUtils {
      * @return The item used by the entity
      */
     public static ItemStack getEntityItemUsed(Entity entity) {
+        if (entity instanceof Projectile projectile && projectile.getShooter() instanceof LivingEntity shooter)
+            entity = shooter;
+
         if (!(entity instanceof LivingEntity livingEntity))
             return null;
 

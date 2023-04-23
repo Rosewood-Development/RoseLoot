@@ -3,10 +3,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
-import java.util.Optional;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * enchantment:sharpness,3
@@ -24,15 +21,7 @@ public class EnchantmentCondition extends BaseLootCondition {
 
     @Override
     public boolean checkInternal(LootContext context) {
-        Optional<ItemStack> item = context.getItemUsed();
-        if (item.isEmpty())
-            return false;
-
-        ItemMeta meta = item.get().getItemMeta();
-        if (meta == null)
-            return false;
-
-        return meta.getEnchantLevel(this.enchantment) >= this.level;
+        return context.getEnchantmentLevel(this.enchantment) >= this.level;
     }
 
     @Override
