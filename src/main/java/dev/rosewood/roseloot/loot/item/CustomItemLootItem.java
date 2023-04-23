@@ -5,35 +5,66 @@ import dev.rosewood.roseloot.hook.NBTAPIHook;
 import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.EnchantingUtils;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 
 public class CustomItemLootItem extends ItemLootItem {
 
     private final CustomItemPlugin customItemPlugin;
     private final String itemId;
 
-    public CustomItemLootItem(CustomItemPlugin customItemPlugin, String itemId, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, EnchantmentBonus enchantmentBonus, String nbt) {
-        super(null, amount, maxAmount, amountModifiers, null, enchantmentBonus, false, nbt);
+    public CustomItemLootItem(CustomItemPlugin customItemPlugin, String itemId, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+        super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
         this.customItemPlugin = customItemPlugin;
         this.itemId = itemId;
     }
 
-    protected ItemStack getCreationItem(LootContext context) {
+    private ItemStack resolveItem(LootContext context) {
         ItemStack itemStack = this.customItemPlugin.resolveItem(context, this.itemId);
         if (itemStack == null) {
             RoseLoot.getInstance().getLogger().warning("Failed to resolve item [" + this.itemId + "] from [" + this.customItemPlugin.name().toLowerCase() + "]");
             return null;
         }
+        return itemStack;
+    }
+
+    protected ItemStack getCreationItem(LootContext context) {
+        ItemStack itemStack = this.resolveItem(context);
+        if (itemStack == null)
+            return null;
+
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
+            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
+            while (recipesIterator.hasNext()) {
+                Recipe recipe = recipesIterator.next();
+                if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == itemStack.getType()) {
+                    itemStack.setType(furnaceRecipe.getResult().getType());
+                    break;
+                }
+            }
+        }
+
+        if (this.itemLootMeta != null)
+            this.itemLootMeta.apply(itemStack, context);
 
         if (this.nbt != null && !this.nbt.isEmpty())
             NBTAPIHook.mergeItemNBT(itemStack, this.nbt);
+
         return itemStack;
     }
 
@@ -86,8 +117,13 @@ public class CustomItemLootItem extends ItemLootItem {
             }
         }
 
+        boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         String nbt = section.getString("nbt");
-        return new CustomItemLootItem(customItemPlugin, itemId, amount, maxAmount, amountModifiers, enchantmentBonus, nbt);
+
+        ItemStack itemStack = customItemPlugin.resolveItem(LootContext.builder().build(), itemId);
+        ItemLootMeta itemLootMeta = itemStack == null ? null : ItemLootMeta.fromSection(itemStack.getType(), section);
+
+        return new CustomItemLootItem(customItemPlugin, itemId, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }
 
 }
