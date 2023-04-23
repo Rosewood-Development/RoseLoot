@@ -2,8 +2,8 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.Optional;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;

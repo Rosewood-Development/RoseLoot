@@ -5,9 +5,9 @@ import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.NumberProvider;
-import dev.rosewood.roseloot.util.EnchantingUtils;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
+import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,6 @@ public class ItemLootMeta {
     private OptionalPercentageValue minDurability, maxDurability;
     private NumberProvider enchantmentLevel;
     private boolean includeTreasureEnchantments;
-    private boolean uncappedRandomEnchants;
     private List<ItemFlag> hideFlags;
     protected List<Enchantment> randomEnchantments;
     protected List<EnchantmentData> enchantments;
@@ -87,7 +86,6 @@ public class ItemLootMeta {
         if (enchantRandomlySection != null) {
             this.enchantmentLevel = NumberProvider.fromSection(enchantRandomlySection, "level", 30);
             this.includeTreasureEnchantments = enchantRandomlySection.getBoolean("treasure", false);
-            this.uncappedRandomEnchants = enchantRandomlySection.getBoolean("uncapped", false);
         }
 
         if (section.isBoolean("hide-flags")) {
@@ -289,7 +287,7 @@ public class ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         if (this.enchantmentLevel != null)
-            EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, this.uncappedRandomEnchants);
+            itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments);
 
         return itemStack;
     }
