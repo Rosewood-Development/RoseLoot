@@ -53,7 +53,7 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
 
     @Override
     public ItemStack apply(ItemStack itemStack, LootContext context) {
-        super.apply(itemStack, context);
+        itemStack = super.apply(itemStack, context);
 
         SuspiciousStewMeta itemMeta = (SuspiciousStewMeta) itemStack.getItemMeta();
         if (itemMeta == null)

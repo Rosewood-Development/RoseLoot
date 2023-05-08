@@ -18,7 +18,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
 
     @Override
     public ItemStack apply(ItemStack itemStack, LootContext context) {
-        super.apply(itemStack, context);
+        itemStack = super.apply(itemStack, context);
 
         EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) itemStack.getItemMeta();
         if (itemMeta == null)

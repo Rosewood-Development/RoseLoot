@@ -32,7 +32,7 @@ public class SkullItemLootMeta extends ItemLootMeta {
 
     @Override
     public ItemStack apply(ItemStack itemStack, LootContext context) {
-        super.apply(itemStack, context);
+        itemStack = super.apply(itemStack, context);
 
         SkullMeta itemMeta = (SkullMeta) itemStack.getItemMeta();
         if (itemMeta == null)

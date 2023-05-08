@@ -60,7 +60,7 @@ public class CustomItemLootItem extends ItemLootItem {
         }
 
         if (this.itemLootMeta != null)
-            this.itemLootMeta.apply(itemStack, context);
+            itemStack = this.itemLootMeta.apply(itemStack, context);
 
         if (this.nbt != null && !this.nbt.isEmpty())
             NBTAPIHook.mergeItemNBT(itemStack, this.nbt);

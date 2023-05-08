@@ -52,7 +52,7 @@ public class MapItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         // Just keep this as a default map if a destination is not specified
         if (this.destination == null) {
-            super.apply(itemStack, context);
+            itemStack = super.apply(itemStack, context);
             return itemStack;
         }
 
@@ -62,7 +62,7 @@ public class MapItemLootMeta extends ItemLootMeta {
 
         World world = origin.get().getWorld();
         if (world == null) {
-            super.apply(itemStack, context);
+            itemStack = super.apply(itemStack, context);
             return itemStack;
         }
 
