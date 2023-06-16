@@ -53,6 +53,9 @@ public class PaperListener implements Listener {
                         .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                         .build();
                 LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.HARVEST, lootContext);
+                if (lootResult.isEmpty())
+                    continue;
+
                 LootContents lootContents = lootResult.getLootContents();
 
                 if (!lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
@@ -89,6 +92,9 @@ public class PaperListener implements Listener {
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops().isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable

@@ -39,6 +39,9 @@ public class PiglinBarterListener implements Listener {
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getOutcome().isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.PIGLIN_BARTER, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing loot if applicable

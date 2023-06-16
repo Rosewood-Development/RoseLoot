@@ -61,6 +61,9 @@ public class BlockListener implements Listener {
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
@@ -106,6 +109,9 @@ public class BlockListener implements Listener {
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
@@ -153,6 +159,9 @@ public class BlockListener implements Listener {
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+            if (lootResult.isEmpty())
+                continue;
+
             LootContents lootContents = lootResult.getLootContents();
 
             if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
@@ -206,6 +215,9 @@ public class BlockListener implements Listener {
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+            if (lootResult.isEmpty())
+                continue;
+
             LootContents lootContents = lootResult.getLootContents();
 
             if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {

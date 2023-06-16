@@ -64,6 +64,9 @@ public class EntityListener implements Listener {
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         // Overwrite existing drops if applicable
@@ -130,6 +133,9 @@ public class EntityListener implements Listener {
                 .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY_DROP_ITEM, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         Location dropLocation = event.getItemDrop().getLocation();

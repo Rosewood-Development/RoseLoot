@@ -47,6 +47,9 @@ public class LootGenerateListener implements Listener {
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
                     .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
+            if (lootResult.isEmpty())
+                return;
+
             LootContents lootContents = lootResult.getLootContents();
 
             // Overwrite existing loot if applicable
@@ -77,6 +80,9 @@ public class LootGenerateListener implements Listener {
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
                     .build();
             LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
+            if (lootResult.isEmpty())
+                return;
+
             LootContents lootContents = lootResult.getLootContents();
 
             // Overwrite existing loot if applicable

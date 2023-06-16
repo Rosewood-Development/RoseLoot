@@ -17,6 +17,10 @@ public class LootResult {
         this.overwriteExisting = overwriteExisting;
     }
 
+    public boolean isEmpty() {
+        return this.lootContents.getContents().isEmpty() && this.overwriteExisting.isEmpty();
+    }
+
     /**
      * @return the LootContext used to generate this LootResult
      */

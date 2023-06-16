@@ -50,6 +50,9 @@ public class HarvestBlockListener implements Listener {
                         .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                         .build();
                 LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.HARVEST, lootContext);
+                if (lootResult.isEmpty())
+                    continue;
+
                 LootContents lootContents = lootResult.getLootContents();
 
                 if (!lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {

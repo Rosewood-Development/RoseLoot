@@ -69,6 +69,9 @@ public class RoseStackerEntityDeathListener implements Listener {
                         .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
                         .build();
                 LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
+                if (lootResult.isEmpty())
+                    continue;
+
                 LootContents lootContents = lootResult.getLootContents();
 
                 // Overwrite existing drops if applicable

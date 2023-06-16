@@ -34,6 +34,9 @@ public class AdvancementListener implements Listener {
                 .put(LootContextParams.ADVANCEMENT_KEY, event.getAdvancement().getKey())
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ADVANCEMENT, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         lootResult.getLootContents().dropForPlayer(player);
     }
 

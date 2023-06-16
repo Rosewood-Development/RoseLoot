@@ -48,6 +48,9 @@ public class FishingListener implements Listener {
                 .put(LootContextParams.HAS_EXISTING_ITEMS, fishHook.getHookedEntity() instanceof Item)
                 .build();
         LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.FISHING, lootContext);
+        if (lootResult.isEmpty())
+            return;
+
         LootContents lootContents = lootResult.getLootContents();
 
         List<ItemStack> items = new ArrayList<>(lootContents.getItems());
