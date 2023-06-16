@@ -73,7 +73,6 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     @Override
     public List<ItemStack> generate(LootContext context) {
-        List<ItemStack> generatedItems = new ArrayList<>();
 
         int amount = this.amount.getInteger(context);
 
@@ -93,21 +92,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         amount = Math.min(amount, this.maxAmount.getInteger(context));
 
         ItemStack creationItem = this.getCreationItem(context);
-        if (creationItem != null && amount > 0) {
-            int maxStackSize = creationItem.getMaxStackSize();
-            while (amount > maxStackSize) {
-                amount -= maxStackSize;
-                ItemStack clone = creationItem.clone();
-                clone.setAmount(maxStackSize);
-                generatedItems.add(clone);
-            }
-
-            if (amount > 0) {
-                ItemStack clone = creationItem.clone();
-                clone.setAmount(amount);
-                generatedItems.add(clone);
-            }
-        }
+        List<ItemStack> generatedItems = new ArrayList<>(LootUtils.createItemStackCopies(creationItem, amount));
 
         context.getPlaceholders().add("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
 
@@ -116,28 +101,9 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     @Override
     public List<ItemStack> getAllItems(LootContext context) {
-        List<ItemStack> generatedItems = new ArrayList<>();
-
         int amount = Math.min(this.amount.getInteger(context), this.maxAmount.getInteger(context));
-
         ItemStack creationItem = this.getCreationItem(context);
-        if (creationItem != null && amount > 0) {
-            int maxStackSize = creationItem.getMaxStackSize();
-            while (amount > maxStackSize) {
-                amount -= maxStackSize;
-                ItemStack clone = creationItem.clone();
-                clone.setAmount(maxStackSize);
-                generatedItems.add(clone);
-            }
-
-            if (amount > 0) {
-                ItemStack clone = creationItem.clone();
-                clone.setAmount(amount);
-                generatedItems.add(clone);
-            }
-        }
-
-        return generatedItems;
+        return LootUtils.createItemStackCopies(creationItem, amount);
     }
 
     public static ItemLootItem fromSection(ConfigurationSection section) {
