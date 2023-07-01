@@ -63,6 +63,7 @@ import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Raider;
 import org.bukkit.entity.Sittable;
 import org.bukkit.entity.Tameable;
@@ -142,6 +143,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("required-tool", RequiredToolCondition::new);
         event.registerLootCondition("required-tool-type", RequiredToolTypeCondition::new);
         event.registerLootCondition("replaced-block-type", ReplacedBlockTypeCondition::new);
+        this.registerBoolean(event, "sneaking", context -> context.getLootingPlayer().map(Player::isSneaking).orElse(false));
         this.registerBoolean(event, "sitting", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Sittable.class).filter(Sittable::isSitting).isPresent());
         this.registerBoolean(event, "sleeping", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(LivingEntity::isSleeping).isPresent());
         event.registerLootCondition("spawner-type", SpawnerTypeCondition::new);
