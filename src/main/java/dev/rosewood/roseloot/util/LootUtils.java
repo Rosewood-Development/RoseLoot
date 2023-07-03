@@ -47,6 +47,11 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("unchecked")
 public final class LootUtils {
 
+    private static final DecimalFormatSymbols DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols();
+    static {
+        DECIMAL_FORMAT_SYMBOLS.setDecimalSeparator('.');
+    }
+
     private LootUtils() {
 
     }
@@ -253,10 +258,7 @@ public final class LootUtils {
     }
 
     public static String getToMaximumDecimals(double value, int decimals) {
-        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-        decimalFormatSymbols.setDecimalSeparator('.');
-
-        DecimalFormat decimalFormat = new DecimalFormat("0." + new String(new char[decimals]).replace('\0', '#'), decimalFormatSymbols);
+        DecimalFormat decimalFormat = new DecimalFormat("0." + new String(new char[decimals]).replace('\0', '#'), DECIMAL_FORMAT_SYMBOLS);
         decimalFormat.setGroupingUsed(false);
         return decimalFormat.format(value);
     }

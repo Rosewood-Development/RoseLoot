@@ -1,6 +1,6 @@
 package dev.rosewood.roseloot.hook.conditions;
 
-import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
+import dev.rosewood.roseloot.listener.hook.RoseStackerEntityDeathListener;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;

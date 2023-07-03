@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.util.List;
 
 public class LootCommandWrapper extends RoseCommandWrapper {
@@ -17,7 +18,11 @@ public class LootCommandWrapper extends RoseCommandWrapper {
 
     @Override
     public List<String> getDefaultAliases() {
-        return List.of("roseloot", "rl");
+        if (NMSUtil.isPaper()) {
+            return List.of("roseloot", "rl");
+        } else {
+            return List.of("roseloot");
+        }
     }
 
     @Override

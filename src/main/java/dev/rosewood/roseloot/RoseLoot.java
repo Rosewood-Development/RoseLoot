@@ -3,6 +3,7 @@ package dev.rosewood.roseloot;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.hook.ItemsAdderHook;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.hook.conditions.HookConditionListener;
 import dev.rosewood.roseloot.listener.AdvancementListener;
@@ -13,7 +14,8 @@ import dev.rosewood.roseloot.listener.FishingListener;
 import dev.rosewood.roseloot.listener.HarvestBlockListener;
 import dev.rosewood.roseloot.listener.LootGenerateListener;
 import dev.rosewood.roseloot.listener.PiglinBarterListener;
-import dev.rosewood.roseloot.listener.RoseStackerEntityDeathListener;
+import dev.rosewood.roseloot.listener.hook.ItemsAdderBlockBreakListener;
+import dev.rosewood.roseloot.listener.hook.RoseStackerEntityDeathListener;
 import dev.rosewood.roseloot.listener.VoucherListener;
 import dev.rosewood.roseloot.listener.paper.NewerPaperListener;
 import dev.rosewood.roseloot.listener.paper.PaperListener;
@@ -71,6 +73,8 @@ public class RoseLoot extends RosePlugin {
         }
         if (RoseStackerHook.isEnabled())
             pluginManager.registerEvents(new RoseStackerEntityDeathListener(this), this);
+        if (ItemsAdderHook.isEnabled())
+            pluginManager.registerEvents(new ItemsAdderBlockBreakListener(this), this);
 
         try {
             // PiglinBarterEvent was added to the 1.16.5 API right before 1.17 was released,

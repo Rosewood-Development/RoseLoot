@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.listener;
+package dev.rosewood.roseloot.listener.hook;
 
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.RosePlugin;

@@ -44,6 +44,10 @@ public class HookConditionListener implements Listener {
             event.registerLootCondition("nbt-looter", NBTLooterCondition::new);
         }
 
+        if (pluginManager.getPlugin("ItemsAdder") != null) {
+            event.registerLootCondition("itemsadder-block", ItemsAdderBlockCondition::new);
+        }
+
         // Register conditions for custom item plugins
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
             if (customItemPlugin.isEnabled() && customItemPlugin.supportsIdLookup())
