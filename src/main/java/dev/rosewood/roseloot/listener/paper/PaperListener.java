@@ -43,6 +43,7 @@ public class PaperListener implements Listener {
         List<ItemStack> drops = new ArrayList<>();
         int experience = 0;
 
+        boolean any = false;
         for (ItemStack itemStack : event.getDrops()) {
             for (int i = 0; i < itemStack.getAmount(); i++) {
                 LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
@@ -66,8 +67,12 @@ public class PaperListener implements Listener {
 
                 drops.addAll(lootContents.getItems());
                 experience += lootContents.getExperience();
+                any = true;
             }
         }
+
+        if (!any)
+            return;
 
         event.getDrops().clear();
         event.getDrops().addAll(drops);
