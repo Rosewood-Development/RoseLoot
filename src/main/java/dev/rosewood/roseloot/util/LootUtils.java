@@ -384,6 +384,9 @@ public final class LootUtils {
     }
 
     public static List<ItemStack> createItemStackCopies(ItemStack itemStack, int amount) {
+        if (itemStack == null || amount <= 0)
+            return new ArrayList<>();
+
         List<ItemStack> items = new ArrayList<>();
         int maxStackSize = itemStack.getMaxStackSize();
         while (maxStackSize > 0 && amount > 0) {
