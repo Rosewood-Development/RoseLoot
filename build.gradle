@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'dev.rosewood'
-version = '1.1.20'
+version = '1.1.21'
 
 java {
     toolchain {
@@ -30,6 +30,7 @@ repositories {
     maven { url = 'https://repo.codemc.org/repository/maven-public' }
     maven { url = 'https://erethon.de/repo/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
+    maven { url = 'https://r.irepo.space/maven/' }
     maven { url = 'https://libraries.minecraft.net' }
     maven { url = 'https://jitpack.io/' }
 }
@@ -55,6 +56,7 @@ dependencies {
     compileOnly 'thirtyvirus.uber:uberitems:2.6'
     compileOnly 'com.github.Slimefun:Slimefun4:RC-30'
     compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
+    compileOnly 'pers.neige.neigeitems:NeigeItems:1.14.27'
     compileOnly 'com.willfp:eco:6.24.0'
     compileOnly 'me.wolfyscript:customcrafting:3.16.6.2'
     compileOnly 'com.wolfyscript:utilities:4.16.4.1'
