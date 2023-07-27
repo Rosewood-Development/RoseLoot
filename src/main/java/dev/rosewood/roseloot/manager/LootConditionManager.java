@@ -47,6 +47,7 @@ import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
+import dev.rosewood.roseloot.loot.condition.tags.paper.BiomeKeyCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.MoonPhaseCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -157,6 +158,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("world", WorldCondition::new);
 
         if (NMSUtil.isPaper()) {
+            event.registerLootCondition("biome-key", BiomeKeyCondition::new);
             event.registerLootCondition("moon-phase", MoonPhaseCondition::new);
         }
 
