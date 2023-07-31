@@ -19,7 +19,7 @@ public class EntityTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.LOOTED_ENTITY)
                 .map(LivingEntity::getType)
                 .filter(this.entityTypes::contains)

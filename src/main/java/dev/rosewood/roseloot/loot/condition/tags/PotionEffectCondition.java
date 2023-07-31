@@ -18,7 +18,7 @@ public class PotionEffectCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<LivingEntity> looter = context.getAs(LootContextParams.LOOTER, LivingEntity.class);
         if (looter.isEmpty())
             return false;

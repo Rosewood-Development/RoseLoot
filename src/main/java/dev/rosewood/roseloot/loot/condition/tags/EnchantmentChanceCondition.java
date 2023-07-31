@@ -25,7 +25,7 @@ public class EnchantmentChanceCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return LootUtils.checkChance(this.chance + this.chancePerLevel * Math.min(context.getEnchantmentLevel(this.enchantment), this.maxCountedLevels));
     }
 

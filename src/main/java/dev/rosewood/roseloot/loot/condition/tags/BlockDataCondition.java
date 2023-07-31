@@ -18,7 +18,7 @@ public class BlockDataCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<Block> block = context.get(LootContextParams.LOOTED_BLOCK);
         if (block.isEmpty())
             return false;

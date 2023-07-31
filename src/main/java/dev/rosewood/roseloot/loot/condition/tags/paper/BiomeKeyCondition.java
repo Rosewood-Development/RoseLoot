@@ -18,7 +18,7 @@ public class BiomeKeyCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getBlock)
                 .map(x -> Bukkit.getUnsafe().getBiomeKey(x.getWorld(), x.getX(), x.getY(), x.getZ()))

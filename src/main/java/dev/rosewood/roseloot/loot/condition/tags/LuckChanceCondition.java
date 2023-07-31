@@ -14,7 +14,7 @@ public class LuckChanceCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return LootUtils.checkChance(this.chance + this.luckOffset * context.getLuckLevel());
     }
 

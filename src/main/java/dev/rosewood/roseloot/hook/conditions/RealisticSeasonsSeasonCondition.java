@@ -18,7 +18,7 @@ public class RealisticSeasonsSeasonCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         SeasonsAPI api = SeasonsAPI.getInstance();
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getWorld)

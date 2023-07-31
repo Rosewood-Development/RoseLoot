@@ -19,7 +19,7 @@ public class ReplacedBlockTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.REPLACED_BLOCK_DATA)
                 .map(BlockData::getMaterial)
                 .filter(this.blockTypes::contains)

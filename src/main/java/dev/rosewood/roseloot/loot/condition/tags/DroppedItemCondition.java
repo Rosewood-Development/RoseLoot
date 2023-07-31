@@ -19,7 +19,7 @@ public class DroppedItemCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.INPUT_ITEM)
                 .map(ItemStack::getType)
                 .filter(this.materials::contains)

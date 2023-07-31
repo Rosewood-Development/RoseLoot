@@ -18,7 +18,7 @@ public class SpawnerTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.LOOTED_BLOCK)
                 .map(Block::getState)
                 .map(x -> x instanceof CreatureSpawner ? ((CreatureSpawner) x) : null)

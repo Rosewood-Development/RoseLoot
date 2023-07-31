@@ -8,7 +8,6 @@ import dev.rosewood.roseloot.api.RoseLootAPI;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
-import dev.rosewood.roseloot.loot.condition.CompoundLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityPropertyConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.StringLootCondition;
@@ -75,7 +74,6 @@ import org.bukkit.inventory.Merchant;
 
 public class LootConditionManager extends Manager implements Listener {
 
-    public static final String OR_PATTERN = "||";
     // Prefix -> (Tag -> new LootCondition instance)
     private final Map<String, Function<String, LootCondition>> registeredConditions;
 
@@ -177,18 +175,14 @@ public class LootConditionManager extends Manager implements Listener {
     }
 
     /**
-     * Parses a LootCondition tag into a LootCondition if one exists
+     * Parses a LootCondition tag into a registered LootCondition if one exists
      *
      * @param tag The LootCondition tag to parse
      * @return the parsed LootCondition, or null if a tag with the name does not exist or the tag was malformed
      */
     public LootCondition parse(String tag) {
-        if (tag.contains(OR_PATTERN))
-            return new CompoundLootCondition(tag);
-
-        String parsed = (tag.startsWith("!") ? tag.substring(1) : tag).toLowerCase();
-        int index = parsed.indexOf(":");
-        String tagPrefix = index == -1 ? parsed : parsed.substring(0, index);
+        int index = tag.indexOf(":");
+        String tagPrefix = index == -1 ? tag : tag.substring(0, index);
 
         Function<String, LootCondition> factory = this.registeredConditions.get(tagPrefix);
         if (factory == null)

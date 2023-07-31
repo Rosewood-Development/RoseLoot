@@ -1,12 +1,11 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.hook.NBTAPIHook;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
-import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
@@ -121,13 +120,12 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         List<AmountModifier> amountModifiers = new ArrayList<>();
         ConfigurationSection amountModifiersSection = section.getConfigurationSection("amount-modifiers");
         if (amountModifiersSection != null) {
-            LootConditionManager lootConditionManager = RoseLoot.getInstance().getManager(LootConditionManager.class);
             for (String key : amountModifiersSection.getKeys(false)) {
                 ConfigurationSection entrySection = amountModifiersSection.getConfigurationSection(key);
                 if (entrySection != null) {
                     List<LootCondition> conditions = new ArrayList<>();
                     for (String conditionString : entrySection.getStringList("conditions")) {
-                        LootCondition condition = lootConditionManager.parse(conditionString);
+                        LootCondition condition = LootConditionParser.parse(conditionString);
                         if (condition != null)
                             conditions.add(condition);
                     }

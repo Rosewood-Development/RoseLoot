@@ -20,7 +20,7 @@ public class InFluidCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .filter(x -> this.fluids.stream().anyMatch(y -> y.isInFluid(x)))
                 .isPresent();

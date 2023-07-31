@@ -16,7 +16,7 @@ public class CustomModelDataCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.getItemUsed()
                 .map(ItemStack::getItemMeta)
                 .filter(ItemMeta::hasCustomModelData)

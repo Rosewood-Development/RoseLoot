@@ -16,7 +16,7 @@ public class WorldCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getWorld)
                 .map(x -> x.getName()) // Not using World::getName because it was changed to WorldInfo::getName which doesn't exist pre-1.17

@@ -19,7 +19,7 @@ public class BlockTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.LOOTED_BLOCK)
                 .map(Block::getType)
                 .filter(this.blockTypes::contains)

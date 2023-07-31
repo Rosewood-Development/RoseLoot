@@ -18,7 +18,7 @@ public class RequiredToolTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.getItemUsed()
                 .map(ItemStack::getType)
                 .filter(this.toolTypes::contains)

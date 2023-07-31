@@ -19,6 +19,7 @@ import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ChangeToolDurabilityLootItem;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
@@ -80,8 +81,6 @@ public class LootTableManager extends Manager implements Listener {
     @Override
     public void reload() {
         Bukkit.getScheduler().runTaskLater(this.rosePlugin, () -> {
-            LootConditionManager lootConditionManager = this.rosePlugin.getManager(LootConditionManager.class);
-
             LootTableTypeRegistrationEvent lootTableTypeRegistrationEvent = new LootTableTypeRegistrationEvent();
             Bukkit.getPluginManager().callEvent(lootTableTypeRegistrationEvent);
             this.lootTableTypes.putAll(lootTableTypeRegistrationEvent.getRegisteredLootTableTypes());
@@ -131,7 +130,7 @@ public class LootTableManager extends Manager implements Listener {
                     List<LootCondition> conditions = new ArrayList<>();
                     List<String> conditionStrings = configuration.getStringList("conditions");
                     for (String conditionString : conditionStrings) {
-                        LootCondition condition = lootConditionManager.parse(conditionString);
+                        LootCondition condition = LootConditionParser.parse(conditionString);
                         if (condition == null)  {
                             this.issueLoading(file, "Invalid condition [" + conditionString + "]");
                             continue;
@@ -156,7 +155,7 @@ public class LootTableManager extends Manager implements Listener {
                         List<LootCondition> poolConditions = new ArrayList<>();
                         List<String> poolConditionStrings = poolSection.getStringList("conditions");
                         for (String conditionString : poolConditionStrings) {
-                            LootCondition condition = lootConditionManager.parse(conditionString);
+                            LootCondition condition = LootConditionParser.parse(conditionString);
                             if (condition == null)  {
                                 this.issueLoading(file, "Invalid pool condition [" + conditionString + "]");
                                 continue;
@@ -173,7 +172,7 @@ public class LootTableManager extends Manager implements Listener {
                             continue;
                         }
 
-                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, lootConditionManager, poolKey);
+                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, poolKey);
 
                         lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, entries));
                     }
@@ -203,7 +202,7 @@ public class LootTableManager extends Manager implements Listener {
         }, 1);
     }
 
-    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, LootConditionManager lootConditionManager, String poolKey) {
+    private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, String poolKey) {
         List<LootEntry> lootEntries = new ArrayList<>();
         for (String entryKey : entriesSection.getKeys(false)) {
             ConfigurationSection entrySection = entriesSection.getConfigurationSection(entryKey);
@@ -215,7 +214,7 @@ public class LootTableManager extends Manager implements Listener {
             List<LootCondition> entryConditions = new ArrayList<>();
             List<String> entryConditionStrings = entrySection.getStringList("conditions");
             for (String conditionString : entryConditionStrings) {
-                LootCondition condition = lootConditionManager.parse(conditionString);
+                LootCondition condition = LootConditionParser.parse(conditionString);
                 if (condition == null)  {
                     this.issueLoading(file, "Invalid entry condition [" + conditionString + "]");
                     continue;
@@ -266,7 +265,7 @@ public class LootTableManager extends Manager implements Listener {
 
             LootEntry.ChildrenStrategy childrenStrategy = LootEntry.ChildrenStrategy.fromString(entrySection.getString("children-strategy", LootEntry.ChildrenStrategy.NORMAL.name()));
             ConfigurationSection childrenSection = entrySection.getConfigurationSection("children");
-            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, lootConditionManager, poolKey) : null;
+            List<LootEntry> childEntries = childrenSection != null ? this.getEntriesRecursively(file, childrenSection, poolKey) : null;
 
             lootEntries.add(new LootEntry(entryConditions, weight, quality, lootItems, childrenStrategy, childEntries));
         }

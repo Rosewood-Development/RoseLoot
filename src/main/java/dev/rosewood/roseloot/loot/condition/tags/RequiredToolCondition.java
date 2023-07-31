@@ -36,7 +36,7 @@ public class RequiredToolCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<ItemStack> itemUsed = context.getItemUsed();
         if (itemUsed.isEmpty())
             return false;

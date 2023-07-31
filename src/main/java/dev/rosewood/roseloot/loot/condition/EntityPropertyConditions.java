@@ -230,7 +230,7 @@ public class EntityPropertyConditions {
         }
 
         @Override
-        protected boolean checkInternal(LootContext context) {
+        public boolean check(LootContext context) {
             return context.getAs(this.entityContext, this.properties.entityClass())
                     .filter(entity -> this.properties.predicate().test(entity, this.values))
                     .isPresent();

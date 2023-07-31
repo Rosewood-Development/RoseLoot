@@ -16,7 +16,7 @@ public class AdvancementCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ADVANCEMENT_KEY)
                 .filter(this.advancementKeys::contains)
                 .isPresent();

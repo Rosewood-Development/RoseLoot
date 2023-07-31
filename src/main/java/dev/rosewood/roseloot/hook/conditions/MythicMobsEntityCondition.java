@@ -12,7 +12,7 @@ public class MythicMobsEntityCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.LOOTED_ENTITY)
                 .filter(x -> MythicBukkit.inst().getAPIHelper().getMythicMobInstance(x) != null)
                 .isPresent();

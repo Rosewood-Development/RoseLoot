@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.manager.LootConditionManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,6 +29,9 @@ import org.bukkit.map.MapView;
 
 @SuppressWarnings("deprecation")
 public final class VanillaLootTableConverter {
+
+    private static final String OR_PATTERN = "||";
+    private static final String AND_PATTERN = "&&";
 
     private static final String[] HEADER = new String[] {
             "# ###################################################################################### #",
@@ -120,6 +122,9 @@ public final class VanillaLootTableConverter {
                 writePiglinBarteringHeader(path, writer);
             } else if (path.equals("gameplay/cat_morning_gift") || path.startsWith("gameplay/hero_of_the_village")) {
                 writeEntityDropsHeader(path, writer);
+            } else if (path.startsWith("archaeology")) {
+                // TODO: Add archaeology support
+                writeLootTableHeader(path, writer);
             } else {
                 writeLootTableHeader(path, writer);
             }
@@ -472,17 +477,8 @@ public final class VanillaLootTableConverter {
             StringBuilder conditionBuilder = new StringBuilder();
             JsonObject condition = conditionElement.getAsJsonObject();
             buildConditionRecursively(path, conditionBuilder, condition);
-            if (conditionBuilder.length() > 0) {
-                String output = conditionBuilder.toString();
-                if (output.startsWith("!") && output.contains(LootConditionManager.OR_PATTERN)) {
-                    String parsed = output.substring(1);
-                    String[] splitConditions = parsed.split(Pattern.quote(LootConditionManager.OR_PATTERN));
-                    for (String value : splitConditions)
-                        conditionList.add("!" + value);
-                } else {
-                    conditionList.add(conditionBuilder.toString());
-                }
-            }
+            if (conditionBuilder.length() > 0)
+                conditionList.add(conditionBuilder.toString());
         }
 
         if (!conditionList.isEmpty()) {
@@ -503,17 +499,38 @@ public final class VanillaLootTableConverter {
         switch (type) {
             case "minecraft:inverted":
                 stringBuilder.append("!");
-                buildConditionRecursively(path, stringBuilder, json.get("term").getAsJsonObject());
+                StringBuilder tempBuilder = new StringBuilder();
+                buildConditionRecursively(path, tempBuilder, json.get("term").getAsJsonObject());
+                String temp = tempBuilder.toString();
+                if (temp.contains(OR_PATTERN) || temp.contains(AND_PATTERN)) {
+                    stringBuilder.append("(");
+                    stringBuilder.append(temp);
+                    stringBuilder.append(")");
+                } else {
+                    stringBuilder.append(temp);
+                }
                 break;
             case "minecraft:alternative":
-                JsonArray terms = json.get("terms").getAsJsonArray();
-                Iterator<JsonElement> termIterator = terms.iterator();
-                while (termIterator.hasNext()) {
-                    JsonElement termElement = termIterator.next();
+            case "minecraft:any_of":
+                JsonArray alternativeTerms = json.get("terms").getAsJsonArray();
+                Iterator<JsonElement> alternativeIterator = alternativeTerms.iterator();
+                while (alternativeIterator.hasNext()) {
+                    JsonElement termElement = alternativeIterator.next();
                     JsonObject term = termElement.getAsJsonObject();
                     buildConditionRecursively(path, stringBuilder, term);
-                    if (termIterator.hasNext())
-                        stringBuilder.append(LootConditionManager.OR_PATTERN);
+                    if (alternativeIterator.hasNext())
+                        stringBuilder.append(" " + OR_PATTERN + " ");
+                }
+                break;
+            case "minecraft:all_of":
+                JsonArray allOfTerms = json.get("terms").getAsJsonArray();
+                Iterator<JsonElement> allOfIterator = allOfTerms.iterator();
+                while (allOfIterator.hasNext()) {
+                    JsonElement termElement = allOfIterator.next();
+                    JsonObject term = termElement.getAsJsonObject();
+                    buildConditionRecursively(path, stringBuilder, term);
+                    if (allOfIterator.hasNext())
+                        stringBuilder.append(" " + AND_PATTERN + " ");
                 }
                 break;
             case "minecraft:random_chance":
@@ -733,17 +750,8 @@ public final class VanillaLootTableConverter {
                 StringBuilder conditionBuilder = new StringBuilder();
                 JsonObject condition = conditionElement.getAsJsonObject();
                 buildConditionRecursively(path, conditionBuilder, condition);
-                if (conditionBuilder.length() > 0) {
-                    String output = conditionBuilder.toString();
-                    if (output.startsWith("!") && output.contains(LootConditionManager.OR_PATTERN)) {
-                        String parsed = output.substring(1);
-                        String[] splitConditions = parsed.split(Pattern.quote(LootConditionManager.OR_PATTERN));
-                        for (String value : splitConditions)
-                            conditionList.add("!" + value);
-                    } else {
-                        conditionList.add(conditionBuilder.toString());
-                    }
-                }
+                if (conditionBuilder.length() > 0)
+                    conditionList.add(conditionBuilder.toString());
             }
 
             boolean add = function.has("add") && function.get("add").getAsBoolean();
@@ -873,7 +881,7 @@ public final class VanillaLootTableConverter {
                     }
                     break;
                 case "minecraft:copy_nbt":
-                    if (name.contains("player_head") || name.contains("bee") || name.contains("banner")) {
+                    if (name.contains("player_head") || name.contains("bee") || name.contains("banner") || name.contains("decorated_pot")) {
                         writer.write("copy-block-state: true");
                     } else if (!name.contains("shulker")) {
                         RoseLoot.getInstance().getLogger().warning("minecraft:copy_nbt unhandled: " + path);

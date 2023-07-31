@@ -17,7 +17,7 @@ public class SpawnReasonCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.LOOTED_ENTITY)
                 .map(LootUtils::getEntitySpawnReason)
                 .filter(this.spawnReasons::contains)

@@ -17,7 +17,7 @@ public class MoonPhaseCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getWorld)
                 .filter(x -> this.moonPhases.contains(x.getMoonPhase()))

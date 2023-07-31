@@ -14,7 +14,7 @@ public class PlaceholderCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return this.operator.evaluate(context.applyPlaceholders(this.left), context.applyPlaceholders(this.right));
     }
 

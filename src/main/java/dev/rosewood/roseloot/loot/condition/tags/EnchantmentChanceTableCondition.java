@@ -25,7 +25,7 @@ public class EnchantmentChanceTableCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         int chanceIndex = Math.min(context.getEnchantmentLevel(this.enchantment), this.chances.size() - 1);
         double chance = this.chances.get(chanceIndex);
 

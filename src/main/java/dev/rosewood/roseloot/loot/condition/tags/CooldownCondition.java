@@ -31,7 +31,7 @@ public class CooldownCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<Player> lootingPlayer = context.getLootingPlayer();
         if (this.playerBased && lootingPlayer.isEmpty())
             return false;
