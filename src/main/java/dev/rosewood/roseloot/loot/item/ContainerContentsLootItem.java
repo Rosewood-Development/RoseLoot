@@ -12,11 +12,7 @@ import org.bukkit.block.Container;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class ContainerContentsLootItem extends ItemLootItem {
-
-    public ContainerContentsLootItem() {
-        super();
-    }
+public class ContainerContentsLootItem implements ItemGenerativeLootItem {
 
     @Override
     public List<ItemStack> generate(LootContext context) {
@@ -29,6 +25,11 @@ public class ContainerContentsLootItem extends ItemLootItem {
             droppedContents.addAll(Arrays.stream(container.getInventory().getContents()).filter(Objects::nonNull).toList());
 
         return droppedContents;
+    }
+
+    @Override
+    public List<ItemStack> getAllItems(LootContext context) {
+        return this.generate(context);
     }
 
     public static ContainerContentsLootItem fromSection(ConfigurationSection section) {

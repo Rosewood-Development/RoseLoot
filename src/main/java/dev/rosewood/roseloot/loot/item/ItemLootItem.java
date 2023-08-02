@@ -45,10 +45,6 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         this.nbt = nbt;
     }
 
-    protected ItemLootItem() {
-        this(null, null, null, null, null, null, false, null);
-    }
-
     protected ItemStack getCreationItem(LootContext context) {
         Material item = this.item;
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
