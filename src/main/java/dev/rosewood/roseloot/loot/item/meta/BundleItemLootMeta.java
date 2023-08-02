@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import org.bukkit.inventory.meta.BundleMeta;
 
 public class BundleItemLootMeta extends ItemLootMeta {
 
-    private final List<ItemLootItem> lootItems;
+    private final List<ItemGenerativeLootItem> lootItems;
 
     public BundleItemLootMeta(ConfigurationSection section) {
         super(section);
@@ -23,7 +24,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
             for (String key : contentsSection.getKeys(false)) {
                 ConfigurationSection itemSection = contentsSection.getConfigurationSection(key);
                 if (itemSection != null) {
-                    ItemLootItem lootItem = ItemLootItem.fromSection(itemSection);
+                    ItemGenerativeLootItem lootItem = ItemLootItem.fromSection(itemSection); // TODO: Allow any ItemGenerativeLootItem here
                     if (lootItem != null)
                         this.lootItems.add(lootItem);
                 }
@@ -39,7 +40,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        for (ItemLootItem lootItem : this.lootItems)
+        for (ItemGenerativeLootItem lootItem : this.lootItems)
             for (ItemStack item : lootItem.generate(context))
                 itemMeta.addItem(item);
 

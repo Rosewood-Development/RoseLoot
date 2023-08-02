@@ -386,6 +386,22 @@ public final class VanillaLootTableConverter {
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
                 }
+                case "minecraft:dynamic" -> {
+                    // Currently only used for decorated pots for dropping sherds dynamically
+                    // It's also possible to use "container" to drop container contents, so handle that too
+                    String name = entry.get("name").getAsString();
+                    if (name.contains("container") || name.contains("sherds")) {
+                        writer.write("items:");
+                        writer.increaseIndentation();
+                        writer.write("0:");
+                        writer.increaseIndentation();
+                        writer.write("type: container_contents");
+                        writer.decreaseIndentation();
+                        writer.decreaseIndentation();
+                    } else {
+                        RoseLoot.getInstance().getLogger().warning("Unhandled dynamic item type: " + name + " | " + path);
+                    }
+                }
                 case "minecraft:alternatives" -> {
                     writer.write("children-strategy: first_passing");
                     JsonArray children = entry.get("children").getAsJsonArray();

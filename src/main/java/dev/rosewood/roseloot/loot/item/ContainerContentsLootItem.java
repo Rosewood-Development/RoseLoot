@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
@@ -8,7 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
+import org.bukkit.block.DecoratedPot;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,8 +24,12 @@ public class ContainerContentsLootItem implements ItemGenerativeLootItem {
         if (lootedBlock.isEmpty())
             return droppedContents;
 
-        if (lootedBlock.get().getState() instanceof Container container)
+        BlockState blockState = lootedBlock.get().getState();
+        if (blockState instanceof Container container) {
             droppedContents.addAll(Arrays.stream(container.getInventory().getContents()).filter(Objects::nonNull).toList());
+        } else if (NMSUtil.getVersionNumber() >= 20 && blockState instanceof DecoratedPot decoratedPot) {
+            droppedContents.addAll(decoratedPot.getShards().stream().map(ItemStack::new).toList());
+        }
 
         return droppedContents;
     }
