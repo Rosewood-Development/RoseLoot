@@ -1,25 +1,22 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
-import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
-public class AdvancementListener implements Listener {
-
-    private final LootTableManager lootTableManager;
+public class AdvancementListener extends LazyLootTableListener {
 
     public AdvancementListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.ADVANCEMENT);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -33,7 +30,7 @@ public class AdvancementListener implements Listener {
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.ADVANCEMENT_KEY, event.getAdvancement().getKey())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ADVANCEMENT, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ADVANCEMENT, lootContext);
         if (lootResult.isEmpty())
             return;
 

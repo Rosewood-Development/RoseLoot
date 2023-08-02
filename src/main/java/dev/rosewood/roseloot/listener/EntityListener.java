@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
@@ -9,37 +10,21 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
-import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockShearEntityEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
 
-public class EntityListener implements Listener {
-
-    private final RosePlugin rosePlugin;
-    private final LootTableManager lootTableManager;
-    private Reference<Player> lastShearer;
+public class EntityListener extends LazyLootTableListener {
 
     public EntityListener(RosePlugin rosePlugin) {
-        this.rosePlugin = rosePlugin;
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
-        this.lastShearer = new WeakReference<>(null);
+        super(rosePlugin, LootTableTypes.ENTITY);
     }
 
     @EventHandler
@@ -63,7 +48,7 @@ public class EntityListener implements Listener {
                 .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY, lootContext);
         if (lootResult.isEmpty())
             return;
 
@@ -100,58 +85,6 @@ public class EntityListener implements Listener {
         Entity entity = event.getEntity();
         if (entity instanceof LivingEntity)
             LootUtils.setEntitySpawnReason((LivingEntity) entity, CreatureSpawnEvent.SpawnReason.SPAWNER);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerShearEntity(PlayerShearEntityEvent event) {
-        this.lastShearer = new WeakReference<>(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onBlockShearEntity(BlockShearEntityEvent event) {
-        this.lastShearer = new WeakReference<>(null);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEntityDropItem(EntityDropItemEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity entity))
-            return;
-
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
-            return;
-
-        Player shearer = switch (entity.getType()) {
-            case SHEEP, SNOWMAN, MUSHROOM_COW -> this.lastShearer.get();
-            default -> null;
-        };
-
-        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(shearer))
-                .put(LootContextParams.ORIGIN, entity.getLocation())
-                .put(LootContextParams.LOOTER, shearer)
-                .put(LootContextParams.LOOTED_ENTITY, entity)
-                .put(LootContextParams.INPUT_ITEM, event.getItemDrop().getItemStack())
-                .put(LootContextParams.HAS_EXISTING_ITEMS, true)
-                .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY_DROP_ITEM, lootContext);
-        if (lootResult.isEmpty())
-            return;
-
-        LootContents lootContents = lootResult.getLootContents();
-
-        Location dropLocation = event.getItemDrop().getLocation();
-
-        // Overwrite existing drops if applicable
-        if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS))
-            event.setCancelled(true);
-
-        // Add items to drops and spawn experience
-        lootContents.getItems().forEach(x -> entity.getWorld().dropItemNaturally(dropLocation, x));
-
-        int experience = lootContents.getExperience();
-        if (experience > 0)
-            entity.getWorld().spawn(entity.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
-
-        lootContents.triggerExtras(dropLocation);
     }
 
 }

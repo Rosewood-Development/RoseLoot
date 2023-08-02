@@ -50,6 +50,7 @@ import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -80,126 +81,124 @@ public class LootTableManager extends Manager implements Listener {
 
     @Override
     public void reload() {
-        Bukkit.getScheduler().runTaskLater(this.rosePlugin, () -> {
-            LootTableTypeRegistrationEvent lootTableTypeRegistrationEvent = new LootTableTypeRegistrationEvent();
-            Bukkit.getPluginManager().callEvent(lootTableTypeRegistrationEvent);
-            this.lootTableTypes.putAll(lootTableTypeRegistrationEvent.getRegisteredLootTableTypes());
-            RoseLoot.getInstance().getLogger().info("Registered " + this.lootTableTypes.size() + " loot table types.");
+        LootTableTypeRegistrationEvent lootTableTypeRegistrationEvent = new LootTableTypeRegistrationEvent();
+        Bukkit.getPluginManager().callEvent(lootTableTypeRegistrationEvent);
+        this.lootTableTypes.putAll(lootTableTypeRegistrationEvent.getRegisteredLootTableTypes());
+        RoseLoot.getInstance().getLogger().info("Registered " + this.lootTableTypes.size() + " loot table types.");
 
-            LootItemTypeRegistrationEvent lootItemTypeRegistrationEvent = new LootItemTypeRegistrationEvent();
-            Bukkit.getPluginManager().callEvent(lootItemTypeRegistrationEvent);
-            this.registeredLootItemFunctions.putAll(lootItemTypeRegistrationEvent.getRegisteredLootItemsTypes());
-            RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
+        LootItemTypeRegistrationEvent lootItemTypeRegistrationEvent = new LootItemTypeRegistrationEvent();
+        Bukkit.getPluginManager().callEvent(lootItemTypeRegistrationEvent);
+        this.registeredLootItemFunctions.putAll(lootItemTypeRegistrationEvent.getRegisteredLootItemsTypes());
+        RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
 
-            File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
-            File examplesDirectory = new File(directory, "examples");
-            if (!examplesDirectory.exists())
-                examplesDirectory.mkdirs();
+        File directory = new File(this.rosePlugin.getDataFolder(), "loottables");
+        File examplesDirectory = new File(directory, "examples");
+        if (!examplesDirectory.exists())
+            examplesDirectory.mkdirs();
 
-            // Copy README.txt file if it doesn't already exist
-            File readme = new File(directory, "README.txt");
-            if (!readme.exists())
-                this.rosePlugin.saveResource("loottables/README.txt", false);
+        // Copy README.txt file if it doesn't already exist
+        File readme = new File(directory, "README.txt");
+        if (!readme.exists())
+            this.rosePlugin.saveResource("loottables/README.txt", false);
 
-            VanillaLootTableConverter.convertVanilla(examplesDirectory);
+        VanillaLootTableConverter.convertVanilla(examplesDirectory);
 
-            List<File> files = LootUtils.listFiles(directory, List.of("examples", "disabled"), List.of("yml"));
-            for (File file : files) {
-                try {
-                    ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);
-                    LootTableType type = this.getLootTableType(configuration.getString("type"));
-                    if (type == null) {
-                        this.failToLoad(file, "Invalid type");
+        List<File> files = LootUtils.listFiles(directory, List.of("examples", "disabled"), List.of("yml"));
+        for (File file : files) {
+            try {
+                ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);
+                LootTableType type = this.getLootTableType(configuration.getString("type"));
+                if (type == null) {
+                    this.failToLoad(file, "Invalid type");
+                    continue;
+                }
+
+                Set<OverwriteExisting> overwriteExisting;
+                if (configuration.isString("overwrite-existing")) {
+                    String overwriteExistingString = configuration.getString("overwrite-existing", "none");
+                    overwriteExisting = switch (overwriteExistingString.toLowerCase()) {
+                        case "all", "true" -> OverwriteExisting.all();
+                        case "none", "false" -> OverwriteExisting.none();
+                        default -> OverwriteExisting.fromStrings(List.of(overwriteExistingString));
+                    };
+                } else {
+                    overwriteExisting = OverwriteExisting.fromStrings(configuration.getStringList("overwrite-existing"));
+                }
+
+                boolean allowRecursion = configuration.getBoolean("allow-recursion", false);
+
+                List<LootCondition> conditions = new ArrayList<>();
+                List<String> conditionStrings = configuration.getStringList("conditions");
+                for (String conditionString : conditionStrings) {
+                    LootCondition condition = LootConditionParser.parse(conditionString);
+                    if (condition == null)  {
+                        this.issueLoading(file, "Invalid condition [" + conditionString + "]");
+                        continue;
+                    }
+                    conditions.add(condition);
+                }
+
+                ConfigurationSection poolsSection = configuration.getConfigurationSection("pools");
+                if (poolsSection == null) {
+                    this.failToLoad(file, "No pools section");
+                    continue;
+                }
+
+                List<LootPool> lootPools = new ArrayList<>();
+                for (String poolKey : poolsSection.getKeys(false)) {
+                    ConfigurationSection poolSection = poolsSection.getConfigurationSection(poolKey);
+                    if (poolSection == null) {
+                        this.issueLoading(file, "Invalid pool section [" + poolKey + "]");
                         continue;
                     }
 
-                    Set<OverwriteExisting> overwriteExisting;
-                    if (configuration.isString("overwrite-existing")) {
-                        String overwriteExistingString = configuration.getString("overwrite-existing", "none");
-                        overwriteExisting = switch (overwriteExistingString.toLowerCase()) {
-                            case "all", "true" -> OverwriteExisting.all();
-                            case "none", "false" -> OverwriteExisting.none();
-                            default -> OverwriteExisting.fromStrings(List.of(overwriteExistingString));
-                        };
-                    } else {
-                        overwriteExisting = OverwriteExisting.fromStrings(configuration.getStringList("overwrite-existing"));
-                    }
-
-                    boolean allowRecursion = configuration.getBoolean("allow-recursion", false);
-
-                    List<LootCondition> conditions = new ArrayList<>();
-                    List<String> conditionStrings = configuration.getStringList("conditions");
-                    for (String conditionString : conditionStrings) {
+                    List<LootCondition> poolConditions = new ArrayList<>();
+                    List<String> poolConditionStrings = poolSection.getStringList("conditions");
+                    for (String conditionString : poolConditionStrings) {
                         LootCondition condition = LootConditionParser.parse(conditionString);
                         if (condition == null)  {
-                            this.issueLoading(file, "Invalid condition [" + conditionString + "]");
+                            this.issueLoading(file, "Invalid pool condition [" + conditionString + "]");
                             continue;
                         }
-                        conditions.add(condition);
+                        poolConditions.add(condition);
                     }
 
-                    ConfigurationSection poolsSection = configuration.getConfigurationSection("pools");
-                    if (poolsSection == null) {
-                        this.failToLoad(file, "No pools section");
+                    NumberProvider rolls = NumberProvider.fromSection(poolSection, "rolls", 1);
+                    NumberProvider bonusRolls = NumberProvider.fromSection(poolSection, "bonus-rolls", 0);
+
+                    ConfigurationSection entriesSection = poolSection.getConfigurationSection("entries");
+                    if (entriesSection == null) {
+                        this.issueLoading(file, "Missing entries section for pool [" + poolKey + "]");
                         continue;
                     }
 
-                    List<LootPool> lootPools = new ArrayList<>();
-                    for (String poolKey : poolsSection.getKeys(false)) {
-                        ConfigurationSection poolSection = poolsSection.getConfigurationSection(poolKey);
-                        if (poolSection == null) {
-                            this.issueLoading(file, "Invalid pool section [" + poolKey + "]");
-                            continue;
-                        }
+                    List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, poolKey);
 
-                        List<LootCondition> poolConditions = new ArrayList<>();
-                        List<String> poolConditionStrings = poolSection.getStringList("conditions");
-                        for (String conditionString : poolConditionStrings) {
-                            LootCondition condition = LootConditionParser.parse(conditionString);
-                            if (condition == null)  {
-                                this.issueLoading(file, "Invalid pool condition [" + conditionString + "]");
-                                continue;
-                            }
-                            poolConditions.add(condition);
-                        }
-
-                        NumberProvider rolls = NumberProvider.fromSection(poolSection, "rolls", 1);
-                        NumberProvider bonusRolls = NumberProvider.fromSection(poolSection, "bonus-rolls", 0);
-
-                        ConfigurationSection entriesSection = poolSection.getConfigurationSection("entries");
-                        if (entriesSection == null) {
-                            this.issueLoading(file, "Missing entries section for pool [" + poolKey + "]");
-                            continue;
-                        }
-
-                        List<LootEntry> entries = this.getEntriesRecursively(file, entriesSection, poolKey);
-
-                        lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, entries));
-                    }
-
-                    File path = file;
-                    List<String> pieces = new ArrayList<>();
-                    do {
-                        pieces.add(LootUtils.getFileName(path));
-                        path = path.getParentFile();
-                    } while (path != null && !path.equals(directory));
-
-                    Collections.reverse(pieces);
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (String piece : pieces) {
-                        if (stringBuilder.length() > 0)
-                            stringBuilder.append('/');
-                        stringBuilder.append(piece);
-                    }
-
-                    this.lootTables.put(type, new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting, allowRecursion));
-                } catch (Exception e) {
-                    this.failToLoad(file, e.getMessage());
+                    lootPools.add(new LootPool(poolConditions, rolls, bonusRolls, entries));
                 }
-            }
 
-            RoseLoot.getInstance().getLogger().info("Loaded " + this.lootTables.values().size() + " loot tables.");
-        }, 1);
+                File path = file;
+                List<String> pieces = new ArrayList<>();
+                do {
+                    pieces.add(LootUtils.getFileName(path));
+                    path = path.getParentFile();
+                } while (path != null && !path.equals(directory));
+
+                Collections.reverse(pieces);
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String piece : pieces) {
+                    if (stringBuilder.length() > 0)
+                        stringBuilder.append('/');
+                    stringBuilder.append(piece);
+                }
+
+                this.lootTables.put(type, new LootTable(stringBuilder.toString(), type, conditions, lootPools, overwriteExisting, allowRecursion));
+            } catch (Exception e) {
+                this.failToLoad(file, e.getMessage());
+            }
+        }
+
+        RoseLoot.getInstance().getLogger().info("Loaded " + this.lootTables.values().size() + " loot tables.");
     }
 
     private List<LootEntry> getEntriesRecursively(File file, ConfigurationSection entriesSection, String poolKey) {
@@ -403,6 +402,16 @@ public class LootTableManager extends Manager implements Listener {
         return this.lootTables.values().stream()
                 .sorted(Comparator.comparing(LootTable::getName))
                 .toList();
+    }
+
+    public List<LootTable> getLootTables(LootTableType lootTableType) {
+        return this.lootTables.get(lootTableType).stream()
+                .sorted(Comparator.comparing(LootTable::getName))
+                .toList();
+    }
+
+    public boolean isLootTableTypeUsed(Collection<LootTableType> lootTableTypes) {
+        return lootTableTypes.stream().anyMatch(x -> !this.lootTables.get(x).isEmpty());
     }
 
     private void issueLoading(File file, String reason) {

@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
@@ -8,7 +9,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
-import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +17,13 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class HarvestBlockListener implements Listener {
-
-    private final LootTableManager lootTableManager;
+public class HarvestBlockListener extends LazyLootTableListener {
 
     public HarvestBlockListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.HARVEST);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -50,7 +47,7 @@ public class HarvestBlockListener implements Listener {
                         .put(LootContextParams.INPUT_ITEM, itemStack)
                         .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                         .build();
-                LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.HARVEST, lootContext);
+                LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.HARVEST, lootContext);
                 if (lootResult.isEmpty())
                     continue;
 

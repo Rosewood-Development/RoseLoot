@@ -171,4 +171,14 @@ public class LootContents {
         this.triggerExtras(player.getLocation());
     }
 
+    public void dropAtLocation(Location location) {
+        this.getItems().forEach(x -> location.getWorld().dropItemNaturally(location, x));
+
+        int experience = this.getExperience();
+        if (experience > 0)
+            location.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+
+        this.triggerExtras(location);
+    }
+
 }

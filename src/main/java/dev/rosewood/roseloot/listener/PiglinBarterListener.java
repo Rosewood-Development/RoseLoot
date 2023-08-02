@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
@@ -8,22 +9,18 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
-import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.List;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Piglin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PiglinBarterEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class PiglinBarterListener implements Listener {
-
-    private final LootTableManager lootTableManager;
+public class PiglinBarterListener extends LazyLootTableListener {
 
     public PiglinBarterListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.PIGLIN_BARTER);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -38,7 +35,7 @@ public class PiglinBarterListener implements Listener {
                 .put(LootContextParams.INPUT_ITEM, event.getInput())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getOutcome().isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.PIGLIN_BARTER, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.PIGLIN_BARTER, lootContext);
         if (lootResult.isEmpty())
             return;
 

@@ -86,12 +86,10 @@ public class LootConditionManager extends Manager implements Listener {
 
     @Override
     public void reload() {
-        Bukkit.getScheduler().runTaskLater(this.rosePlugin, () -> {
-            LootConditionRegistrationEvent event = new LootConditionRegistrationEvent();
-            Bukkit.getPluginManager().callEvent(event);
-            this.registeredConditions.putAll(event.getRegisteredConditions());
-            RoseLoot.getInstance().getLogger().info("Registered " + this.registeredConditions.size() + " loot table conditions.");
-        }, 1);
+        LootConditionRegistrationEvent event = new LootConditionRegistrationEvent();
+        Bukkit.getPluginManager().callEvent(event);
+        this.registeredConditions.putAll(event.getRegisteredConditions());
+        RoseLoot.getInstance().getLogger().info("Registered " + this.registeredConditions.size() + " loot table conditions.");
     }
 
     @Override

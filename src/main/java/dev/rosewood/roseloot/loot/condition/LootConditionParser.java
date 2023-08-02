@@ -19,16 +19,22 @@ public final class LootConditionParser {
     }
 
     /**
-     * Parses a condition string into a LootCondition supporting the following operators:
-     *   - AND: &&
-     *   - OR: ||
-     *   - NOT: !
-     *   - PARENTHESIS: ()
+     * Parses a condition String into a {@link LootCondition} supporting the following operators:
+     * <ul>
+     *     <li><code>AND: &&</code></li>
+     *     <li><code>OR: ||</code></li>
+     *     <li><code>NOT: !</code></li>
+     *     <li><code>PARENTHESIS: ()</code></li>
+     * </ul>
      *
-     * @param condition The condition string
-     * @return The parsed LootCondition or null if the condition string is invalid
+     * Any spaces are purely aesthetic and will be removed.
+     *
+     * @param condition The condition String to parse
+     * @return The parsed {@link LootCondition} or <code>null</code> if the condition String is invalid
      */
     public static LootCondition parse(String condition) {
+        condition = condition.replaceAll("\\s+", "");
+
         try {
             String[] tokens = condition.split(TOKEN_REGEX);
 
@@ -38,18 +44,16 @@ public final class LootConditionParser {
                 switch (token) {
                     case "(" -> operators.push(token);
                     case ")" -> {
-                        while (!operators.peek().equals("(")) {
+                        while (!operators.peek().equals("("))
                             conditions.push(getLootCondition(operators.pop(), conditions));
-                        }
                         operators.pop();
                     }
                     case "&&", "||", "!" -> {
-                        while (!operators.isEmpty() && hasPrecedence(token, operators.peek())) {
+                        while (!operators.isEmpty() && hasPrecedence(token, operators.peek()))
                             conditions.push(getLootCondition(operators.pop(), conditions));
-                        }
                         operators.push(token);
                     }
-                    default -> conditions.push(LOOT_CONDITION_MANAGER.parse(token.replaceAll(" ", "")));
+                    default -> conditions.push(LOOT_CONDITION_MANAGER.parse(token));
                 }
             }
 

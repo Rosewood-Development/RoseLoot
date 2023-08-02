@@ -592,7 +592,7 @@ public final class VanillaLootTableConverter {
                     }
                 } else if (tagElement != null) {
                     String tag = tagElement.getAsString().substring("minecraft:".length());
-                    stringBuilder.append("tool-tag:").append(tag);
+                    stringBuilder.append("required-tool-type:#").append(tag);
                 } else {
                     RoseLoot.getInstance().getLogger().warning("minecraft:match_tool unhandled value" + " | " + path);
                 }
