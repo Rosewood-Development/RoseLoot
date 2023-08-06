@@ -105,6 +105,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("biome", BiomeCondition::new);
         event.registerLootCondition("block-data", BlockDataCondition::new);
         event.registerLootCondition("block-type", BlockTypeCondition::new);
+        this.registerBoolean(event, "burning", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> x.getFireTicks() > 0).isPresent());
         this.registerBoolean(event, "can-breed", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Breedable.class).filter(Breedable::canBreed).isPresent());
         this.registerBoolean(event, "can-join-raid", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> x instanceof Raider raider && raider.isCanJoinRaid()).isPresent());
         event.registerLootCondition("chance", ChanceCondition::new);
@@ -142,9 +143,9 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("required-tool", RequiredToolCondition::new);
         event.registerLootCondition("required-tool-type", RequiredToolTypeCondition::new);
         event.registerLootCondition("replaced-block-type", ReplacedBlockTypeCondition::new);
-        this.registerBoolean(event, "sneaking", context -> context.getLootingPlayer().filter(Player::isSneaking).isPresent());
         this.registerBoolean(event, "sitting", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Sittable.class).filter(Sittable::isSitting).isPresent());
         this.registerBoolean(event, "sleeping", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(LivingEntity::isSleeping).isPresent());
+        this.registerBoolean(event, "sneaking", context -> context.getLootingPlayer().filter(Player::isSneaking).isPresent());
         event.registerLootCondition("spawner-type", SpawnerTypeCondition::new);
         event.registerLootCondition("spawn-reason", SpawnReasonCondition::new);
         this.registerBoolean(event, "tamed", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Tameable.class).filter(Tameable::isTamed).isPresent());
