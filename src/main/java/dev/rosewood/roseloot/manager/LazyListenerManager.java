@@ -6,7 +6,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.hook.ItemsAdderHook;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.listener.AdvancementListener;
-import dev.rosewood.roseloot.listener.ArchaeologyLootGenerateListener;
+import dev.rosewood.roseloot.listener.ArchaeologyListener;
 import dev.rosewood.roseloot.listener.BlockListener;
 import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FishingListener;
@@ -44,7 +44,7 @@ public class LazyListenerManager extends Manager {
                 this.lazyListeners.add(new NewerPaperListener(rosePlugin));
         }
         if (NMSUtil.getVersionNumber() >= 20)
-            this.lazyListeners.add(new ArchaeologyLootGenerateListener(rosePlugin));
+            this.lazyListeners.add(new ArchaeologyListener(rosePlugin));
         if (RoseStackerHook.isEnabled())
             this.lazyListeners.add(new RoseStackerEntityDeathListener(rosePlugin));
         if (ItemsAdderHook.isEnabled())

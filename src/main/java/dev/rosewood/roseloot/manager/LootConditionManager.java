@@ -30,6 +30,7 @@ import dev.rosewood.roseloot.loot.condition.tags.GrownCropCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HumidityCondition;
 import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
+import dev.rosewood.roseloot.loot.condition.tags.InputItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
@@ -126,6 +127,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("has-saddle", HasSaddleCondition::new);
         event.registerLootCondition("humidity", HumidityCondition::new);
         event.registerLootCondition("in-fluid", InFluidCondition::new);
+        event.registerLootCondition("input-item", InputItemCondition::new);
         event.registerLootCondition("killed-by", KilledByCondition::new);
         event.registerLootCondition("light-level", LightLevelCondition::new);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition::new);

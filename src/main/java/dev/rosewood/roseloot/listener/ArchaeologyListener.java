@@ -25,19 +25,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
 
-public class ArchaeologyLootGenerateListener extends LazyLootTableListener {
+public class ArchaeologyListener extends LazyLootTableListener {
 
-    public ArchaeologyLootGenerateListener(RosePlugin rosePlugin) {
+    public ArchaeologyListener(RosePlugin rosePlugin) {
         super(rosePlugin, LootTableTypes.ARCHAEOLOGY);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockBrush(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-
         Block block = event.getClickedBlock();
-        if (block == null)
+        if (block == null || event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
         Material type = block.getType();

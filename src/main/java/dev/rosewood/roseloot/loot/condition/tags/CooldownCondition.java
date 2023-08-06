@@ -66,20 +66,13 @@ public class CooldownCondition extends BaseLootCondition {
             int value = Integer.parseInt(matcher.group(1));
             String suffix = matcher.group(2);
             switch (suffix.toLowerCase()) {
-                case "s":
-                    duration += TimeUnit.SECONDS.toMillis(value);
-                    break;
-                case "m":
-                    duration += TimeUnit.MINUTES.toMillis(value);
-                    break;
-                case "h":
-                    duration += TimeUnit.HOURS.toMillis(value);
-                    break;
-                case "d":
-                    duration += TimeUnit.DAYS.toMillis(value);
-                    break;
-                default:
+                case "s" -> duration += TimeUnit.SECONDS.toMillis(value);
+                case "m" -> duration += TimeUnit.MINUTES.toMillis(value);
+                case "h" -> duration += TimeUnit.HOURS.toMillis(value);
+                case "d" -> duration += TimeUnit.DAYS.toMillis(value);
+                default -> {
                     return false;
+                }
             }
         }
 

@@ -18,8 +18,9 @@ public abstract class BaseLootCondition implements LootCondition {
 
     /**
      * @param tag The tag, including both prefix and values
+     * @throws IllegalArgumentException if the tag is empty, null, or malformed
      */
-    public BaseLootCondition(String tag) {
+    public BaseLootCondition(String tag) throws IllegalArgumentException {
         this(tag, true);
     }
 
