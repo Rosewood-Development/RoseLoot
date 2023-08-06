@@ -42,6 +42,7 @@ public class LootGenerateListener extends LazyLootTableListener {
                     .put(LootContextParams.LOOTER, looter)
                     .put(LootContextParams.LOOTED_BLOCK, block)
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
+                    .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getLoot().isEmpty())
                     .build();
             LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.CONTAINER, lootContext);
             if (lootResult.isEmpty())
@@ -75,6 +76,7 @@ public class LootGenerateListener extends LazyLootTableListener {
                     .put(LootContextParams.ORIGIN, entity.getLocation())
                     .put(LootContextParams.LOOTER, looter)
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
+                    .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getLoot().isEmpty())
                     .build();
             LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.CONTAINER, lootContext);
             if (lootResult.isEmpty())

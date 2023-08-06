@@ -34,6 +34,9 @@ public class LootTableTypes {
     public static final LootTableType ADVANCEMENT = register("ADVANCEMENT", builder ->
             builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTER).required(LootContextParams.ADVANCEMENT_KEY)
                     .optional(LootContextParams.HAS_EXISTING_ITEMS));
+    public static final LootTableType ARCHAEOLOGY = register("ARCHAEOLOGY", builder ->
+            builder.required(LootContextParams.ORIGIN).required(LootContextParams.VANILLA_LOOT_TABLE_KEY)
+                    .optional(LootContextParams.LOOTER).optional(LootContextParams.HAS_EXISTING_ITEMS));
     public static final LootTableType LOOT_TABLE = register("LOOT_TABLE", LootTableType.unrestricted());
 
     public static Map<String, LootTableType> values() {

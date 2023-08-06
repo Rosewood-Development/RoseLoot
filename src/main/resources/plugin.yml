@@ -4,7 +4,7 @@ authors: [Esophose]
 website: https://www.spigotmc.org/resources/101979/
 main: dev.rosewood.roseloot.RoseLoot
 api-version: '1.13'
-description: Manipulate loot of mobs, blocks, fishing, chests, piglin bartering, advancements, and more!
+description: Manipulate loot of mobs, blocks, fishing, chests, piglin bartering, advancements, archaeology, and more!
 softdepend:
   - PlaceholderAPI
   - HeadDatabase
