@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.api.RoseLootAPI;
@@ -73,7 +72,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Merchant;
 
-public class LootConditionManager extends Manager implements Listener {
+public class LootConditionManager extends DelayedManager implements Listener {
 
     // Prefix -> (Tag -> new LootCondition instance)
     private final Map<String, Function<String, LootCondition>> registeredConditions;
@@ -86,7 +85,7 @@ public class LootConditionManager extends Manager implements Listener {
     }
 
     @Override
-    public void reload() {
+    protected void delayedReload() {
         LootConditionRegistrationEvent event = new LootConditionRegistrationEvent();
         Bukkit.getPluginManager().callEvent(event);
         this.registeredConditions.putAll(event.getRegisteredConditions());

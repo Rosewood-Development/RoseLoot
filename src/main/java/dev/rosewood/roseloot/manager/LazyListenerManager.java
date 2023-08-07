@@ -1,7 +1,6 @@
 package dev.rosewood.roseloot.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.hook.ItemsAdderHook;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
@@ -21,7 +20,7 @@ import dev.rosewood.roseloot.listener.paper.PaperListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LazyListenerManager extends Manager {
+public class LazyListenerManager extends DelayedManager {
 
     private final List<LazyListener> lazyListeners;
 
@@ -63,7 +62,7 @@ public class LazyListenerManager extends Manager {
     }
 
     @Override
-    public void reload() {
+    protected void delayedReload() {
         this.lazyListeners.forEach(LazyListener::enable);
     }
 

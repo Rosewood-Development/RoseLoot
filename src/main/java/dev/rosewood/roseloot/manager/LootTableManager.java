@@ -6,7 +6,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
-import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.LootTableTypeRegistrationEvent;
@@ -64,7 +63,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class LootTableManager extends Manager implements Listener {
+public class LootTableManager extends DelayedManager implements Listener {
 
     private final BiMap<String, LootTableType> lootTableTypes;
     private final Multimap<LootTableType, LootTable> lootTables;
@@ -80,7 +79,7 @@ public class LootTableManager extends Manager implements Listener {
     }
 
     @Override
-    public void reload() {
+    protected void delayedReload() {
         LootTableTypeRegistrationEvent lootTableTypeRegistrationEvent = new LootTableTypeRegistrationEvent();
         Bukkit.getPluginManager().callEvent(lootTableTypeRegistrationEvent);
         this.lootTableTypes.putAll(lootTableTypeRegistrationEvent.getRegisteredLootTableTypes());
