@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.provider;
 
+import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
@@ -8,18 +9,44 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public interface StringProvider {
 
+    /**
+     * Gets a string from this provider with placeholders applied
+     *
+     * @param context The LootContext
+     * @return The string
+     */
     String get(LootContext context);
 
-    default List<String> getList(LootContext context) {
-        return new ArrayList<>(List.of(this.get(context)));
+    /**
+     * Gets a string from this provider with placeholders and colors applied
+     *
+     * @param context The LootContext
+     * @return The string with placeholders and colors applied
+     */
+    default String getFormatted(LootContext context) {
+        return HexUtils.colorify(this.get(context));
+    }
+
+    /**
+     * Gets a list of strings from this provider with placeholders applied
+     *
+     * @param context The LootContext
+     * @return The list of strings
+     */
+    List<String> getList(LootContext context);
+
+    /**
+     * Gets a list of strings from this provider with placeholders and colors applied
+     *
+     * @param context The LootContext
+     * @return The list of strings with placeholders and colors applied
+     */
+    default List<String> getListFormatted(LootContext context) {
+        return this.getList(context).stream().map(HexUtils::colorify).toList();
     }
 
     static StringProvider fromString(String string) {
-        if (string.startsWith("%") && string.endsWith("%")) {
-            return new PlaceholderStringProvider(string);
-        } else {
-            return new ConstantStringProvider(string);
-        }
+        return new ConstantStringProvider(string);
     }
 
     static StringProvider fromSection(ConfigurationSection section, String key, String defaultValue) {
@@ -33,22 +60,12 @@ public interface StringProvider {
 
         if (section.isString(key)) {
             String stringValue = section.getString(key, "");
-            if (stringValue.startsWith("%") && stringValue.endsWith("%")) {
-                // Placeholder!
-                return new PlaceholderStringProvider(stringValue);
-            } else {
-                return new ConstantStringProvider(stringValue);
-            }
+            return new ConstantStringProvider(stringValue);
         } else if (section.isList(key)) {
             List<String> stringList = section.getStringList(key);
             List<StringProvider> stringProviders = new ArrayList<>(stringList.size());
-            for (String string : stringList) {
-                if (string.startsWith("%") && string.endsWith("%")) {
-                    stringProviders.add(new PlaceholderStringProvider(string));
-                } else {
-                    stringProviders.add(new ConstantStringProvider(string));
-                }
-            }
+            for (String string : stringList)
+                stringProviders.add(new ConstantStringProvider(string));
             return new ListStringProvider(stringProviders);
         }
 
@@ -69,7 +86,12 @@ public interface StringProvider {
 
         @Override
         public String get(LootContext context) {
-            return this.value;
+            return context.applyPlaceholders(this.value);
+        }
+
+        @Override
+        public List<String> getList(LootContext context) {
+            return List.of(context.applyPlaceholders(this.value));
         }
 
     }
@@ -84,27 +106,16 @@ public interface StringProvider {
 
         @Override
         public String get(LootContext context) {
-            return this.values.get(LootUtils.RANDOM.nextInt(this.values.size())).get(context);
+            if (this.values.isEmpty())
+                return "";
+
+            StringProvider value = this.values.get(LootUtils.RANDOM.nextInt(this.values.size()));
+            return context.applyPlaceholders(value.get(context));
         }
 
         @Override
         public List<String> getList(LootContext context) {
-            return this.values.stream().map(x -> x.get(context)).toList();
-        }
-
-    }
-
-    class PlaceholderStringProvider implements StringProvider {
-
-        private final String placeholder;
-
-        private PlaceholderStringProvider(String placeholder) {
-            this.placeholder = placeholder;
-        }
-
-        @Override
-        public String get(LootContext context) {
-            return context.applyPlaceholders(this.placeholder);
+            return this.values.stream().map(x -> x.get(context)).map(context::applyPlaceholders).toList();
         }
 
     }

@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.nms.SkullUtils;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,18 +17,18 @@ public class SkullItemLootMeta extends ItemLootMeta {
 
     private boolean copyLooted;
     private boolean copyLooter;
-    private String texture;
-    private String owner;
-    private String hdbId;
+    private final StringProvider texture;
+    private final StringProvider owner;
+    private final StringProvider hdbId;
 
     public SkullItemLootMeta(ConfigurationSection section) {
         super(section);
 
         if (section.isBoolean("copy-looted")) this.copyLooted = section.getBoolean("copy-looted");
         if (section.isBoolean("copy-looter")) this.copyLooter = section.getBoolean("copy-looter");
-        if (section.isString("texture")) this.texture = section.getString("texture");
-        if (section.isString("owner")) this.owner = section.getString("owner");
-        if (section.contains("hdb-id")) this.hdbId = section.getString("hdb-id");
+        this.texture = StringProvider.fromSection(section, "texture", null);
+        this.owner = StringProvider.fromSection(section, "owner", null);
+        this.hdbId = StringProvider.fromSection(section, "hdb-id", null);
     }
 
     @Override
@@ -45,17 +46,17 @@ public class SkullItemLootMeta extends ItemLootMeta {
         } else if (this.copyLooter && lootingPlayer.isPresent()) {
             itemMeta.setOwningPlayer(lootingPlayer.get());
         } else if (this.texture != null) {
-            SkullUtils.setSkullTexture(itemMeta, this.texture);
+            SkullUtils.setSkullTexture(itemMeta, this.texture.get(context));
         } else if (this.owner != null) {
             OfflinePlayer offlinePlayer;
             try {
-                offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(this.owner));
+                offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(this.owner.get(context)));
             } catch (IllegalArgumentException e) {
-                offlinePlayer = Bukkit.getOfflinePlayer(this.owner);
+                offlinePlayer = Bukkit.getOfflinePlayer(this.owner.get(context));
             }
             itemMeta.setOwningPlayer(offlinePlayer);
         } else if (this.hdbId != null && Bukkit.getPluginManager().getPlugin("HeadDatabase") != null) {
-            SkullUtils.setSkullTexture(itemMeta, new me.arcaniax.hdb.api.HeadDatabaseAPI().getBase64(this.hdbId));
+            SkullUtils.setSkullTexture(itemMeta, new me.arcaniax.hdb.api.HeadDatabaseAPI().getBase64(this.hdbId.get(context)));
         }
 
         itemStack.setItemMeta(itemMeta);

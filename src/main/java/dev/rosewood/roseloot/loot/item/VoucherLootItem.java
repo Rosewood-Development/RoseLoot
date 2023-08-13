@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.VoucherUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class VoucherLootItem extends ItemLootItem {
 
     private final String lootTable;
 
-    public VoucherLootItem(String lootTable, Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+    public VoucherLootItem(String lootTable, Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
         super(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
         this.lootTable = lootTable;
     }
@@ -81,7 +82,7 @@ public class VoucherLootItem extends ItemLootItem {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-        String nbt = section.getString("nbt");
+        StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
         return new VoucherLootItem(lootTable, item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }

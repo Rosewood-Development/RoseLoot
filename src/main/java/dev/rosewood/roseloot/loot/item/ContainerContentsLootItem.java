@@ -28,7 +28,7 @@ public class ContainerContentsLootItem implements ItemGenerativeLootItem {
         if (blockState instanceof Container container) {
             droppedContents.addAll(Arrays.stream(container.getInventory().getContents()).filter(Objects::nonNull).toList());
         } else if (NMSUtil.getVersionNumber() >= 20 && blockState instanceof DecoratedPot decoratedPot) {
-            droppedContents.addAll(decoratedPot.getShards().stream().map(ItemStack::new).toList());
+            droppedContents.addAll(decoratedPot.getSherds().values().stream().map(ItemStack::new).toList());
         }
 
         return droppedContents;

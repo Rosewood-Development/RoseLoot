@@ -6,10 +6,22 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public interface NumberProvider {
 
+    /**
+     * Gets an integer number from this provider
+     *
+     * @param context The LootContext
+     * @return The number
+     */
     default int getInteger(LootContext context) {
         return (int) Math.round(this.getDouble(context));
     }
 
+    /**
+     * Gets a double number from this provider
+     *
+     * @param context The LootContext
+     * @return The number
+     */
     double getDouble(LootContext context);
 
     static NumberProvider fromString(String string) {

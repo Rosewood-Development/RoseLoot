@@ -6,6 +6,7 @@ import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class TagLootItem extends ItemLootItem {
 
     private final Tag<Material> tag;
 
-    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
         super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
         this.tag = tag;
     }
@@ -89,7 +90,7 @@ public class TagLootItem extends ItemLootItem {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-        String nbt = section.getString("nbt");
+        StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(Iterators.get(tag.getValues().iterator(), 0), section);
         return new TagLootItem(tag, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }

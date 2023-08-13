@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public class CustomItemLootItem extends ItemLootItem {
     private final CustomItemPlugin customItemPlugin;
     private final String itemId;
 
-    public CustomItemLootItem(CustomItemPlugin customItemPlugin, String itemId, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+    public CustomItemLootItem(CustomItemPlugin customItemPlugin, String itemId, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
         super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
         this.customItemPlugin = customItemPlugin;
         this.itemId = itemId;
@@ -36,7 +37,7 @@ public class CustomItemLootItem extends ItemLootItem {
     private ItemStack resolveItem(LootContext context) {
         ItemStack itemStack = this.customItemPlugin.resolveItem(context, this.itemId);
         if (itemStack == null) {
-            RoseLoot.getInstance().getLogger().warning("Failed to resolve item [" + this.itemId + "] from [" + this.customItemPlugin.name().toLowerCase() + "]");
+            failToResolve(this.itemId, this.customItemPlugin);
             return null;
         }
         return itemStack;
@@ -62,8 +63,10 @@ public class CustomItemLootItem extends ItemLootItem {
         if (this.itemLootMeta != null)
             itemStack = this.itemLootMeta.apply(itemStack, context);
 
-        if (this.nbt != null && !this.nbt.isEmpty())
-            NBTAPIHook.mergeItemNBT(itemStack, this.nbt);
+        if (this.nbt != null) {
+            String nbt = this.nbt.get(context);
+            NBTAPIHook.mergeItemNBT(itemStack, nbt);
+        }
 
         return itemStack;
     }
@@ -117,12 +120,22 @@ public class CustomItemLootItem extends ItemLootItem {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-        String nbt = section.getString("nbt");
+        StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
 
         ItemStack itemStack = customItemPlugin.resolveItem(LootContext.builder().build(), itemId);
-        ItemLootMeta itemLootMeta = itemStack == null ? null : ItemLootMeta.fromSection(itemStack.getType(), section);
+        ItemLootMeta itemLootMeta;
+        if (itemStack != null) {
+            itemLootMeta = ItemLootMeta.fromSection(itemStack.getType(), section);
+        } else {
+            itemLootMeta = null;
+            failToResolve(itemId, customItemPlugin);
+        }
 
         return new CustomItemLootItem(customItemPlugin, itemId, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
+    }
+
+    private static void failToResolve(String itemId, CustomItemPlugin customItemPlugin) {
+        RoseLoot.getInstance().getLogger().warning("Failed to resolve item [" + itemId + "] from [" + customItemPlugin.name().toLowerCase() + "]");
     }
 
 }
