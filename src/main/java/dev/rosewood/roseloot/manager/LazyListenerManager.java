@@ -33,8 +33,7 @@ public class LazyListenerManager extends DelayedManager {
         this.lazyListeners.add(new EntityListener(rosePlugin));
         this.lazyListeners.add(new FishingListener(rosePlugin));
         this.lazyListeners.add(new AdvancementListener(rosePlugin));
-        if (NMSUtil.getVersionNumber() >= 15)
-            this.lazyListeners.add(new LootGenerateListener(rosePlugin));
+        this.lazyListeners.add(new LootGenerateListener(rosePlugin));
         if (NMSUtil.getVersionNumber() >= 16)
             this.lazyListeners.add(new HarvestBlockListener(rosePlugin));
         if (NMSUtil.isPaper()) {
