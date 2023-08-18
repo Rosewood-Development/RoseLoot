@@ -255,7 +255,7 @@ public class LootTableManager extends DelayedManager implements Listener {
             }
 
             LootComponent.ChildrenStrategy childrenStrategy = LootComponent.ChildrenStrategy.fromString(componentSection.getString("children-strategy", LootComponent.ChildrenStrategy.NORMAL.name()));
-            ConfigurationSection childrenSection = componentSection.getConfigurationSection("children");
+            ConfigurationSection childrenSection = this.findNextComponentsSection(file, componentSection);
             List<LootComponent> childEntries = childrenSection != null ? this.getLootComponentsRecursively(file, childrenSection, parents) : null;
 
             lootComponents.add(new LootComponent(entryConditions, rolls, bonusRolls, weight, quality, lootItems, childrenStrategy, childEntries));
