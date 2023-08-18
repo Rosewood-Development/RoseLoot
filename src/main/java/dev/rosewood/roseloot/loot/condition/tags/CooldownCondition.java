@@ -15,12 +15,12 @@ import org.bukkit.entity.Player;
  * cooldown:custom_id,player,15m
  * value 1: Custom ID of the cooldown
  * value 2: <player> or <global>
- * value 3: Time of the cooldown with a time suffix (s, m, h, d)
+ * value 3: Time of the cooldown with a time suffix (ms, s, m, h, d)
  */
 public class CooldownCondition extends BaseLootCondition {
 
-    private static final Pattern ENTIRE_DURATION_PATTERN = Pattern.compile("((\\d+)([smhd]))+");
-    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([smhd])");
+    private static final Pattern ENTIRE_DURATION_PATTERN = Pattern.compile("((\\d+)(ms|[smhd]))+");
+    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)(ms|[smhd])");
 
     private String cooldownId;
     private boolean playerBased;
@@ -66,6 +66,7 @@ public class CooldownCondition extends BaseLootCondition {
             int value = Integer.parseInt(matcher.group(1));
             String suffix = matcher.group(2);
             switch (suffix.toLowerCase()) {
+                case "ms" -> duration += value;
                 case "s" -> duration += TimeUnit.SECONDS.toMillis(value);
                 case "m" -> duration += TimeUnit.MINUTES.toMillis(value);
                 case "h" -> duration += TimeUnit.HOURS.toMillis(value);
