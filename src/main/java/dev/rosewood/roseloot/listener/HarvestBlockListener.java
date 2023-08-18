@@ -61,6 +61,7 @@ public class HarvestBlockListener extends LazyLootTableListener {
 
                 drops.addAll(lootContents.getItems());
                 experience += lootContents.getExperience();
+                lootContents.triggerExtras(block.getLocation());
                 any = true;
             }
         }

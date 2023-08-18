@@ -123,7 +123,7 @@ public class LootComponent implements LootContentsPopulator {
      * The strategy to use when evaluating a LootComponent's children
      */
     public enum ChildrenStrategy {
-        NORMAL,        // Process as if this is a LootPool with a single roll and no bonuses
+        NORMAL,        // Process all children taking into account weights and conditions
         SEQUENTIAL,    // Keep processing children until a child does not pass conditions
         FIRST_PASSING; // Keep attempting to process children until one passes conditions, then stop
 
