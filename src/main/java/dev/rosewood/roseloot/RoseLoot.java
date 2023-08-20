@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.listener.VoucherListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.CooldownManager;
+import dev.rosewood.roseloot.manager.DataManager;
 import dev.rosewood.roseloot.manager.LazyListenerManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootConditionManager;
@@ -32,7 +33,7 @@ public class RoseLoot extends RosePlugin {
     }
 
     public RoseLoot() {
-        super(101979, 12626, ConfigurationManager.class, null, LocaleManager.class, CommandManager.class);
+        super(101979, 12626, ConfigurationManager.class, DataManager.class, LocaleManager.class, CommandManager.class);
 
         instance = this;
     }
