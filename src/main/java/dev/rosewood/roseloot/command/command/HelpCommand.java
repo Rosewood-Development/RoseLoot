@@ -15,8 +15,6 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 @SuppressWarnings("deprecation")
 public class HelpCommand extends dev.rosewood.rosegarden.command.command.HelpCommand {
 
-    private static final String WIKI_URL = "https://github.com/Rosewood-Development/RoseLoot/wiki/Loot-Tables-Overview";
-
     public HelpCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
         super(rosePlugin, parent);
     }
@@ -41,9 +39,10 @@ public class HelpCommand extends dev.rosewood.rosegarden.command.command.HelpCom
         }
 
         if (context.getSender().hasPermission("roseloot.help.wiki")) {
+            String url = localeManager.getLocaleMessage("command-help-wiki-url");
             TextComponent link = new TextComponent(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-help-wiki")));
-            link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, WIKI_URL));
-            link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-help-wiki-hover", StringPlaceholders.of("url", WIKI_URL))))));
+            link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+            link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(localeManager.getLocaleMessage("command-help-wiki-hover", StringPlaceholders.of("url", url))))));
             context.getSender().spigot().sendMessage(link);
         }
     }
