@@ -64,7 +64,7 @@ import org.bukkit.event.Listener;
 
 public class LootTableManager extends DelayedManager implements Listener {
 
-    private static final List<String> RESERVED_COMPONENT_KEYS = List.of("type", "conditions", "rolls", "bonus-rolls", "weight", "quality", "children-strategy");
+    private static final List<String> RESERVED_COMPONENT_KEYS = List.of("type", "conditions", "rolls", "bonus-rolls", "weight", "quality", "children-strategy", "items");
 
     private final BiMap<String, LootTableType> lootTableTypes;
     private final Multimap<LootTableType, LootTable> lootTables;
