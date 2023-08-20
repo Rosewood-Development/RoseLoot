@@ -58,15 +58,16 @@ public interface StringProvider {
             }
         }
 
-        if (section.isString(key)) {
-            String stringValue = section.getString(key, "");
-            return new ConstantStringProvider(stringValue);
-        } else if (section.isList(key)) {
+        if (section.isList(key)) {
             List<String> stringList = section.getStringList(key);
             List<StringProvider> stringProviders = new ArrayList<>(stringList.size());
             for (String string : stringList)
                 stringProviders.add(new ConstantStringProvider(string));
             return new ListStringProvider(stringProviders);
+        } else {
+            String stringValue = section.getString(key);
+            if (stringValue != null)
+                return new ConstantStringProvider(stringValue);
         }
 
         if (defaultValue == null) {
