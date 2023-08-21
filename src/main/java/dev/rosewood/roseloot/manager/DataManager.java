@@ -28,6 +28,7 @@ public class DataManager extends AbstractDataManager {
     @Override
     public void reload() {
         this.databaseConnector = new SQLiteConnector(this.rosePlugin);
+        this.databaseConnector.cleanup();
     }
 
     public void setCooldowns(Collection<CooldownManager.Cooldown> cooldowns) {

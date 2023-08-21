@@ -6,6 +6,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.roseloot.util.TimeUtils;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -51,7 +52,7 @@ public class CooldownManager extends Manager {
     public Collection<Cooldown> getActiveCooldowns(UUID player) {
         return this.cooldowns.values().stream()
                 .filter(x -> x.player() == null || x.player().equals(player))
-                .filter(x -> !x.isExpired())
+                .filter(Cooldown::isValid)
                 .toList();
     }
 
@@ -66,12 +67,15 @@ public class CooldownManager extends Manager {
 
     @Override
     public void reload() {
-        this.rosePlugin.getManager(DataManager.class).getCooldowns().forEach(x -> this.cooldowns.put(x.id(), x));
+        this.rosePlugin.getManager(DataManager.class).getCooldowns().stream()
+                .filter(Cooldown::isValid)
+                .forEach(x -> this.cooldowns.put(x.id(), x));
     }
 
     @Override
     public void disable() {
-        this.rosePlugin.getManager(DataManager.class).setCooldowns(this.cooldowns.values());
+        List<Cooldown> cooldowns = this.cooldowns.values().stream().filter(Cooldown::isValid).toList();
+        this.rosePlugin.getManager(DataManager.class).setCooldowns(cooldowns);
         this.cooldowns.clear();
     }
 
@@ -79,6 +83,10 @@ public class CooldownManager extends Manager {
 
         public boolean isExpired() {
             return this.expiration < System.currentTimeMillis();
+        }
+
+        public boolean isValid() {
+            return !this.isExpired();
         }
 
         @Override
