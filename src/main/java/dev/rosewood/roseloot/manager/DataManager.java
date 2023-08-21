@@ -55,13 +55,15 @@ public class DataManager extends AbstractDataManager {
     public Collection<CooldownManager.Cooldown> getCooldowns() {
         List<CooldownManager.Cooldown> cooldownList = new ArrayList<>();
         this.databaseConnector.connect(connection -> {
-            ResultSet cooldowns = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "cooldowns").executeQuery();
-            while (cooldowns.next()) {
-                cooldownList.add(new CooldownManager.Cooldown(
-                        cooldowns.getString("id"),
-                        UUID.fromString(cooldowns.getString("player")),
-                        cooldowns.getLong("expiration")
-                ));
+            try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.getTablePrefix() + "cooldowns")) {
+                ResultSet cooldowns = statement.executeQuery();
+                while (cooldowns.next()) {
+                    cooldownList.add(new CooldownManager.Cooldown(
+                            cooldowns.getString("id"),
+                            UUID.fromString(cooldowns.getString("player")),
+                            cooldowns.getLong("expiration")
+                    ));
+                }
             }
         });
         return cooldownList;
