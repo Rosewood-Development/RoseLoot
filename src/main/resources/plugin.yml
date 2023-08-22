@@ -37,6 +37,7 @@ softdepend:
   - Terra
   - MMOCore
   - NBTAPI
+  - CoreProtect
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

@@ -48,6 +48,10 @@ public class HookConditionListener implements Listener {
             event.registerLootCondition("itemsadder-block", ItemsAdderBlockCondition::new);
         }
 
+        if (pluginManager.getPlugin("CoreProtect") != null) {
+            event.registerLootCondition("coreprotect-natural-block", CoreProtectNaturalBlockCondition::new);
+        }
+
         // Register conditions for custom item plugins
         for (CustomItemPlugin customItemPlugin : CustomItemPlugin.values())
             if (customItemPlugin.isEnabled() && customItemPlugin.supportsIdLookup())

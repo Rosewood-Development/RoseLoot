@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.hook.CoreProtectRecentBlockHook;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContents;
@@ -32,6 +33,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
@@ -90,6 +92,11 @@ public class BlockListener extends LazyLootTableListener {
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
 
         lootContents.triggerExtras(dropLocation);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockPlaceMonitor(BlockPlaceEvent event) {
+        CoreProtectRecentBlockHook.markBlock(event.getBlock());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
