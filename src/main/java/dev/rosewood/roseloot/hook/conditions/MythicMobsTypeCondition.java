@@ -28,6 +28,7 @@ public class MythicMobsTypeCondition extends BaseLootCondition {
         if (activeMob == null)
             return false;
 
+        context.getPlaceholders().add("mythic_mob_level", activeMob.getLevel());
         return this.types.contains(activeMob.getMobType());
     }
 
