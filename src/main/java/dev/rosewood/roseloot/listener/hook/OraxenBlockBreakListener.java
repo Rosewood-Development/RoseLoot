@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.listener.hook;
 
-import dev.lone.itemsadder.api.Events.CustomBlockBreakEvent;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
@@ -11,6 +10,8 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.util.LootUtils;
+import io.th0rgal.oraxen.api.events.noteblock.OraxenNoteBlockBreakEvent;
+import io.th0rgal.oraxen.api.events.stringblock.OraxenStringBlockBreakEvent;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -25,32 +26,39 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDropItemEvent;
 
 /**
- * Implementation note: overwrite-existing is not supported for ItemsAdder blocks. The drops need to be
- * manually cancelled through the ItemsAdder configuration with cancel_drops.
+ * Implementation note: overwrite-existing is not supported for Oraxen blocks. The drops need to be
+ * manually cancelled through the Oraxen configuration.
  */
-public class ItemsAdderBlockBreakListener extends LazyLootTableListener {
+public class OraxenBlockBreakListener extends LazyLootTableListener {
 
-    public static final LootContextParam<String> ITEMSADDER_BLOCK = LootContextParams.create("itemsadder_block", String.class);
+    public static final LootContextParam<String> ORAXEN_BLOCK = LootContextParams.create("oraxen_block", String.class);
 
-    public ItemsAdderBlockBreakListener(RosePlugin rosePlugin) {
+    public OraxenBlockBreakListener(RosePlugin rosePlugin) {
         super(rosePlugin, LootTableTypes.BLOCK);
     }
 
     @EventHandler
-    public void onItemsAdderBlockBreak(CustomBlockBreakEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
+    public void onOraxenStringBlockBreak(OraxenStringBlockBreakEvent event) {
+        this.handleOraxenBlockBreak(event.getPlayer(), event.getBlock(), event.getMechanic().getItemID());
+    }
+
+    @EventHandler
+    public void onOraxenNoteBlockBreak(OraxenNoteBlockBreakEvent event) {
+        this.handleOraxenBlockBreak(event.getPlayer(), event.getBlock(), event.getMechanic().getItemID());
+    }
+
+    private void handleOraxenBlockBreak(Player player, Block block, String itemId) {
+        if (player.getGameMode() == GameMode.CREATIVE)
             return;
 
-        Block block = event.getBlock();
         if (ConfigurationManager.Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
-        Player player = event.getPlayer();
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
                 .put(LootContextParams.ORIGIN, block.getLocation())
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.LOOTED_BLOCK, block)
-                .put(ITEMSADDER_BLOCK, event.getNamespacedID())
+                .put(ORAXEN_BLOCK, itemId)
                 .build();
         LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())

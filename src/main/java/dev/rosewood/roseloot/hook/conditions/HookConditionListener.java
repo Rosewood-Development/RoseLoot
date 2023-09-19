@@ -48,6 +48,10 @@ public class HookConditionListener implements Listener {
             event.registerLootCondition("itemsadder-block", ItemsAdderBlockCondition::new);
         }
 
+        if (pluginManager.getPlugin("Oraxen") != null) {
+            event.registerLootCondition("oraxen-block", OraxenBlockCondition::new);
+        }
+
         if (pluginManager.getPlugin("CoreProtect") != null) {
             event.registerLootCondition("coreprotect-natural-block", CoreProtectNaturalBlockCondition::new);
         }
