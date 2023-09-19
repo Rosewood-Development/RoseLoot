@@ -7,6 +7,7 @@ import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.listener.AdvancementListener;
 import dev.rosewood.roseloot.listener.ArchaeologyListener;
 import dev.rosewood.roseloot.listener.BlockListener;
+import dev.rosewood.roseloot.listener.EntityDropItemListener;
 import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FishingListener;
 import dev.rosewood.roseloot.listener.HarvestBlockListener;
@@ -31,6 +32,7 @@ public class LazyListenerManager extends DelayedManager {
 
         this.lazyListeners.add(new BlockListener(rosePlugin));
         this.lazyListeners.add(new EntityListener(rosePlugin));
+        this.lazyListeners.add(new EntityDropItemListener(rosePlugin));
         this.lazyListeners.add(new FishingListener(rosePlugin));
         this.lazyListeners.add(new AdvancementListener(rosePlugin));
         this.lazyListeners.add(new LootGenerateListener(rosePlugin));
