@@ -156,7 +156,8 @@ public class LootConditionManager extends DelayedManager implements Listener {
         event.registerLootCondition("world", WorldCondition::new);
 
         if (NMSUtil.isPaper()) {
-            event.registerLootCondition("biome-key", BiomeKeyCondition::new);
+            if (NMSUtil.getVersionNumber() >= 19)
+                event.registerLootCondition("biome-key", BiomeKeyCondition::new);
             event.registerLootCondition("moon-phase", MoonPhaseCondition::new);
         }
 
