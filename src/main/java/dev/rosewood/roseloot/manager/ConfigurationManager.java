@@ -75,4 +75,9 @@ public class ConfigurationManager extends AbstractConfigurationManager {
         };
     }
 
+    @Override
+    protected List<RoseSetting> getDatabaseSettings() {
+        return List.of();
+    }
+
 }
