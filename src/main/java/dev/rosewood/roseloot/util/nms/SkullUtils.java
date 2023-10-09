@@ -27,7 +27,7 @@ public final class SkullUtils {
         if (texture == null || texture.isEmpty())
             return;
 
-        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), null);
+        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "");
         profile.getProperties().put("textures", new Property("textures", texture));
 
         try {
