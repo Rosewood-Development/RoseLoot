@@ -12,7 +12,7 @@ import java.util.Deque;
 public final class LootConditionParser {
 
     private static final LootConditionManager LOOT_CONDITION_MANAGER = RoseLoot.getInstance().getManager(LootConditionManager.class);
-    private static final String TOKEN_REGEX = "(?<=&&)|(?=&&)|(?<=\\|\\|)|(?=\\|\\|)|(?<=!)|(?=!)|(?<=\\()|(?=\\()|(?<=\\))|(?=\\))";
+    private static final String TOKEN_REGEX = "(?<=&&)|(?=&&)|(?<=\\|\\|)|(?=\\|\\|)|(?<=(?<=^|\\s|\\()!)|(?=(?<=^|\\s|\\()!)|(?<=\\()|(?=\\()|(?<=\\))|(?=\\))";
 
     private LootConditionParser() {
 
