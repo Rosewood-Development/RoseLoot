@@ -51,16 +51,16 @@ public class ArchaeologyListener extends LazyLootTableListener {
         if (ConfigurationManager.Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
-        LootTable lootTable = brushableBlock.getLootTable();
-        if (lootTable == null)
-            return;
-
         Player player = event.getPlayer();
-        LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
+        LootContext.Builder lootContextBuilder = LootContext.builder(LootUtils.getEntityLuck(player))
                 .put(LootContextParams.ORIGIN, block.getLocation())
-                .put(LootContextParams.LOOTER, player)
-                .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, lootTable.getKey())
-                .build();
+                .put(LootContextParams.LOOTER, player);
+
+        LootTable lootTable = brushableBlock.getLootTable();
+        if (lootTable != null)
+            lootContextBuilder.put(LootContextParams.VANILLA_LOOT_TABLE_KEY, lootTable.getKey());
+
+        LootContext lootContext = lootContextBuilder.build();
         LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ARCHAEOLOGY, lootContext);
         if (lootResult.isEmpty())
             return;
