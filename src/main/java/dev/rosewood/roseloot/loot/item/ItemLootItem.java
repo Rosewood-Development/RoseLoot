@@ -71,7 +71,6 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     @Override
     public List<ItemStack> generate(LootContext context) {
-
         int amount = this.amount.getInteger(context);
 
         for (AmountModifier amountModifier : this.amountModifiers) {

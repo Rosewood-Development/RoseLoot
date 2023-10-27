@@ -29,10 +29,10 @@ public class TagLootItem extends ItemLootItem {
     }
 
     @Override
-    public List<ItemStack> generate(LootContext context) {
+    protected ItemStack getCreationItem(LootContext context) {
         List<Material> values = new ArrayList<>(this.tag.getValues());
         this.item = values.get(LootUtils.RANDOM.nextInt(values.size()));
-        return super.generate(context);
+        return super.getCreationItem(context);
     }
 
     public static TagLootItem fromSection(ConfigurationSection section) {
