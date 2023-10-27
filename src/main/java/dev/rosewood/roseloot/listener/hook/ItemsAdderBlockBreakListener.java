@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class ItemsAdderBlockBreakListener extends LazyLootTableListener {
         int experience = lootContents.getExperience();
         if (experience > 0) {
             Location location = player.getLocation();
-            player.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
         }
 
         lootContents.triggerExtras(dropLocation);

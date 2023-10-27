@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -50,7 +51,7 @@ public class NewerPaperListener extends LazyLootTableListener {
 
         int experience = lootContents.getExperience();
         if (experience > 0)
-            block.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
+            EntitySpawnUtil.spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
         lootContents.triggerExtras(dropLocation);
     }

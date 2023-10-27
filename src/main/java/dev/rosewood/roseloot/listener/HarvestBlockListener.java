@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ public class HarvestBlockListener extends LazyLootTableListener {
         // Drop experience
         if (experience > 0) {
             int finalExperience = experience;
-            player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(finalExperience));
+            EntitySpawnUtil.spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(finalExperience));
         }
     }
 

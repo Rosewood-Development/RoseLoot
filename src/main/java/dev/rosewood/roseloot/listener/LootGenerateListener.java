@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -60,7 +61,7 @@ public class LootGenerateListener extends LazyLootTableListener {
             int experience = lootContents.getExperience();
             if (experience > 0) {
                 Location location = looter == null ? block.getLocation() : looter.getLocation();
-                block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+                EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
             }
 
             lootContents.triggerExtras(block.getLocation());
@@ -94,7 +95,7 @@ public class LootGenerateListener extends LazyLootTableListener {
             int experience = lootContents.getExperience();
             if (experience > 0) {
                 Location location = looter == null ? entity.getLocation() : looter.getLocation();
-                entity.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+                EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
             }
 
             lootContents.triggerExtras(entity.getLocation());
