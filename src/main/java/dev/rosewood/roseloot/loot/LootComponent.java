@@ -33,51 +33,52 @@ public class LootComponent implements LootContentsPopulator {
 
     @Override
     public void populate(LootContext context, LootContents contents) {
-        int numRolls = this.rolls.getInteger(context) + (int) Math.round(this.bonusRolls.getDouble(context) * context.getLuckLevel());
-        for (int i = 0; i < numRolls; i++)
-            this.populateChildren(context, contents);
-    }
-
-    private void populateChildren(LootContext context, LootContents contents) {
         contents.add(this.lootItems);
 
         if (this.children != null && this.childrenStrategy != null) {
             switch (this.childrenStrategy) {
                 case NORMAL -> {
+                    List<LootComponent> weightedEntries = new ArrayList<>();
                     List<LootComponent> unweightedEntries = new ArrayList<>();
-                    RandomCollection<LootComponent> randomEntries = new RandomCollection<>();
+
+                    // Sort entries by weighted and unweighted
                     for (LootComponent child : this.children) {
                         if (child.isWeighted()) {
-                            // If weighted, add to the random entries if it passes conditions
-                            if (!child.check(context))
-                                continue;
-
-                            randomEntries.add(child.getWeight(context), child);
+                            weightedEntries.add(child);
                         } else {
-                            // Otherwise, generate it right away
                             unweightedEntries.add(child);
                         }
                     }
 
-                    if (!randomEntries.isEmpty())
-                        randomEntries.next().populateChildren(context, contents);
-
+                    // Handle unweighted entries
                     for (LootComponent entry : unweightedEntries)
                         if (entry.check(context))
-                            entry.populateChildren(context, contents);
+                            entry.populate(context, contents);
+
+                    // Handle weighted entries
+                    int numRolls = this.rolls.getInteger(context) + (int) Math.round(this.bonusRolls.getDouble(context) * context.getLuckLevel());
+                    for (int i = 0; i < numRolls; i++) {
+                        RandomCollection<LootComponent> randomEntries = new RandomCollection<>();
+                        for (LootComponent entry : weightedEntries)
+                            if (entry.check(context))
+                                randomEntries.add(entry.getWeight(context), entry);
+
+                        if (!randomEntries.isEmpty())
+                            randomEntries.next().populate(context, contents);
+                    }
                 }
                 case SEQUENTIAL -> {
                     for (LootComponent child : this.children) {
                         if (!child.check(context))
                             break;
 
-                        child.populateChildren(context, contents);
+                        child.populate(context, contents);
                     }
                 }
                 case FIRST_PASSING -> {
                     for (LootComponent child : this.children) {
                         if (child.check(context)) {
-                            child.populateChildren(context, contents);
+                            child.populate(context, contents);
                             break;
                         }
                     }
