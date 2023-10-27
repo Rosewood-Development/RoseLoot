@@ -57,16 +57,15 @@ public class ArchaeologyListener extends LazyLootTableListener {
                 .put(LootContextParams.LOOTER, player);
 
         LootTable lootTable = brushableBlock.getLootTable();
-        if (lootTable != null)
+        if (lootTable != null) {
             lootContextBuilder.put(LootContextParams.VANILLA_LOOT_TABLE_KEY, lootTable.getKey());
+        } else if (brushableBlock.getItem() != null && brushableBlock.getItem().getType() != Material.AIR) {
+            return; // already generated
+        }
 
         LootContext lootContext = lootContextBuilder.build();
         LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ARCHAEOLOGY, lootContext);
-        if (lootResult.isEmpty())
-            return;
-
         LootContents lootContents = lootResult.getLootContents();
-
         List<ItemStack> items = new ArrayList<>(lootContents.getItems());
         if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
             if (items.isEmpty()) {
@@ -74,9 +73,12 @@ public class ArchaeologyListener extends LazyLootTableListener {
             } else {
                 brushableBlock.setItem(items.remove(0));
             }
-            brushableBlock.setLootTable(null);
-            brushableBlock.update();
+        } else if (!items.isEmpty() && (brushableBlock.getItem() == null || brushableBlock.getItem().getType() == Material.AIR)) {
+            brushableBlock.setItem(items.remove(0));
         }
+
+        brushableBlock.setLootTable(null);
+        brushableBlock.update();
 
         Location dropLocation = block.getLocation();
         items.forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
