@@ -34,7 +34,7 @@ public final class SkullUtils {
             return;
 
         if (NMSUtil.getVersionNumber() >= 18) { // No need to use NMS on 1.18.1+
-            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes(texture.getBytes()));
             PlayerTextures textures = profile.getTextures();
 
             String decodedTextureJson = new String(Base64.getDecoder().decode(texture));
