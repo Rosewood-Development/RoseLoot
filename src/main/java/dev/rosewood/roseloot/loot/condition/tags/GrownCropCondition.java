@@ -2,8 +2,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
-import org.bukkit.block.Block;
+import dev.rosewood.roseloot.util.BlockInfo;
 import org.bukkit.block.data.Ageable;
 
 public class GrownCropCondition extends BaseLootCondition {
@@ -14,8 +13,8 @@ public class GrownCropCondition extends BaseLootCondition {
 
     @Override
     public boolean check(LootContext context) {
-        return context.get(LootContextParams.LOOTED_BLOCK)
-                .map(Block::getBlockData)
+        return context.getLootedBlockInfo()
+                .map(BlockInfo::getData)
                 .map(x -> x instanceof Ageable ? (Ageable) x : null)
                 .filter(x -> x.getAge() == x.getMaximumAge())
                 .isPresent();

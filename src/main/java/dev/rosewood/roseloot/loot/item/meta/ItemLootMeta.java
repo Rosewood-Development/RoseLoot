@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.loot.item.meta;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
+import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
@@ -21,7 +21,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -267,17 +266,17 @@ public class ItemLootMeta {
         if (this.repairCost != null && itemMeta instanceof Repairable)
             ((Repairable) itemMeta).setRepairCost(this.repairCost);
 
-        Optional<Block> lootedBlock = context.get(LootContextParams.LOOTED_BLOCK);
-        if (lootedBlock.isPresent() && lootedBlock.get().getType() == itemStack.getType()) {
-            Block block = lootedBlock.get();
-            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta)
-                ((BlockStateMeta) itemMeta).setBlockState(block.getState());
+        Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
+        if (lootedBlock.isPresent() && lootedBlock.get().getMaterial() == itemStack.getType()) {
+            BlockInfo block = lootedBlock.get();
+            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta blockStateMeta)
+                blockStateMeta.setBlockState(block.getState());
 
-            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta)
-                ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
+            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta blockDataMeta)
+                blockDataMeta.setBlockData(block.getData());
 
-            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable)
-                itemMeta.setDisplayName(((Nameable) block.getState()).getCustomName());
+            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable nameable)
+                itemMeta.setDisplayName(nameable.getCustomName());
         }
 
         itemStack.setItemMeta(itemMeta);

@@ -14,7 +14,7 @@ public class LootTableTypes {
             builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_ENTITY)
                     .optional(LootContextParams.LOOTER).optional(LootContextParams.EXPLOSION_TYPE).optional(LootContextParams.HAS_EXISTING_ITEMS));
     public static final LootTableType BLOCK = register("BLOCK", builder ->
-            builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_BLOCK)
+            builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_BLOCK, LootContextParams.LOOTED_BLOCK_STATE)
                     .optional(LootContextParams.REPLACED_BLOCK_DATA).optional(LootContextParams.LOOTER).optional(LootContextParams.EXPLOSION_TYPE).optional(LootContextParams.HAS_EXISTING_ITEMS));
     public static final LootTableType HARVEST = register("HARVEST", builder ->
             builder.required(LootContextParams.ORIGIN).required(LootContextParams.LOOTED_BLOCK).required(LootContextParams.LOOTER).required(LootContextParams.INPUT_ITEM)

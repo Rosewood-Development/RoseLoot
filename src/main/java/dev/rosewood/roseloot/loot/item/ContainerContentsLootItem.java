@@ -2,13 +2,12 @@ package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.util.BlockInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.block.DecoratedPot;
@@ -20,7 +19,7 @@ public class ContainerContentsLootItem implements ItemGenerativeLootItem {
     @Override
     public List<ItemStack> generate(LootContext context) {
         List<ItemStack> droppedContents = new ArrayList<>();
-        Optional<Block> lootedBlock = context.get(LootContextParams.LOOTED_BLOCK);
+        Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
         if (lootedBlock.isEmpty())
             return droppedContents;
 

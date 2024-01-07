@@ -3,8 +3,7 @@ package dev.rosewood.roseloot.hook.conditions.nbt;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTTileEntity;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
-import org.bukkit.block.Block;
+import dev.rosewood.roseloot.util.BlockInfo;
 import org.bukkit.block.TileState;
 
 public class NBTBlockCondition extends NBTCondition {
@@ -15,8 +14,8 @@ public class NBTBlockCondition extends NBTCondition {
 
     @Override
     protected NBTCompound getNBTCompound(LootContext context) {
-        return context.get(LootContextParams.LOOTED_BLOCK)
-                .map(Block::getState)
+        return context.getLootedBlockInfo()
+                .map(BlockInfo::getState)
                 .filter(TileState.class::isInstance)
                 .map(NBTTileEntity::new)
                 .orElse(null);

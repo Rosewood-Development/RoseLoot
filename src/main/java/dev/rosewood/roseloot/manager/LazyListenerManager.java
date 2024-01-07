@@ -18,6 +18,7 @@ import dev.rosewood.roseloot.listener.helper.LazyListener;
 import dev.rosewood.roseloot.listener.hook.ItemsAdderBlockBreakListener;
 import dev.rosewood.roseloot.listener.hook.OraxenBlockBreakListener;
 import dev.rosewood.roseloot.listener.hook.RoseStackerEntityDeathListener;
+import dev.rosewood.roseloot.listener.paper.FallingBlockListener;
 import dev.rosewood.roseloot.listener.paper.NewerPaperListener;
 import dev.rosewood.roseloot.listener.paper.PaperListener;
 import java.util.ArrayList;
@@ -44,6 +45,8 @@ public class LazyListenerManager extends DelayedManager {
             this.lazyListeners.add(new PaperListener(rosePlugin));
             if (NMSUtil.getVersionNumber() >= 17)
                 this.lazyListeners.add(new NewerPaperListener(rosePlugin));
+            if (NMSUtil.getVersionNumber() >= 20)
+                this.lazyListeners.add(new FallingBlockListener(rosePlugin));
         }
         if (NMSUtil.getVersionNumber() >= 20)
             this.lazyListeners.add(new ArchaeologyListener(rosePlugin));

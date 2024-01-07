@@ -2,10 +2,9 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.util.BlockInfo;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 
@@ -19,8 +18,8 @@ public class SpawnerTypeCondition extends BaseLootCondition {
 
     @Override
     public boolean check(LootContext context) {
-        return context.get(LootContextParams.LOOTED_BLOCK)
-                .map(Block::getState)
+        return context.getLootedBlockInfo()
+                .map(BlockInfo::getState)
                 .map(x -> x instanceof CreatureSpawner ? ((CreatureSpawner) x) : null)
                 .map(CreatureSpawner::getSpawnedType)
                 .filter(x -> this.entityTypes.contains(x))

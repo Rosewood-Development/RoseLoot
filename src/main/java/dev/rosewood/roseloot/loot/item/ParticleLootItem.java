@@ -27,7 +27,7 @@ public class ParticleLootItem implements TriggerableLootItem {
     public void trigger(LootContext context, Location location) {
         // Use the center of the entity or the center of the block, whichever is available first, or fall back to the given location
         Location targetLocation = context.get(LootContextParams.LOOTED_ENTITY).map(livingEntity -> livingEntity.getLocation().add(0, livingEntity.getHeight() / 2, 0))
-                .orElseGet(() -> context.get(LootContextParams.LOOTED_BLOCK).map(block -> block.getLocation().add(0.5, 0.5, 0.5))
+                .orElseGet(() -> context.getLootedBlockInfo().map(block -> block.getLocation().add(0.5, 0.5, 0.5))
                 .orElse(location));
 
         this.particleSpawnData.trigger(context.getLootingPlayer().orElse(null), targetLocation, context);

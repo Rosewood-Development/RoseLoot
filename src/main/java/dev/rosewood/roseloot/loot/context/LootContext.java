@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.hook.PlaceholderAPIHook;
 import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
+import dev.rosewood.roseloot.util.BlockInfo;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,8 +29,6 @@ public class LootContext {
         this.luck = luck;
         this.cachedEnchantmentLevels = cachedEnchantmentLevels;
         this.placeholders = new LootPlaceholders();
-
-        this.addContextPlaceholders();
     }
 
     /**
@@ -107,6 +106,19 @@ public class LootContext {
             Optional<ItemStack> itemStack = entry.getKey().getItemUsed(entry.getValue());
             if (itemStack.isPresent())
                 return itemStack;
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * @return the BlockInfo associated with the looted block
+     */
+    @NotNull
+    public Optional<BlockInfo> getLootedBlockInfo() {
+        for (Map.Entry<LootContextParam<?>, Object> entry : this.paramStorage.entrySet()) {
+            Optional<BlockInfo> blockInfo = entry.getKey().getBlockInfo(entry.getValue());
+            if (blockInfo.isPresent())
+                return blockInfo;
         }
         return Optional.empty();
     }
