@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener.paper;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -15,6 +16,7 @@ import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ExperienceOrb;
@@ -101,12 +103,18 @@ public class PaperListener extends LazyLootTableListener {
 
         // Overwrite existing drops if applicable
         if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
-            event.setCancelled(true);
-            block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
-            block.setBlockData(event.getNewState());
+            if (NMSUtil.getVersionNumber() >= 19) {
+                event.setWillDrop(false);
+            } else {
+                event.setCancelled(true);
+                block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+                block.setBlockData(event.getNewState());
+            }
         }
 
-        lootContents.dropAtLocation(block.getLocation());
+        // Due to the way Paper's BlockDestroyEvent is implemented, we need to delay the item drops by a tick
+        // otherwise they will get destroyed immediately by the BlockBreakEvent's item cancellation
+        Bukkit.getScheduler().runTask(this.rosePlugin, () -> lootContents.dropAtLocation(block.getLocation()));
     }
 
 }
