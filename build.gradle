@@ -120,4 +120,4 @@ publishing {
 }
 
 build.dependsOn shadowJar
-//publishShadowPublicationToMavenRepository.dependsOn jar
+publishShadowPublicationToMavenRepository.dependsOn jar
