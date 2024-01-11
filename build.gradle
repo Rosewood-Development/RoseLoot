@@ -28,6 +28,7 @@ repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://repo.rosewooddev.io/repository/public/' }
     maven { url = 'https://repo.codemc.org/repository/maven-public/' }
+    maven { url = 'https://repo.luminescent.dev/repository/public/' }
     maven { url = 'https://erethon.de/repo/' }
     maven { url = 'https://maven.playpro.com/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
@@ -54,6 +55,7 @@ dependencies {
     compileOnly 'nl.knokko:customitems:9.18'
     compileOnly 'com.github.emanondev:ItemEdit:2.17'
     compileOnly 'thirtyvirus.uber:uberitems:2.6'
+    compileOnly 'dev.luminescent:DeezItems:1.1.1'
     compileOnly 'com.github.Slimefun:Slimefun4:RC-30'
     compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
     compileOnly 'com.willfp:eco:6.24.0'
@@ -118,4 +120,4 @@ publishing {
 }
 
 build.dependsOn shadowJar
-publishShadowPublicationToMavenRepository.dependsOn jar
+//publishShadowPublicationToMavenRepository.dependsOn jar

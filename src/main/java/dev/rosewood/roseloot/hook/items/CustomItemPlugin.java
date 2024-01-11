@@ -21,6 +21,7 @@ public enum CustomItemPlugin {
     KNOKKOCUSTOMITEMS(KnokkoCustomItemProvider::new),
     ITEMEDIT(ItemEditItemProvider::new),
     UBERITEMS(UberItemProvider::new),
+    DEEZITEMS(DeezItemsProvider::new),
     SLIMEFUN(SlimefunItemProvider::new),
     CUSTOMCRAFTING(CustomCraftingItemProvider::new);
 
