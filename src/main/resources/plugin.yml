@@ -38,6 +38,7 @@ softdepend:
   - MMOCore
   - NBTAPI
   - CoreProtect
+  - CustomFishing
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

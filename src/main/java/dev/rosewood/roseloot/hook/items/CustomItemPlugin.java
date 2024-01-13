@@ -23,7 +23,8 @@ public enum CustomItemPlugin {
     UBERITEMS(UberItemProvider::new),
     DEEZITEMS(DeezItemsProvider::new),
     SLIMEFUN(SlimefunItemProvider::new),
-    CUSTOMCRAFTING(CustomCraftingItemProvider::new);
+    CUSTOMCRAFTING(CustomCraftingItemProvider::new),
+    CUSTOMFISHING(CustomFishingItemProvider::new);
 
     private final Lazy<ItemProvider> itemProvider;
 
