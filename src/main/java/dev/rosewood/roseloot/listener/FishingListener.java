@@ -55,7 +55,6 @@ public class FishingListener extends LazyLootTableListener {
             // Manually change the item on the hook to the first item in the loot contents
             if (items.isEmpty()) {
                 itemCaught.remove();
-                player.decrementStatistic(Statistic.FISH_CAUGHT);
             } else {
                 ItemStack itemStack = items.remove(0);
                 itemCaught.setItemStack(itemStack);

@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Random;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -61,6 +62,10 @@ public final class EnchantingUtils {
      */
     public static ItemStack randomlyEnchant(ItemStack itemStack, int level, boolean treasure) {
         try {
+            // Ensures the enchantments get added as the right material
+            if (itemStack.getType() == Material.ENCHANTED_BOOK)
+                itemStack.setType(Material.BOOK);
+
             Object nmsItemStack = method_CraftItemStack_asNMSCopy.invoke(null, itemStack);
             nmsItemStack = method_EnchantmentManager_enchantItem.invoke(null, randomSource, nmsItemStack, level, treasure);
             return (ItemStack) method_CraftItemStack_asBukkitCopy.invoke(null, nmsItemStack);
