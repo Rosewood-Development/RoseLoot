@@ -41,7 +41,7 @@ public class ExperienceLootItem implements ExperienceGenerativeLootItem {
             }
         }
 
-        context.getPlaceholders().add("experience_amount", amount);
+        context.addPlaceholder("experience_amount", amount);
 
         return amount;
     }

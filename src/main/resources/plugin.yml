@@ -38,6 +38,7 @@ softdepend:
   - MMOCore
   - NBTAPI
   - CoreProtect
+  - DeezItems
   - CustomFishing
 permissions:
   roseloot.basecommand:

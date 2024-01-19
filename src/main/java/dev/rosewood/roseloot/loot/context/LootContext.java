@@ -148,11 +148,13 @@ public class LootContext {
     }
 
     /**
-     * @return the LootPlaceholders used to parse placeholders within loot item strings
+     * Adds a placeholder that can be parsed within this context as %placeholder%
+     *
+     * @param key The placeholder key
+     * @param value The placeholder value
      */
-    @NotNull
-    public LootPlaceholders getPlaceholders() {
-        return this.placeholders;
+    public void addPlaceholder(String key, Object value) {
+        this.placeholders.add(key, value);
     }
 
     /**
@@ -198,9 +200,9 @@ public class LootContext {
      * Adds placeholders relative to this context
      */
     private void addContextPlaceholders() {
-        this.getLootingPlayer().ifPresent(x -> this.placeholders.add("player", x.getName()));
-        this.getItemUsed().ifPresent(x -> this.placeholders.add("item_type", x.getType().name().toLowerCase()));
-        this.placeholders.add("luck_level", this.getLuckLevel());
+        this.getLootingPlayer().ifPresent(x -> this.addPlaceholder("player", x.getName()));
+        this.getItemUsed().ifPresent(x -> this.addPlaceholder("item_type", x.getType().name().toLowerCase()));
+        this.addPlaceholder("luck_level", this.getLuckLevel());
     }
 
     /**

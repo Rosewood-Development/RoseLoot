@@ -91,7 +91,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         ItemStack creationItem = this.getCreationItem(context);
         List<ItemStack> generatedItems = new ArrayList<>(LootUtils.createItemStackCopies(creationItem, amount));
 
-        context.getPlaceholders().add("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
+        context.addPlaceholder("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
 
         return generatedItems;
     }

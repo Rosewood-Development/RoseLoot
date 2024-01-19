@@ -21,11 +21,11 @@ public class RandomNumberLootItem implements AutoTriggerableLootItem {
         int intValue = (int) Math.round(doubleValue);
 
         if (this.id.isBlank()) {
-            context.getPlaceholders().add("random_number_int", intValue);
-            context.getPlaceholders().add("random_number_double", doubleValue);
+            context.addPlaceholder("random_number_int", intValue);
+            context.addPlaceholder("random_number_double", doubleValue);
         } else {
-            context.getPlaceholders().add("random_number_" + this.id + "_int", intValue);
-            context.getPlaceholders().add("random_number_" + this.id + "_double", doubleValue);
+            context.addPlaceholder("random_number_" + this.id + "_int", intValue);
+            context.addPlaceholder("random_number_" + this.id + "_double", doubleValue);
         }
     }
 

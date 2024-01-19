@@ -22,7 +22,7 @@ public class RoseStackerPrimaryEntityCondition extends BaseLootCondition {
             return false;
 
         if (stackedEntity.isEmpty()) {
-            context.getPlaceholders().add("rosestacker_entity_stack_size", 1);
+            context.addPlaceholder("rosestacker_entity_stack_size", 1);
             return true;
         }
 
