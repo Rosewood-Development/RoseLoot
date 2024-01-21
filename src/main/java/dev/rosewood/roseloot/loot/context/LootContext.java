@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.hook.PlaceholderAPIHook;
 import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
+import dev.rosewood.roseloot.util.BlockInfo;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,8 +29,6 @@ public class LootContext {
         this.luck = luck;
         this.cachedEnchantmentLevels = cachedEnchantmentLevels;
         this.placeholders = new LootPlaceholders();
-
-        this.addContextPlaceholders();
     }
 
     /**
@@ -112,6 +111,19 @@ public class LootContext {
     }
 
     /**
+     * @return the BlockInfo associated with the looted block
+     */
+    @NotNull
+    public Optional<BlockInfo> getLootedBlockInfo() {
+        for (Map.Entry<LootContextParam<?>, Object> entry : this.paramStorage.entrySet()) {
+            Optional<BlockInfo> blockInfo = entry.getKey().getBlockInfo(entry.getValue());
+            if (blockInfo.isPresent())
+                return blockInfo;
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Gets the enchantment level for the given Enchantment for the ItemStack used by the looter
      *
      * @param enchantment The Enchantment level to get
@@ -136,11 +148,13 @@ public class LootContext {
     }
 
     /**
-     * @return the LootPlaceholders used to parse placeholders within loot item strings
+     * Adds a placeholder that can be parsed within this context as %placeholder%
+     *
+     * @param key The placeholder key
+     * @param value The placeholder value
      */
-    @NotNull
-    public LootPlaceholders getPlaceholders() {
-        return this.placeholders;
+    public void addPlaceholder(String key, Object value) {
+        this.placeholders.add(key, value);
     }
 
     /**
@@ -186,9 +200,9 @@ public class LootContext {
      * Adds placeholders relative to this context
      */
     private void addContextPlaceholders() {
-        this.getLootingPlayer().ifPresent(x -> this.placeholders.add("player", x.getName()));
-        this.getItemUsed().ifPresent(x -> this.placeholders.add("item_type", x.getType().name().toLowerCase()));
-        this.placeholders.add("luck_level", this.getLuckLevel());
+        this.getLootingPlayer().ifPresent(x -> this.addPlaceholder("player", x.getName()));
+        this.getItemUsed().ifPresent(x -> this.addPlaceholder("item_type", x.getType().name().toLowerCase()));
+        this.addPlaceholder("luck_level", this.getLuckLevel());
     }
 
     /**

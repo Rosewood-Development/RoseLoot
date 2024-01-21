@@ -17,7 +17,7 @@ public class RealisticSeasonsEventCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getWorld)
                 .map(x -> RealisticSeasons.getInstance().getEventManager().getActiveEvents(x))

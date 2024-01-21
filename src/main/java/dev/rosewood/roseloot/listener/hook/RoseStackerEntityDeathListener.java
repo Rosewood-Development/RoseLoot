@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener.hook;
 
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
@@ -10,7 +11,6 @@ import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
-import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.rosestacker.event.EntityStackMultipleDeathEvent;
 import dev.rosewood.rosestacker.stack.StackedEntity;
@@ -22,21 +22,16 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class RoseStackerEntityDeathListener implements Listener {
+public class RoseStackerEntityDeathListener extends LazyLootTableListener {
 
     public static final LootContextParam<StackedEntity> STACKED_ENTITY = LootContextParams.create("rosestacker_stacked_entity", StackedEntity.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("rosestacker_entity_stack_size", x.getStackSize())));
 
-    private final RosePlugin rosePlugin;
-    private final LootTableManager lootTableManager;
-
     public RoseStackerEntityDeathListener(RosePlugin rosePlugin) {
-        this.rosePlugin = rosePlugin;
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.ENTITY);
     }
 
     @EventHandler
@@ -68,7 +63,7 @@ public class RoseStackerEntityDeathListener implements Listener {
                         .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                         .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
                         .build();
-                LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.ENTITY, lootContext);
+                LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY, lootContext);
                 if (lootResult.isEmpty())
                     continue;
 

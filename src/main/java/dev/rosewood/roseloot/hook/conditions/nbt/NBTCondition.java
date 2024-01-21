@@ -17,7 +17,7 @@ public abstract class NBTCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         String left = this.getNBTValue(context, this.path);
         if (left == null)
             return false;

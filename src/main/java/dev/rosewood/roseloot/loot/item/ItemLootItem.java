@@ -1,13 +1,13 @@
 package dev.rosewood.roseloot.loot.item;
 
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.hook.NBTAPIHook;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
-import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
@@ -33,9 +33,9 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     protected final List<AmountModifier> amountModifiers;
     protected final EnchantmentBonus enchantmentBonus;
     protected final boolean smeltIfBurning;
-    protected final String nbt;
+    protected final StringProvider nbt;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, String nbt) {
+    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
@@ -44,10 +44,6 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         this.enchantmentBonus = enchantmentBonus;
         this.smeltIfBurning = smeltIfBurning;
         this.nbt = nbt;
-    }
-
-    protected ItemLootItem() {
-        this(null, null, null, null, null, null, false, null);
     }
 
     protected ItemStack getCreationItem(LootContext context) {
@@ -65,15 +61,16 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         }
 
         ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(item), context);
-        if (this.nbt != null && !this.nbt.isEmpty())
-            NBTAPIHook.mergeItemNBT(itemStack, this.nbt);
+        if (this.nbt != null) {
+            String nbt = this.nbt.get(context);
+            NBTAPIHook.mergeItemNBT(itemStack, nbt);
+        }
 
         return itemStack;
     }
 
     @Override
     public List<ItemStack> generate(LootContext context) {
-
         int amount = this.amount.getInteger(context);
 
         for (AmountModifier amountModifier : this.amountModifiers) {
@@ -94,7 +91,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         ItemStack creationItem = this.getCreationItem(context);
         List<ItemStack> generatedItems = new ArrayList<>(LootUtils.createItemStackCopies(creationItem, amount));
 
-        context.getPlaceholders().add("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
+        context.addPlaceholder("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
 
         return generatedItems;
     }
@@ -121,13 +118,12 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         List<AmountModifier> amountModifiers = new ArrayList<>();
         ConfigurationSection amountModifiersSection = section.getConfigurationSection("amount-modifiers");
         if (amountModifiersSection != null) {
-            LootConditionManager lootConditionManager = RoseLoot.getInstance().getManager(LootConditionManager.class);
             for (String key : amountModifiersSection.getKeys(false)) {
                 ConfigurationSection entrySection = amountModifiersSection.getConfigurationSection(key);
                 if (entrySection != null) {
                     List<LootCondition> conditions = new ArrayList<>();
                     for (String conditionString : entrySection.getStringList("conditions")) {
-                        LootCondition condition = lootConditionManager.parse(conditionString);
+                        LootCondition condition = LootConditionParser.parse(conditionString);
                         if (condition != null)
                             conditions.add(condition);
                     }
@@ -154,7 +150,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         }
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-        String nbt = section.getString("nbt");
+        StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
         ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
         return new ItemLootItem(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
     }

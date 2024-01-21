@@ -2,11 +2,10 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.util.BlockInfo;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
 public class BlockDataCondition extends BaseLootCondition {
@@ -18,12 +17,12 @@ public class BlockDataCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
-        Optional<Block> block = context.get(LootContextParams.LOOTED_BLOCK);
-        if (block.isEmpty())
+    public boolean check(LootContext context) {
+        Optional<BlockInfo> blockInfo = context.getLootedBlockInfo();
+        if (blockInfo.isEmpty())
             return false;
 
-        BlockData blockData = block.get().getBlockData();
+        BlockData blockData = blockInfo.get().getData();
         String blockDataString = blockData.getAsString(false);
         if (!blockDataString.contains("[") || !blockDataString.contains("]"))
             return false;

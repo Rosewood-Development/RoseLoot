@@ -2,6 +2,8 @@ package dev.rosewood.roseloot.listener.paper;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
@@ -9,27 +11,24 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
-import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-public class PaperListener implements Listener {
-
-    private final LootTableManager lootTableManager;
+public class PaperListener extends LazyLootTableListener {
 
     public PaperListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.HARVEST, LootTableTypes.BLOCK);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -53,7 +52,7 @@ public class PaperListener implements Listener {
                         .put(LootContextParams.INPUT_ITEM, itemStack)
                         .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                         .build();
-                LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.HARVEST, lootContext);
+                LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.HARVEST, lootContext);
                 if (lootResult.isEmpty())
                     continue;
 
@@ -80,7 +79,7 @@ public class PaperListener implements Listener {
         // Drop experience
         if (experience > 0) {
             int finalExperience = experience;
-            player.getWorld().spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(finalExperience));
+            EntitySpawnUtil.spawn(player.getLocation(), ExperienceOrb.class, x -> x.setExperience(finalExperience));
         }
     }
 
@@ -96,7 +95,7 @@ public class PaperListener implements Listener {
                 .put(LootContextParams.REPLACED_BLOCK_DATA, event.getNewState())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops().isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 
@@ -104,20 +103,18 @@ public class PaperListener implements Listener {
 
         // Overwrite existing drops if applicable
         if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
-            event.setCancelled(true);
-            block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
-            block.setBlockData(event.getNewState());
+            if (NMSUtil.getVersionNumber() >= 19) {
+                event.setWillDrop(false);
+            } else {
+                event.setCancelled(true);
+                block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+                block.setBlockData(event.getNewState());
+            }
         }
 
-        // Drop items and experience
-        Location dropLocation = block.getLocation();
-        lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
-
-        int experience = lootContents.getExperience();
-        if (experience > 0)
-            block.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
-
-        lootContents.triggerExtras(dropLocation);
+        // Due to the way Paper's BlockDestroyEvent is implemented, we need to delay the item drops by a tick
+        // otherwise they will get destroyed immediately by the BlockBreakEvent's item cancellation
+        Bukkit.getScheduler().runTask(this.rosePlugin, () -> lootContents.dropAtLocation(block.getLocation()));
     }
 
 }

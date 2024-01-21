@@ -23,7 +23,7 @@ public class EcoBossesTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         if (this.bossKey == null)
             return false;
 

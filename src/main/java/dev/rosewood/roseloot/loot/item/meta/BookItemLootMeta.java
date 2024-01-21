@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.List;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -11,17 +12,17 @@ import org.bukkit.inventory.meta.BookMeta;
 @SuppressWarnings("deprecation")
 public class BookItemLootMeta extends ItemLootMeta {
 
-    private String title;
-    private String author;
-    private List<String> pages;
+    private final StringProvider title;
+    private final StringProvider author;
+    private final StringProvider pages;
     private BookMeta.Generation generation;
 
     public BookItemLootMeta(ConfigurationSection section) {
         super(section);
 
-        if (section.isString("title")) this.title = section.getString("title");
-        if (section.isString("author")) this.author = section.getString("author");
-        if (section.isList("pages")) this.pages = section.getStringList("pages");
+        this.title = StringProvider.fromSection(section, "title", null);
+        this.author = StringProvider.fromSection(section, "author", null);
+        this.pages = StringProvider.fromSection(section, "pages", null);
 
         if (section.isString("generation")) {
             String generation = section.getString("generation");
@@ -42,10 +43,13 @@ public class BookItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.title != null) itemMeta.setTitle(this.title);
-        if (this.author != null) itemMeta.setAuthor(this.author);
-        if (this.pages != null && !this.pages.isEmpty())
-            itemMeta.spigot().setPages(this.pages.stream().map(context::formatText).map(TextComponent::fromLegacyText).toList());
+        if (this.title != null) itemMeta.setTitle(this.title.get(context));
+        if (this.author != null) itemMeta.setAuthor(this.author.get(context));
+        if (this.pages != null) {
+            List<String> pages = this.pages.getListFormatted(context);
+            if (!pages.isEmpty())
+                itemMeta.spigot().setPages(pages.stream().map(TextComponent::fromLegacyText).toList());
+        }
         if (this.generation != null) itemMeta.setGeneration(this.generation);
 
         itemStack.setItemMeta(itemMeta);

@@ -20,7 +20,7 @@ public class EnchantmentCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.getEnchantmentLevel(this.enchantment) >= this.level;
     }
 

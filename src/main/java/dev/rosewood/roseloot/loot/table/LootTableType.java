@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,12 +13,12 @@ import java.util.stream.Collectors;
 public class LootTableType {
 
     private final Set<LootContextParam<?>> all;
-    private final Set<LootContextParam<?>> required;
+    private final Set<Collection<LootContextParam<?>>> required;
     private final boolean unrestricted;
     private final Set<LootContextParam<?>> extraNotify;
 
-    private LootTableType(Set<LootContextParam<?>> optional, Set<LootContextParam<?>> required, boolean unrestricted) {
-        this.all = Sets.union(optional, required);
+    private LootTableType(Set<LootContextParam<?>> optional, Set<Collection<LootContextParam<?>>> required, boolean unrestricted) {
+        this.all = Sets.union(optional, required.stream().flatMap(Collection::stream).collect(Collectors.toSet()));
         this.required = required;
         this.unrestricted = unrestricted;
         this.extraNotify = new HashSet<>();
@@ -32,9 +34,13 @@ public class LootTableType {
         if (this.unrestricted)
             return;
 
-        Set<LootContextParam<?>> missing = Sets.difference(this.required, context.getParams());
+        Set<String> missing = new HashSet<>();
+        for (Collection<LootContextParam<?>> required : this.required)
+            if (context.getParams().stream().noneMatch(required::contains))
+                missing.add(required.stream().map(LootContextParam::getName).collect(Collectors.joining(" OR ")));
+
         if (!missing.isEmpty())
-            throw new IllegalArgumentException("Missing required parameters: [" + missing.stream().map(LootContextParam::getName).collect(Collectors.joining(", ")) + "]");
+            throw new IllegalArgumentException("Missing required parameters: [" + String.join(", ", missing) + "]");
 
         Set<LootContextParam<?>> extra = new HashSet<>(Sets.difference(context.getParams(), this.all));
         if (!extra.isEmpty()) {
@@ -62,7 +68,8 @@ public class LootTableType {
 
     public static class Builder {
 
-        private final Set<LootContextParam<?>> optional, required;
+        private final Set<LootContextParam<?>> optional;
+        private final Set<Collection<LootContextParam<?>>> required;
 
         private Builder() {
             this.optional = new HashSet<>();
@@ -81,13 +88,14 @@ public class LootTableType {
         }
 
         /**
-         * Adds a parameter to the required parameters
+         * Adds a parameter to the required parameters.
+         * If more than one parameter is provided, at least one of them must be provided.
          *
-         * @param param The parameter to add
+         * @param params The parameter to add
          * @return This builder
          */
-        public Builder required(LootContextParam<?> param) {
-            this.required.add(param);
+        public Builder required(LootContextParam<?>... params) {
+            this.required.add(Arrays.asList(params));
             return this;
         }
 

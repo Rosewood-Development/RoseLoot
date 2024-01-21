@@ -1,14 +1,12 @@
 package dev.rosewood.roseloot.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.api.RoseLootAPI;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.condition.BooleanLootCondition;
-import dev.rosewood.roseloot.loot.condition.CompoundLootCondition;
 import dev.rosewood.roseloot.loot.condition.EntityPropertyConditions;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.StringLootCondition;
@@ -31,6 +29,7 @@ import dev.rosewood.roseloot.loot.condition.tags.GrownCropCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HumidityCondition;
 import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
+import dev.rosewood.roseloot.loot.condition.tags.InputItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
@@ -47,6 +46,7 @@ import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
+import dev.rosewood.roseloot.loot.condition.tags.paper.BiomeKeyCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.MoonPhaseCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -72,9 +72,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Merchant;
 
-public class LootConditionManager extends Manager implements Listener {
+public class LootConditionManager extends DelayedManager implements Listener {
 
-    public static final String OR_PATTERN = "||";
     // Prefix -> (Tag -> new LootCondition instance)
     private final Map<String, Function<String, LootCondition>> registeredConditions;
 
@@ -86,13 +85,11 @@ public class LootConditionManager extends Manager implements Listener {
     }
 
     @Override
-    public void reload() {
-        Bukkit.getScheduler().runTaskLater(this.rosePlugin, () -> {
-            LootConditionRegistrationEvent event = new LootConditionRegistrationEvent();
-            Bukkit.getPluginManager().callEvent(event);
-            this.registeredConditions.putAll(event.getRegisteredConditions());
-            RoseLoot.getInstance().getLogger().info("Registered " + this.registeredConditions.size() + " loot table conditions.");
-        }, 1);
+    protected void delayedReload() {
+        LootConditionRegistrationEvent event = new LootConditionRegistrationEvent();
+        Bukkit.getPluginManager().callEvent(event);
+        this.registeredConditions.putAll(event.getRegisteredConditions());
+        RoseLoot.getInstance().getLogger().info("Registered " + this.registeredConditions.size() + " loot table conditions.");
     }
 
     @Override
@@ -107,6 +104,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("biome", BiomeCondition::new);
         event.registerLootCondition("block-data", BlockDataCondition::new);
         event.registerLootCondition("block-type", BlockTypeCondition::new);
+        this.registerBoolean(event, "burning", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> x.getFireTicks() > 0).isPresent());
         this.registerBoolean(event, "can-breed", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Breedable.class).filter(Breedable::canBreed).isPresent());
         this.registerBoolean(event, "can-join-raid", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> x instanceof Raider raider && raider.isCanJoinRaid()).isPresent());
         event.registerLootCondition("chance", ChanceCondition::new);
@@ -129,6 +127,7 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("has-saddle", HasSaddleCondition::new);
         event.registerLootCondition("humidity", HumidityCondition::new);
         event.registerLootCondition("in-fluid", InFluidCondition::new);
+        event.registerLootCondition("input-item", InputItemCondition::new);
         event.registerLootCondition("killed-by", KilledByCondition::new);
         event.registerLootCondition("light-level", LightLevelCondition::new);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition::new);
@@ -143,9 +142,9 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("required-tool", RequiredToolCondition::new);
         event.registerLootCondition("required-tool-type", RequiredToolTypeCondition::new);
         event.registerLootCondition("replaced-block-type", ReplacedBlockTypeCondition::new);
-        this.registerBoolean(event, "sneaking", context -> context.getLootingPlayer().filter(Player::isSneaking).isPresent());
         this.registerBoolean(event, "sitting", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Sittable.class).filter(Sittable::isSitting).isPresent());
         this.registerBoolean(event, "sleeping", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(LivingEntity::isSleeping).isPresent());
+        this.registerBoolean(event, "sneaking", context -> context.getLootingPlayer().filter(Player::isSneaking).isPresent());
         event.registerLootCondition("spawner-type", SpawnerTypeCondition::new);
         event.registerLootCondition("spawn-reason", SpawnReasonCondition::new);
         this.registerBoolean(event, "tamed", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Tameable.class).filter(Tameable::isTamed).isPresent());
@@ -157,6 +156,8 @@ public class LootConditionManager extends Manager implements Listener {
         event.registerLootCondition("world", WorldCondition::new);
 
         if (NMSUtil.isPaper()) {
+            if (NMSUtil.getVersionNumber() >= 19)
+                event.registerLootCondition("biome-key", BiomeKeyCondition::new);
             event.registerLootCondition("moon-phase", MoonPhaseCondition::new);
         }
 
@@ -175,18 +176,14 @@ public class LootConditionManager extends Manager implements Listener {
     }
 
     /**
-     * Parses a LootCondition tag into a LootCondition if one exists
+     * Parses a LootCondition tag into a registered LootCondition if one exists
      *
      * @param tag The LootCondition tag to parse
      * @return the parsed LootCondition, or null if a tag with the name does not exist or the tag was malformed
      */
     public LootCondition parse(String tag) {
-        if (tag.contains(OR_PATTERN))
-            return new CompoundLootCondition(tag);
-
-        String parsed = (tag.startsWith("!") ? tag.substring(1) : tag).toLowerCase();
-        int index = parsed.indexOf(":");
-        String tagPrefix = index == -1 ? parsed : parsed.substring(0, index);
+        int index = tag.indexOf(":");
+        String tagPrefix = index == -1 ? tag : tag.substring(0, index);
 
         Function<String, LootCondition> factory = this.registeredConditions.get(tagPrefix);
         if (factory == null)

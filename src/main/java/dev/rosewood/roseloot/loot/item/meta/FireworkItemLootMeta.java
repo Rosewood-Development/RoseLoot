@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +13,13 @@ import org.bukkit.inventory.meta.FireworkMeta;
 
 public class FireworkItemLootMeta extends ItemLootMeta {
 
-    private Integer power;
+    private final NumberProvider power;
     private List<FireworkEffect> fireworkEffects;
 
     public FireworkItemLootMeta(ConfigurationSection section) {
         super(section);
 
-        if (section.isInt("power")) this.power = LootUtils.clamp(section.getInt("power"), 0, 127);
+        this.power = NumberProvider.fromSection(section, "power", 0);
 
         ConfigurationSection fireworkEffectSection = section.getConfigurationSection("firework-effects");
         if (fireworkEffectSection != null) {
@@ -84,7 +85,7 @@ public class FireworkItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.power != null) itemMeta.setPower(this.power);
+        if (this.power != null) itemMeta.setPower(LootUtils.clamp(this.power.getInteger(context), 0, 127));
         if (this.fireworkEffects != null) itemMeta.addEffects(this.fireworkEffects);
 
         itemStack.setItemMeta(itemMeta);

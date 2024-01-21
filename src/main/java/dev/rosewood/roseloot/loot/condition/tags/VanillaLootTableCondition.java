@@ -16,7 +16,7 @@ public class VanillaLootTableCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.VANILLA_LOOT_TABLE_KEY)
                 .filter(this.vanillaLootTableKeys::contains)
                 .isPresent();

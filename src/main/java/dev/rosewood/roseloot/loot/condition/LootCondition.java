@@ -4,6 +4,9 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 
 public interface LootCondition {
 
+    LootCondition ALWAYS_TRUE = context -> true;
+    LootCondition ALWAYS_FALSE = context -> false;
+
     /**
      * Checks if the LootContext meets this tag's condition
      *

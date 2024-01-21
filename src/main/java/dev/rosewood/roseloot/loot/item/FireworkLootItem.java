@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class FireworkLootItem implements TriggerableLootItem {
         World world = location.getWorld();
         if (world != null) {
             int power = Math.min(this.powers.stream().mapToInt(x -> x.getInteger(context)).max().orElse(0), 127);
-            Firework firework = world.spawn(location, Firework.class, entity -> {
+            Firework firework = EntitySpawnUtil.spawn(location, Firework.class, entity -> {
                 FireworkMeta meta = entity.getFireworkMeta();
                 if (power >= 0) meta.setPower(power);
                 meta.addEffects(this.effects);

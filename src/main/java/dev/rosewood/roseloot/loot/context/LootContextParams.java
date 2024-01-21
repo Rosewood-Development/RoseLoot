@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.context;
 
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
+import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -10,6 +11,7 @@ import java.util.function.Function;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
@@ -40,7 +42,9 @@ public final class LootContextParams {
                 Optional.ofNullable(x.getCustomName()).ifPresent(name -> y.add("entity_name", name));
             }));
     public static final LootContextParam<Block> LOOTED_BLOCK = create("looted_block", Block.class, builder ->
-            builder.withPlaceholders((x, y) -> y.add("block_type", x.getType().name().toLowerCase())));
+            builder.withPlaceholders((x, y) -> y.add("block_type", x.getType().name().toLowerCase())).withBlockInfo(BlockInfo::of));
+    public static final LootContextParam<BlockState> LOOTED_BLOCK_STATE = create("looted_block_state", BlockState.class, builder ->
+            builder.withPlaceholders((x, y) -> y.add("block_type", x.getType().name().toLowerCase())).withBlockInfo(BlockInfo::of));
     public static final LootContextParam<BlockData> REPLACED_BLOCK_DATA = create("replaced_block_data", BlockData.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("replaced_block_type", x.getMaterial().name().toLowerCase())));
     public static final LootContextParam<FishHook> FISH_HOOK = create("fish_hook", FishHook.class);
@@ -99,6 +103,11 @@ public final class LootContextParams {
 
         public Builder<T> withItemUsed(Function<T, ItemStack> itemUsedProvider) {
             this.param.itemUsedProvider = itemUsedProvider;
+            return this;
+        }
+
+        public Builder<T> withBlockInfo(Function<T, BlockInfo> blockInfoProvider) {
+            this.param.blockInfoProvider = blockInfoProvider;
             return this;
         }
 

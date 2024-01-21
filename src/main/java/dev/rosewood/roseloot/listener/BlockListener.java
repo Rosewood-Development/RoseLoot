@@ -1,6 +1,8 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.hook.CoreProtectRecentBlockHook;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -9,7 +11,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
-import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,19 +31,17 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-public class BlockListener implements Listener {
-
-    private final LootTableManager lootTableManager;
+public class BlockListener extends LazyLootTableListener {
 
     public BlockListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.BLOCK);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -60,7 +60,7 @@ public class BlockListener implements Listener {
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 
@@ -95,6 +95,11 @@ public class BlockListener implements Listener {
         lootContents.triggerExtras(dropLocation);
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockPlaceMonitor(BlockPlaceEvent event) {
+        CoreProtectRecentBlockHook.markBlock(event.getBlock());
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
         if (event instanceof LootedLeavesDecayEvent)
@@ -108,7 +113,7 @@ public class BlockListener implements Listener {
                 .put(LootContextParams.ORIGIN, block.getLocation())
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 
@@ -134,7 +139,7 @@ public class BlockListener implements Listener {
 
         int experience = lootContents.getExperience();
         if (experience > 0)
-            block.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
+            EntitySpawnUtil.spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
         lootContents.triggerExtras(block.getLocation());
     }
@@ -158,7 +163,7 @@ public class BlockListener implements Listener {
                     .put(LootContextParams.EXPLOSION_TYPE, ExplosionType.BLOCK)
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+            LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
             if (lootResult.isEmpty())
                 continue;
 
@@ -175,7 +180,7 @@ public class BlockListener implements Listener {
 
             int experience = lootContents.getExperience();
             if (experience > 0)
-                exploded.getWorld().spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
+                EntitySpawnUtil.spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
             lootContents.triggerExtras(dropLocation);
         }
@@ -214,7 +219,7 @@ public class BlockListener implements Listener {
                     .put(LootContextParams.EXPLOSION_TYPE, explosionType)
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !exploded.getDrops().isEmpty())
                     .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+            LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
             if (lootResult.isEmpty())
                 continue;
 
@@ -225,15 +230,7 @@ public class BlockListener implements Listener {
                 exploded.setType(Material.AIR);
             }
 
-            // Drop items and experience
-            Location dropLocation = exploded.getLocation();
-            lootContents.getItems().forEach(x -> exploded.getWorld().dropItemNaturally(dropLocation, x));
-
-            int experience = lootContents.getExperience();
-            if (experience > 0)
-                exploded.getWorld().spawn(exploded.getLocation(), ExperienceOrb.class, x -> x.setExperience(experience));
-
-            lootContents.triggerExtras(dropLocation);
+            lootContents.dropAtLocation(exploded.getLocation());
         }
     }
 

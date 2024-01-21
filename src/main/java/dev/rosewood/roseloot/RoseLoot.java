@@ -3,25 +3,14 @@ package dev.rosewood.roseloot;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
-import dev.rosewood.roseloot.hook.ItemsAdderHook;
-import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.hook.conditions.HookConditionListener;
-import dev.rosewood.roseloot.listener.AdvancementListener;
-import dev.rosewood.roseloot.listener.BlockListener;
-import dev.rosewood.roseloot.listener.EntityListener;
 import dev.rosewood.roseloot.listener.FireworkDamageListener;
-import dev.rosewood.roseloot.listener.FishingListener;
-import dev.rosewood.roseloot.listener.HarvestBlockListener;
-import dev.rosewood.roseloot.listener.LootGenerateListener;
-import dev.rosewood.roseloot.listener.PiglinBarterListener;
-import dev.rosewood.roseloot.listener.hook.ItemsAdderBlockBreakListener;
-import dev.rosewood.roseloot.listener.hook.RoseStackerEntityDeathListener;
 import dev.rosewood.roseloot.listener.VoucherListener;
-import dev.rosewood.roseloot.listener.paper.NewerPaperListener;
-import dev.rosewood.roseloot.listener.paper.PaperListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.CooldownManager;
+import dev.rosewood.roseloot.manager.DataManager;
+import dev.rosewood.roseloot.manager.LazyListenerManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
@@ -44,7 +33,7 @@ public class RoseLoot extends RosePlugin {
     }
 
     public RoseLoot() {
-        super(101979, 12626, ConfigurationManager.class, null, LocaleManager.class, CommandManager.class);
+        super(101979, 12626, ConfigurationManager.class, DataManager.class, LocaleManager.class, CommandManager.class);
 
         instance = this;
     }
@@ -55,37 +44,9 @@ public class RoseLoot extends RosePlugin {
             this.getLogger().severe(this.getDescription().getName() + " best supports 1.16.5 servers and newer. If you try to use part of the plugin that is not available for your current server version, expect to see some errors.");
 
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new BlockListener(this), this);
-        pluginManager.registerEvents(new EntityListener(this), this);
-        pluginManager.registerEvents(new FishingListener(this), this);
-        pluginManager.registerEvents(new AdvancementListener(this), this);
         pluginManager.registerEvents(new VoucherListener(this), this);
         pluginManager.registerEvents(new HookConditionListener(), this);
         pluginManager.registerEvents(new FireworkDamageListener(), this);
-        if (NMSUtil.getVersionNumber() >= 15)
-            pluginManager.registerEvents(new LootGenerateListener(this), this);
-        if (NMSUtil.getVersionNumber() >= 16)
-            pluginManager.registerEvents(new HarvestBlockListener(this), this);
-        if (NMSUtil.isPaper()) {
-            pluginManager.registerEvents(new PaperListener(this), this);
-            if (NMSUtil.getVersionNumber() >= 17)
-                pluginManager.registerEvents(new NewerPaperListener(this), this);
-        }
-        if (RoseStackerHook.isEnabled())
-            pluginManager.registerEvents(new RoseStackerEntityDeathListener(this), this);
-        if (ItemsAdderHook.isEnabled())
-            pluginManager.registerEvents(new ItemsAdderBlockBreakListener(this), this);
-
-        try {
-            // PiglinBarterEvent was added to the 1.16.5 API right before 1.17 was released,
-            // so we need an additional check to make sure the class exists
-            if (NMSUtil.getVersionNumber() >= 16) {
-                Class.forName("org.bukkit.event.entity.PiglinBarterEvent");
-                pluginManager.registerEvents(new PiglinBarterListener(this), this);
-            }
-        } catch (Exception e) {
-            this.getLogger().warning("Your Spigot API version appears to be outdated! Piglin bartering loot tables will be unavailable until you update to the latest API version for your server.");
-        }
     }
 
     @Override
@@ -98,6 +59,7 @@ public class RoseLoot extends RosePlugin {
         return List.of(
                 LootConditionManager.class,
                 LootTableManager.class,
+                LazyListenerManager.class,
                 CooldownManager.class
         );
     }

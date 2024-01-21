@@ -4,23 +4,18 @@ import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.manager.CooldownManager;
+import dev.rosewood.roseloot.util.TimeUtils;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.bukkit.entity.Player;
 
 /**
  * cooldown:custom_id,player,15m
  * value 1: Custom ID of the cooldown
  * value 2: <player> or <global>
- * value 3: Time of the cooldown with a time suffix (s, m, h, d)
+ * value 3: Time of the cooldown with a time suffix (ms, s, m, h, d)
  */
 public class CooldownCondition extends BaseLootCondition {
-
-    private static final Pattern ENTIRE_DURATION_PATTERN = Pattern.compile("((\\d+)([smhd]))+");
-    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)([smhd])");
 
     private String cooldownId;
     private boolean playerBased;
@@ -31,7 +26,7 @@ public class CooldownCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<Player> lootingPlayer = context.getLootingPlayer();
         if (this.playerBased && lootingPlayer.isEmpty())
             return false;
@@ -57,32 +52,7 @@ public class CooldownCondition extends BaseLootCondition {
         }
 
         String stringDuration = values[2];
-        if (!ENTIRE_DURATION_PATTERN.matcher(stringDuration).matches())
-            return false;
-
-        long duration = 0;
-        Matcher matcher = DURATION_PATTERN.matcher(stringDuration);
-        while (matcher.find()) {
-            int value = Integer.parseInt(matcher.group(1));
-            String suffix = matcher.group(2);
-            switch (suffix.toLowerCase()) {
-                case "s":
-                    duration += TimeUnit.SECONDS.toMillis(value);
-                    break;
-                case "m":
-                    duration += TimeUnit.MINUTES.toMillis(value);
-                    break;
-                case "h":
-                    duration += TimeUnit.HOURS.toMillis(value);
-                    break;
-                case "d":
-                    duration += TimeUnit.DAYS.toMillis(value);
-                    break;
-                default:
-                    return false;
-            }
-        }
-
+        long duration = TimeUtils.getDuration(stringDuration);
         if (duration <= 0)
             return false;
 

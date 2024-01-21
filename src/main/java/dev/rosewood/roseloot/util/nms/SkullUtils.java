@@ -5,8 +5,14 @@ import com.mojang.authlib.properties.Property;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 public final class SkullUtils {
 
@@ -27,7 +33,23 @@ public final class SkullUtils {
         if (texture == null || texture.isEmpty())
             return;
 
-        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), null);
+        if (NMSUtil.getVersionNumber() >= 18) { // No need to use NMS on 1.18.1+
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes(texture.getBytes()));
+            PlayerTextures textures = profile.getTextures();
+
+            String decodedTextureJson = new String(Base64.getDecoder().decode(texture));
+            String decodedTextureUrl = decodedTextureJson.substring(28, decodedTextureJson.length() - 4);
+
+            try {
+                textures.setSkin(new URL(decodedTextureUrl));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            skullMeta.setOwnerProfile(profile);
+            return;
+        }
+
+        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "");
         profile.getProperties().put("textures", new Property("textures", texture));
 
         try {

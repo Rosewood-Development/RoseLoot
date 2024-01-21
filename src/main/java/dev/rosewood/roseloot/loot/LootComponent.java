@@ -10,18 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
-public class LootEntry implements LootContentsPopulator {
+public class LootComponent implements LootContentsPopulator {
 
     private final List<LootCondition> conditions;
-    private final NumberProvider weight;
-    private final NumberProvider quality;
     private final List<LootItem> lootItems;
 
+    private final NumberProvider rolls, bonusRolls;
+    private final NumberProvider weight, quality;
     private final ChildrenStrategy childrenStrategy;
-    private final List<LootEntry> children;
+    private final List<LootComponent> children;
 
-    public LootEntry(List<LootCondition> conditions, NumberProvider weight, NumberProvider quality, List<LootItem> lootItems, ChildrenStrategy childrenStrategy, List<LootEntry> children) {
+    public LootComponent(List<LootCondition> conditions, NumberProvider rolls, NumberProvider bonusRolls, NumberProvider weight, NumberProvider quality, List<LootItem> lootItems, ChildrenStrategy childrenStrategy, List<LootComponent> children) {
         this.conditions = conditions;
+        this.rolls = rolls;
+        this.bonusRolls = bonusRolls;
         this.weight = weight;
         this.quality = quality;
         this.lootItems = lootItems;
@@ -36,30 +38,37 @@ public class LootEntry implements LootContentsPopulator {
         if (this.children != null && this.childrenStrategy != null) {
             switch (this.childrenStrategy) {
                 case NORMAL -> {
-                    List<LootEntry> unweightedEntries = new ArrayList<>();
-                    RandomCollection<LootEntry> randomEntries = new RandomCollection<>();
-                    for (LootEntry child : this.children) {
-                        if (child.isWeighted()) {
-                            // If weighted, add to the random entries if it passes conditions
-                            if (!child.check(context))
-                                continue;
+                    List<LootComponent> weightedEntries = new ArrayList<>();
+                    List<LootComponent> unweightedEntries = new ArrayList<>();
 
-                            randomEntries.add(child.getWeight(context), child);
+                    // Sort entries by weighted and unweighted
+                    for (LootComponent child : this.children) {
+                        if (child.isWeighted()) {
+                            weightedEntries.add(child);
                         } else {
-                            // Otherwise, generate it right away
                             unweightedEntries.add(child);
                         }
                     }
 
-                    if (!randomEntries.isEmpty())
-                        randomEntries.next().populate(context, contents);
-
-                    for (LootEntry entry : unweightedEntries)
+                    // Handle unweighted entries
+                    for (LootComponent entry : unweightedEntries)
                         if (entry.check(context))
                             entry.populate(context, contents);
+
+                    // Handle weighted entries
+                    int numRolls = this.rolls.getInteger(context) + (int) Math.round(this.bonusRolls.getDouble(context) * context.getLuckLevel());
+                    for (int i = 0; i < numRolls; i++) {
+                        RandomCollection<LootComponent> randomEntries = new RandomCollection<>();
+                        for (LootComponent entry : weightedEntries)
+                            if (entry.check(context))
+                                randomEntries.add(entry.getWeight(context), entry);
+
+                        if (!randomEntries.isEmpty())
+                            randomEntries.next().populate(context, contents);
+                    }
                 }
                 case SEQUENTIAL -> {
-                    for (LootEntry child : this.children) {
+                    for (LootComponent child : this.children) {
                         if (!child.check(context))
                             break;
 
@@ -67,7 +76,7 @@ public class LootEntry implements LootContentsPopulator {
                     }
                 }
                 case FIRST_PASSING -> {
-                    for (LootEntry child : this.children) {
+                    for (LootComponent child : this.children) {
                         if (child.check(context)) {
                             child.populate(context, contents);
                             break;
@@ -95,27 +104,27 @@ public class LootEntry implements LootContentsPopulator {
     }
 
     /**
-     * Gets the weight of this entry taking the quality into account
+     * Gets the weight of this component taking the quality into account
      *
      * @param context The LootContext
-     * @return the weight of this entry
+     * @return the weight of this component
      */
     public double getWeight(LootContext context) {
         return this.weight.getDouble(context) + this.quality.getDouble(context) * context.getLuckLevel();
     }
 
     /**
-     * @return true if this entry is weighted
+     * @return true if this component is weighted
      */
     public boolean isWeighted() {
         return this.weight != null;
     }
 
     /**
-     * The strategy to use when evaluating a LootEntry's children
+     * The strategy to use when evaluating a LootComponent's children
      */
     public enum ChildrenStrategy {
-        NORMAL,        // Process as if this is a LootPool with a single roll and no bonuses
+        NORMAL,        // Process all children taking into account weights and conditions
         SEQUENTIAL,    // Keep processing children until a child does not pass conditions
         FIRST_PASSING; // Keep attempting to process children until one passes conditions, then stop
 
@@ -126,5 +135,4 @@ public class LootEntry implements LootContentsPopulator {
             return NORMAL;
         }
     }
-
 }

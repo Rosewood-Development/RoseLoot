@@ -12,38 +12,36 @@ public class LootTable implements LootContentsPopulator {
     private final String name;
     private final LootTableType type;
     private final List<LootCondition> conditions;
-    private final List<LootPool> pools;
+    private final List<LootComponent> components;
     private final Set<OverwriteExisting> overwriteExisting;
     private final boolean allowRecursion;
 
-    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootPool> pools, Set<OverwriteExisting> overwriteExisting, boolean allowRecursion) {
+    public LootTable(String name, LootTableType type, List<LootCondition> conditions, List<LootComponent> components, Set<OverwriteExisting> overwriteExisting, boolean allowRecursion) {
         this.name = name;
         this.type = type;
         this.conditions = conditions;
-        this.pools = pools;
+        this.components = components;
         this.overwriteExisting = overwriteExisting;
         this.allowRecursion = allowRecursion;
     }
 
     @Override
     public void populate(LootContext context, LootContents contents) {
-        this.populate(context, contents, false);
-    }
-
-    public void populate(LootContext context, LootContents contents, boolean ignoreChecks) {
         this.type.validateLootContext(context);
 
         context.setCurrentLootTable(this);
 
-        if (!ignoreChecks && !this.check(context))
-            return;
+        for (LootComponent component : this.components) {
+            if (!component.check(context))
+                continue;
 
-        this.pools.forEach(x -> x.populate(context, contents));
+            component.populate(context, contents);
+        }
     }
 
     @Override
     public List<ItemStack> getAllItems(LootContext context) {
-        return this.pools.stream().flatMap(x -> x.getAllItems(context).stream()).toList();
+        return this.components.stream().flatMap(x -> x.getAllItems(context).stream()).toList();
     }
 
     @Override

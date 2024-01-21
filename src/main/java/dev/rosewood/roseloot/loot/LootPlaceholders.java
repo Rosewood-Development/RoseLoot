@@ -69,7 +69,7 @@ public class LootPlaceholders {
                     value = intValue;
             }
 
-            builder.addPlaceholder(key, value);
+            builder.add(key, value);
         }
 
         this.compiled = builder.build();

@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.context;
 
 import dev.rosewood.roseloot.loot.LootPlaceholders;
+import dev.rosewood.roseloot.util.BlockInfo;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -15,6 +16,7 @@ public class LootContextParam<T> {
     protected BiConsumer<T, LootPlaceholders> placeholderApplicator;
     protected Function<T, Player> playerProvider;
     protected Function<T, ItemStack> itemUsedProvider;
+    protected Function<T, BlockInfo> blockInfoProvider;
 
     public LootContextParam(String name, Class<T> type) {
         this.name = name;
@@ -67,6 +69,18 @@ public class LootContextParam<T> {
     public Optional<ItemStack> getItemUsed(Object value) {
         if (this.itemUsedProvider != null)
             return this.transform(value).map(x -> this.itemUsedProvider.apply(x));
+        return Optional.empty();
+    }
+
+    /**
+     * Gets optional block info used from the given value
+     *
+     * @param value the value to get the item from
+     * @return an optional item
+     */
+    public Optional<BlockInfo> getBlockInfo(Object value) {
+        if (this.blockInfoProvider != null)
+            return this.transform(value).map(x -> this.blockInfoProvider.apply(x));
         return Optional.empty();
     }
 

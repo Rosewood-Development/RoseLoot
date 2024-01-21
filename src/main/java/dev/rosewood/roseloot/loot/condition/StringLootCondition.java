@@ -16,7 +16,7 @@ public class StringLootCondition extends BaseLootCondition {
     }
 
     @Override
-    protected boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return this.predicate.test(context, this.values);
     }
 

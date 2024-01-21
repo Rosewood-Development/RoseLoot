@@ -3,8 +3,9 @@ package dev.rosewood.roseloot.loot.item.meta;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import dev.rosewood.roseloot.provider.StringProvider;
+import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
@@ -20,7 +21,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -34,8 +34,8 @@ import org.bukkit.inventory.meta.Repairable;
 
 public class ItemLootMeta {
 
-    private String displayName;
-    private List<String> lore;
+    private final StringProvider displayName;
+    private final StringProvider lore;
     private Integer customModelData;
     private Boolean unbreakable;
     private Integer repairCost;
@@ -51,16 +51,11 @@ public class ItemLootMeta {
     protected Boolean copyBlockName;
 
     public ItemLootMeta(ConfigurationSection section) {
-        if (section.isString("display-name")) this.displayName = section.getString("display-name");
+        this.displayName = StringProvider.fromSection(section, "display-name", null);
+        this.lore = StringProvider.fromSection(section, "lore", null);
         if (section.isInt("custom-model-data")) this.customModelData = section.getInt("custom-model-data");
         if (section.isBoolean("unbreakable")) this.unbreakable = section.getBoolean("unbreakable");
         if (section.isInt("repair-cost")) this.repairCost = section.getInt("repair-cost");
-
-        if (section.isList("lore")) {
-            this.lore = section.getStringList("lore");
-        } else if (section.isString("lore")) {
-            this.lore = List.of(section.getString("lore"));
-        }
 
         if (section.contains("durability")) {
             if (!section.isConfigurationSection("durability")) {
@@ -213,8 +208,8 @@ public class ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        if (this.displayName != null) itemMeta.setDisplayName(context.formatText(this.displayName));
-        if (this.lore != null) itemMeta.setLore(this.lore.stream().map(context::formatText).toList());
+        if (this.displayName != null) itemMeta.setDisplayName(this.displayName.getFormatted(context));
+        if (this.lore != null) itemMeta.setLore(this.lore.getListFormatted(context));
         if (this.customModelData != null) itemMeta.setCustomModelData(this.customModelData);
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
@@ -271,17 +266,17 @@ public class ItemLootMeta {
         if (this.repairCost != null && itemMeta instanceof Repairable)
             ((Repairable) itemMeta).setRepairCost(this.repairCost);
 
-        Optional<Block> lootedBlock = context.get(LootContextParams.LOOTED_BLOCK);
-        if (lootedBlock.isPresent() && lootedBlock.get().getType() == itemStack.getType()) {
-            Block block = lootedBlock.get();
-            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta)
-                ((BlockStateMeta) itemMeta).setBlockState(block.getState());
+        Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
+        if (lootedBlock.isPresent() && lootedBlock.get().getMaterial() == itemStack.getType()) {
+            BlockInfo block = lootedBlock.get();
+            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta blockStateMeta)
+                blockStateMeta.setBlockState(block.getState());
 
-            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta)
-                ((BlockDataMeta) itemMeta).setBlockData(block.getBlockData());
+            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta blockDataMeta)
+                blockDataMeta.setBlockData(block.getData());
 
-            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable)
-                itemMeta.setDisplayName(((Nameable) block.getState()).getCustomName());
+            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable nameable)
+                itemMeta.setDisplayName(nameable.getCustomName());
         }
 
         itemStack.setItemMeta(itemMeta);

@@ -30,7 +30,7 @@ public class EconomyLootItem implements TriggerableLootItem {
     @Override
     public void trigger(LootContext context, Location location) {
         double amount = this.amounts.stream().mapToDouble(x -> x.getDouble(context)).sum();
-        context.getPlaceholders().add("economy_amount", amount);
+        context.addPlaceholder("economy_amount", amount);
         context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount));
     }
 

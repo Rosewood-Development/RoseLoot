@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
@@ -8,7 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
-import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -18,15 +19,12 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.world.LootGenerateEvent;
 
-public class LootGenerateListener implements Listener {
-
-    private final LootTableManager lootTableManager;
+public class LootGenerateListener extends LazyLootTableListener {
 
     public LootGenerateListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.CONTAINER);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -45,8 +43,9 @@ public class LootGenerateListener implements Listener {
                     .put(LootContextParams.LOOTER, looter)
                     .put(LootContextParams.LOOTED_BLOCK, block)
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
+                    .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getLoot().isEmpty())
                     .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
+            LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.CONTAINER, lootContext);
             if (lootResult.isEmpty())
                 return;
 
@@ -62,7 +61,7 @@ public class LootGenerateListener implements Listener {
             int experience = lootContents.getExperience();
             if (experience > 0) {
                 Location location = looter == null ? block.getLocation() : looter.getLocation();
-                block.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+                EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
             }
 
             lootContents.triggerExtras(block.getLocation());
@@ -78,8 +77,9 @@ public class LootGenerateListener implements Listener {
                     .put(LootContextParams.ORIGIN, entity.getLocation())
                     .put(LootContextParams.LOOTER, looter)
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
+                    .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getLoot().isEmpty())
                     .build();
-            LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.CONTAINER, lootContext);
+            LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.CONTAINER, lootContext);
             if (lootResult.isEmpty())
                 return;
 
@@ -95,7 +95,7 @@ public class LootGenerateListener implements Listener {
             int experience = lootContents.getExperience();
             if (experience > 0) {
                 Location location = looter == null ? entity.getLocation() : looter.getLocation();
-                entity.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+                EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
             }
 
             lootContents.triggerExtras(entity.getLocation());

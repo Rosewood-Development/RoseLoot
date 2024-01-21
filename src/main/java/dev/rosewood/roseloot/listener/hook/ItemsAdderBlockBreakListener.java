@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener.hook;
 
 import dev.lone.itemsadder.api.Events.CustomBlockBreakEvent;
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -9,7 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
-import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,21 +23,18 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDropItemEvent;
 
 /**
  * Implementation note: overwrite-existing is not supported for ItemsAdder blocks. The drops need to be
  * manually cancelled through the ItemsAdder configuration with cancel_drops.
  */
-public class ItemsAdderBlockBreakListener implements Listener {
+public class ItemsAdderBlockBreakListener extends LazyLootTableListener {
 
     public static final LootContextParam<String> ITEMSADDER_BLOCK = LootContextParams.create("itemsadder_block", String.class);
 
-    private final LootTableManager lootTableManager;
-
     public ItemsAdderBlockBreakListener(RosePlugin rosePlugin) {
-        this.lootTableManager = rosePlugin.getManager(LootTableManager.class);
+        super(rosePlugin, LootTableTypes.BLOCK);
     }
 
     @EventHandler
@@ -54,9 +52,8 @@ public class ItemsAdderBlockBreakListener implements Listener {
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(ITEMSADDER_BLOCK, event.getNamespacedID())
-                .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops(event.getPlayer().getInventory().getItemInMainHand()).isEmpty())
                 .build();
-        LootResult lootResult = this.lootTableManager.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 
@@ -82,7 +79,7 @@ public class ItemsAdderBlockBreakListener implements Listener {
         int experience = lootContents.getExperience();
         if (experience > 0) {
             Location location = player.getLocation();
-            player.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
         }
 
         lootContents.triggerExtras(dropLocation);

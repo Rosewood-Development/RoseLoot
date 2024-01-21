@@ -15,7 +15,7 @@ public class HumidityCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)
                 .map(Location::getBlock)
                 .map(Block::getHumidity)

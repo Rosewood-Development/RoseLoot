@@ -1,12 +1,10 @@
 package dev.rosewood.roseloot.loot.condition;
 
 import dev.rosewood.roseloot.RoseLoot;
-import dev.rosewood.roseloot.loot.context.LootContext;
 
 public abstract class BaseLootCondition implements LootCondition {
 
     private String tag;
-    private boolean inverted;
     private boolean printedDeprecationWarning;
 
     /**
@@ -20,8 +18,9 @@ public abstract class BaseLootCondition implements LootCondition {
 
     /**
      * @param tag The tag, including both prefix and values
+     * @throws IllegalArgumentException if the tag is empty, null, or malformed
      */
-    public BaseLootCondition(String tag) {
+    public BaseLootCondition(String tag) throws IllegalArgumentException {
         this(tag, true);
     }
 
@@ -31,15 +30,7 @@ public abstract class BaseLootCondition implements LootCondition {
 
         if (!parse) {
             this.tag = tag;
-            this.inverted = false;
             return;
-        }
-
-        if (tag.startsWith("!")) {
-            tag = tag.substring(1);
-            this.inverted = true;
-        } else {
-            this.inverted = false;
         }
 
         this.tag = tag;
@@ -68,26 +59,13 @@ public abstract class BaseLootCondition implements LootCondition {
         }
     }
 
-    @Override
-    public final boolean check(LootContext context) {
-        return this.checkInternal(context) ^ this.inverted;
-    }
-
-    /**
-     * Checks if the LootContext meets this tag's condition
-     *
-     * @param context The LootContext
-     * @return true if the condition is met, otherwise false
-     */
-    protected abstract boolean checkInternal(LootContext context);
-
     /**
      * Parses the value portion of the tag
      *
      * @param values The values portion of the tag to parse
      * @return true if the tag is valid, otherwise false
      */
-    public abstract boolean parseValues(String[] values);
+    protected abstract boolean parseValues(String[] values);
 
     @Override
     public String toString() {

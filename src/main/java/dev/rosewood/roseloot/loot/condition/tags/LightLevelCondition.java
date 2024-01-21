@@ -17,7 +17,7 @@ public class LightLevelCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<Block> originBlock = context.get(LootContextParams.ORIGIN).map(Location::getBlock);
         if (originBlock.isEmpty())
             return false;

@@ -19,7 +19,7 @@ public class FeatureCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<Location> origin = context.get(LootContextParams.ORIGIN);
         if (origin.isEmpty())
             return false;

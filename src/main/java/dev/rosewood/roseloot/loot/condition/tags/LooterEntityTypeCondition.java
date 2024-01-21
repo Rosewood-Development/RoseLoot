@@ -19,7 +19,7 @@ public class LooterEntityTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(LootContextParams.LOOTER)
                 .map(Entity::getType)
                 .filter(this.entityTypes::contains)

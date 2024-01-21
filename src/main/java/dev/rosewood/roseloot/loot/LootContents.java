@@ -7,6 +7,7 @@ import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.RecursiveLootItem;
 import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
+import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -165,10 +166,20 @@ public class LootContents {
         int experience = this.getExperience();
         if (experience > 0) {
             Location location = player.getLocation();
-            player.getWorld().spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+            EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
         }
 
         this.triggerExtras(player.getLocation());
+    }
+
+    public void dropAtLocation(Location location) {
+        this.getItems().forEach(x -> location.getWorld().dropItemNaturally(location, x));
+
+        int experience = this.getExperience();
+        if (experience > 0)
+            EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
+
+        this.triggerExtras(location);
     }
 
 }

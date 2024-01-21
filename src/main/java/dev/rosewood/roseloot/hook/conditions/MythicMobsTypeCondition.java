@@ -19,7 +19,7 @@ public class MythicMobsTypeCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
         if (lootedEntity.isEmpty())
             return false;
@@ -28,6 +28,7 @@ public class MythicMobsTypeCondition extends BaseLootCondition {
         if (activeMob == null)
             return false;
 
+        context.addPlaceholder("mythic_mob_level", activeMob.getLevel());
         return this.types.contains(activeMob.getMobType());
     }
 

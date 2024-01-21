@@ -15,14 +15,14 @@ public class RoseStackerPrimaryEntityCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<StackedEntity> stackedEntity = context.get(RoseStackerEntityDeathListener.STACKED_ENTITY);
         Optional<LivingEntity> entity = context.get(LootContextParams.LOOTED_ENTITY);
         if (entity.isEmpty())
             return false;
 
         if (stackedEntity.isEmpty()) {
-            context.getPlaceholders().add("rosestacker_entity_stack_size", 1);
+            context.addPlaceholder("rosestacker_entity_stack_size", 1);
             return true;
         }
 

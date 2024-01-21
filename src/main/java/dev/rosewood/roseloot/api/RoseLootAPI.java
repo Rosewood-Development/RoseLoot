@@ -1,9 +1,7 @@
 package dev.rosewood.roseloot.api;
 
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,13 +13,9 @@ public final class RoseLootAPI {
 
     private static RoseLootAPI instance;
 
-    private final RoseLoot roseLoot;
-    private final LootTableManager lootTableManager;
     private final Map<String, Function<String, LootCondition>> customRegisteredConditions;
 
     private RoseLootAPI() {
-        this.roseLoot = RoseLoot.getInstance();
-        this.lootTableManager = this.roseLoot.getManager(LootTableManager.class);
         this.customRegisteredConditions = new LinkedHashMap<>();
     }
 

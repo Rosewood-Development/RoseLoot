@@ -23,7 +23,7 @@ public class KilledByCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         Optional<Player> lootingPlayer = context.getLootingPlayer();
         if (lootingPlayer.isPresent())
             return this.entityTypes.contains(EntityType.PLAYER);

@@ -15,7 +15,7 @@ public class ItemsAdderBlockCondition extends BaseLootCondition {
     }
 
     @Override
-    public boolean checkInternal(LootContext context) {
+    public boolean check(LootContext context) {
         return context.get(ItemsAdderBlockBreakListener.ITEMSADDER_BLOCK)
                 .filter(this.blockTypes::contains)
                 .isPresent();
