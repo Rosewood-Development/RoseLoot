@@ -11,7 +11,7 @@ import java.util.Optional;
 public class NeigeItemProvider extends ItemProvider {
 
     public NeigeItemProvider() {
-        super("NeigeItems");
+        super("NeigeItems", true);
     }
 
     @Override
