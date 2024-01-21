@@ -30,6 +30,7 @@ softdepend:
   - UberItems
   - Slimefun
   - MythicMobs
+  - NeigeItems
   - CustomCrafting
   - WolfyUtilities
   - RoseStacker

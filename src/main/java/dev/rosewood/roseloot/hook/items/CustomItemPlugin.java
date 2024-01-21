@@ -12,6 +12,7 @@ public enum CustomItemPlugin {
     ECO(EcoItemProvider::new),
     MMOITEMS(MMOItemProvider::new),
     MYTHICMOBS(MythicMobsItemProvider::new),
+    NEIGEITEMS(NeigeItemProvider::new),
     ITEMBRIDGE(ItemBridgeItemProvider::new),
     EXECUTABLEITEMS(ExecutableItemProvider::new),
     EXECUTABLEBLOCKS(ExecutableBlockProvider::new),
