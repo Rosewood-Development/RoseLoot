@@ -12,9 +12,7 @@ public class RoseStackerStackedEntityCondition extends BaseLootCondition {
 
     @Override
     public boolean check(LootContext context) {
-        return context.get(RoseStackerEntityDeathListener.STACKED_ENTITY)
-                .filter(x -> x.getStackSize() > 1)
-                .isPresent();
+        return context.get(RoseStackerEntityDeathListener.STACKED_ENTITY).orElse(false);
     }
 
     @Override

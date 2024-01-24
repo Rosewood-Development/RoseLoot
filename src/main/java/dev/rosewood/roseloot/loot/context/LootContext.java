@@ -148,13 +148,27 @@ public class LootContext {
     }
 
     /**
-     * Adds a placeholder that can be parsed within this context as %placeholder%
+     * Adds a placeholder that can be parsed within this context as %placeholder%.
+     * Overwrites existing placeholders in the context with the same key.
      *
      * @param key The placeholder key
      * @param value The placeholder value
      */
     public void addPlaceholder(String key, Object value) {
-        this.placeholders.add(key, value);
+        this.addPlaceholder(key, value, true);
+    }
+
+    /**
+     * Adds a placeholder that can be parsed within this context as %placeholder%.
+     * Optionally overwrites existing placeholders in the context with the same key.
+     *
+     * @param key The placeholder key
+     * @param value The placeholder value
+     * @param overwrite Whether to overwrite existing placeholders
+     */
+    public void addPlaceholder(String key, Object value, boolean overwrite) {
+        if (overwrite || !this.placeholders.containsKey(key))
+            this.placeholders.add(key, value);
     }
 
     /**

@@ -41,6 +41,16 @@ public class LootPlaceholders {
     }
 
     /**
+     * Checks if a placeholder with a given key exists
+     *
+     * @param key The key of the placeholder
+     * @return true if the placeholder exists, false otherwise
+     */
+    public boolean containsKey(String key) {
+        return this.placeholders.containsKey(key);
+    }
+
+    /**
      * Applies the placeholders to the given string
      *
      * @param string The string to apply the placeholders to

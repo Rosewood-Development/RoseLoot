@@ -13,7 +13,6 @@ import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.rosestacker.event.EntityStackMultipleDeathEvent;
-import dev.rosewood.rosestacker.stack.StackedEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +26,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class RoseStackerEntityDeathListener extends LazyLootTableListener {
 
-    public static final LootContextParam<StackedEntity> STACKED_ENTITY = LootContextParams.create("rosestacker_stacked_entity", StackedEntity.class, builder ->
-            builder.withPlaceholders((x, y) -> y.add("rosestacker_entity_stack_size", x.getStackSize())));
+    public static final LootContextParam<Boolean> STACKED_ENTITY = LootContextParams.create("rosestacker_stacked_entity", Boolean.class);
+    public static final LootContextParam<Boolean> STACKED_ENTITY_PRIMARY = LootContextParams.create("rosestacker_stacked_entity_primary", Boolean.class);
 
     public RoseStackerEntityDeathListener(RosePlugin rosePlugin) {
         super(rosePlugin, LootTableTypes.ENTITY);
@@ -51,6 +50,7 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                 enchantmentLevels = itemUsed.getEnchantments();
         }
 
+        boolean primaried = false;
         List<LootContents> extras = new ArrayList<>();
         Multimap<LivingEntity, EntityStackMultipleDeathEvent.EntityDrops> stackDrops = event.getEntityDrops();
         for (LivingEntity entity : stackDrops.keySet()) {
@@ -59,10 +59,14 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                         .put(LootContextParams.ORIGIN, entity.getLocation())
                         .put(LootContextParams.LOOTER, looter)
                         .put(LootContextParams.LOOTED_ENTITY, entity)
-                        .put(STACKED_ENTITY, event.getStack())
+                        .put(STACKED_ENTITY, true)
+                        .put(STACKED_ENTITY_PRIMARY, !primaried)
                         .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                         .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
                         .build();
+                lootContext.addPlaceholder("rosestacker_entity_stack_size", event.getEntityDrops().size());
+                primaried = true;
+
                 LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY, lootContext);
                 if (lootResult.isEmpty())
                     continue;
