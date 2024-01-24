@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class OraxenItemProvider extends ItemProvider {
 
     public OraxenItemProvider() {
-        super("Oraxen");
+        super("Oraxen", true);
     }
 
     @Override

@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 public class EcoItemProvider extends ItemProvider {
 
     public EcoItemProvider() {
-        super("eco");
+        super("eco", true);
     }
 
     @Override

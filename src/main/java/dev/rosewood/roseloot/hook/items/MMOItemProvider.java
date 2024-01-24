@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 public class MMOItemProvider extends ItemProvider {
 
     public MMOItemProvider() {
-        super("MMOItems");
+        super("MMOItems", true);
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemsXLItemProvider extends ItemProvider {
 
     public ItemsXLItemProvider() {
-        super("ItemsXL");
+        super("ItemsXL", true);
     }
 
     @Override

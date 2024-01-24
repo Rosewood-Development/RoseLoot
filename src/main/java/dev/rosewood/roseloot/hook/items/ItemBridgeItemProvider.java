@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemBridgeItemProvider extends ItemProvider {
 
     public ItemBridgeItemProvider() {
-        super("ItemBridge");
+        super("ItemBridge", true);
     }
 
     @Override
@@ -33,4 +33,5 @@ public class ItemBridgeItemProvider extends ItemProvider {
 
         return key.toString();
     }
+
 }

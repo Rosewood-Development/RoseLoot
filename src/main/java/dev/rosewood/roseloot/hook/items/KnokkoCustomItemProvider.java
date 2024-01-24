@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 public class KnokkoCustomItemProvider extends ItemProvider {
 
     public KnokkoCustomItemProvider() {
-        super("CustomItems");
+        super("CustomItems", true);
     }
 
     @Override

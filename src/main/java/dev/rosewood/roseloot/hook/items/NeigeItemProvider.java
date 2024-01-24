@@ -1,12 +1,9 @@
 package dev.rosewood.roseloot.hook.items;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pers.neige.neigeitems.item.ItemInfo;
 import pers.neige.neigeitems.manager.ItemManager;
-
-import java.util.Optional;
 
 public class NeigeItemProvider extends ItemProvider {
 
@@ -19,12 +16,9 @@ public class NeigeItemProvider extends ItemProvider {
         if (!this.isEnabled())
             return null;
 
-        Optional<Player> player = context.getLootingPlayer();
-        if (player.isPresent()) {
-            return ItemManager.INSTANCE.getItemStack(id, player.get());
-        }
-
-        return ItemManager.INSTANCE.getItemStack(id);
+        return context.getLootingPlayer()
+                .map(player -> ItemManager.INSTANCE.getItemStack(id, player))
+                .orElseGet(() -> ItemManager.INSTANCE.getItemStack(id));
     }
 
     @Override
@@ -38,4 +32,5 @@ public class NeigeItemProvider extends ItemProvider {
 
         return itemInfo.getId();
     }
+
 }

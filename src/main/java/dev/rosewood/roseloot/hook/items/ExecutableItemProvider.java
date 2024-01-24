@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class ExecutableItemProvider extends ItemProvider {
 
     public ExecutableItemProvider() {
-        super("ExecutableItems");
+        super("ExecutableItems", true);
     }
 
     @Override

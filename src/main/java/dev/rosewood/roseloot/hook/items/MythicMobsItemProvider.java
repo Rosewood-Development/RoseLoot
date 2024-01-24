@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 public class MythicMobsItemProvider extends ItemProvider {
 
     public MythicMobsItemProvider() {
-        super("MythicMobs");
+        super("MythicMobs", true);
     }
 
     @Override

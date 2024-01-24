@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 public class SlimefunItemProvider extends ItemProvider {
 
     public SlimefunItemProvider() {
-        super("Slimefun");
+        super("Slimefun", true);
     }
 
     @Override

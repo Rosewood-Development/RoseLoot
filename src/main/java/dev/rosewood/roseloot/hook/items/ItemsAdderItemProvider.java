@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemsAdderItemProvider extends ItemProvider {
 
     public ItemsAdderItemProvider() {
-        super("ItemsAdder");
+        super("ItemsAdder", true);
     }
 
     @Override

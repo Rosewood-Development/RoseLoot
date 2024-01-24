@@ -14,10 +14,6 @@ public abstract class ItemProvider {
         this.supportsIdLookup = supportsIdLookup;
     }
 
-    public ItemProvider(String pluginName) {
-        this(pluginName, true);
-    }
-
     /**
      * @return true if the provider is enabled, false otherwise
      */
