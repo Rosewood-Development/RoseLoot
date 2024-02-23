@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
@@ -291,6 +292,13 @@ public class ItemLootMeta {
         if (Tag.ITEMS_BANNERS.isTagged(material))
             return new BannerItemLootMeta(section);
 
+        if (NMSUtil.getVersionNumber() >= 20 && Tag.ITEMS_TRIMMABLE_ARMOR.isTagged(material)) {
+            return switch (material) {
+                case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS -> new ColorableArmorItemLootMeta(section);
+                default -> new ArmorItemLootMeta(section);
+            };
+        }
+
         return switch (material) {
             case WRITABLE_BOOK, WRITTEN_BOOK -> new BookItemLootMeta(section);
             case ENCHANTED_BOOK -> new EnchantmentStorageItemLootMeta(section);
@@ -366,6 +374,13 @@ public class ItemLootMeta {
 
         if (Tag.ITEMS_BANNERS.isTagged(material))
             BannerItemLootMeta.applyProperties(itemStack, stringBuilder);
+
+        if (NMSUtil.getVersionNumber() >= 20 && Tag.ITEMS_TRIMMABLE_ARMOR.isTagged(material)) {
+            switch (material) {
+                case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS -> ColorableArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
+                default -> ArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
+            }
+        }
 
         switch (material) {
             case WRITABLE_BOOK, WRITTEN_BOOK -> BookItemLootMeta.applyProperties(itemStack, stringBuilder);

@@ -7,14 +7,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
- * Used for leather horse armor and leather armor for versions that don't support armor trims.
- * Otherwise, used only for leather horse armor. See {@link ColorableArmorItemLootMeta} for leather armor in 1.20+.
+ * Used for leather armor in 1.20+.
  */
-public class LeatherArmorItemLootMeta extends ItemLootMeta {
+public class ColorableArmorItemLootMeta extends ArmorItemLootMeta {
 
     private Color color;
 
-    public LeatherArmorItemLootMeta(ConfigurationSection section) {
+    public ColorableArmorItemLootMeta(ConfigurationSection section) {
         super(section);
 
         String colorString = section.getString("color");
@@ -42,6 +41,8 @@ public class LeatherArmorItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
+        ArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
+
         LeatherArmorMeta itemMeta = (LeatherArmorMeta) itemStack.getItemMeta();
         if (itemMeta == null)
             return;
