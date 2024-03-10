@@ -372,14 +372,17 @@ public class ItemLootMeta {
             }
         }
 
-        if (Tag.ITEMS_BANNERS.isTagged(material))
+        if (Tag.ITEMS_BANNERS.isTagged(material)) {
             BannerItemLootMeta.applyProperties(itemStack, stringBuilder);
+            return;
+        }
 
         if (NMSUtil.getVersionNumber() >= 20 && Tag.ITEMS_TRIMMABLE_ARMOR.isTagged(material)) {
             switch (material) {
                 case LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS -> ColorableArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
                 default -> ArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
             }
+            return;
         }
 
         switch (material) {
