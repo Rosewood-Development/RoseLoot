@@ -14,27 +14,27 @@ public class TokenManagerEconomyProvider implements EconomyProvider {
     }
 
     @Override
-    public String formatCurrency(double amount) {
+    public String formatCurrency(double amount, String currency) {
         if (!this.enabled)
             return String.valueOf(amount);
         return NumberUtil.withCommas((long) amount);
     }
 
     @Override
-    public double checkBalance(OfflinePlayer offlinePlayer) {
+    public double checkBalance(OfflinePlayer offlinePlayer, String currency) {
         if (!this.enabled)
             return 0;
         return TokenManagerPlugin.getInstance().getTokens(offlinePlayer.getPlayer()).orElse(0);
     }
 
     @Override
-    public void deposit(OfflinePlayer offlinePlayer, double amount) {
+    public void deposit(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (this.enabled)
             TokenManagerPlugin.getInstance().addTokens(offlinePlayer.getPlayer(), (long) amount);
     }
 
     @Override
-    public void withdraw(OfflinePlayer offlinePlayer, double amount) {
+    public void withdraw(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (this.enabled)
             TokenManagerPlugin.getInstance().removeTokens(offlinePlayer.getPlayer(), (long) amount);
     }

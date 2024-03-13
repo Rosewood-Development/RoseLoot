@@ -11,10 +11,12 @@ import org.bukkit.configuration.ConfigurationSection;
 public class EconomyLootItem implements TriggerableLootItem {
 
     private final EconomyPlugin plugin;
+    private final String currency;
     private final List<NumberProvider> amounts;
 
-    public EconomyLootItem(EconomyPlugin plugin, NumberProvider amounts) {
+    public EconomyLootItem(EconomyPlugin plugin, String currency, NumberProvider amounts) {
         this.plugin = plugin;
+        this.currency = currency;
         this.amounts = new ArrayList<>(List.of(amounts));
     }
 
@@ -31,7 +33,7 @@ public class EconomyLootItem implements TriggerableLootItem {
     public void trigger(LootContext context, Location location) {
         double amount = this.amounts.stream().mapToDouble(x -> x.getDouble(context)).sum();
         context.addPlaceholder("economy_amount", amount);
-        context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount));
+        context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount, this.currency));
     }
 
     public static EconomyLootItem fromSection(ConfigurationSection section) {
@@ -39,8 +41,9 @@ public class EconomyLootItem implements TriggerableLootItem {
         if (economyPlugin == null)
             return null;
 
+        String currency = section.getString("currency");
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 0);
-        return new EconomyLootItem(economyPlugin, amount);
+        return new EconomyLootItem(economyPlugin, currency, amount);
     }
 
 }

@@ -20,27 +20,27 @@ public class VaultEconomyProvider implements EconomyProvider {
     }
 
     @Override
-    public String formatCurrency(double amount) {
+    public String formatCurrency(double amount, String currency) {
         if (!this.enabled)
             return String.valueOf(amount);
         return this.economy.format(amount);
     }
 
     @Override
-    public double checkBalance(OfflinePlayer offlinePlayer) {
+    public double checkBalance(OfflinePlayer offlinePlayer, String currency) {
         if (!this.enabled)
             return 0;
         return this.economy.getBalance(offlinePlayer);
     }
 
     @Override
-    public void deposit(OfflinePlayer offlinePlayer, double amount) {
+    public void deposit(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (this.enabled)
             this.economy.depositPlayer(offlinePlayer, amount);
     }
 
     @Override
-    public void withdraw(OfflinePlayer offlinePlayer, double amount) {
+    public void withdraw(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (this.enabled)
             this.economy.withdrawPlayer(offlinePlayer, amount);
     }

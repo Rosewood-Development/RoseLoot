@@ -18,27 +18,27 @@ public class PlayerPointsEconomyProvider implements EconomyProvider {
     }
 
     @Override
-    public String formatCurrency(double amount) {
+    public String formatCurrency(double amount, String currency) {
         if (!this.enabled)
             return String.valueOf(amount);
         return PlayerPoints.getInstance().getManager(LocaleManager.class).getCurrencyName((int) Math.round(amount));
     }
 
     @Override
-    public double checkBalance(OfflinePlayer offlinePlayer) {
+    public double checkBalance(OfflinePlayer offlinePlayer, String currency) {
         if (!this.enabled)
             return 0;
         return this.economy.look(offlinePlayer.getUniqueId());
     }
 
     @Override
-    public void deposit(OfflinePlayer offlinePlayer, double amount) {
+    public void deposit(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (this.enabled)
             this.economy.give(offlinePlayer.getUniqueId(), (int) Math.round(amount));
     }
 
     @Override
-    public void withdraw(OfflinePlayer offlinePlayer, double amount) {
+    public void withdraw(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (this.enabled)
             this.economy.take(offlinePlayer.getUniqueId(), (int) Math.round(amount));
     }

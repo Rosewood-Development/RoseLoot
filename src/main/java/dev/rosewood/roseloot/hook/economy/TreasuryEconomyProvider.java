@@ -26,14 +26,14 @@ public class TreasuryEconomyProvider implements EconomyProvider {
     }
 
     @Override
-    public String formatCurrency(double amount) {
+    public String formatCurrency(double amount, String currency) {
         if (!this.enabled)
             return String.valueOf(amount);
         return this.economyProvider.getPrimaryCurrency().format(new BigDecimal(amount), null, 2);
     }
 
     @Override
-    public double checkBalance(OfflinePlayer offlinePlayer) {
+    public double checkBalance(OfflinePlayer offlinePlayer, String currency) {
         if (!this.enabled)
             return 0;
 
@@ -50,7 +50,7 @@ public class TreasuryEconomyProvider implements EconomyProvider {
     }
 
     @Override
-    public void deposit(OfflinePlayer offlinePlayer, double amount) {
+    public void deposit(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (!this.enabled)
             return;
 
@@ -60,7 +60,7 @@ public class TreasuryEconomyProvider implements EconomyProvider {
     }
 
     @Override
-    public void withdraw(OfflinePlayer offlinePlayer, double amount) {
+    public void withdraw(OfflinePlayer offlinePlayer, double amount, String currency) {
         if (!this.enabled)
             return;
 

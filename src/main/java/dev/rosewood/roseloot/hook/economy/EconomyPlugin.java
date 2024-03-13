@@ -9,7 +9,8 @@ public enum EconomyPlugin implements EconomyProvider {
     VAULT(VaultEconomyProvider::new),
     TREASURY(TreasuryEconomyProvider::new),
     PLAYERPOINTS(PlayerPointsEconomyProvider::new),
-    TOKENMANAGER(TokenManagerEconomyProvider::new);
+    TOKENMANAGER(TokenManagerEconomyProvider::new),
+    COINSENGINE(CoinsEngineEconomyProvider::new);
 
     private final Lazy<EconomyProvider> economyProvider;
 
@@ -18,23 +19,23 @@ public enum EconomyPlugin implements EconomyProvider {
     }
 
     @Override
-    public String formatCurrency(double amount) {
-        return this.economyProvider.get().formatCurrency(amount);
+    public String formatCurrency(double amount, String currency) {
+        return this.economyProvider.get().formatCurrency(amount, currency);
     }
 
     @Override
-    public double checkBalance(OfflinePlayer offlinePlayer) {
-        return this.economyProvider.get().checkBalance(offlinePlayer);
+    public double checkBalance(OfflinePlayer offlinePlayer, String currency) {
+        return this.economyProvider.get().checkBalance(offlinePlayer, currency);
     }
 
     @Override
-    public void deposit(OfflinePlayer offlinePlayer, double amount) {
-        this.economyProvider.get().deposit(offlinePlayer, amount);
+    public void deposit(OfflinePlayer offlinePlayer, double amount, String currency) {
+        this.economyProvider.get().deposit(offlinePlayer, amount, currency);
     }
 
     @Override
-    public void withdraw(OfflinePlayer offlinePlayer, double amount) {
-        this.economyProvider.get().withdraw(offlinePlayer, amount);
+    public void withdraw(OfflinePlayer offlinePlayer, double amount, String currency) {
+        this.economyProvider.get().withdraw(offlinePlayer, amount, currency);
     }
 
     public static EconomyPlugin fromString(String name) {
