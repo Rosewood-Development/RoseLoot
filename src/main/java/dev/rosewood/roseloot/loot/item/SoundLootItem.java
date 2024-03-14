@@ -5,7 +5,6 @@ import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.Optional;
 import org.bukkit.Location;
 import org.bukkit.SoundCategory;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -31,9 +30,7 @@ public class SoundLootItem implements TriggerableLootItem {
         if (this.playerOnly) {
             player.ifPresent(value -> value.playSound(location, this.sound, this.category, (float) this.volume.getDouble(context), (float) this.pitch.getDouble(context)));
         } else {
-            World world = location.getWorld();
-            if (world != null)
-                world.playSound(location, this.sound, this.category, (float) this.volume.getDouble(context), (float) this.pitch.getDouble(context));
+            location.getWorld().playSound(location, this.sound, this.category, (float) this.volume.getDouble(context), (float) this.pitch.getDouble(context));
         }
     }
 

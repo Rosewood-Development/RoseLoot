@@ -13,15 +13,4 @@ package dev.rosewood.roseloot.loot.item;
  */
 public sealed interface LootItem permits ItemGenerativeLootItem, ExperienceGenerativeLootItem, TriggerableLootItem, RecursiveLootItem {
 
-    /**
-     * Attempts to combine another LootItem into this LootItem.
-     * Should only return {@code true} if a combination has occurred.
-     *
-     * @param lootItem The LootItem to attempt to merge with
-     * @return true if a combination has occurred, otherwise false if nothing happened
-     */
-    default boolean combineWith(LootItem lootItem) {
-        return false;
-    }
-
 }

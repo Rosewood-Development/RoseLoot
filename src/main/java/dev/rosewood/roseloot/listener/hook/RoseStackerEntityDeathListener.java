@@ -13,8 +13,6 @@ import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.rosestacker.event.EntityStackMultipleDeathEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
@@ -50,8 +48,12 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                 enchantmentLevels = itemUsed.getEnchantments();
         }
 
+        LootContents groupedExtras = new LootContents(LootContext.builder()
+                .put(LootContextParams.ORIGIN, mainEntity.getLocation())
+                .put(LootContextParams.LOOTER, looter)
+                .build());
+
         boolean primaried = false;
-        List<LootContents> extras = new ArrayList<>();
         Multimap<LivingEntity, EntityStackMultipleDeathEvent.EntityDrops> stackDrops = event.getEntityDrops();
         for (LivingEntity entity : stackDrops.keySet()) {
             for (EntityStackMultipleDeathEvent.EntityDrops drops : event.getEntityDrops().get(entity)) {
@@ -84,11 +86,11 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                 drops.getDrops().addAll(lootContents.getItems());
                 drops.setExperience(drops.getExperience() + lootContents.getExperience());
 
-                extras.add(lootContents);
+                groupedExtras.add(lootContents.getExtras());
             }
         }
 
-        Runnable task = () -> extras.forEach(x -> x.triggerExtras(mainEntity.getLocation()));
+        Runnable task = () -> groupedExtras.triggerExtras(mainEntity.getLocation());
         if (!Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTask(this.rosePlugin, task);
         } else {

@@ -9,7 +9,7 @@ import org.bukkit.Location;
 public non-sealed interface TriggerableLootItem extends LootItem {
 
     /**
-     * Triggers the LootItem to trigger its contents
+     * Causes the LootItem to trigger its contents
      *
      * @param context The LootContext
      * @param location The Location to trigger at

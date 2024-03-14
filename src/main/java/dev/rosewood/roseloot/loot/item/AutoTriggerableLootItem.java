@@ -10,7 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 public interface AutoTriggerableLootItem extends TriggerableLootItem {
 
     /**
-     * Triggers the LootItem to trigger its contents
+     * Causes the LootItem to trigger its contents
      *
      * @param context The LootContext
      */

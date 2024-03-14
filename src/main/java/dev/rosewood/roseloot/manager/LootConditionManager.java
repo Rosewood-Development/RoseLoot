@@ -19,7 +19,6 @@ import dev.rosewood.roseloot.loot.condition.tags.CooldownCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DimensionCondition;
-import dev.rosewood.roseloot.loot.condition.tags.DroppedItemCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentChanceTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.EnchantmentCondition;
@@ -114,7 +113,6 @@ public class LootConditionManager extends DelayedManager implements Listener {
         event.registerLootCondition("custom-model-data", CustomModelDataCondition::new);
         event.registerLootCondition("death-cause", DeathCauseCondition::new);
         event.registerLootCondition("dimension", DimensionCondition::new);
-        event.registerLootCondition("dropped-item", DroppedItemCondition::new);
         event.registerLootCondition("enchantment-chance-table", EnchantmentChanceTableCondition::new);
         event.registerLootCondition("enchantment-chance", EnchantmentChanceCondition::new);
         event.registerLootCondition("enchantment", EnchantmentCondition::new);

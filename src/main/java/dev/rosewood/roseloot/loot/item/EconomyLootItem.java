@@ -3,37 +3,37 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.hook.economy.EconomyPlugin;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
-import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class EconomyLootItem implements TriggerableLootItem {
+public class EconomyLootItem implements GroupTriggerableLootItem<EconomyLootItem> {
 
     private final EconomyPlugin plugin;
     private final String currency;
-    private final List<NumberProvider> amounts;
+    private final NumberProvider amount;
 
-    public EconomyLootItem(EconomyPlugin plugin, String currency, NumberProvider amounts) {
+    public EconomyLootItem(EconomyPlugin plugin, String currency, NumberProvider amount) {
         this.plugin = plugin;
         this.currency = currency;
-        this.amounts = new ArrayList<>(List.of(amounts));
-    }
-
-    @Override
-    public boolean combineWith(LootItem lootItem) {
-        if (!(lootItem instanceof EconomyLootItem other) || this.plugin != other.plugin)
-            return false;
-
-        this.amounts.addAll(other.amounts);
-        return true;
+        this.amount = amount;
     }
 
     @Override
     public void trigger(LootContext context, Location location) {
-        double amount = this.amounts.stream().mapToDouble(x -> x.getDouble(context)).sum();
+        this.trigger(context, location, List.of());
+    }
+
+    @Override
+    public void trigger(LootContext context, Location location, List<EconomyLootItem> others) {
+        double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
         context.addPlaceholder("economy_amount", amount);
         context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount, this.currency));
+    }
+
+    @Override
+    public boolean canTriggerWith(EconomyLootItem other) {
+        return this.plugin == other.plugin && this.currency.equals(other.currency);
     }
 
     public static EconomyLootItem fromSection(ConfigurationSection section) {

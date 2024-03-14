@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.AutoTriggerableLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceGenerativeLootItem;
+import dev.rosewood.roseloot.loot.item.GroupTriggerableLootItem;
 import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.RecursiveLootItem;
@@ -11,6 +12,7 @@ import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bukkit.Location;
 import org.bukkit.entity.ExperienceOrb;
@@ -35,22 +37,12 @@ public class LootContents {
      *
      * @param lootItems The LootItems to add
      */
-    public void add(List<LootItem> lootItems) {
+    public void add(List<? extends LootItem> lootItems) {
         // Turn RecursiveLootItem into a List<LootItem> and add them to the stored contents
         // Continue doing this until we have no more RecursiveLootItem to process
         lootItems.stream()
                 .flatMap(x -> x instanceof RecursiveLootItem recursiveLootItem ? this.recursivelyGenerateLootItems(recursiveLootItem).stream() : Stream.of(x))
                 .forEach(this.contents::add);
-
-        // Attempt to merge LootItems
-        for (int i = 0; i < this.contents.size(); i++) {
-            LootItem item = this.contents.get(i);
-            for (int j = i + 1; j < this.contents.size(); j++) {
-                LootItem other = this.contents.get(j);
-                if (item.combineWith(other))
-                    this.contents.remove(j--);
-            }
-        }
 
         // Automatically trigger and remove AutoTriggerableLootItem
         this.contents.removeIf(x -> {
@@ -99,11 +91,21 @@ public class LootContents {
      * @return the experience amount of this loot contents
      */
     public int getExperience() {
-        return this.contents.stream()
+        List<ExperienceGenerativeLootItem<?>> lootItems = this.contents.stream()
                 .filter(x -> x instanceof ExperienceGenerativeLootItem)
-                .map(x -> (ExperienceGenerativeLootItem) x)
-                .mapToInt(x -> x.generate(this.context))
-                .sum();
+                .map(x -> (ExperienceGenerativeLootItem<?>) x)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        int amount = 0;
+        while (!lootItems.isEmpty()) {
+            ExperienceGenerativeLootItem<?> lootItem = lootItems.remove(0);
+            List<ExperienceGenerativeLootItem<?>> others = lootItems.stream()
+                    .filter(x -> lootItem.getClass().isAssignableFrom(x.getClass()))
+                    .toList();
+            lootItems.removeAll(others);
+            amount += lootItem.generate(this.context, forceCast(others));
+        }
+        return amount;
     }
 
     /**
@@ -122,9 +124,32 @@ public class LootContents {
      * @param location The Location to execute the rest of the drops at
      */
     public void triggerExtras(Location location) {
+        // Trigger ungrouped triggerable loot items immediately
         this.contents.stream()
-                .filter(x -> x instanceof TriggerableLootItem)
-                .forEach(x -> ((TriggerableLootItem) x).trigger(this.context, location));
+                .filter(x -> x instanceof TriggerableLootItem && !(x instanceof GroupTriggerableLootItem<?>))
+                .map(x -> (TriggerableLootItem) x)
+                .forEach(x -> x.trigger(this.context, location));
+
+        // Then group and trigger the rest
+        List<GroupTriggerableLootItem<?>> lootItems = this.contents.stream()
+                .filter(x -> x instanceof GroupTriggerableLootItem)
+                .map(x -> (GroupTriggerableLootItem<?>) x)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        while (!lootItems.isEmpty()) {
+            GroupTriggerableLootItem<?> lootItem = lootItems.remove(0);
+            List<GroupTriggerableLootItem<?>> others = lootItems.stream()
+                    .filter(x -> lootItem.getClass().isAssignableFrom(x.getClass()))
+                    .filter(x -> lootItem.canTriggerWith(forceCast(x)))
+                    .toList();
+            lootItems.removeAll(others);
+            lootItem.trigger(this.context, location, forceCast(others));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T, R> R forceCast(T value) {
+        return (R) value;
     }
 
     /**
@@ -163,11 +188,10 @@ public class LootContents {
     public void dropForPlayer(Player player) {
         player.getInventory().addItem(this.getItems().toArray(new ItemStack[0])).forEach((x, y) -> player.getWorld().dropItemNaturally(player.getLocation(), y));
 
+        Location location = player.getLocation();
         int experience = this.getExperience();
-        if (experience > 0) {
-            Location location = player.getLocation();
-            EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
-        }
+        if (experience > 0)
+            player.giveExp(experience);
 
         this.triggerExtras(player.getLocation());
     }

@@ -10,7 +10,6 @@ import java.util.List;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -20,44 +19,30 @@ public class FireworkLootItem implements TriggerableLootItem {
 
     public static final String DAMAGELESS_METADATA = "damageless";
 
-    private final List<NumberProvider> powers;
+    private final NumberProvider power;
     private final List<FireworkEffect> effects;
-    private boolean dealDamage;
+    private final boolean dealDamage;
 
     public FireworkLootItem(NumberProvider power, List<FireworkEffect> effects, boolean dealDamage) {
-        this.powers = new ArrayList<>(List.of(power));
+        this.power = power;
         this.effects = new ArrayList<>(effects);
         this.dealDamage = dealDamage;
     }
 
     @Override
-    public boolean combineWith(LootItem lootItem) {
-        if (!(lootItem instanceof FireworkLootItem other))
-            return false;
-
-        this.powers.addAll(other.powers);
-        this.effects.addAll(other.effects);
-        this.dealDamage |= other.dealDamage;
-        return true;
-    }
-
-    @Override
     public void trigger(LootContext context, Location location) {
-        World world = location.getWorld();
-        if (world != null) {
-            int power = Math.min(this.powers.stream().mapToInt(x -> x.getInteger(context)).max().orElse(0), 127);
-            Firework firework = EntitySpawnUtil.spawn(location, Firework.class, entity -> {
-                FireworkMeta meta = entity.getFireworkMeta();
-                if (power >= 0) meta.setPower(power);
-                meta.addEffects(this.effects);
-                entity.setFireworkMeta(meta);
-                if (!this.dealDamage)
-                    entity.setMetadata(DAMAGELESS_METADATA, new FixedMetadataValue(RoseLoot.getInstance(), true));
-            });
+        int power = LootUtils.clamp(this.power.getInteger(context), 0, 127);
+        Firework firework = EntitySpawnUtil.spawn(location, Firework.class, entity -> {
+            FireworkMeta meta = entity.getFireworkMeta();
+            meta.setPower(power);
+            meta.addEffects(this.effects);
+            entity.setFireworkMeta(meta);
+            if (!this.dealDamage)
+                entity.setMetadata(DAMAGELESS_METADATA, new FixedMetadataValue(RoseLoot.getInstance(), true));
+        });
 
-            if (power < 0)
-                firework.detonate();
-        }
+        if (power < 0)
+            firework.detonate();
     }
 
     public static FireworkLootItem fromSection(ConfigurationSection section) {

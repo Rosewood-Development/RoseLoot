@@ -3,10 +3,11 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.hook.MMOCoreHook;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class MMOCoreExperienceLootItem implements TriggerableLootItem {
+public class MMOCoreExperienceLootItem implements GroupTriggerableLootItem<MMOCoreExperienceLootItem> {
 
     private final String profession;
     private final NumberProvider amount;
@@ -18,7 +19,18 @@ public class MMOCoreExperienceLootItem implements TriggerableLootItem {
 
     @Override
     public void trigger(LootContext context, Location location) {
+        this.trigger(context, location, List.of());
+    }
+
+    @Override
+    public void trigger(LootContext context, Location location, List<MMOCoreExperienceLootItem> others) {
+        double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
         context.getLootingPlayer().ifPresent(x -> MMOCoreHook.giveExperience(x, this.profession, this.amount.getDouble(context)));
+    }
+
+    @Override
+    public boolean canTriggerWith(MMOCoreExperienceLootItem other) {
+        return this.profession.equals(other.profession);
     }
 
     public static MMOCoreExperienceLootItem fromSection(ConfigurationSection section) {

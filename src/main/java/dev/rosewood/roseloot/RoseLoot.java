@@ -46,7 +46,7 @@ public class RoseLoot extends RosePlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new VoucherListener(this), this);
         pluginManager.registerEvents(new HookConditionListener(), this);
-        pluginManager.registerEvents(new FireworkDamageListener(), this);
+        pluginManager.registerEvents(new FireworkDamageListener(this), this);
     }
 
     @Override

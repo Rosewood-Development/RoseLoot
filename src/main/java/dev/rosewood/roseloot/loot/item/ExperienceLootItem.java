@@ -3,7 +3,6 @@ package dev.rosewood.roseloot.loot.item;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.NumberProvider;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -13,47 +12,49 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 
-public class ExperienceLootItem implements ExperienceGenerativeLootItem {
+public class ExperienceLootItem implements ExperienceGenerativeLootItem<ExperienceLootItem> {
 
-    private final List<NumberProvider> amounts;
-    private final List<NumberProvider> equipmentBonuses;
+    private final NumberProvider amount;
+    private final NumberProvider equipmentBonus;
 
     public ExperienceLootItem(NumberProvider amount, NumberProvider equipmentBonus) {
-        this.amounts = new ArrayList<>(List.of(amount));
-        this.equipmentBonuses = new ArrayList<>(List.of(equipmentBonus));
+        this.amount = amount;
+        this.equipmentBonus = equipmentBonus;
     }
 
     @Override
-    public int generate(LootContext context) {
-        int amount = this.amounts.stream().mapToInt(x -> x.getInteger(context)).sum();
+    public int generate(LootContext context, List<ExperienceLootItem> others) {
+        // Sum amounts
+        int amount = this.amount.getInteger(context);
+        amount += others.stream().mapToInt(x -> x.amount.getInteger(context)).sum();
 
-        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (lootedEntity.isPresent() && !this.equipmentBonuses.isEmpty()) {
-            EntityEquipment equipment = lootedEntity.get().getEquipment();
-            if (equipment != null) {
-                long equipmentAmount = Arrays.stream(EquipmentSlot.values())
-                        .filter(x -> equipment.getItem(x).getType() != Material.AIR)
-                        .count();
-
-                for (int i = 0; i < equipmentAmount; i++)
-                    for (NumberProvider equipmentBonus : this.equipmentBonuses)
-                        amount += equipmentBonus.getInteger(context);
-            }
-        }
+        // Add equipment bonuses
+        amount += this.sumEquipmentBonuses(context);
+        amount += others.stream().mapToInt(x -> x.sumEquipmentBonuses(context)).sum();
 
         context.addPlaceholder("experience_amount", amount);
 
         return amount;
     }
 
-    @Override
-    public boolean combineWith(LootItem lootItem) {
-        if (!(lootItem instanceof ExperienceLootItem other))
-            return false;
+    protected int sumEquipmentBonuses(LootContext context) {
+        int amount = 0;
+        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+        if (lootedEntity.isEmpty())
+            return amount;
 
-        this.amounts.addAll(other.amounts);
-        this.equipmentBonuses.addAll(other.equipmentBonuses);
-        return true;
+        EntityEquipment equipment = lootedEntity.get().getEquipment();
+        if (equipment == null)
+            return amount;
+
+        long equipmentAmount = Arrays.stream(EquipmentSlot.values())
+                .filter(x -> equipment.getItem(x).getType() != Material.AIR)
+                .count();
+
+        for (int i = 0; i < equipmentAmount; i++)
+            amount += this.equipmentBonus.getInteger(context);
+
+        return amount;
     }
 
     public static ExperienceLootItem fromSection(ConfigurationSection section) {

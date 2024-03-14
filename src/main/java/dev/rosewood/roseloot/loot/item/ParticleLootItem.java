@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Vibration;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -96,9 +95,7 @@ public class ParticleLootItem implements TriggerableLootItem {
                 if (player != null)
                     player.spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location, context));
             } else {
-                World world = location.getWorld();
-                if (world != null)
-                    world.spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location, context), this.longDistance);
+                location.getWorld().spawnParticle(this.particle, location, amount, offsetX, offsetY, offsetZ, extra, this.dataContainer == null ? null : this.dataContainer.buildData(location, context), this.longDistance);
             }
         }
 
