@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.hook.economy.EconomyPlugin;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.List;
+import java.util.Objects;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -27,13 +28,15 @@ public class EconomyLootItem implements GroupTriggerableLootItem<EconomyLootItem
     @Override
     public void trigger(LootContext context, Location location, List<EconomyLootItem> others) {
         double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
-        context.addPlaceholder("economy_amount", amount);
+        String suffix = this.currency == null ? "" : "_" + this.currency;
+        context.addPlaceholder("economy_amount" + suffix, amount);
+        context.addPlaceholder("economy_amount_" + this.plugin.name().toLowerCase() + suffix, amount);
         context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount, this.currency));
     }
 
     @Override
     public boolean canTriggerWith(EconomyLootItem other) {
-        return this.plugin == other.plugin && this.currency.equals(other.currency);
+        return this.plugin == other.plugin && Objects.equals(this.currency, other.currency);
     }
 
     public static EconomyLootItem fromSection(ConfigurationSection section) {
