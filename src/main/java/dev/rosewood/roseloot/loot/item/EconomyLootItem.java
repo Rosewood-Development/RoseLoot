@@ -29,7 +29,9 @@ public class EconomyLootItem implements GroupTriggerableLootItem<EconomyLootItem
     public void trigger(LootContext context, Location location, List<EconomyLootItem> others) {
         double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
         String suffix = this.currency == null ? "" : "_" + this.currency;
-        context.addPlaceholder("economy_amount" + suffix, amount);
+        context.addPlaceholder("economy_amount", amount);
+        if (this.currency != null)
+            context.addPlaceholder("economy_amount" + suffix, amount);
         context.addPlaceholder("economy_amount_" + this.plugin.name().toLowerCase() + suffix, amount);
         context.getLootingPlayer().ifPresent(x -> this.plugin.deposit(x, amount, this.currency));
     }

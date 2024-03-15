@@ -64,7 +64,8 @@ public interface NumberProvider {
             if (numberSection.contains("min") || numberSection.contains("max")) {
                 NumberProvider min = fromSection(numberSection, "min", defaultValue);
                 NumberProvider max = fromSection(numberSection, "max", defaultValue);
-                return new UniformDistributionNumberProvider(min, max);
+                int decimals = numberSection.getInt("decimals", 2);
+                return new UniformDistributionNumberProvider(min, max, decimals);
             } else {
                 NumberProvider n = fromSection(numberSection, "n", defaultValue);
                 NumberProvider p = fromSection(numberSection, "p", defaultValue);
@@ -117,15 +118,18 @@ public interface NumberProvider {
     class UniformDistributionNumberProvider implements NumberProvider {
 
         private final NumberProvider min, max;
+        private final int decimals;
 
-        private UniformDistributionNumberProvider(NumberProvider min, NumberProvider max) {
+        private UniformDistributionNumberProvider(NumberProvider min, NumberProvider max, int decimals) {
             this.min = min;
             this.max = max;
+            this.decimals = LootUtils.clamp(decimals, 0, 15);
         }
 
         @Override
         public double getDouble(LootContext context) {
-            return LootUtils.randomInRange(this.min.getDouble(context), this.max.getDouble(context));
+            double value = LootUtils.randomInRange(this.min.getDouble(context), this.max.getDouble(context));
+            return this.decimals == 0 ? value : Math.round(value * Math.pow(10, this.decimals)) / Math.pow(10, this.decimals);
         }
 
     }
