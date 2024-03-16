@@ -64,6 +64,15 @@ public class LootPlaceholders {
     }
 
     /**
+     * Copies the placeholders from this LootPlaceholders to another LootPlaceholders
+     *
+     * @param other The other LootPlaceholders
+     */
+    public void copyTo(LootPlaceholders other) {
+        other.placeholders.putAll(this.placeholders);
+    }
+
+    /**
      * Compiles the placeholders into a StringPlaceholders object
      */
     private void compile() {

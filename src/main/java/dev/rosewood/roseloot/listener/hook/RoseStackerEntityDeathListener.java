@@ -48,10 +48,11 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                 enchantmentLevels = itemUsed.getEnchantments();
         }
 
-        LootContents groupedExtras = new LootContents(LootContext.builder()
+        LootContext groupedExtrasContext = LootContext.builder()
                 .put(LootContextParams.ORIGIN, mainEntity.getLocation())
                 .put(LootContextParams.LOOTER, looter)
-                .build());
+                .build();
+        LootContents groupedExtras = new LootContents(groupedExtrasContext);
 
         boolean primaried = false;
         Multimap<LivingEntity, EntityStackMultipleDeathEvent.EntityDrops> stackDrops = event.getEntityDrops();
@@ -87,6 +88,7 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                 drops.setExperience(drops.getExperience() + lootContents.getExperience());
 
                 groupedExtras.add(lootContents.getExtras());
+                lootContext.copyPlaceholders(groupedExtrasContext);
             }
         }
 

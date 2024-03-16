@@ -194,6 +194,15 @@ public class LootContext {
     }
 
     /**
+     * Copies placeholders from this LootContext to another LootContext
+     *
+     * @param otherContext the other LootContext
+     */
+    public void copyPlaceholders(LootContext otherContext) {
+        this.placeholders.copyTo(otherContext.placeholders);
+    }
+
+    /**
      * @return the last LootTable to be used with this LootContext
      */
     @NotNull
