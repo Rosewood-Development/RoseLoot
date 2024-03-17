@@ -67,7 +67,10 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                         .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                         .put(LootContextParams.HAS_EXISTING_ITEMS, !drops.getDrops().isEmpty())
                         .build();
-                lootContext.addPlaceholder("rosestacker_entity_stack_size", event.getEntityDrops().size());
+                lootContext.addPlaceholder("rosestacker_entity_stack_size", event.getOriginalStackSize());
+                lootContext.addPlaceholder("rosestacker_entity_stack_new_size", event.getOriginalStackSize() - event.getEntityKillCount());
+                lootContext.addPlaceholder("rosestacker_entity_stack_amount_killed", event.getEntityDrops().size());
+                lootContext.addPlaceholder("rosestacker_entity_stack_amount_killed_unapproximated", event.getEntityKillCount());
                 primaried = true;
 
                 LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY, lootContext);
