@@ -16,6 +16,9 @@ public class RoseStackerHook {
     }
 
     public static boolean shouldIgnoreNormalDeathEvent(LivingEntity entity) {
+        if (!isEnabled())
+            return false;
+
         RoseStackerAPI api = RoseStackerAPI.getInstance();
         StackedEntity stackedEntity = api.getStackedEntity(entity);
         return api.isEntityStackMultipleDeathEventCalled() && stackedEntity != null && stackedEntity.getStackSize() > 1;
