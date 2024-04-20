@@ -884,13 +884,13 @@ public final class VanillaLootTableConverter {
                     break;
                 case "minecraft:set_potion":
                     String potionType = function.get("id").getAsString().substring("minecraft:".length());
-                    writer.write("potion-type: " + potionType);
+                    writePotionTypeAsPotionEffectType(writer, potionType);
                     break;
                 case "minecraft:set_nbt":
                     if (name.contains("potion") || name.contains("tipped_arrow")) {
                         String potionTypeNbt = function.get("tag").getAsString();
                         potionTypeNbt = potionTypeNbt.substring(potionTypeNbt.lastIndexOf(":") + 1, potionTypeNbt.lastIndexOf("\""));
-                        writer.write("potion-type: " + potionTypeNbt);
+                        writePotionTypeAsPotionEffectType(writer, potionTypeNbt);
                     } else {
                         String tag = function.get("tag").getAsString().replaceAll(Pattern.quote("\\\""), "\"").replaceAll(Pattern.quote("'"), "''");
                         writer.write("nbt: '" + tag + "'");
@@ -980,6 +980,18 @@ public final class VanillaLootTableConverter {
                     RoseLoot.getInstance().getLogger().warning("Unhandled item function type: " + type + " | " + path);
                     break;
             }
+        }
+    }
+
+    private static void writePotionTypeAsPotionEffectType(IndentedFileWriter writer, String potionTypeString) throws IOException {
+        if (potionTypeString.startsWith("strong_")) {
+            writer.write("potion-type: " + potionTypeString.substring("strong_".length()));
+            writer.write("upgraded: true");
+        } else if (potionTypeString.startsWith("long_")) {
+            writer.write("potion-type: " + potionTypeString.substring("long_".length()));
+            writer.write("extended: true");
+        } else {
+            writer.write("potion-type: " + potionTypeString);
         }
     }
 
