@@ -880,7 +880,7 @@ public final class VanillaLootTableConverter {
                     writer.write("destination: mansion");
                     writer.write("scale: " + scale.name().toLowerCase());
                     writer.write("search-radius: 50");
-                    writer.write("skip-existing-chunks: " + skipExistingChunks);
+                    writer.write("skip-known-structures: " + skipExistingChunks);
                     break;
                 case "minecraft:set_potion":
                     String potionType = function.get("id").getAsString().substring("minecraft:".length());
