@@ -21,8 +21,8 @@ public class FireworkEffectItemLootMeta extends ItemLootMeta {
         if (section.getBoolean("flicker", false)) builder.withFlicker();
         if (section.getBoolean("trail", false)) builder.withTrail();
 
-        if (section.isString("type")) {
-            String type = section.getString("type");
+        if (section.isString("shape")) {
+            String type = section.getString("shape");
             for (FireworkEffect.Type value : FireworkEffect.Type.values()) {
                 if (value.name().equalsIgnoreCase(type)) {
                     builder.with(value);
