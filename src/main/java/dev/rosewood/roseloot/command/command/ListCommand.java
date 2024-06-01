@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.command.command;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
-import dev.rosewood.rosegarden.command.framework.RoseCommand;
-import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
+import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import org.bukkit.command.CommandSender;
 
-public class ListCommand extends RoseCommand {
+public class ListCommand extends BaseRoseCommand {
 
-    public ListCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-        super(rosePlugin, parent);
+    public ListCommand(RosePlugin rosePlugin) {
+        super(rosePlugin);
     }
 
     @RoseExecutable
@@ -41,23 +41,11 @@ public class ListCommand extends RoseCommand {
     }
 
     @Override
-    protected String getDefaultName() {
-        return "list";
-    }
-
-    @Override
-    protected List<String> getDefaultAliases() {
-        return List.of();
-    }
-
-    @Override
-    public String getDescriptionKey() {
-        return "command-list-description";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "roseloot.list";
+    protected CommandInfo createCommandInfo() {
+        return CommandInfo.builder("list")
+                .descriptionKey("command-list-description")
+                .permission("roseloot.list")
+                .build();
     }
 
     /**

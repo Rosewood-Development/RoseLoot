@@ -1,12 +1,14 @@
 package dev.rosewood.roseloot.command.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.command.argument.ArgumentHandlers;
+import dev.rosewood.rosegarden.command.framework.ArgumentsDefinition;
+import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
-import dev.rosewood.rosegarden.command.framework.RoseCommand;
-import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
-import dev.rosewood.rosegarden.command.framework.annotation.Optional;
+import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
+import dev.rosewood.roseloot.command.argument.LootArgumentHandlers;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -16,14 +18,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class GiveItemsCommand extends RoseCommand {
+public class GiveItemsCommand extends BaseRoseCommand {
 
-    public GiveItemsCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-        super(rosePlugin, parent);
+    public GiveItemsCommand(RosePlugin rosePlugin) {
+        super(rosePlugin);
     }
 
     @RoseExecutable
-    public void execute(CommandContext context, LootTable lootTable, @Optional Player player, @Optional Boolean silent) {
+    public void execute(CommandContext context, LootTable lootTable, Player player, Boolean silent) {
         LocaleManager localeManager = this.rosePlugin.getManager(LocaleManager.class);
 
         CommandSender sender = context.getSender();
@@ -52,23 +54,20 @@ public class GiveItemsCommand extends RoseCommand {
     }
 
     @Override
-    protected String getDefaultName() {
-        return "giveitems";
+    protected CommandInfo createCommandInfo() {
+        return CommandInfo.builder("giveitems")
+                .descriptionKey("command-giveitems-description")
+                .permission("roseloot.giveitems")
+                .build();
     }
 
     @Override
-    protected List<String> getDefaultAliases() {
-        return List.of();
-    }
-
-    @Override
-    public String getDescriptionKey() {
-        return "command-giveitems-description";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "roseloot.giveitems";
+    protected ArgumentsDefinition createArgumentsDefinition() {
+        return ArgumentsDefinition.builder()
+                .required("loottable", LootArgumentHandlers.LOOT_TABLE)
+                .optional("player", ArgumentHandlers.PLAYER)
+                .optional("silent", ArgumentHandlers.BOOLEAN)
+                .build();
     }
 
 }

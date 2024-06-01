@@ -45,7 +45,7 @@ public class LazyListenerManager extends DelayedManager {
             this.lazyListeners.add(new PaperListener(rosePlugin));
             if (NMSUtil.getVersionNumber() >= 17)
                 this.lazyListeners.add(new NewerPaperListener(rosePlugin));
-            if (NMSUtil.getVersionNumber() >= 20 && !NMSUtil.getVersion().contains("R1"))
+            if (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() >= 2))
                 this.lazyListeners.add(new FallingBlockListener(rosePlugin));
         }
         if (NMSUtil.getVersionNumber() >= 20)

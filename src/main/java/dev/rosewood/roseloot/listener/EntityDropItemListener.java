@@ -10,10 +10,12 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,10 +67,12 @@ public class EntityDropItemListener extends LazyLootTableListener {
         if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
             return;
 
-        Player shearer = switch (entity.getType()) {
-            case SHEEP, SNOWMAN, MUSHROOM_COW -> this.lastShearer.get();
-            default -> null;
-        };
+        Player shearer;
+        if (entity.getType() == EntityType.SHEEP || entity.getType() == VersionUtils.SNOW_GOLEM || entity.getType() == VersionUtils.MOOSHROOM) {
+            shearer = this.lastShearer.get();
+        } else {
+            shearer = null;
+        }
 
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(shearer))
                 .put(LootContextParams.ORIGIN, entity.getLocation())

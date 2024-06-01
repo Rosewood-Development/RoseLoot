@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +18,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class LootTableLootItem implements RecursiveLootItem {
@@ -74,10 +74,10 @@ public class LootTableLootItem implements RecursiveLootItem {
             Optional<ItemStack> itemUsed = context.getItemUsed();
             if (itemUsed.isPresent()) {
                 ItemStack item = itemUsed.get();
-                if (item.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
-                    lootingModifier = item.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
-                } else if (item.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
-                    lootingModifier = item.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+                if (item.containsEnchantment(VersionUtils.LOOTING)) {
+                    lootingModifier = item.getEnchantmentLevel(VersionUtils.LOOTING);
+                } else if (item.containsEnchantment(VersionUtils.FORTUNE)) {
+                    lootingModifier = item.getEnchantmentLevel(VersionUtils.FORTUNE);
                 }
             }
 

@@ -1,14 +1,14 @@
 package dev.rosewood.roseloot.command.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.command.argument.ArgumentHandlers;
+import dev.rosewood.rosegarden.command.framework.ArgumentsDefinition;
+import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
-import dev.rosewood.rosegarden.command.framework.RoseCommand;
-import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
-import dev.rosewood.rosegarden.command.framework.annotation.Optional;
+import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.manager.LocaleManager;
-import java.util.List;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -19,14 +19,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @SuppressWarnings("deprecation")
-public class CopyCommand extends RoseCommand {
+public class CopyCommand extends BaseRoseCommand {
 
-    public CopyCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-        super(rosePlugin, parent);
+    public CopyCommand(RosePlugin rosePlugin) {
+        super(rosePlugin);
     }
 
     @RoseExecutable
-    public void execute(CommandContext context, @Optional Boolean keepVanillaNBT) {
+    public void execute(CommandContext context, Boolean keepVanillaNBT) {
         LocaleManager localeManager = this.rosePlugin.getManager(LocaleManager.class);
 
         ItemStack itemStack = ((Player) context.getSender()).getInventory().getItemInMainHand();
@@ -48,28 +48,19 @@ public class CopyCommand extends RoseCommand {
     }
 
     @Override
-    protected String getDefaultName() {
-        return "copy";
+    protected CommandInfo createCommandInfo() {
+        return CommandInfo.builder("copy")
+                .descriptionKey("command-copy-description")
+                .permission("roseloot.copy")
+                .playerOnly(true)
+                .build();
     }
 
     @Override
-    protected List<String> getDefaultAliases() {
-        return List.of();
-    }
-
-    @Override
-    public String getDescriptionKey() {
-        return "command-copy-description";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "roseloot.copy";
-    }
-
-    @Override
-    public boolean isPlayerOnly() {
-        return true;
+    protected ArgumentsDefinition createArgumentsDefinition() {
+        return ArgumentsDefinition.builder()
+                .optional("keepVanillaNBT", ArgumentHandlers.BOOLEAN)
+                .build();
     }
 
 }

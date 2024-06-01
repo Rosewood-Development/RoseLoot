@@ -2,8 +2,8 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.loot.item.FireworkLootItem;
+import dev.rosewood.roseloot.util.VersionUtils;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,7 +20,7 @@ public class FireworkDamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFireworkExplode(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if (damager.getType() == EntityType.FIREWORK && damager.hasMetadata(FireworkLootItem.DAMAGELESS_METADATA)) {
+        if (damager.getType() == VersionUtils.FIREWORK_ROCKET && damager.hasMetadata(FireworkLootItem.DAMAGELESS_METADATA)) {
             damager.removeMetadata(FireworkLootItem.DAMAGELESS_METADATA, this.rosePlugin);
             event.setCancelled(true);
         }

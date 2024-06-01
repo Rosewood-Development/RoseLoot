@@ -1,38 +1,50 @@
 package dev.rosewood.roseloot.command.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.command.argument.ArgumentHandlers;
+import dev.rosewood.rosegarden.command.framework.ArgumentsDefinition;
+import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
-import dev.rosewood.rosegarden.command.framework.RoseCommand;
-import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
-import dev.rosewood.rosegarden.command.framework.RoseSubCommand;
-import dev.rosewood.rosegarden.command.framework.annotation.Optional;
+import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.manager.CooldownManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
+import dev.rosewood.rosestacker.lib.rosegarden.command.framework.annotation.Optional;
 import java.util.Collection;
-import java.util.List;
 import org.bukkit.entity.Player;
 
-public class CooldownsCommand extends RoseCommand {
+public class CooldownsCommand extends BaseRoseCommand {
 
-    public CooldownsCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-        super(rosePlugin, parent);
+    public CooldownsCommand(RosePlugin rosePlugin) {
+        super(rosePlugin);
     }
 
-    @RoseExecutable
-    public void execute(CommandContext context, RoseSubCommand command) {
-
+    @Override
+    protected CommandInfo createCommandInfo() {
+        return CommandInfo.builder("cooldowns")
+                .descriptionKey("command-cooldowns-description")
+                .permission("roseloot.cooldowns")
+                .build();
     }
 
-    public static class CooldownsListCommand extends RoseSubCommand {
+    @Override
+    protected ArgumentsDefinition createArgumentsDefinition() {
+        return ArgumentsDefinition.builder()
+                .requiredSub(
+                        new CooldownsListCommand(this.rosePlugin),
+                        new CooldownsResetCommand(this.rosePlugin)
+                );
+    }
 
-        public CooldownsListCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-            super(rosePlugin, parent);
+    public static class CooldownsListCommand extends BaseRoseCommand {
+
+        public CooldownsListCommand(RosePlugin rosePlugin) {
+            super(rosePlugin);
         }
 
         @RoseExecutable
-        public void execute(CommandContext context, @Optional Player player) {
+        public void execute(CommandContext context, Player player) {
             CooldownManager cooldownManager = this.rosePlugin.getManager(CooldownManager.class);
             LocaleManager localeManager = this.rosePlugin.getManager(LocaleManager.class);
 
@@ -64,16 +76,23 @@ public class CooldownsCommand extends RoseCommand {
         }
 
         @Override
-        protected String getDefaultName() {
-            return "list";
+        protected CommandInfo createCommandInfo() {
+            return CommandInfo.builder("list").build();
+        }
+
+        @Override
+        protected ArgumentsDefinition createArgumentsDefinition() {
+            return ArgumentsDefinition.builder()
+                    .optional("player", ArgumentHandlers.PLAYER)
+                    .build();
         }
 
     }
 
-    public static class CooldownsResetCommand extends RoseSubCommand {
+    public static class CooldownsResetCommand extends BaseRoseCommand {
 
-        public CooldownsResetCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-            super(rosePlugin, parent);
+        public CooldownsResetCommand(RosePlugin rosePlugin) {
+            super(rosePlugin);
         }
 
         @RoseExecutable
@@ -88,34 +107,21 @@ public class CooldownsCommand extends RoseCommand {
         }
 
         @Override
-        protected String getDefaultName() {
-            return "reset";
+        protected CommandInfo createCommandInfo() {
+            return CommandInfo.builder("reset").build();
+        }
+
+        @Override
+        protected ArgumentsDefinition createArgumentsDefinition() {
+            return ArgumentsDefinition.builder()
+                    .optional("player", ArgumentHandlers.PLAYER)
+                    .build();
         }
 
     }
 
     private static String getDisplay(Player player) {
         return player == null ? "Global" : player.getName();
-    }
-
-    @Override
-    protected String getDefaultName() {
-        return "cooldowns";
-    }
-
-    @Override
-    protected List<String> getDefaultAliases() {
-        return List.of();
-    }
-
-    @Override
-    public String getDescriptionKey() {
-        return "command-cooldowns-description";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "roseloot.cooldowns";
     }
 
 }

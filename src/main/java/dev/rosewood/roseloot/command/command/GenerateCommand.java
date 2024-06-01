@@ -1,12 +1,14 @@
 package dev.rosewood.roseloot.command.command;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.command.argument.ArgumentHandlers;
+import dev.rosewood.rosegarden.command.framework.ArgumentsDefinition;
+import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
-import dev.rosewood.rosegarden.command.framework.RoseCommand;
-import dev.rosewood.rosegarden.command.framework.RoseCommandWrapper;
-import dev.rosewood.rosegarden.command.framework.annotation.Optional;
+import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
+import dev.rosewood.roseloot.command.argument.LootArgumentHandlers;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -15,18 +17,17 @@ import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
-import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class GenerateCommand extends RoseCommand {
+public class GenerateCommand extends BaseRoseCommand {
 
-    public GenerateCommand(RosePlugin rosePlugin, RoseCommandWrapper parent) {
-        super(rosePlugin, parent);
+    public GenerateCommand(RosePlugin rosePlugin) {
+        super(rosePlugin);
     }
 
     @RoseExecutable
-    public void execute(CommandContext context, LootTable lootTable, @Optional Player player, @Optional Boolean silent) {
+    public void execute(CommandContext context, LootTable lootTable, Player player, Boolean silent) {
         LocaleManager localeManager = this.rosePlugin.getManager(LocaleManager.class);
 
         CommandSender sender = context.getSender();
@@ -53,23 +54,20 @@ public class GenerateCommand extends RoseCommand {
     }
 
     @Override
-    protected String getDefaultName() {
-        return "generate";
+    protected CommandInfo createCommandInfo() {
+        return CommandInfo.builder("generate")
+                .descriptionKey("command-generate-description")
+                .permission("roseloot.generate")
+                .build();
     }
 
     @Override
-    protected List<String> getDefaultAliases() {
-        return List.of();
-    }
-
-    @Override
-    public String getDescriptionKey() {
-        return "command-generate-description";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "roseloot.generate";
+    protected ArgumentsDefinition createArgumentsDefinition() {
+        return ArgumentsDefinition.builder()
+                .required("loottable", LootArgumentHandlers.LOOT_TABLE)
+                .optional("player", ArgumentHandlers.PLAYER)
+                .optional("silent", ArgumentHandlers.BOOLEAN)
+                .build();
     }
 
 }

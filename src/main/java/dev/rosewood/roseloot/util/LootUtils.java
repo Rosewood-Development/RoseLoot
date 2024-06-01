@@ -18,13 +18,11 @@ import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -293,9 +291,9 @@ public final class LootUtils {
             EntityEquipment equipment = livingEntity.getEquipment();
             if (equipment != null) {
                 if (equipment.getItemInMainHand().getType() == Material.FISHING_ROD && equipment.getItemInMainHand().getItemMeta() != null) {
-                    luck += equipment.getItemInMainHand().getItemMeta().getEnchantLevel(Enchantment.LUCK);
+                    luck += equipment.getItemInMainHand().getItemMeta().getEnchantLevel(VersionUtils.LUCK_OF_THE_SEA);
                 } else if (equipment.getItemInOffHand().getType() == Material.FISHING_ROD && equipment.getItemInOffHand().getItemMeta() != null) {
-                    luck += equipment.getItemInOffHand().getItemMeta().getEnchantLevel(Enchantment.LUCK);
+                    luck += equipment.getItemInOffHand().getItemMeta().getEnchantLevel(VersionUtils.LUCK_OF_THE_SEA);
                 }
             }
         }
@@ -379,7 +377,7 @@ public final class LootUtils {
                     .rotateAroundX(-Math.toRadians(location.getPitch()))
                     .rotateAroundY(-Math.toRadians(location.getYaw()))
                     .add(new Vector(player.getLocation().getX(), player.getLocation().getY() + player.getEyeHeight(), player.getLocation().getZ()));
-            player.spawnParticle(Particle.ITEM_CRACK, position.toLocation(location.getWorld()), 1, offset.getX(), offset.getY(), offset.getZ(), 0, itemStack);
+            player.spawnParticle(VersionUtils.PARTICLE_ITEM, position.toLocation(location.getWorld()), 1, offset.getX(), offset.getY(), offset.getZ(), 0, itemStack);
         }
     }
 

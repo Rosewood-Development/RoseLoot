@@ -5,6 +5,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.StructureType;
 import org.bukkit.World;
@@ -20,7 +21,11 @@ public final class StructureUtils {
 
     static {
         try {
-            String version = NMSUtil.getVersion();
+            String version = null;
+            String name = Bukkit.getServer().getClass().getPackage().getName();
+            if (name.contains("R")) {
+                version = name.substring(name.lastIndexOf('.') + 1);
+            }
 
             Class<?> class_StructureGenerator;
             Class<?> class_CraftWorld;
@@ -30,8 +35,9 @@ public final class StructureUtils {
             Class<?> class_StructureStart;
 
             if (NMSUtil.getVersionNumber() >= 17) {
+                String cbPackage = Bukkit.getServer().getClass().getPackage().getName();
                 class_StructureGenerator = Class.forName("net.minecraft.world.level.levelgen.feature.StructureGenerator");
-                class_CraftWorld = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
+                class_CraftWorld = Class.forName(cbPackage + ".CraftWorld");
                 class_BlockPosition = Class.forName("net.minecraft.core.BlockPosition");
                 class_WorldServer = Class.forName("net.minecraft.server.level.WorldServer");
                 class_StructureManager = Class.forName("net.minecraft.world.level.StructureManager");

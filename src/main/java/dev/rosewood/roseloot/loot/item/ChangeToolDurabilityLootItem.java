@@ -5,12 +5,12 @@ import dev.rosewood.roseloot.hook.ItemsAdderHook;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +42,7 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem {
             return;
 
         Player player = context.getLootingPlayer().orElse(null);
-        if (this.applyDurability(player, itemStack, damageable, itemMeta.getEnchantLevel(Enchantment.DURABILITY), context)) {
+        if (this.applyDurability(player, itemStack, damageable, itemMeta.getEnchantLevel(VersionUtils.UNBREAKING), context)) {
             itemStack.setItemMeta(itemMeta);
             if (damageable.getDamage() >= itemStack.getType().getMaxDurability() - 1) {
                 if (player != null)

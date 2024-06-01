@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Random;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -17,10 +18,16 @@ public final class EnchantingUtils {
     private static Method method_CraftItemStack_asBukkitCopy;
     static {
         try {
+            String version = null;
+            String name = Bukkit.getServer().getClass().getPackage().getName();
+            if (name.contains("R")) {
+                version = name.substring(name.lastIndexOf('.') + 1);
+            }
+
             if (NMSUtil.getVersionNumber() < 17) { // 1.16.5
-                Class<?> class_EnchantmentManager = Class.forName("net.minecraft.server." + NMSUtil.getVersion() + ".EnchantmentManager");
-                Class<?> class_ItemStack = Class.forName("net.minecraft.server." + NMSUtil.getVersion() + ".ItemStack");
-                Class<?> class_CraftItemStack = Class.forName("org.bukkit.craftbukkit." + NMSUtil.getVersion() + ".inventory.CraftItemStack");
+                Class<?> class_EnchantmentManager = Class.forName("net.minecraft.server." + version + ".EnchantmentManager");
+                Class<?> class_ItemStack = Class.forName("net.minecraft.server." + version + ".ItemStack");
+                Class<?> class_CraftItemStack = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
                 randomSource = new Random();
                 method_EnchantmentManager_enchantItem = ReflectionUtils.getMethodByName(class_EnchantmentManager, "a", Random.class, class_ItemStack, int.class, boolean.class);
                 method_CraftItemStack_asNMSCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asNMSCopy", ItemStack.class);
@@ -28,16 +35,17 @@ public final class EnchantingUtils {
             } else if (NMSUtil.getVersionNumber() < 19) { // 1.17+
                 Class<?> class_EnchantmentManager = Class.forName("net.minecraft.world.item.enchantment.EnchantmentManager");
                 Class<?> class_ItemStack = Class.forName("net.minecraft.world.item.ItemStack");
-                Class<?> class_CraftItemStack = Class.forName("org.bukkit.craftbukkit." + NMSUtil.getVersion() + ".inventory.CraftItemStack");
+                Class<?> class_CraftItemStack = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
                 randomSource = new Random();
                 method_EnchantmentManager_enchantItem = ReflectionUtils.getMethodByName(class_EnchantmentManager, "a", Random.class, class_ItemStack, int.class, boolean.class);
                 method_CraftItemStack_asNMSCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asNMSCopy", ItemStack.class);
                 method_CraftItemStack_asBukkitCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asBukkitCopy", class_ItemStack);
             } else { // 1.19+
+                String cbPackage = Bukkit.getServer().getClass().getPackage().getName();
                 Class<?> class_RandomSource = Class.forName("net.minecraft.util.RandomSource");
                 Class<?> class_EnchantmentManager = Class.forName("net.minecraft.world.item.enchantment.EnchantmentManager");
                 Class<?> class_ItemStack = Class.forName("net.minecraft.world.item.ItemStack");
-                Class<?> class_CraftItemStack = Class.forName("org.bukkit.craftbukkit." + NMSUtil.getVersion() + ".inventory.CraftItemStack");
+                Class<?> class_CraftItemStack = Class.forName(cbPackage + ".inventory.CraftItemStack");
                 randomSource = ReflectionUtils.getMethodByName(class_RandomSource, "a").invoke(null);
                 method_EnchantmentManager_enchantItem = ReflectionUtils.getMethodByName(class_EnchantmentManager, "a", class_RandomSource, class_ItemStack, int.class, boolean.class);
                 method_CraftItemStack_asNMSCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asNMSCopy", ItemStack.class);
