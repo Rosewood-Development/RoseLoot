@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import java.io.File;
 import java.io.FileWriter;
@@ -128,7 +129,8 @@ public final class VanillaLootTableConverter {
             } else if (path.equals("gameplay/cat_morning_gift")
                     || path.startsWith("gameplay/hero_of_the_village")
                     || path.startsWith("gameplay/panda_sneeze")
-                    || path.startsWith("gameplay/sniffer_digging")) {
+                    || path.startsWith("gameplay/sniffer_digging")
+                    || path.startsWith("shearing/bogged")) {
                 writeEntityDropsHeader(path, writer);
             } else if (path.startsWith("archaeology")) {
                 writeArchaeologyHeader(path, writer);
@@ -200,6 +202,8 @@ public final class VanillaLootTableConverter {
         } else if (path.startsWith("gameplay/hero_of_the_village")) {
             writer.write("- 'entity-type:villager'");
             writer.write("- 'villager-profession:" + path.substring("gameplay/hero_of_the_village/".length(), path.length() - "_gift".length()) + "'");
+        } else if (path.startsWith("shearing/bogged")) {
+            writer.write("- 'entity-type:bogged'");
         } else {
             RoseLoot.getInstance().getLogger().warning("Unhandled gameplay loot table type: " + path);
         }
@@ -207,7 +211,7 @@ public final class VanillaLootTableConverter {
     }
 
     private static void writeArchaeologyHeader(String path, IndentedFileWriter writer) throws IOException {
-        writer.write("ARCHAEOLOGY");
+        writer.write("type: ARCHAEOLOGY");
         writer.write("overwrite-existing: items");
         writer.write("conditions: []");
     }
@@ -943,13 +947,12 @@ public final class VanillaLootTableConverter {
                 }
                 case "minecraft:set_potion" -> {
                     String potionType = function.get("id").getAsString().substring("minecraft:".length());
-                    writePotionTypeAsPotionEffectType(writer, potionType);
+                    writer.write("potion-type: " + potionType);
                 }
                 case "minecraft:set_nbt", "minecraft:set_custom_data" -> {
                     if (name.contains("potion") || name.contains("tipped_arrow")) {
                         String potionTypeNbt = function.get("tag").getAsString();
-                        potionTypeNbt = potionTypeNbt.substring(potionTypeNbt.lastIndexOf(":") + 1, potionTypeNbt.lastIndexOf("\""));
-                        writePotionTypeAsPotionEffectType(writer, potionTypeNbt);
+                        writer.write("potion-type: " + potionTypeNbt.substring(potionTypeNbt.lastIndexOf(":") + 1, potionTypeNbt.lastIndexOf("\"")));
                     } else {
                         String tag = function.get("tag").getAsString().replaceAll(Pattern.quote("\\\""), "\"").replaceAll(Pattern.quote("'"), "''");
                         writer.write("nbt: '" + tag + "'");
@@ -1058,24 +1061,20 @@ public final class VanillaLootTableConverter {
     }
 
     private static void writePotionTypeAsPotionEffectType(IndentedFileWriter writer, String potionTypeString) throws IOException {
-        if (potionTypeString.startsWith("strong_")) {
-            writer.write("potion-type: " + potionTypeString.substring("strong_".length()));
-            writer.write("upgraded: true");
-        } else if (potionTypeString.startsWith("long_")) {
-            writer.write("potion-type: " + potionTypeString.substring("long_".length()));
-            writer.write("extended: true");
-        } else {
-            writer.write("potion-type: " + potionTypeString);
-        }
+
     }
 
     private static String fixEntityNames(String entityType) {
         // Apply replacements for spigot enums that are wrong
-        return switch (entityType) {
-            case "snow_golem" -> "snowman";
-            case "mooshroom" -> "mushroom_cow";
-            default -> entityType;
-        };
+        if (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() > 5)) {
+            return entityType; // They were finally fixed
+        } else {
+            return switch (entityType) {
+                case "snow_golem" -> "snowman";
+                case "mooshroom" -> "mushroom_cow";
+                default -> entityType;
+            };
+        }
     }
 
     private static class IndentedFileWriter {

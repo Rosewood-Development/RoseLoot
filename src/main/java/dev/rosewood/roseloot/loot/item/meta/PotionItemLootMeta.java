@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import java.util.LinkedHashMap;
@@ -10,7 +9,6 @@ import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -18,9 +16,7 @@ import org.bukkit.potion.PotionType;
 public class PotionItemLootMeta extends ItemLootMeta {
 
     private Color color;
-    private final PotionType potionType;
-    private final boolean extended;
-    private final boolean upgraded;
+    private PotionType potionType;
     private Map<PotionEffectData, Boolean> customEffects;
 
     public PotionItemLootMeta(ConfigurationSection section) {
@@ -35,17 +31,12 @@ public class PotionItemLootMeta extends ItemLootMeta {
         }
 
         String potionTypeString = section.getString("potion-type");
-        PotionType potionType = PotionType.WATER;
         for (PotionType value : PotionType.values()) {
             if (value.name().equalsIgnoreCase(potionTypeString)) {
-                potionType = value;
+                this.potionType = value;
                 break;
             }
         }
-
-        this.potionType = potionType;
-        this.extended = section.getBoolean("extended", false);
-        this.upgraded = section.getBoolean("upgraded", false);
 
         ConfigurationSection customEffectsSection = section.getConfigurationSection("custom-effects");
         if (customEffectsSection != null) {
@@ -84,11 +75,7 @@ public class PotionItemLootMeta extends ItemLootMeta {
             return itemStack;
 
         if (this.color != null) itemMeta.setColor(this.color);
-        if (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() >= 5)) {
-            itemMeta.setBasePotionType(this.potionType);
-        } else {
-            itemMeta.setBasePotionData(new PotionData(this.potionType, this.extended && this.potionType.isExtendable(), this.upgraded && this.potionType.isUpgradeable()));
-        }
+        if (this.potionType != null) itemMeta.setBasePotionType(this.potionType);
         if (this.customEffects != null) this.customEffects.forEach((x, y) -> itemMeta.addCustomEffect(x.toPotionEffect(context), y));
 
         itemStack.setItemMeta(itemMeta);
@@ -108,12 +95,6 @@ public class PotionItemLootMeta extends ItemLootMeta {
         PotionType potionType = itemMeta.getBasePotionType();
         if (potionType != null)
             stringBuilder.append("potion-type: ").append(potionType.name().toLowerCase()).append('\n');
-
-        if (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() >= 5)) {
-            PotionData baseData = itemMeta.getBasePotionData();
-            stringBuilder.append("extended: ").append(baseData.isExtended()).append('\n');
-            stringBuilder.append("upgraded: ").append(baseData.isUpgraded()).append('\n');
-        }
 
         List<PotionEffect> effects = itemMeta.getCustomEffects();
         if (!effects.isEmpty()) {

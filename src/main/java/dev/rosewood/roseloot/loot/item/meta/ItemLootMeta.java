@@ -224,7 +224,7 @@ public class ItemLootMeta {
                 } else {
                     // Empty, pick from every applicable enchantment for the item
                     for (Enchantment enchantment : Enchantment.values())
-                        if (enchantment.canEnchantItem(itemStack))
+                        if (enchantment.canEnchantItem(itemStack) && enchantment.isDiscoverable())
                             possibleEnchantments.add(enchantment);
                 }
 
@@ -313,6 +313,7 @@ public class ItemLootMeta {
             case AXOLOTL_BUCKET -> new AxolotlBucketItemLootMeta(section);
             case BUNDLE -> new BundleItemLootMeta(section);
             case MAP -> new MapItemLootMeta(section);
+            case OMINOUS_BOTTLE -> new OminousBottleItemLootMeta(section);
             default -> new ItemLootMeta(section);
         };
     }
@@ -399,6 +400,7 @@ public class ItemLootMeta {
             case AXOLOTL_BUCKET -> AxolotlBucketItemLootMeta.applyProperties(itemStack, stringBuilder);
             case BUNDLE -> BundleItemLootMeta.applyProperties(itemStack, stringBuilder);
             case MAP -> MapItemLootMeta.applyProperties(itemStack, stringBuilder);
+            case OMINOUS_BOTTLE -> OminousBottleItemLootMeta.applyProperties(itemStack, stringBuilder);
         }
     }
 
