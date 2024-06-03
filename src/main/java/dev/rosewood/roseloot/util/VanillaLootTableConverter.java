@@ -56,6 +56,12 @@ public final class VanillaLootTableConverter {
                 continue;
 
             String path = lootTables.getKey().getKey();
+            if (path.startsWith("dispensers")
+                    || path.startsWith("equipment")
+                    || path.startsWith("pots")
+                    || path.startsWith("spawners"))
+                continue; // Empty? What do these do other than random sequences?
+
             handleVanilla(vanillaDirectory, path);
         }
 

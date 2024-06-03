@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.BlockInfo;
@@ -16,10 +17,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
@@ -282,8 +285,10 @@ public class ItemLootMeta {
 
         itemStack.setItemMeta(itemMeta);
 
-        if (this.enchantmentLevel != null)
-            itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments);
+        if (this.enchantmentLevel != null) {
+            Optional<World> world = context.get(LootContextParams.ORIGIN).map(Location::getWorld);
+            itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, world.orElse(null));
+        }
 
         return itemStack;
     }

@@ -15,7 +15,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 public class HelpCommand extends dev.rosewood.rosegarden.command.HelpCommand {
 
     public HelpCommand(RosePlugin rosePlugin, BaseRoseCommand parent) {
-        super(rosePlugin, parent, CommandInfo.builder("help").descriptionKey("command-description-help").build());
+        super(rosePlugin, parent, CommandInfo.builder("help").descriptionKey("command-help-description").build());
     }
 
     @Override
