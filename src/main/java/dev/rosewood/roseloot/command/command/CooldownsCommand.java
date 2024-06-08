@@ -25,16 +25,12 @@ public class CooldownsCommand extends BaseRoseCommand {
         return CommandInfo.builder("cooldowns")
                 .descriptionKey("command-cooldowns-description")
                 .permission("roseloot.cooldowns")
+                .arguments(ArgumentsDefinition.builder()
+                        .requiredSub(
+                                new CooldownsListCommand(this.rosePlugin),
+                                new CooldownsResetCommand(this.rosePlugin)
+                        ))
                 .build();
-    }
-
-    @Override
-    protected ArgumentsDefinition createArgumentsDefinition() {
-        return ArgumentsDefinition.builder()
-                .requiredSub(
-                        new CooldownsListCommand(this.rosePlugin),
-                        new CooldownsResetCommand(this.rosePlugin)
-                );
     }
 
     public static class CooldownsListCommand extends BaseRoseCommand {
@@ -77,13 +73,10 @@ public class CooldownsCommand extends BaseRoseCommand {
 
         @Override
         protected CommandInfo createCommandInfo() {
-            return CommandInfo.builder("list").build();
-        }
-
-        @Override
-        protected ArgumentsDefinition createArgumentsDefinition() {
-            return ArgumentsDefinition.builder()
-                    .optional("player", ArgumentHandlers.PLAYER)
+            return CommandInfo.builder("list")
+                    .arguments(ArgumentsDefinition.builder()
+                            .optional("player", ArgumentHandlers.PLAYER)
+                            .build())
                     .build();
         }
 
@@ -108,13 +101,10 @@ public class CooldownsCommand extends BaseRoseCommand {
 
         @Override
         protected CommandInfo createCommandInfo() {
-            return CommandInfo.builder("reset").build();
-        }
-
-        @Override
-        protected ArgumentsDefinition createArgumentsDefinition() {
-            return ArgumentsDefinition.builder()
-                    .optional("player", ArgumentHandlers.PLAYER)
+            return CommandInfo.builder("reset")
+                    .arguments(ArgumentsDefinition.builder()
+                            .optional("player", ArgumentHandlers.PLAYER)
+                            .build())
                     .build();
         }
 

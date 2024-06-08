@@ -53,13 +53,9 @@ public class CopyCommand extends BaseRoseCommand {
                 .descriptionKey("command-copy-description")
                 .permission("roseloot.copy")
                 .playerOnly(true)
-                .build();
-    }
-
-    @Override
-    protected ArgumentsDefinition createArgumentsDefinition() {
-        return ArgumentsDefinition.builder()
-                .optional("keepVanillaNBT", ArgumentHandlers.BOOLEAN)
+                .arguments(ArgumentsDefinition.builder()
+                        .optional("keepVanillaNBT", ArgumentHandlers.BOOLEAN)
+                        .build())
                 .build();
     }
 

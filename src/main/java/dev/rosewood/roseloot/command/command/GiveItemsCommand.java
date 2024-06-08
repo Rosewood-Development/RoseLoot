@@ -58,15 +58,11 @@ public class GiveItemsCommand extends BaseRoseCommand {
         return CommandInfo.builder("giveitems")
                 .descriptionKey("command-giveitems-description")
                 .permission("roseloot.giveitems")
-                .build();
-    }
-
-    @Override
-    protected ArgumentsDefinition createArgumentsDefinition() {
-        return ArgumentsDefinition.builder()
-                .required("loottable", LootArgumentHandlers.LOOT_TABLE)
-                .optional("player", ArgumentHandlers.PLAYER)
-                .optional("silent", ArgumentHandlers.BOOLEAN)
+                .arguments(ArgumentsDefinition.builder()
+                        .required("loottable", LootArgumentHandlers.LOOT_TABLE)
+                        .optional("player", ArgumentHandlers.PLAYER)
+                        .optional("silent", ArgumentHandlers.BOOLEAN)
+                        .build())
                 .build();
     }
 

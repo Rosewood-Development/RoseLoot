@@ -58,15 +58,11 @@ public class GenerateCommand extends BaseRoseCommand {
         return CommandInfo.builder("generate")
                 .descriptionKey("command-generate-description")
                 .permission("roseloot.generate")
-                .build();
-    }
-
-    @Override
-    protected ArgumentsDefinition createArgumentsDefinition() {
-        return ArgumentsDefinition.builder()
-                .required("loottable", LootArgumentHandlers.LOOT_TABLE)
-                .optional("player", ArgumentHandlers.PLAYER)
-                .optional("silent", ArgumentHandlers.BOOLEAN)
+                .arguments(ArgumentsDefinition.builder()
+                        .required("loottable", LootArgumentHandlers.LOOT_TABLE)
+                        .optional("player", ArgumentHandlers.PLAYER)
+                        .optional("silent", ArgumentHandlers.BOOLEAN)
+                        .build())
                 .build();
     }
 

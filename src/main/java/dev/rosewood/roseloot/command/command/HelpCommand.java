@@ -3,7 +3,6 @@ package dev.rosewood.roseloot.command.command;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.framework.BaseRoseCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
-import dev.rosewood.rosegarden.command.framework.CommandInfo;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -15,7 +14,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 public class HelpCommand extends dev.rosewood.rosegarden.command.HelpCommand {
 
     public HelpCommand(RosePlugin rosePlugin, BaseRoseCommand parent) {
-        super(rosePlugin, parent, CommandInfo.builder("help").descriptionKey("command-help-description").build());
+        super(rosePlugin, parent);
     }
 
     @Override
