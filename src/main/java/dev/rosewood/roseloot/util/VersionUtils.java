@@ -53,14 +53,23 @@ public class VersionUtils {
             PARTICLE_ITEM = Particle.valueOf("ITEM_CRACK");
             POOF = Particle.valueOf("EXPLOSION_NORMAL");
             SMOKE = Particle.valueOf("SMOKE_NORMAL");
-            FORTUNE = Enchantment.getByName("fortune");
-            INFINITY = Enchantment.getByName("infinity");
-            LOOTING = Enchantment.getByName("looting");
-            LUCK_OF_THE_SEA = Enchantment.getByName("luck_of_the_sea");
-            SWEEPING_EDGE = Enchantment.getByName("sweeping_edge");
-            UNBREAKING = Enchantment.getByName("unbreaking");
+            FORTUNE = findEnchantmentLegacy("fortune", "loot_bonus_blocks");
+            INFINITY = findEnchantmentLegacy("infinity", "arrow_infinite");
+            LOOTING = findEnchantmentLegacy("looting", "loot_bonus_mobs");
+            LUCK_OF_THE_SEA = findEnchantmentLegacy("luck_of_the_sea", "luck");
+            SWEEPING_EDGE = findEnchantmentLegacy("sweeping", "sweeping_edge");
+            UNBREAKING = findEnchantmentLegacy("unbreaking", "durability");
             HIDE_ADDITIONAL_TOOLTIP = ItemFlag.valueOf("HIDE_POTION_EFFECTS");
         }
+    }
+
+    private static Enchantment findEnchantmentLegacy(String... names) {
+        for (String name : names) {
+            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(name));
+            if (enchantment != null)
+                return enchantment;
+        }
+        return null;
     }
 
 }
