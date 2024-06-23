@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 group = 'dev.rosewood'
-version = '1.2.13'
+version = '1.2.14'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT'
     compileOnly 'com.mojang:authlib:1.5.21'
     compileOnly 'org.jetbrains:annotations:23.0.0'
     compileOnly 'com.github.milkbowl:vault:1.7.3'

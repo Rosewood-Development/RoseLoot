@@ -129,7 +129,11 @@ public interface NumberProvider {
         @Override
         public double getDouble(LootContext context) {
             double value = LootUtils.randomInRange(this.min.getDouble(context), this.max.getDouble(context));
-            return this.decimals == 0 ? value : Math.round(value * Math.pow(10, this.decimals)) / Math.pow(10, this.decimals);
+            if (this.decimals == -1)
+                return value;
+            if (this.decimals == 0)
+                return Math.round(value);
+            return Math.round(value * Math.pow(10, this.decimals)) / Math.pow(10, this.decimals);
         }
 
     }
