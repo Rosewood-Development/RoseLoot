@@ -36,6 +36,7 @@ public final class VanillaLootTableConverter {
 
     private static final String OR_PATTERN = "||";
     private static final String AND_PATTERN = "&&";
+    private static final int NAMESPACE_LENGTH = "minecraft:".length();
 
     private static final String[] HEADER = new String[] {
             "# ###################################################################################### #",
@@ -56,12 +57,6 @@ public final class VanillaLootTableConverter {
                 continue;
 
             String path = lootTables.getKey().getKey();
-            if (path.startsWith("dispensers")
-                    || path.startsWith("equipment")
-                    || path.startsWith("pots")
-                    || path.startsWith("spawners"))
-                continue; // Empty? What do these do other than random sequences?
-
             handleVanilla(vanillaDirectory, path);
         }
 
@@ -96,7 +91,8 @@ public final class VanillaLootTableConverter {
         if (destination.exists())
             return;
 
-        try (InputStream inputStream = Bukkit.class.getClassLoader().getResourceAsStream("data/minecraft/loot_tables/" + path + ".json")) {
+        String lootTableDirectoryName = NMSUtil.getVersionNumber() >= 21 ? "loot_table" : "loot_tables"; // why
+        try (InputStream inputStream = Bukkit.class.getClassLoader().getResourceAsStream("data/minecraft/" + lootTableDirectoryName + "/" + path + ".json")) {
             if (inputStream == null)
                 return;
 
@@ -387,7 +383,7 @@ public final class VanillaLootTableConverter {
                     writer.write("0:");
                     writer.increaseIndentation();
                     writer.write("type: item");
-                    writer.write("item: " + entry.get("name").getAsString().substring("minecraft:".length()));
+                    writer.write("item: " + entry.get("name").getAsString().substring(NAMESPACE_LENGTH));
                     writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
                     writer.decreaseIndentation();
@@ -399,7 +395,7 @@ public final class VanillaLootTableConverter {
                     writer.write("0:");
                     writer.increaseIndentation();
                     writer.write("type: tag");
-                    writer.write("tag: " + entry.get("name").getAsString().substring("minecraft:".length()));
+                    writer.write("tag: " + entry.get("name").getAsString().substring(NAMESPACE_LENGTH));
                     writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
                     writer.decreaseIndentation();
@@ -412,9 +408,15 @@ public final class VanillaLootTableConverter {
                     writer.increaseIndentation();
                     writer.write("type: loot_table");
                     if (entry.has("value")) {
-                        writer.write("value: " + entry.get("value").getAsString().substring("minecraft:".length()));
+                        JsonElement valueElement = entry.get("value");
+                        if (valueElement.isJsonObject()) {
+                            JsonObject valueObject = valueElement.getAsJsonObject();
+                            writeTableContents(path + "/$minecraft:loot_table", writer, valueObject);
+                        } else {
+                            writer.write("value: " + entry.get("value").getAsString().substring(NAMESPACE_LENGTH));
+                        }
                     } else {
-                        writer.write("value: " + entry.get("name").getAsString().substring("minecraft:".length()));
+                        writer.write("value: " + entry.get("name").getAsString().substring(NAMESPACE_LENGTH));
                     }
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
@@ -546,7 +548,7 @@ public final class VanillaLootTableConverter {
     private static void buildConditionRecursively(String path, StringBuilder stringBuilder, JsonObject json) {
         String type = json.get("condition").getAsString();
         switch (type) {
-            case "minecraft:inverted":
+            case "minecraft:inverted" -> {
                 stringBuilder.append("!");
                 StringBuilder tempBuilder = new StringBuilder();
                 buildConditionRecursively(path, tempBuilder, json.get("term").getAsJsonObject());
@@ -558,9 +560,8 @@ public final class VanillaLootTableConverter {
                 } else {
                     stringBuilder.append(temp);
                 }
-                break;
-            case "minecraft:alternative":
-            case "minecraft:any_of":
+            }
+            case "minecraft:alternative", "minecraft:any_of" -> {
                 JsonArray alternativeTerms = json.get("terms").getAsJsonArray();
                 Iterator<JsonElement> alternativeIterator = alternativeTerms.iterator();
                 while (alternativeIterator.hasNext()) {
@@ -570,8 +571,8 @@ public final class VanillaLootTableConverter {
                     if (alternativeIterator.hasNext())
                         stringBuilder.append(" " + OR_PATTERN + " ");
                 }
-                break;
-            case "minecraft:all_of":
+            }
+            case "minecraft:all_of" -> {
                 JsonArray allOfTerms = json.get("terms").getAsJsonArray();
                 Iterator<JsonElement> allOfIterator = allOfTerms.iterator();
                 while (allOfIterator.hasNext()) {
@@ -581,18 +582,42 @@ public final class VanillaLootTableConverter {
                     if (allOfIterator.hasNext())
                         stringBuilder.append(" " + AND_PATTERN + " ");
                 }
-                break;
-            case "minecraft:random_chance":
-                stringBuilder.append("chance:").append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append('%');
-                break;
-            case "minecraft:random_chance_with_looting":
+            }
+            case "minecraft:random_chance" ->
+                    stringBuilder.append("chance:").append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append('%');
+            case "minecraft:random_chance_with_looting" -> {
                 stringBuilder.append("enchantment-chance:");
                 stringBuilder.append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append("%,looting,");
                 stringBuilder.append(LootUtils.getToMaximumDecimals(json.get("looting_multiplier").getAsDouble() * 100, 3)).append('%');
-                break;
-            case "minecraft:table_bonus":
+            }
+            case "minecraft:random_chance_with_enchanted_bonus" -> {
+                stringBuilder.append("enchantment-chance:");
+                String enchantment = json.get("enchantment").getAsString().substring(NAMESPACE_LENGTH);
+                double unenchantedChance = json.get("unenchanted_chance").getAsDouble();
+                JsonObject enchantedChanceElement = json.get("enchanted_chance").getAsJsonObject();
+                String chanceType = enchantedChanceElement.get("type").getAsString();
+                switch (chanceType) {
+                    case "minecraft:linear" -> {
+                        double base = enchantedChanceElement.get("base").getAsDouble();
+                        double perLevelAboveFirst = enchantedChanceElement.get("per_level_above_first").getAsDouble();
+                        // Sanity check to make sure we aren't losing details
+                        double expectedBase = unenchantedChance + perLevelAboveFirst;
+                        if (Math.abs(base - expectedBase) > 0.0001) {
+                            RoseLoot.getInstance().getLogger().warning("minecraft:random_chance_with_enchanted_bonus non-standard chance | " + path);
+                            break;
+                        }
+
+                        stringBuilder.append(LootUtils.getToMaximumDecimals(unenchantedChance * 100, 3)).append("%,").append(enchantment).append(',');
+                        stringBuilder.append(LootUtils.getToMaximumDecimals(perLevelAboveFirst * 100, 3)).append('%');
+                    }
+                    default -> {
+                        RoseLoot.getInstance().getLogger().warning("minecraft:random_chance_with_enchanted_bonus unsupported chance type | " + chanceType + " | " + path);
+                    }
+                }
+            }
+            case "minecraft:table_bonus" -> {
                 stringBuilder.append("enchantment-chance-table:");
-                stringBuilder.append(json.get("enchantment").getAsString().substring("minecraft:".length())).append(',');
+                stringBuilder.append(json.get("enchantment").getAsString().substring(NAMESPACE_LENGTH)).append(',');
                 JsonArray chancesElement = json.get("chances").getAsJsonArray();
                 Iterator<JsonElement> chanceElementIterator = chancesElement.iterator();
                 while (chanceElementIterator.hasNext()) {
@@ -601,16 +626,14 @@ public final class VanillaLootTableConverter {
                     if (chanceElementIterator.hasNext())
                         stringBuilder.append(',');
                 }
-                break;
-            case "minecraft:block_state_property":
+            }
+            case "minecraft:block_state_property" -> {
                 JsonObject properties = json.get("properties").getAsJsonObject();
                 for (Map.Entry<String, JsonElement> entry : properties.entrySet())
                     stringBuilder.append("block-data:").append(entry.getKey()).append("=").append(entry.getValue().getAsString());
-                break;
-            case "minecraft:killed_by_player":
-                stringBuilder.append("killed-by:player");
-                break;
-            case "minecraft:match_tool":
+            }
+            case "minecraft:killed_by_player" -> stringBuilder.append("killed-by:player");
+            case "minecraft:match_tool" -> {
                 JsonObject predicate = json.get("predicate").getAsJsonObject();
                 JsonElement itemElement = predicate.get("item");
                 JsonElement itemsElement = predicate.get("items");
@@ -619,7 +642,7 @@ public final class VanillaLootTableConverter {
                 JsonElement tagElement = predicate.get("tag");
                 if (itemElement != null) {
                     stringBuilder.append("required-tool-type:");
-                    stringBuilder.append(itemElement.getAsString().substring("minecraft:".length()));
+                    stringBuilder.append(itemElement.getAsString().substring(NAMESPACE_LENGTH));
                 } else if (itemsElement != null) {
                     if (itemsElement.isJsonArray()) {
                         JsonArray items = itemsElement.getAsJsonArray();
@@ -627,26 +650,26 @@ public final class VanillaLootTableConverter {
                         stringBuilder.append("required-tool-type:");
                         while (toolsIterator.hasNext()) {
                             JsonElement toolElement = toolsIterator.next();
-                            stringBuilder.append(toolElement.getAsString().substring("minecraft:".length()));
+                            stringBuilder.append(toolElement.getAsString().substring(NAMESPACE_LENGTH));
                             if (toolsIterator.hasNext())
                                 stringBuilder.append(',');
                         }
                     } else {
                         stringBuilder.append("required-tool-type:");
-                        stringBuilder.append(itemsElement.getAsString().substring("minecraft:".length()));
+                        stringBuilder.append(itemsElement.getAsString().substring(NAMESPACE_LENGTH));
                     }
                 } else if (enchantmentsElement != null) {
                     JsonArray enchantments = enchantmentsElement.getAsJsonArray();
                     if (enchantments.size() > 0) {
                         JsonObject enchantment = enchantments.get(0).getAsJsonObject();
                         stringBuilder.append("enchantment:");
-                        stringBuilder.append(enchantment.get("enchantment").getAsString().substring("minecraft:".length()));
+                        stringBuilder.append(enchantment.get("enchantment").getAsString().substring(NAMESPACE_LENGTH));
                         JsonElement levels = enchantment.get("levels");
                         if (levels != null)
                             stringBuilder.append(',').append(levels.getAsJsonObject().get("min").getAsInt());
                     }
                 } else if (tagElement != null) {
-                    String tag = tagElement.getAsString().substring("minecraft:".length());
+                    String tag = tagElement.getAsString().substring(NAMESPACE_LENGTH);
                     stringBuilder.append("required-tool-type:#").append(tag);
                 } else if (predicatesElement != null) {
                     JsonObject predicatesObject = predicatesElement.getAsJsonObject();
@@ -654,10 +677,13 @@ public final class VanillaLootTableConverter {
                         if (key.equals("minecraft:enchantments")) {
                             JsonArray enchantments = predicatesObject.get(key).getAsJsonArray();
                             if (enchantments.size() > 0) {
-                                JsonObject enchantment = enchantments.get(0).getAsJsonObject();
+                                JsonObject enchantmentObject = enchantments.get(0).getAsJsonObject();
+                                JsonElement enchantment = enchantmentObject.get("enchantment");
+                                if (enchantment == null)
+                                    enchantment = enchantmentObject.get("enchantments");
                                 stringBuilder.append("enchantment:");
-                                stringBuilder.append(enchantment.get("enchantment").getAsString().substring("minecraft:".length()));
-                                JsonElement levels = enchantment.get("levels");
+                                stringBuilder.append(enchantment.getAsString().substring(NAMESPACE_LENGTH));
+                                JsonElement levels = enchantmentObject.get("levels");
                                 if (levels != null)
                                     stringBuilder.append(',').append(levels.getAsJsonObject().get("min").getAsInt());
                             }
@@ -668,8 +694,8 @@ public final class VanillaLootTableConverter {
                 } else {
                     RoseLoot.getInstance().getLogger().warning("minecraft:match_tool unhandled value | " + path);
                 }
-                break;
-            case "minecraft:damage_source_properties":
+            }
+            case "minecraft:damage_source_properties" -> {
                 JsonObject damagePredicate = json.get("predicate").getAsJsonObject();
                 List<String> causes = new ArrayList<>();
                 Map<String, List<String>> causeMapping = new HashMap<>();
@@ -714,22 +740,23 @@ public final class VanillaLootTableConverter {
                             stringBuilder.append(',');
                     }
                 }
-                break;
-            case "minecraft:entity_properties":
+            }
+            case "minecraft:entity_properties" -> {
                 JsonObject propertiesPredicate = json.get("predicate").getAsJsonObject();
                 if (propertiesPredicate.has("type_specific")) {
                     JsonObject typeSpecificObject = propertiesPredicate.get("type_specific").getAsJsonObject();
                     String entityType = typeSpecificObject.get("type").getAsString().replace("minecraft:", "");
-                    if (entityType.equals("slime")) {
-                        stringBuilder.append("slime-size:1");
-                    } else if (entityType.equals("fishing_hook")) {
-                        if (typeSpecificObject.get("in_open_water").getAsBoolean()) {
-                            stringBuilder.append("open-water");
-                        } else {
-                            stringBuilder.append("!open-water");
+                    switch (entityType) {
+                        case "slime" -> stringBuilder.append("slime-size:1");
+                        case "fishing_hook" -> {
+                            if (typeSpecificObject.get("in_open_water").getAsBoolean()) {
+                                stringBuilder.append("open-water");
+                            } else {
+                                stringBuilder.append("!open-water");
+                            }
                         }
-                    } else {
-                        RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type_specific value: " + entityType + " | " + path);
+                        case "raider" -> stringBuilder.append("patrol-leader");
+                        default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type_specific value: " + entityType + " | " + path);
                     }
                 } else if (propertiesPredicate.has("type")) {
                     String entityType = propertiesPredicate.get("type").getAsString().replace("minecraft:", "");
@@ -749,16 +776,16 @@ public final class VanillaLootTableConverter {
                         stringBuilder.append("!open-water");
                     }
                 }
-                break;
-            case "minecraft:location_check":
+            }
+            case "minecraft:location_check" -> {
                 JsonObject locationPredicate = json.get("predicate").getAsJsonObject();
                 if (locationPredicate.has("biome")) {
-                    stringBuilder.append("biome:").append(locationPredicate.get("biome").getAsString().substring("minecraft:".length()));
+                    stringBuilder.append("biome:").append(locationPredicate.get("biome").getAsString().substring(NAMESPACE_LENGTH));
                 } else if (locationPredicate.has("biomes")) {
                     stringBuilder.append("biome:").append(locationPredicate.get("biomes").getAsJsonArray().asList()
                             .stream()
                             .map(JsonElement::getAsString)
-                            .map(x -> x.substring("minecraft:".length()))
+                            .map(x -> x.substring(NAMESPACE_LENGTH))
                             .collect(Collectors.joining(",")));
                 } else if (locationPredicate.has("block")) {
                     JsonObject blockObject = locationPredicate.get("block").getAsJsonObject();
@@ -781,13 +808,13 @@ public final class VanillaLootTableConverter {
 
                                 Iterator<JsonElement> blocksIterator = blocksArray.iterator();
                                 while (blocksIterator.hasNext()) {
-                                    stringBuilder.append(blocksIterator.next().getAsString().substring("minecraft:".length()));
+                                    stringBuilder.append(blocksIterator.next().getAsString().substring(NAMESPACE_LENGTH));
                                     if (blocksIterator.hasNext())
                                         stringBuilder.append(',');
                                 }
                             }
                         } else {
-                            stringBuilder.append("block-type:").append(blocksObject.getAsString().substring("minecraft:".length()));
+                            stringBuilder.append("block-type:").append(blocksObject.getAsString().substring(NAMESPACE_LENGTH));
                         }
                     }
                 } else if (locationPredicate.has("dimension")) {
@@ -802,13 +829,11 @@ public final class VanillaLootTableConverter {
                 } else {
                     RoseLoot.getInstance().getLogger().warning("Unhandled location_check type: " + locationPredicate + " | " + path);
                 }
-                break;
-            case "minecraft:survives_explosion":
+            }
+            case "minecraft:survives_explosion" -> {
                 // Ignored, still handled by vanilla logic
-                break;
-            default:
-                RoseLoot.getInstance().getLogger().warning("Unhandled condition type: " + type + " | " + path);
-                break;
+            }
+            default -> RoseLoot.getInstance().getLogger().warning("Unhandled condition type: " + type + " | " + path);
         }
     }
 
@@ -911,7 +936,7 @@ public final class VanillaLootTableConverter {
                         JsonObject effectObject = effectElement.getAsJsonObject();
                         writer.write(i++ + ":");
                         writer.increaseIndentation();
-                        writer.write("effect: " + effectObject.get("type").getAsString().substring("minecraft:".length()));
+                        writer.write("effect: " + effectObject.get("type").getAsString().substring(NAMESPACE_LENGTH));
                         writeNumberProvider("duration", "duration", writer, effectObject, 8.0, 20);
                         writer.decreaseIndentation();
                     }
@@ -923,7 +948,7 @@ public final class VanillaLootTableConverter {
                     writer.increaseIndentation();
                     for (Map.Entry<String, JsonElement> entry : enchantments.entrySet()) {
                         int enchantmentLevel = entry.getValue().getAsInt();
-                        writer.write(entry.getKey().replace("minecraft:", "") + ": " + enchantmentLevel);
+                        writer.write(entry.getKey().substring(NAMESPACE_LENGTH) + ": " + enchantmentLevel);
                     }
                     writer.decreaseIndentation();
                 }
@@ -934,7 +959,7 @@ public final class VanillaLootTableConverter {
                     writer.write("display-name: '" + displayName.replaceAll(Pattern.quote("'"), "''") + "'");
 
                     // JsonObject nameObject = function.get("name").getAsJsonObject();
-                    // writer.write("display-name: #" + nameObject.get("translate").getAsString().substring("minecraft:".length()));
+                    // writer.write("display-name: #" + nameObject.get("translate").getAsString().substring(NAMESPACE_LENGTH));
                 }
                 case "minecraft:exploration_map" -> {
                     byte zoom = function.get("zoom").getAsByte();
@@ -952,7 +977,7 @@ public final class VanillaLootTableConverter {
                     writer.write("skip-known-structures: " + skipExistingChunks);
                 }
                 case "minecraft:set_potion" -> {
-                    String potionType = function.get("id").getAsString().substring("minecraft:".length());
+                    String potionType = function.get("id").getAsString().substring(NAMESPACE_LENGTH);
                     writer.write("potion-type: " + potionType);
                 }
                 case "minecraft:set_nbt", "minecraft:set_custom_data" -> {
@@ -982,7 +1007,7 @@ public final class VanillaLootTableConverter {
                         writer.increaseIndentation();
                         JsonArray randomEnchantments = enchantmentsElement.getAsJsonArray();
                         for (JsonElement enchantmentElement : randomEnchantments) {
-                            String enchantment = enchantmentElement.getAsString().substring("minecraft:".length());
+                            String enchantment = enchantmentElement.getAsString().substring(NAMESPACE_LENGTH);
                             writer.write("- " + enchantment);
                         }
                         writer.decreaseIndentation();
@@ -993,7 +1018,18 @@ public final class VanillaLootTableConverter {
                     writer.increaseIndentation();
                     writeNumberProvider("level", "levels", writer, function, 30.0);
                     JsonElement treasureElement = function.get("treasure");
-                    boolean treasure = treasureElement != null && treasureElement.getAsBoolean();
+                    boolean treasure;
+                    if (treasureElement != null) {
+                        treasure = treasureElement.getAsBoolean();
+                    } else {
+                        JsonElement optionsElement = function.get("options");
+                        if (optionsElement != null) {
+                            String options = function.get("options").getAsString();
+                            treasure = options.equals("#minecraft:on_random_loot");
+                        } else {
+                            treasure = false;
+                        }
+                    }
                     writer.write("treasure: " + treasure);
                     writer.decreaseIndentation();
                 }
@@ -1005,13 +1041,21 @@ public final class VanillaLootTableConverter {
                     writeNumberProvider("max-bonus-levels", "limit", writer, function, null);
                     writer.decreaseIndentation();
                 }
+                case "minecraft:enchanted_count_increase" -> {
+                    writer.write("enchantment-bonus:");
+                    writer.increaseIndentation();
+                    writer.write("enchantment: " + function.get("enchantment").getAsString().substring(NAMESPACE_LENGTH));
+                    writeNumberProvider("bonus-per-level", "count", writer, function, 0.0);
+                    writeNumberProvider("max-bonus-levels", "limit", writer, function, null);
+                    writer.decreaseIndentation();
+                }
                 case "minecraft:apply_bonus" -> {
                     writer.write("enchantment-bonus:");
                     writer.increaseIndentation();
 
-                    String formula = function.get("formula").getAsString().substring("minecraft:".length());
+                    String formula = function.get("formula").getAsString().substring(NAMESPACE_LENGTH);
                     writer.write("formula: " + formula);
-                    writer.write("enchantment: " + function.get("enchantment").getAsString().substring("minecraft:".length()));
+                    writer.write("enchantment: " + function.get("enchantment").getAsString().substring(NAMESPACE_LENGTH));
 
                     JsonElement parametersElement = function.get("parameters");
                     if (parametersElement != null) {
@@ -1037,6 +1081,27 @@ public final class VanillaLootTableConverter {
                 case "minecraft:furnace_smelt" -> writer.write("smelt-if-burning: true");
                 case "minecraft:explosion_decay" -> {
                     // Ignored, still handled by vanilla logic
+                }
+                case "minecraft:set_ominous_bottle_amplifier" -> {
+                    writeNumberProvider("amplifier", "amplifier", writer, function, 0.0);
+                }
+                case "minecraft:set_components" -> {
+                    JsonObject jsonObject = function.get("components").getAsJsonObject();
+                    for (String key : jsonObject.keySet()) {
+                        switch (key) {
+                            case "minecraft:trim" -> {
+                                JsonObject trim = jsonObject.get("minecraft:trim").getAsJsonObject();
+                                String material = trim.get("material").getAsString().substring(NAMESPACE_LENGTH);
+                                String pattern = trim.get("pattern").getAsString();
+                                writer.write("trim: ");
+                                writer.increaseIndentation();
+                                writer.write("material: " + material);
+                                writer.write("pattern: " + pattern);
+                                writer.decreaseIndentation();
+                            }
+                            default -> RoseLoot.getInstance().getLogger().warning("minecraft:set_components unhandled key: " + key + " | " + path);
+                        }
+                    }
                 }
                 case "minecraft:copy_components" -> {
                     JsonArray includeArray = function.get("include").getAsJsonArray();
@@ -1064,10 +1129,6 @@ public final class VanillaLootTableConverter {
                 default -> RoseLoot.getInstance().getLogger().warning("Unhandled item function type: " + type + " | " + path);
             }
         }
-    }
-
-    private static void writePotionTypeAsPotionEffectType(IndentedFileWriter writer, String potionTypeString) throws IOException {
-
     }
 
     private static String fixEntityNames(String entityType) {

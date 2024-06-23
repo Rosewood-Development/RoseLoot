@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.util.nms;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,6 +17,7 @@ public final class EnchantingUtils {
     private static Object randomSource;
     private static Method method_CraftWorld_getHandle;
     private static Method method_ServerLevel_enabledFeatures;
+    private static Method method_ServerLevel_registryAccess;
     private static Method method_EnchantmentManager_enchantItem;
     private static Method method_CraftItemStack_asNMSCopy;
     private static Method method_CraftItemStack_asBukkitCopy;
@@ -53,7 +55,7 @@ public final class EnchantingUtils {
                 method_EnchantmentManager_enchantItem = ReflectionUtils.getMethodByName(class_EnchantmentManager, "a", class_RandomSource, class_ItemStack, int.class, boolean.class);
                 method_CraftItemStack_asNMSCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asNMSCopy", ItemStack.class);
                 method_CraftItemStack_asBukkitCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asBukkitCopy", class_ItemStack);
-            } else { // 1.20.5+
+            } else if (NMSUtil.getVersionNumber() < 21) { // 1.20.5+
                 String cbPackage = Bukkit.getServer().getClass().getPackage().getName();
                 Class<?> class_CraftWorld = Class.forName(cbPackage + ".CraftWorld");
                 Class<?> class_ServerLevel = Class.forName("net.minecraft.server.level.ServerLevel");
@@ -66,6 +68,21 @@ public final class EnchantingUtils {
                 method_CraftWorld_getHandle = ReflectionUtils.getMethodByName(class_CraftWorld, "getHandle");
                 method_ServerLevel_enabledFeatures = ReflectionUtils.getMethodByName(class_ServerLevel, "enabledFeatures");
                 method_EnchantmentManager_enchantItem = ReflectionUtils.getMethodByName(class_EnchantmentManager, "a", class_FeatureFlagSet, class_RandomSource, class_ItemStack, int.class, boolean.class);
+                method_CraftItemStack_asNMSCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asNMSCopy", ItemStack.class);
+                method_CraftItemStack_asBukkitCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asBukkitCopy", class_ItemStack);
+            } else { // 1.21+
+                String cbPackage = Bukkit.getServer().getClass().getPackage().getName();
+                Class<?> class_CraftWorld = Class.forName(cbPackage + ".CraftWorld");
+                Class<?> class_ServerLevel = Class.forName("net.minecraft.server.level.ServerLevel");
+                Class<?> class_RandomSource = Class.forName("net.minecraft.util.RandomSource");
+                Class<?> class_EnchantmentManager = Class.forName("net.minecraft.world.item.enchantment.EnchantmentManager");
+                Class<?> class_ItemStack = Class.forName("net.minecraft.world.item.ItemStack");
+                Class<?> class_CraftItemStack = Class.forName(cbPackage + ".inventory.CraftItemStack");
+                Class<?> class_RegistryAccess = Class.forName("net.minecraft.core.RegistryAccess");
+                randomSource = ReflectionUtils.getMethodByName(class_RandomSource, "a").invoke(null);
+                method_CraftWorld_getHandle = ReflectionUtils.getMethodByName(class_CraftWorld, "getHandle");
+                method_ServerLevel_registryAccess = ReflectionUtils.getMethodByName(class_ServerLevel, "H_");
+                method_EnchantmentManager_enchantItem = ReflectionUtils.getMethodByName(class_EnchantmentManager, "a", class_RandomSource, class_ItemStack, int.class, class_RegistryAccess, Optional.class);
                 method_CraftItemStack_asNMSCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asNMSCopy", ItemStack.class);
                 method_CraftItemStack_asBukkitCopy = ReflectionUtils.getMethodByName(class_CraftItemStack, "asBukkitCopy", class_ItemStack);
             }
@@ -98,6 +115,10 @@ public final class EnchantingUtils {
                 Object nmsWorld = method_CraftWorld_getHandle.invoke(world);
                 Object enabledFeatures = method_ServerLevel_enabledFeatures.invoke(nmsWorld);
                 nmsItemStack = method_EnchantmentManager_enchantItem.invoke(null, enabledFeatures, randomSource, nmsItemStack, level, treasure);
+            } else if (method_ServerLevel_registryAccess != null) {
+                Object nmsWorld = method_CraftWorld_getHandle.invoke(world);
+                Object registryAccess = method_ServerLevel_registryAccess.invoke(nmsWorld);
+                nmsItemStack = method_EnchantmentManager_enchantItem.invoke(null, randomSource, nmsItemStack, level, registryAccess, Optional.empty());
             } else {
                 nmsItemStack = method_EnchantmentManager_enchantItem.invoke(null, randomSource, nmsItemStack, level, treasure);
             }

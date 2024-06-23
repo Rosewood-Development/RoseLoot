@@ -61,6 +61,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.ApiStatus;
 
 public class LootTableManager extends DelayedManager implements Listener {
 
@@ -110,7 +111,7 @@ public class LootTableManager extends DelayedManager implements Listener {
             try {
                 this.loadFile(file);
             } catch (Exception e) {
-                this.failToLoad(file, e.getMessage());
+                this.failToLoad(file.getName(), e.getMessage());
             }
         }
 
@@ -119,10 +120,18 @@ public class LootTableManager extends DelayedManager implements Listener {
 
     private void loadFile(File file) {
         ConfigurationSection configuration = CommentedFileConfiguration.loadConfiguration(file);
-        LootTableType type = this.getLootTableType(configuration.getString("type"));
+        String path = this.getLootTablePath(file);
+        LootTable loadedLootTable = this.loadConfiguration(path, file.getName(), configuration);
+        if (loadedLootTable != null)
+            this.lootTables.put(loadedLootTable.getType(), loadedLootTable);
+    }
+
+    @ApiStatus.Internal
+    public LootTable loadConfiguration(String path, String fileName, ConfigurationSection configuration) {
+        LootTableType type = this.getLootTableType(configuration.getString("type", "LOOT_TABLE"));
         if (type == null) {
-            this.failToLoad(file, "Invalid type");
-            return;
+            this.failToLoad(fileName, "Invalid type");
+            return null;
         }
 
         Set<OverwriteExisting> overwriteExisting;
@@ -138,22 +147,20 @@ public class LootTableManager extends DelayedManager implements Listener {
         }
 
         boolean allowRecursion = configuration.getBoolean("allow-recursion", false);
-        List<LootCondition> conditions = this.parseConditionsSection(file, configuration);
+        List<LootCondition> conditions = this.parseConditionsSection(fileName, configuration);
 
         // Find the first section key, if there are any more than one throw an error, if there are none throw an error
-        ConfigurationSection rootComponentSection = this.findNextComponentsSection(file, configuration);
+        ConfigurationSection rootComponentSection = this.findNextComponentsSection(fileName, configuration);
         if (rootComponentSection == null) {
-            this.failToLoad(file, "No root component section");
-            return;
+            this.failToLoad(fileName, "No root component section");
+            return null;
         }
 
-        List<LootComponent> lootComponents = this.getLootComponentsRecursively(file, rootComponentSection, rootComponentSection.getCurrentPath());
-        String name = this.getLootTablePath(file);
-
-        this.lootTables.put(type, new LootTable(name, type, conditions, lootComponents, overwriteExisting, allowRecursion));
+        List<LootComponent> lootComponents = this.getLootComponentsRecursively(fileName, rootComponentSection, rootComponentSection.getCurrentPath());
+        return new LootTable(path, type, conditions, lootComponents, overwriteExisting, allowRecursion);
     }
 
-    private List<LootCondition> parseConditionsSection(File file, ConfigurationSection section) {
+    private List<LootCondition> parseConditionsSection(String fileName, ConfigurationSection section) {
         List<LootCondition> conditions = new ArrayList<>();
         List<String> conditionStrings = section.getStringList("conditions");
         for (String conditionString : conditionStrings) {
@@ -161,7 +168,7 @@ public class LootTableManager extends DelayedManager implements Listener {
             if (condition != null)  {
                 conditions.add(condition);
             } else {
-                this.issueLoading(file, "Invalid condition [" + conditionString + "]");
+                this.issueLoading(fileName, "Invalid condition [" + conditionString + "]");
                 conditions.add(LootCondition.ALWAYS_FALSE);
             }
         }
@@ -186,7 +193,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         return stringBuilder.toString();
     }
 
-    private ConfigurationSection findNextComponentsSection(File file, ConfigurationSection section) {
+    private ConfigurationSection findNextComponentsSection(String fileName, ConfigurationSection section) {
         ConfigurationSection foundSection = null;
         for (String key : section.getKeys(false)) {
             if (RESERVED_COMPONENT_KEYS.contains(key))
@@ -197,7 +204,7 @@ public class LootTableManager extends DelayedManager implements Listener {
                 continue;
 
             if (foundSection != null) {
-                this.issueLoading(file, "Ignored unknown value [" + key + "]");
+                this.issueLoading(fileName, "Ignored unknown value [" + key + "]");
                 continue;
             }
 
@@ -206,16 +213,16 @@ public class LootTableManager extends DelayedManager implements Listener {
         return foundSection;
     }
 
-    private List<LootComponent> getLootComponentsRecursively(File file, ConfigurationSection componentsSection, String parents) {
+    private List<LootComponent> getLootComponentsRecursively(String fileName, ConfigurationSection componentsSection, String parents) {
         List<LootComponent> lootComponents = new ArrayList<>();
         for (String entryKey : componentsSection.getKeys(false)) {
             ConfigurationSection componentSection = componentsSection.getConfigurationSection(entryKey);
             if (componentSection == null) {
-                this.issueLoading(file, "Component is not an object [parent: " + parents + ", component: " + entryKey + "]");
+                this.issueLoading(fileName, "Component is not an object [parent: " + parents + ", component: " + entryKey + "]");
                 continue;
             }
 
-            List<LootCondition> entryConditions = this.parseConditionsSection(file, componentSection);
+            List<LootCondition> entryConditions = this.parseConditionsSection(fileName, componentSection);
 
             NumberProvider weight = NumberProvider.fromSection(componentSection, "weight", null);
             NumberProvider quality = NumberProvider.fromSection(componentSection, "quality", 0);
@@ -228,25 +235,25 @@ public class LootTableManager extends DelayedManager implements Listener {
                 for (String itemKey : itemsSection.getKeys(false)) {
                     ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
                     if (itemSection == null) {
-                        this.issueLoading(file, "Invalid item section [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
+                        this.issueLoading(fileName, "Invalid item section [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
                         continue;
                     }
 
                     String lootItemType = itemSection.getString("type");
                     if (lootItemType == null) {
-                        this.issueLoading(file, "Invalid item section, unset type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
+                        this.issueLoading(fileName, "Invalid item section, unset type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
                         continue;
                     }
 
                     Function<ConfigurationSection, LootItem> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
                     if (lootItemFunction == null) {
-                        this.issueLoading(file, "Invalid item section [pool: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
+                        this.issueLoading(fileName, "Invalid item section [pool: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
                         continue;
                     }
 
                     LootItem lootItem = lootItemFunction.apply(itemSection);
                     if (lootItem == null) {
-                        this.issueLoading(file, "Invalid item type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
+                        this.issueLoading(fileName, "Invalid item type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
                         continue;
                     }
 
@@ -255,8 +262,8 @@ public class LootTableManager extends DelayedManager implements Listener {
             }
 
             LootComponent.ChildrenStrategy childrenStrategy = LootComponent.ChildrenStrategy.fromString(componentSection.getString("children-strategy", LootComponent.ChildrenStrategy.NORMAL.name()));
-            ConfigurationSection childrenSection = this.findNextComponentsSection(file, componentSection);
-            List<LootComponent> childEntries = childrenSection != null ? this.getLootComponentsRecursively(file, childrenSection, parents) : null;
+            ConfigurationSection childrenSection = this.findNextComponentsSection(fileName, componentSection);
+            List<LootComponent> childEntries = childrenSection != null ? this.getLootComponentsRecursively(fileName, childrenSection, parents) : null;
 
             lootComponents.add(new LootComponent(entryConditions, rolls, bonusRolls, weight, quality, lootItems, childrenStrategy, childEntries));
         }
@@ -405,15 +412,15 @@ public class LootTableManager extends DelayedManager implements Listener {
         return lootTableTypes.stream().anyMatch(x -> !this.lootTables.get(x).isEmpty());
     }
 
-    private void issueLoading(File file, String reason) {
-        this.rosePlugin.getLogger().warning("Skipped loading part of loottables/" + file.getName() + ": " + reason);
+    private void issueLoading(String fileName, String reason) {
+        this.rosePlugin.getLogger().warning("Skipped loading part of loottables/" + fileName + ": " + reason);
     }
 
-    private void failToLoad(File file, String reason) {
+    private void failToLoad(String fileName, String reason) {
         if (reason != null) {
-            this.rosePlugin.getLogger().warning("Failed to load loottables/" + file.getName() + ": " + reason);
+            this.rosePlugin.getLogger().warning("Failed to load loottables/" + fileName + ": " + reason);
         } else {
-            this.rosePlugin.getLogger().warning("Failed to load loottables/" + file.getName());
+            this.rosePlugin.getLogger().warning("Failed to load loottables/" + fileName);
         }
     }
 

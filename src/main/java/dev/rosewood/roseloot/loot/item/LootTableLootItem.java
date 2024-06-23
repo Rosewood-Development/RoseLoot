@@ -28,6 +28,11 @@ public class LootTableLootItem implements RecursiveLootItem {
     private org.bukkit.loot.LootTable vanillaLootTable;
     private boolean running;
 
+    public LootTableLootItem(LootTable lootTable) {
+        this.lootTableName = lootTable.getName();
+        this.lootTable = lootTable;
+    }
+
     public LootTableLootItem(String lootTableName) {
         this.lootTableName = lootTableName;
     }
@@ -107,9 +112,17 @@ public class LootTableLootItem implements RecursiveLootItem {
     }
 
     public static LootTableLootItem fromSection(ConfigurationSection section) {
-        if (!section.contains("value"))
-            return null;
-        return new LootTableLootItem(section.getString("value"));
+        if (section.isString("value"))
+            return new LootTableLootItem(section.getString("value"));
+
+        try {
+            LootTable loadedLootTable = RoseLoot.getInstance().getManager(LootTableManager.class).loadConfiguration("$internal", "$internal", section);
+            if (loadedLootTable != null)
+                return new LootTableLootItem(loadedLootTable);
+        } catch (Exception e) {
+            RoseLoot.getInstance().getLogger().warning("Failed to load internal loot table: " + e.getMessage());
+        }
+        return null;
     }
 
     private static class VanillaItemLootItem implements ItemGenerativeLootItem {
