@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot;
 
+import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.AutoTriggerableLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceGenerativeLootItem;
@@ -8,7 +9,6 @@ import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.RecursiveLootItem;
 import dev.rosewood.roseloot.loot.item.TriggerableLootItem;
-import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

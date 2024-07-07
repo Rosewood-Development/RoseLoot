@@ -1,9 +1,9 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
-import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;

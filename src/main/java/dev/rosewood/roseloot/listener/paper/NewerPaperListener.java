@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener.paper;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -9,7 +10,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
-import dev.rosewood.roseloot.util.EntitySpawnUtil;
 import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
