@@ -24,8 +24,13 @@ public class HookConditionListener implements Listener {
             event.registerLootCondition("mythicmobs-entity", MythicMobsEntityCondition::new);
         }
 
-        if (pluginManager.getPlugin("EcoBosses") != null)
+        if (pluginManager.getPlugin("EcoBosses") != null) {
             event.registerLootCondition("ecobosses-type", EcoBossesTypeCondition::new);
+        }
+
+        if (pluginManager.getPlugin("EcoMobs") != null) {
+            event.registerLootCondition("ecomobs-type", EcoMobsTypeCondition::new);
+        }
 
         if (pluginManager.getPlugin("RoseStacker") != null) {
             event.registerLootCondition("rosestacker-stacked-entity", RoseStackerStackedEntityCondition::new);

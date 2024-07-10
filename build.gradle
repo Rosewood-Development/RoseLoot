@@ -1,7 +1,7 @@
  import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java-library'
     id 'maven-publish'
 }
@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 group = 'dev.rosewood'
-version = '1.2.15'
+version = '1.2.16'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
@@ -30,6 +30,7 @@ repositories {
     maven { url = 'https://repo.rosewooddev.io/repository/public/' }
     maven { url = 'https://repo.codemc.org/repository/maven-public/' }
     maven { url = 'https://repo.luminescent.dev/repository/public-releases/' }
+    maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
     maven { url = 'https://erethon.de/repo/' }
     maven { url = 'https://maven.playpro.com/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
@@ -63,7 +64,7 @@ dependencies {
     compileOnly 'com.github.Slimefun:Slimefun4:RC-37'
     compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
     compileOnly 'pers.neige.neigeitems:NeigeItems:1.14.27'
-    compileOnly 'com.willfp:eco:6.24.0'
+    compileOnly 'com.willfp:eco:6.71.4'
     compileOnly 'me.wolfyscript:customcrafting:3.16.6.2'
     compileOnly 'com.wolfyscript:utilities:4.16.4.1'
     compileOnly 'dev.rosewood:rosestacker:1.5.19'
