@@ -74,6 +74,7 @@ dependencies {
     compileOnly 'de.tr7zw:item-nbt-api-plugin:2.10.0'
     compileOnly 'net.coreprotect:coreprotect:21.0'
     compileOnly 'com.github.Xiao-MoMi:Custom-Fishing:2.0.11'
+    compileOnly 'dev.krakenied:blocktracker:1.0.5'
     compileOnly 'com.arcaniax:HeadDatabase-API:1.3.1', {
         exclude group: 'org.spigotmc'
     }

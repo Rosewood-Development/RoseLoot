@@ -41,6 +41,7 @@ softdepend:
   - CoreProtect
   - DeezItems
   - CustomFishing
+  - BlockTracker
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands

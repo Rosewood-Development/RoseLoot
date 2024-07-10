@@ -411,8 +411,13 @@ public class ItemLootMeta {
 
     private record AttributeData(Attribute attribute, NumberProvider amount, AttributeModifier.Operation operation, EquipmentSlot slot) {
 
+        @SuppressWarnings("removal") // using correct API per version
         public AttributeModifier toAttributeModifier(LootContext context) {
-            return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(context), this.operation, this.slot);
+            if (NMSUtil.getVersionNumber() >= 21) {
+                return new AttributeModifier(this.attribute.getKey(), this.amount.getDouble(context), this.operation, this.slot.getGroup());
+            } else {
+                return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(context), this.operation, this.slot);
+            }
         }
 
     }
