@@ -9,7 +9,6 @@ import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.OptionalPercentageValue;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class ItemLootMeta {
     private Integer customModelData;
     private Boolean unbreakable;
     private Integer repairCost;
-    private OptionalPercentageValue minDurability, maxDurability;
+    private final NumberProvider durability;
     private NumberProvider enchantmentLevel;
     private boolean includeTreasureEnchantments;
     private List<ItemFlag> hideFlags;
@@ -60,26 +59,7 @@ public class ItemLootMeta {
         if (section.isInt("custom-model-data")) this.customModelData = section.getInt("custom-model-data");
         if (section.isBoolean("unbreakable")) this.unbreakable = section.getBoolean("unbreakable");
         if (section.isInt("repair-cost")) this.repairCost = section.getInt("repair-cost");
-
-        if (section.contains("durability")) {
-            if (!section.isConfigurationSection("durability")) {
-                // Fixed value
-                OptionalPercentageValue durability = OptionalPercentageValue.parse(section.getString("durability"));
-                if (durability != null)
-                    this.minDurability = durability;
-            } else {
-                // Min/max values
-                ConfigurationSection durabilitySection = section.getConfigurationSection("durability");
-                if (durabilitySection != null) {
-                    OptionalPercentageValue minDurability = OptionalPercentageValue.parse(durabilitySection.getString("min"));
-                    OptionalPercentageValue maxDurability = OptionalPercentageValue.parse(durabilitySection.getString("max"));
-                    if (minDurability != null && maxDurability != null) {
-                        this.minDurability = minDurability;
-                        this.maxDurability = maxDurability;
-                    }
-                }
-            }
-        }
+        this.durability = NumberProvider.fromSection(section, "durability", null);
 
         ConfigurationSection enchantRandomlySection = section.getConfigurationSection("enchant-randomly");
         if (enchantRandomlySection != null) {
@@ -253,18 +233,15 @@ public class ItemLootMeta {
             itemMeta.setAttributeModifiers(attributes);
         }
 
-        if (itemMeta instanceof Damageable damageable && this.minDurability != null) {
+        if (itemMeta instanceof Damageable damageable && this.durability != null) {
             int max = itemStack.getType().getMaxDurability();
-            if (this.maxDurability == null) {
-                // Set fixed durability value
-                int durability = this.minDurability.getAsInt(max);
-                damageable.setDamage(itemStack.getType().getMaxDurability() - durability);
+            int durabilityValue;
+            if (this.durability.isPercentage()) {
+                durabilityValue = (int) Math.round(this.durability.getDouble(context) * max);
             } else {
-                // Set random durability in range
-                int minDurability = this.minDurability.getAsInt(max);
-                int maxDurability = this.maxDurability.getAsInt(max);
-                damageable.setDamage(itemStack.getType().getMaxDurability() - LootUtils.randomInRange(minDurability, maxDurability));
+                durabilityValue = this.durability.getInteger(context);
             }
+            damageable.setDamage(max - Math.max(0, Math.min(durabilityValue, max)));
         }
 
         if (this.repairCost != null && itemMeta instanceof Repairable)

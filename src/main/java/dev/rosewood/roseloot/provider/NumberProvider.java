@@ -24,6 +24,11 @@ public interface NumberProvider {
      */
     double getDouble(LootContext context);
 
+    /**
+     * @return true if this number provider's input was represented with a percentage, false otherwise
+     */
+    boolean isPercentage();
+
     static NumberProvider fromString(String string) {
         if (string.endsWith("%")) {
             if (string.startsWith("%")) {
@@ -31,13 +36,13 @@ public interface NumberProvider {
             } else {
                 try {
                     double percentageValue = Double.parseDouble(string.substring(0, string.length() - 1));
-                    return new ConstantNumberProvider(percentageValue / 100);
+                    return new ConstantNumberProvider(percentageValue / 100, true);
                 } catch (NumberFormatException ignored) { }
             }
         }
 
         try {
-            return new ConstantNumberProvider(Double.parseDouble(string));
+            return new ConstantNumberProvider(Double.parseDouble(string), false);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -52,14 +57,14 @@ public interface NumberProvider {
             if (defaultValue == null) {
                 return null;
             } else {
-                return new ConstantNumberProvider(defaultValue);
+                return new ConstantNumberProvider(defaultValue, false);
             }
         }
 
         if (section.isConfigurationSection(key)) {
             ConfigurationSection numberSection = section.getConfigurationSection(key);
             if (numberSection == null)
-                return new ConstantNumberProvider(defaultValue);
+                return new ConstantNumberProvider(defaultValue, false);
 
             if (numberSection.contains("min") || numberSection.contains("max")) {
                 NumberProvider min = fromSection(numberSection, "min", defaultValue);
@@ -82,35 +87,42 @@ public interface NumberProvider {
                     } else {
                         try {
                             double percentageValue = Double.parseDouble(stringValue.substring(0, stringValue.length() - 1));
-                            return new ConstantNumberProvider(percentageValue / 100);
+                            return new ConstantNumberProvider(percentageValue / 100, true);
                         } catch (NumberFormatException ignored) { }
                     }
                 }
             } else {
                 double doubleValue = section.getDouble(key, Double.MIN_VALUE);
                 if (doubleValue != Double.MIN_VALUE)
-                    return new ConstantNumberProvider(doubleValue);
+                    return new ConstantNumberProvider(doubleValue, false);
             }
         }
 
         if (defaultValue == null) {
             return null;
         } else {
-            return new ConstantNumberProvider(section.getDouble(key, defaultValue));
+            return new ConstantNumberProvider(section.getDouble(key, defaultValue), false);
         }
     }
 
     class ConstantNumberProvider implements NumberProvider {
 
         private final double value;
+        private final boolean isPercentage;
 
-        private ConstantNumberProvider(double value) {
+        private ConstantNumberProvider(double value, boolean isPercentage) {
             this.value = value;
+            this.isPercentage = isPercentage;
         }
 
         @Override
         public double getDouble(LootContext context) {
             return this.value;
+        }
+
+        @Override
+        public boolean isPercentage() {
+            return this.isPercentage;
         }
 
     }
@@ -134,6 +146,11 @@ public interface NumberProvider {
             if (this.decimals == 0)
                 return Math.round(value);
             return Math.round(value * Math.pow(10, this.decimals)) / Math.pow(10, this.decimals);
+        }
+
+        @Override
+        public boolean isPercentage() {
+            return this.min.isPercentage() || this.max.isPercentage();
         }
 
     }
@@ -165,6 +182,11 @@ public interface NumberProvider {
             return this.getInteger(context);
         }
 
+        @Override
+        public boolean isPercentage() {
+            return this.n.isPercentage() || this.p.isPercentage();
+        }
+
     }
 
     class PlaceholderNumberProvider implements NumberProvider {
@@ -182,6 +204,11 @@ public interface NumberProvider {
             } catch (NumberFormatException e) {
                 return 0;
             }
+        }
+
+        @Override
+        public boolean isPercentage() {
+            return false;
         }
 
     }
