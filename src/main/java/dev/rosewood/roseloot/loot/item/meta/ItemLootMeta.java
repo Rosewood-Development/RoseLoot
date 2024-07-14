@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ObjectArrays;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -11,11 +12,14 @@ import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
@@ -36,6 +40,38 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
 public class ItemLootMeta {
+
+    private static class MaterialMappings {
+        private static final Map<Material, Function<ConfigurationSection, ? extends ItemLootMeta>> CONSTRUCTORS;
+        private static final Map<Material, BiConsumer<ItemStack, StringBuilder>> PROPERTY_APPLIERS;
+        static {
+            CONSTRUCTORS = new HashMap<>();
+            PROPERTY_APPLIERS = new HashMap<>();
+
+            mapMaterials(BookItemLootMeta::new, BookItemLootMeta::applyProperties, Material.WRITABLE_BOOK, Material.WRITTEN_BOOK);
+            mapMaterials(EnchantmentStorageItemLootMeta::new, EnchantmentStorageItemLootMeta::applyProperties, Material.ENCHANTED_BOOK);
+            mapMaterials(FireworkEffectItemLootMeta::new, FireworkEffectItemLootMeta::applyProperties, Material.FIREWORK_STAR);
+            mapMaterials(FireworkItemLootMeta::new, FireworkItemLootMeta::applyProperties, Material.FIREWORK_ROCKET);
+            mapMaterials(KnowledgeBookItemLootMeta::new, KnowledgeBookItemLootMeta::applyProperties, Material.KNOWLEDGE_BOOK);
+
+            mapMaterials(BannerItemLootMeta::new, BannerItemLootMeta::applyProperties, Tag.ITEMS_BANNERS.getValues().toArray(Material[]::new));
+
+            Material[] leatherArmor = { Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS };
+            if (NMSUtil.getVersionNumber() >= 20) {
+                mapMaterials(ArmorItemLootMeta::new, ArmorItemLootMeta::applyProperties, Tag.ITEMS_TRIMMABLE_ARMOR.getValues().toArray(Material[]::new));
+                mapMaterials(ColorableArmorItemLootMeta::new, ColorableArmorItemLootMeta::applyProperties, leatherArmor); // overwrites the above
+            } else {
+                mapMaterials(LeatherArmorItemLootMeta::new, LeatherArmorItemLootMeta::applyProperties, ObjectArrays.concat(leatherArmor, Material.LEATHER_HORSE_ARMOR));
+            }
+        }
+
+        private static void mapMaterials(Function<ConfigurationSection, ? extends ItemLootMeta> constructor, BiConsumer<ItemStack, StringBuilder> propertyApplier, Material... materials) {
+            for (Material material : materials) {
+                CONSTRUCTORS.put(material, constructor);
+                PROPERTY_APPLIERS.put(material, propertyApplier);
+            }
+        }
+    }
 
     private final StringProvider displayName;
     private final StringProvider lore;

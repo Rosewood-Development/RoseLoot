@@ -1,6 +1,8 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.hook.NBTAPIHook;
+import dev.rosewood.roseloot.hook.items.CustomItemPlugin;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -26,7 +28,7 @@ import org.bukkit.inventory.Recipe;
 
 public class ItemLootItem implements ItemGenerativeLootItem {
 
-    protected Material item;
+    protected final StringProvider item;
     protected final ItemLootMeta itemLootMeta;
     protected final NumberProvider amount;
     protected final NumberProvider maxAmount;
@@ -35,7 +37,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     protected final boolean smeltIfBurning;
     protected final StringProvider nbt;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
+    public ItemLootItem(StringProvider item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
@@ -46,8 +48,19 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         this.nbt = nbt;
     }
 
+    protected ItemStack resolveItem(LootContext context) {
+        Material material = Material.matchMaterial(this.item.get(context));
+        if (material == null)
+
+        return new ItemStack();
+    }
+
+    protected String getFailToResolveMessage(String itemId) {
+        return "Failed to resolve item [" + itemId + "]";
+    }
+
     protected ItemStack getCreationItem(LootContext context) {
-        Material item = this.item;
+        Material item = ;
         Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
         if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
             Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();

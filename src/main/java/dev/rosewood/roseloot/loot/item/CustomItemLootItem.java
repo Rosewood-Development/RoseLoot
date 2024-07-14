@@ -26,115 +26,36 @@ import org.bukkit.inventory.Recipe;
 public class CustomItemLootItem extends ItemLootItem {
 
     private final CustomItemPlugin customItemPlugin;
-    private final String itemId;
 
-    public CustomItemLootItem(CustomItemPlugin customItemPlugin, String itemId, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
-        super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
+    public CustomItemLootItem(CustomItemPlugin customItemPlugin, ItemLootItem base) {
+        super(base.item, base.amount, base.maxAmount, base.amountModifiers, base.itemLootMeta, base.enchantmentBonus, base.smeltIfBurning, base.nbt);
         this.customItemPlugin = customItemPlugin;
-        this.itemId = itemId;
     }
 
     private ItemStack resolveItem(LootContext context) {
-        ItemStack itemStack = this.customItemPlugin.resolveItem(context, this.itemId);
+        String itemId = this.item.get(context);
+        ItemStack itemStack = this.customItemPlugin.resolveItem(context, itemId);
         if (itemStack == null) {
-            failToResolve(this.itemId, this.customItemPlugin);
+            failToResolve(itemId, this.customItemPlugin);
             return null;
         }
-        return itemStack;
-    }
-
-    protected ItemStack getCreationItem(LootContext context) {
-        ItemStack itemStack = this.resolveItem(context);
-        if (itemStack == null)
-            return null;
-
-        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
-            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
-            while (recipesIterator.hasNext()) {
-                Recipe recipe = recipesIterator.next();
-                if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == itemStack.getType()) {
-                    itemStack.setType(furnaceRecipe.getResult().getType());
-                    break;
-                }
-            }
-        }
-
-        if (this.itemLootMeta != null)
-            itemStack = this.itemLootMeta.apply(itemStack, context);
-
-        if (this.nbt != null) {
-            String nbt = this.nbt.get(context);
-            NBTAPIHook.mergeItemNBT(itemStack, nbt);
-        }
-
         return itemStack;
     }
 
     public static CustomItemLootItem fromSection(ConfigurationSection section) {
         String plugin = section.getString("plugin");
-        String itemId = section.getString("item");
-
         CustomItemPlugin customItemPlugin = CustomItemPlugin.fromString(plugin);
         if (customItemPlugin == null)
             return null;
 
-        if (itemId == null)
+        ItemLootItem base = ItemLootItem.fromSection(section);
+        if (base == null)
             return null;
 
-        NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
-        NumberProvider maxAmount = NumberProvider.fromSection(section, "max-amount", Integer.MAX_VALUE);
-
-        List<AmountModifier> amountModifiers = new ArrayList<>();
-        ConfigurationSection amountModifiersSection = section.getConfigurationSection("amount-modifiers");
-        if (amountModifiersSection != null) {
-            for (String key : amountModifiersSection.getKeys(false)) {
-                ConfigurationSection entrySection = amountModifiersSection.getConfigurationSection(key);
-                if (entrySection != null) {
-                    List<LootCondition> conditions = new ArrayList<>();
-                    for (String conditionString : entrySection.getStringList("conditions")) {
-                        LootCondition condition = LootConditionParser.parse(conditionString);
-                        if (condition != null)
-                            conditions.add(condition);
-                    }
-
-                    NumberProvider value = NumberProvider.fromSection(entrySection, "value", 1);
-                    boolean add = entrySection.getBoolean("add", false);
-                    amountModifiers.add(new AmountModifier(conditions, value, add));
-                }
-            }
-        }
-
-        ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
-        EnchantmentBonus enchantmentBonus = null;
-        if (enchantmentBonusSection != null) {
-            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
-            String enchantmentString = enchantmentBonusSection.getString("enchantment");
-            if (enchantmentString != null) {
-                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
-                NumberProvider bonusPerLevel = NumberProvider.fromSection(enchantmentBonusSection, "bonus-per-level", 0);
-                NumberProvider probability = NumberProvider.fromSection(enchantmentBonusSection, "probability", 0);
-                if (enchantment != null)
-                    enchantmentBonus = new EnchantmentBonus(formula, enchantment, bonusPerLevel, probability);
-            }
-        }
-
-        boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-        StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
-
-        ItemStack itemStack = customItemPlugin.resolveItem(LootContext.builder().build(), itemId);
-        ItemLootMeta itemLootMeta;
-        if (itemStack != null) {
-            itemLootMeta = ItemLootMeta.fromSection(itemStack.getType(), section);
-        } else {
-            itemLootMeta = null;
-            failToResolve(itemId, customItemPlugin);
-        }
-
-        return new CustomItemLootItem(customItemPlugin, itemId, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
+        return new CustomItemLootItem(customItemPlugin, base);
     }
 
-    private static void failToResolve(String itemId, CustomItemPlugin customItemPlugin) {
+    protected static void failToResolve(String itemId, CustomItemPlugin customItemPlugin) {
         RoseLoot.getInstance().getLogger().warning("Failed to resolve item [" + itemId + "] from [" + customItemPlugin.name().toLowerCase() + "]");
     }
 

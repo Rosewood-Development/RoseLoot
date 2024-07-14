@@ -5,6 +5,7 @@ import dev.rosewood.rosegarden.utils.HexUtils;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
 import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.util.BlockInfo;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,6 +18,23 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class LootContext {
+
+    private static final LootContext NONE = new LootContext(0, Collections.emptyMap()) {
+        @Override
+        public void setCurrentLootTable(LootTable lootTable) {
+            throw new UnsupportedOperationException("Cannot modify the none LootContext");
+        }
+
+        @Override
+        public void addPlaceholder(String key, Object value) {
+            throw new UnsupportedOperationException("Cannot modify the none LootContext");
+        }
+
+        @Override
+        public void addPlaceholder(String key, Object value, boolean overwrite) {
+            throw new UnsupportedOperationException("Cannot modify the none LootContext");
+        }
+    };
 
     private final Map<LootContextParam<?>, Object> paramStorage;
     private final double luck;
@@ -226,6 +244,11 @@ public class LootContext {
         this.getLootingPlayer().ifPresent(x -> this.addPlaceholder("player", x.getName()));
         this.getItemUsed().ifPresent(x -> this.addPlaceholder("item_type", x.getType().name().toLowerCase()));
         this.addPlaceholder("luck_level", this.getLuckLevel());
+    }
+
+    @NotNull
+    public static LootContext none() {
+        return NONE;
     }
 
     /**
