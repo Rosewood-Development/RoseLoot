@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.hook;
 
-import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.NBTContainer;
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.iface.ReadWriteNBT;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -33,10 +33,10 @@ public class NBTAPIHook {
         if (!isEnabled())
             return;
 
-        NBTItem nbtItem = new NBTItem(itemStack);
-        NBTCompound nbtCompound = new NBTContainer(nbt);
-        nbtItem.mergeCompound(nbtCompound);
-        nbtItem.applyNBT(itemStack);
+        ReadWriteNBT nbtCompound = NBT.parseNBT(nbt);
+        NBT.modify(itemStack, itemNbt -> {
+            itemNbt.mergeCompound(nbtCompound);
+        });
     }
 
     /**
@@ -50,7 +50,7 @@ public class NBTAPIHook {
         if (!isEnabled())
             return null;
 
-        NBTItem nbtItem = new NBTItem(itemStack);
+        ReadWriteNBT nbtItem = new NBTContainer(NBT.readNbt(itemStack).toString());
         if (!keepVanillaNBT)
             VANILLA_ITEM_NBT_KEYS.forEach(nbtItem::removeKey);
 

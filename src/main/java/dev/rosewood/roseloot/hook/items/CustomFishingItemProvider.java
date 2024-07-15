@@ -3,7 +3,8 @@ package dev.rosewood.roseloot.hook.items;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import net.momirealms.customfishing.api.CustomFishingPlugin;
+import net.momirealms.customfishing.api.BukkitCustomFishingPlugin;
+import net.momirealms.customfishing.api.mechanic.context.Context;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,12 +19,8 @@ public class CustomFishingItemProvider extends ItemProvider {
         if (!this.isEnabled())
             return null;
 
-        String[] pieces = id.split(Pattern.quote(":"), 2);
-        if (pieces.length != 2)
-            return null;
-
         Optional<Player> optionalPlayer = context.getLootingPlayer();
-        return CustomFishingPlugin.getInstance().getItemManager().build(optionalPlayer.orElse(null), pieces[0], pieces[1]);
+        return BukkitCustomFishingPlugin.getInstance().getItemManager().buildAny(Context.player(optionalPlayer.orElse(null)), id);
     }
 
     @Override
@@ -31,7 +28,7 @@ public class CustomFishingItemProvider extends ItemProvider {
         if (!this.isEnabled())
             return null;
 
-        return CustomFishingPlugin.getInstance().getItemManager().getCustomFishingItemID(item);
+        return BukkitCustomFishingPlugin.getInstance().getItemManager().getCustomFishingItemID(item);
     }
 
 }

@@ -17,7 +17,7 @@ public class ExperienceLootItem implements ExperienceGenerativeLootItem<Experien
     private final NumberProvider amount;
     private final NumberProvider equipmentBonus;
 
-    public ExperienceLootItem(NumberProvider amount, NumberProvider equipmentBonus) {
+    protected ExperienceLootItem(NumberProvider amount, NumberProvider equipmentBonus) {
         this.amount = amount;
         this.equipmentBonus = equipmentBonus;
     }

@@ -12,7 +12,7 @@ public class CommandLootItem implements TriggerableLootItem {
 
     private final StringProvider command;
 
-    public CommandLootItem(StringProvider command) {
+    protected CommandLootItem(StringProvider command) {
         this.command = command;
     }
 

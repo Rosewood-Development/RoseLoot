@@ -28,12 +28,12 @@ public class LootTableLootItem implements RecursiveLootItem {
     private org.bukkit.loot.LootTable vanillaLootTable;
     private boolean running;
 
-    public LootTableLootItem(LootTable lootTable) {
+    protected LootTableLootItem(LootTable lootTable) {
         this.lootTableName = lootTable.getName();
         this.lootTable = lootTable;
     }
 
-    public LootTableLootItem(String lootTableName) {
+    protected LootTableLootItem(String lootTableName) {
         this.lootTableName = lootTableName;
     }
 

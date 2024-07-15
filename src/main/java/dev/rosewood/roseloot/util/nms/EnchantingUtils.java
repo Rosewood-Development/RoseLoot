@@ -107,8 +107,13 @@ public final class EnchantingUtils {
     public static ItemStack randomlyEnchant(ItemStack itemStack, int level, boolean treasure, World world) {
         try {
             // Ensures the enchantments get added as the right material
-            if (itemStack.getType() == Material.ENCHANTED_BOOK)
-                itemStack.setType(Material.BOOK);
+            if (itemStack.getType() == Material.ENCHANTED_BOOK) {
+                if (NMSUtil.isPaper()) {
+                    itemStack = itemStack.withType(Material.BOOK);
+                } else {
+                    itemStack.setType(Material.BOOK);
+                }
+            }
 
             Object nmsItemStack = method_CraftItemStack_asNMSCopy.invoke(null, itemStack);
             if (method_ServerLevel_enabledFeatures != null) {

@@ -16,6 +16,10 @@ import org.bukkit.inventory.ItemStack;
 
 public class ContainerContentsLootItem implements ItemGenerativeLootItem {
 
+    protected ContainerContentsLootItem() {
+
+    }
+
     @Override
     public List<ItemStack> generate(LootContext context) {
         List<ItemStack> droppedContents = new ArrayList<>();
@@ -24,11 +28,11 @@ public class ContainerContentsLootItem implements ItemGenerativeLootItem {
             return droppedContents;
 
         BlockState blockState = lootedBlock.get().getState();
-        if (blockState instanceof Container container) {
+        if (blockState instanceof Container container)
             droppedContents.addAll(Arrays.stream(container.getInventory().getContents()).filter(Objects::nonNull).toList());
-        } else if (NMSUtil.getVersionNumber() >= 20 && blockState instanceof DecoratedPot decoratedPot) {
+
+        if (NMSUtil.getVersionNumber() >= 20 && blockState instanceof DecoratedPot decoratedPot)
             droppedContents.addAll(decoratedPot.getSherds().values().stream().map(ItemStack::new).toList());
-        }
 
         return droppedContents;
     }

@@ -15,7 +15,7 @@ public class EconomyLootItem implements GroupTriggerableLootItem<EconomyLootItem
     private final StringProvider currency;
     private final NumberProvider amount;
 
-    public EconomyLootItem(EconomyPlugin plugin, StringProvider currency, NumberProvider amount) {
+    protected EconomyLootItem(EconomyPlugin plugin, StringProvider currency, NumberProvider amount) {
         this.plugin = plugin;
         this.currency = currency;
         this.amount = amount;

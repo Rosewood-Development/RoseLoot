@@ -12,7 +12,7 @@ public class ExplosionLootItem implements GroupTriggerableLootItem<ExplosionLoot
     private final boolean fire;
     private final boolean breakBlocks;
 
-    public ExplosionLootItem(NumberProvider power, boolean fire, boolean breakBlocks) {
+    protected ExplosionLootItem(NumberProvider power, boolean fire, boolean breakBlocks) {
         this.power = power;
         this.fire = fire;
         this.breakBlocks = breakBlocks;

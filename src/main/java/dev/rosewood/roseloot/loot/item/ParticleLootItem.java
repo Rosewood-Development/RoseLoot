@@ -18,7 +18,7 @@ public class ParticleLootItem implements TriggerableLootItem {
 
     private final ParticleSpawnData particleSpawnData;
 
-    public ParticleLootItem(ParticleSpawnData particleSpawnData) {
+    protected ParticleLootItem(ParticleSpawnData particleSpawnData) {
         this.particleSpawnData = particleSpawnData;
     }
 

@@ -12,7 +12,7 @@ public class MMOCoreExperienceLootItem implements GroupTriggerableLootItem<MMOCo
     private final String profession;
     private final NumberProvider amount;
 
-    public MMOCoreExperienceLootItem(String profession, NumberProvider amount) {
+    protected MMOCoreExperienceLootItem(String profession, NumberProvider amount) {
         this.profession = profession;
         this.amount = amount;
     }
