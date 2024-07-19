@@ -71,7 +71,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     protected void logFailToResolveMessage(String itemId) {
         // Only log for placeholders if this isn't the first time
-        if (!itemId.startsWith("%") && !itemId.endsWith("%") && !this.firstPlaceholderParseFailure)
+        if (!itemId.startsWith("%") && !itemId.endsWith("%") || !this.firstPlaceholderParseFailure)
             RoseLoot.getInstance().getLogger().warning(this.getFailToResolveMessage(itemId));
         this.firstPlaceholderParseFailure = false;
     }
