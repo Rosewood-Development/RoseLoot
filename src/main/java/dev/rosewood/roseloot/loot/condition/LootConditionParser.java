@@ -4,14 +4,13 @@ import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.condition.predicate.AndLootCondition;
 import dev.rosewood.roseloot.loot.condition.predicate.InvertedLootCondition;
 import dev.rosewood.roseloot.loot.condition.predicate.OrLootCondition;
-import dev.rosewood.roseloot.manager.LootConditionManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 // Uses the Shunting Yard algorithm to tokenize the input string
 public final class LootConditionParser {
 
-    private static final LootConditionManager LOOT_CONDITION_MANAGER = RoseLoot.getInstance().getManager(LootConditionManager.class);
     private static final String TOKEN_REGEX = "(?<=&&)|(?=&&)|(?<=\\|\\|)|(?=\\|\\|)|(?<=(?<=^|\\s|\\()!)|(?=(?<=^|\\s|\\()!)|(?<=\\()|(?=\\()|(?<=\\))|(?=\\))";
 
     private LootConditionParser() {
@@ -35,6 +34,7 @@ public final class LootConditionParser {
     public static LootCondition parse(String condition) {
         condition = condition.replaceAll("\\s+", "");
 
+        LootTableManager lootTableManager = RoseLoot.getInstance().getManager(LootTableManager.class);
         try {
             String[] tokens = condition.split(TOKEN_REGEX);
 
@@ -53,7 +53,7 @@ public final class LootConditionParser {
                             conditions.push(getLootCondition(operators.pop(), conditions));
                         operators.push(token);
                     }
-                    default -> conditions.push(LOOT_CONDITION_MANAGER.parse(token));
+                    default -> conditions.push(lootTableManager.parseCondition(token));
                 }
             }
 

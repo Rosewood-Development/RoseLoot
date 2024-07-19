@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import org.bukkit.Location;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
@@ -34,7 +35,7 @@ public class FallingBlockListener extends LazyLootTableListener {
                 .put(LootContextParams.LOOTED_BLOCK_STATE, fallingBlock.getBlockState()) // Paper method, hence this being paper-only
                 .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 

@@ -12,6 +12,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class PaperListener extends LazyLootTableListener {
                         .put(LootContextParams.INPUT_ITEM, itemStack)
                         .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                         .build();
-                LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.HARVEST, lootContext);
+                LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.HARVEST, lootContext);
                 if (lootResult.isEmpty())
                     continue;
 
@@ -95,7 +96,7 @@ public class PaperListener extends LazyLootTableListener {
                 .put(LootContextParams.REPLACED_BLOCK_DATA, event.getNewState())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops().isEmpty())
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 

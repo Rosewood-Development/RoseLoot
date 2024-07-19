@@ -7,14 +7,18 @@ import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Bee;
@@ -169,20 +173,47 @@ public class EntityPropertyConditions {
         }, allowEmptyValues);
     }
 
-    private static <T extends Entity, E extends Enum<E>> void registerEnum(Class<T> entityClass, String name, Function<T, E> supplier, Class<E> enumClass, boolean allowEmptyValues) {
-        register(entityClass, name, (entity, values) -> availableOrContains(entity, values, supplier, allowEmptyValues), values -> {
-            Set<E> enumValues = EnumSet.noneOf(enumClass);
+    // Oh yeah, this is a mess, but it makes the registration look clean.
+    @SuppressWarnings({"unchecked", "deprecation"})
+    private static <T extends Entity, E> void registerEnum(Class<T> entityClass, String name, Function<T, E> supplier, Class<E> enumClass, boolean allowEmptyValues) {
+        if (NMSUtil.getVersionNumber() >= 21 && Keyed.class.isAssignableFrom(enumClass)) {
+            Class<? extends Keyed> keyedClass = (Class<? extends Keyed>) enumClass;
+            Registry<?> registry = Bukkit.getRegistry(keyedClass);
+
+            if (registry != null) {
+                register(entityClass, name, (entity, values) -> availableOrContainsUnchecked(entity, values, supplier, false), values -> {
+                    Set<Object> registryValues = new HashSet<>();
+                    for (String value : values) {
+                        try {
+                            NamespacedKey key = NamespacedKey.fromString(value);
+                            if (key != null)
+                                registryValues.add(registry.getOrThrow(key));
+                        } catch (Exception ignored) { }
+                    }
+                    return registryValues;
+                }, false);
+                return;
+            }
+        }
+
+        register(entityClass, name, (entity, values) -> availableOrContainsUnchecked(entity, values, supplier, allowEmptyValues), values -> {
+            Set<Object> enumValues = new HashSet<>();
             for (String value : values) {
                 try {
-                    E enumValue = Enum.valueOf(enumClass, value.toUpperCase());
-                    enumValues.add(enumValue);
+                    for (Object enumValue : enumClass.getEnumConstants()) {
+                        Enum<?> enumConstant = (Enum<?>) enumValue;
+                        if (value.equalsIgnoreCase(enumConstant.name())) {
+                            enumValues.add(enumConstant);
+                            break;
+                        }
+                    }
                 } catch (Exception ignored) { }
             }
             return enumValues;
         }, allowEmptyValues);
     }
 
-    private static <T extends Entity, E extends Enum<E>> void registerEnum(Class<T> entityClass, String name, Function<T, E> supplier, Class<E> enumClass) {
+    private static <T extends Entity, E> void registerEnum(Class<T> entityClass, String name, Function<T, E> supplier, Class<E> enumClass) {
         registerEnum(entityClass, name, supplier, enumClass, false);
     }
 
@@ -200,6 +231,13 @@ public class EntityPropertyConditions {
 
     private static <T extends Entity, V> boolean availableOrContains(T entity, Collection<V> values, Function<T, V> supplier, boolean allowEmptyValues) {
         V value = supplier.apply(entity);
+        if (allowEmptyValues && values.isEmpty())
+            return value != null;
+        return values.contains(value);
+    }
+
+    private static <T extends Entity> boolean availableOrContainsUnchecked(T entity, Collection<Object> values, Function<T, ?> supplier, boolean allowEmptyValues) {
+        Object value = supplier.apply(entity);
         if (allowEmptyValues && values.isEmpty())
             return value != null;
         return values.contains(value);

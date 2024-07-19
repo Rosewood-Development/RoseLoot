@@ -8,10 +8,8 @@ import java.util.Arrays;
 
 public abstract class LazyLootTableListener extends LazyListener {
 
-    protected static final LootTableManager LOOT_TABLE_MANAGER = RoseLoot.getInstance().getManager(LootTableManager.class);
-
     public LazyLootTableListener(RosePlugin rosePlugin, LootTableType... lootTableTypes) {
-        super(rosePlugin, () -> LOOT_TABLE_MANAGER.isLootTableTypeUsed(Arrays.asList(lootTableTypes)));
+        super(rosePlugin, () -> RoseLoot.getInstance().getManager(LootTableManager.class).isLootTableTypeUsed(Arrays.asList(lootTableTypes)));
     }
 
 }

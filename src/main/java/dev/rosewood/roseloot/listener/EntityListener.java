@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -47,7 +48,7 @@ public class EntityListener extends LazyLootTableListener {
                 .put(LootContextParams.EXPLOSION_TYPE, LootUtils.getDeathExplosionType(entity))
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.ENTITY, lootContext);
         if (lootResult.isEmpty())
             return;
 

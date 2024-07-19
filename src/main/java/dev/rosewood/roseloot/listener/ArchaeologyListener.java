@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class ArchaeologyListener extends LazyLootTableListener {
         }
 
         LootContext lootContext = lootContextBuilder.build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ARCHAEOLOGY, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.ARCHAEOLOGY, lootContext);
         LootContents lootContents = lootResult.getLootContents();
         List<ItemStack> items = new ArrayList<>(lootContents.getItems());
         if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {

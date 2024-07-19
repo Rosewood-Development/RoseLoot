@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VersionUtils;
 import java.lang.ref.Reference;
@@ -81,7 +82,7 @@ public class EntityDropItemListener extends LazyLootTableListener {
                 .put(LootContextParams.INPUT_ITEM, event.getItemDrop().getItemStack())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY_DROP_ITEM, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.ENTITY_DROP_ITEM, lootContext);
         if (lootResult.isEmpty())
             return;
 
