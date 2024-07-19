@@ -5,6 +5,7 @@ import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.config.RoseSetting;
 import dev.rosewood.rosegarden.manager.AbstractConfigurationManager;
 import dev.rosewood.roseloot.RoseLoot;
+import java.io.File;
 import java.util.List;
 
 public class ConfigurationManager extends AbstractConfigurationManager {
@@ -55,7 +56,9 @@ public class ConfigurationManager extends AbstractConfigurationManager {
 
         @Override
         public CommentedFileConfiguration getBaseConfig() {
-            return RoseLoot.getInstance().getManager(ConfigurationManager.class).getConfig();
+            File configFile = new File(RoseLoot.getInstance().getDataFolder(), "config.yml");
+            return CommentedFileConfiguration.loadConfiguration(configFile);
+            //return RoseLoot.getInstance().getManager(ConfigurationManager.class).getConfig();
         }
     }
 

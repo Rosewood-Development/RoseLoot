@@ -15,7 +15,7 @@ public class PotionEffectLootItem implements TriggerableLootItem {
 
     private final List<PotionItemLootMeta.PotionEffectData> effects;
 
-    public PotionEffectLootItem(List<PotionItemLootMeta.PotionEffectData> effects) {
+    protected PotionEffectLootItem(List<PotionItemLootMeta.PotionEffectData> effects) {
         this.effects = effects;
     }
 

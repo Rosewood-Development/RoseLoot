@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -45,7 +46,7 @@ public class LootGenerateListener extends LazyLootTableListener {
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getLoot().isEmpty())
                     .build();
-            LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.CONTAINER, lootContext);
+            LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.CONTAINER, lootContext);
             if (lootResult.isEmpty())
                 return;
 
@@ -79,7 +80,7 @@ public class LootGenerateListener extends LazyLootTableListener {
                     .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, event.getLootTable().getKey())
                     .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getLoot().isEmpty())
                     .build();
-            LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.CONTAINER, lootContext);
+            LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.CONTAINER, lootContext);
             if (lootResult.isEmpty())
                 return;
 

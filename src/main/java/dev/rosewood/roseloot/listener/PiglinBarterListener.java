@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -65,7 +66,7 @@ public class PiglinBarterListener extends LazyLootTableListener {
                 .put(LootContextParams.INPUT_ITEM, inputItem)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getOutcome().isEmpty())
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.PIGLIN_BARTER, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.PIGLIN_BARTER, lootContext);
         if (lootResult.isEmpty())
             return;
 

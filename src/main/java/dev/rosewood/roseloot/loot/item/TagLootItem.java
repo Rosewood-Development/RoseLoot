@@ -1,98 +1,59 @@
 package dev.rosewood.roseloot.loot.item;
 
-import com.google.common.collect.Iterators;
-import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
-import dev.rosewood.roseloot.provider.NumberProvider;
-import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class TagLootItem extends ItemLootItem {
 
-    private final Tag<Material> tag;
-
-    public TagLootItem(Tag<Material> tag, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
-        super(null, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
-        this.tag = tag;
+    protected TagLootItem(ItemLootItem base) {
+        super(base);
+        this.resolveItem(LootContext.none());
     }
 
     @Override
-    protected ItemStack getCreationItem(LootContext context) {
-        List<Material> values = new ArrayList<>(this.tag.getValues());
-        this.item = values.get(LootUtils.RANDOM.nextInt(values.size()));
-        return super.getCreationItem(context);
-    }
-
-    public static TagLootItem fromSection(ConfigurationSection section) {
-        String tagString = section.getString("tag");
-        if (tagString == null)
-            return null;
-
+    protected Optional<ItemStack> resolveItem(LootContext context) {
+        String tagString = this.item.get(context);
         NamespacedKey namespacedKey = NamespacedKey.fromString(tagString);
-        if (namespacedKey == null)
-            return null;
+        if (namespacedKey == null) {
+            this.logFailToResolveMessage(tagString);
+            return Optional.empty();
+        }
 
         // Look for matching tags
         Tag<Material> tag = Bukkit.getTag(Tag.REGISTRY_ITEMS, namespacedKey, Material.class);
         if (tag == null)
             tag = Bukkit.getTag(Tag.REGISTRY_BLOCKS, namespacedKey, Material.class);
 
-        if (tag == null)
+        if (tag == null) {
+            this.logFailToResolveMessage(tagString);
+            return Optional.empty();
+        }
+
+        List<Material> values = new ArrayList<>(tag.getValues());
+        Material material = values.get(LootUtils.RANDOM.nextInt(values.size()));
+        return Optional.of(new ItemStack(material));
+    }
+
+    @Override
+    protected String getFailToResolveMessage(String tagId) {
+        return "Failed to resolve tag [" + tagId + "]";
+    }
+
+    public static TagLootItem fromSection(ConfigurationSection section) {
+        ItemLootItem base = ItemLootItem.fromSection(section, "tag");
+        if (base == null)
             return null;
 
-        NumberProvider amount = NumberProvider.fromSection(section, "amount", 1);
-        NumberProvider maxAmount = NumberProvider.fromSection(section, "max-amount", Integer.MAX_VALUE);
-
-        List<AmountModifier> amountModifiers = new ArrayList<>();
-        ConfigurationSection amountModifiersSection = section.getConfigurationSection("amount-modifiers");
-        if (amountModifiersSection != null) {
-            for (String key : amountModifiersSection.getKeys(false)) {
-                ConfigurationSection entrySection = amountModifiersSection.getConfigurationSection(key);
-                if (entrySection != null) {
-                    List<LootCondition> conditions = new ArrayList<>();
-                    for (String conditionString : entrySection.getStringList("conditions")) {
-                        LootCondition condition = LootConditionParser.parse(conditionString);
-                        if (condition != null)
-                            conditions.add(condition);
-                    }
-
-                    NumberProvider value = NumberProvider.fromSection(entrySection, "value", 1);
-                    boolean add = entrySection.getBoolean("add", false);
-                    amountModifiers.add(new AmountModifier(conditions, value, add));
-                }
-            }
-        }
-
-        ConfigurationSection enchantmentBonusSection = section.getConfigurationSection("enchantment-bonus");
-        TagLootItem.EnchantmentBonus enchantmentBonus = null;
-        if (enchantmentBonusSection != null) {
-            BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
-            String enchantmentString = enchantmentBonusSection.getString("enchantment");
-            if (enchantmentString != null) {
-                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
-                NumberProvider bonusPerLevel = NumberProvider.fromSection(enchantmentBonusSection, "bonus-per-level", 0);
-                NumberProvider probability = NumberProvider.fromSection(enchantmentBonusSection, "probability", 0);
-                if (enchantment != null)
-                    enchantmentBonus = new TagLootItem.EnchantmentBonus(formula, enchantment, bonusPerLevel, probability);
-            }
-        }
-
-        boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
-        StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
-        ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(Iterators.get(tag.getValues().iterator(), 0), section);
-        return new TagLootItem(tag, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
+        return new TagLootItem(base);
     }
 
 }

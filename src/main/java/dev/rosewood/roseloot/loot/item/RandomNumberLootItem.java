@@ -10,7 +10,7 @@ public class RandomNumberLootItem implements AutoTriggerableLootItem {
     private final String id;
     private final NumberProvider numberProvider;
 
-    public RandomNumberLootItem(String id, NumberProvider numberProvider) {
+    protected RandomNumberLootItem(String id, NumberProvider numberProvider) {
         this.id = id;
         this.numberProvider = numberProvider;
     }

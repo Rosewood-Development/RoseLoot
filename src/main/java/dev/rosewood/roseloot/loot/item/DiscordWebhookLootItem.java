@@ -21,7 +21,7 @@ public class DiscordWebhookLootItem implements TriggerableLootItem {
     private final StringProvider avatarUrl;
     private final StringProvider username;
 
-    public DiscordWebhookLootItem(StringProvider url, StringProvider content, StringProvider avatarUrl, StringProvider username) {
+    protected DiscordWebhookLootItem(StringProvider url, StringProvider content, StringProvider avatarUrl, StringProvider username) {
         this.url = url;
         this.content = content;
         this.avatarUrl = avatarUrl;

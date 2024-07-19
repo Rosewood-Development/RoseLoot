@@ -11,6 +11,7 @@ import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.rosestacker.event.EntityStackMultipleDeathEvent;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
                 lootContext.addPlaceholder("rosestacker_entity_stack_amount_killed_unapproximated", event.getEntityKillCount());
                 primaried = true;
 
-                LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.ENTITY, lootContext);
+                LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.ENTITY, lootContext);
                 if (lootResult.isEmpty())
                     continue;
 

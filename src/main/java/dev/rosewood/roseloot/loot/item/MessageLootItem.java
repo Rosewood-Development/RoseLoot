@@ -22,7 +22,7 @@ public class MessageLootItem implements GroupTriggerableLootItem<MessageLootItem
     private final boolean broadcast;
     private final boolean combineDuplicateMessages;
 
-    public MessageLootItem(MessageType messageType, String message, NumberProvider fadeIn, NumberProvider duration, NumberProvider fadeOut, boolean broadcast, boolean combineDuplicateMessages) {
+    protected MessageLootItem(MessageType messageType, String message, NumberProvider fadeIn, NumberProvider duration, NumberProvider fadeOut, boolean broadcast, boolean combineDuplicateMessages) {
         this.messageType = messageType;
         this.message = message;
         this.fadeIn = fadeIn;

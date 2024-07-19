@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -26,7 +27,7 @@ public class EntityEquipmentLootItem implements ItemGenerativeLootItem {
     private final NumberProvider bootsDropChance;
     private final boolean dropInventory;
 
-    public EntityEquipmentLootItem(NumberProvider mainHandDropChance, NumberProvider offHandDropChance, NumberProvider helmetDropChance, NumberProvider chestplateDropChance, NumberProvider leggingsDropChance, NumberProvider bootsDropChance, boolean dropInventory) {
+    protected EntityEquipmentLootItem(NumberProvider mainHandDropChance, NumberProvider offHandDropChance, NumberProvider helmetDropChance, NumberProvider chestplateDropChance, NumberProvider leggingsDropChance, NumberProvider bootsDropChance, boolean dropInventory) {
         this.mainHandDropChance = mainHandDropChance;
         this.offHandDropChance = offHandDropChance;
         this.helmetDropChance = helmetDropChance;

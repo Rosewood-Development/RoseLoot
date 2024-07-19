@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -35,7 +36,7 @@ public class NewerPaperListener extends LazyLootTableListener {
                 .put(LootContextParams.REPLACED_BLOCK_DATA, event.getSource().getBlockData())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !event.getDrops().isEmpty())
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 

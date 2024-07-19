@@ -9,6 +9,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class FishingListener extends LazyLootTableListener {
                 .put(LootContextParams.FISH_HOOK, fishHook)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, fishHook.getHookedEntity() instanceof Item)
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.FISHING, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.FISHING, lootContext);
         if (lootResult.isEmpty())
             return;
 

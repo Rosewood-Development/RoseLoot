@@ -12,7 +12,6 @@ import dev.rosewood.roseloot.manager.CooldownManager;
 import dev.rosewood.roseloot.manager.DataManager;
 import dev.rosewood.roseloot.manager.LazyListenerManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
-import dev.rosewood.roseloot.manager.LootConditionManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -57,7 +56,6 @@ public class RoseLoot extends RosePlugin {
     @Override
     protected List<Class<? extends Manager>> getManagerLoadPriority() {
         return List.of(
-                LootConditionManager.class,
                 LootTableManager.class,
                 LazyListenerManager.class,
                 CooldownManager.class

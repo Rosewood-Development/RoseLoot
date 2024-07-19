@@ -22,7 +22,7 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem {
     private final NumberProvider amount;
     private final boolean ignoreUnbreaking;
 
-    private ChangeToolDurabilityLootItem(NumberProvider amount, boolean ignoreUnbreaking) {
+    protected ChangeToolDurabilityLootItem(NumberProvider amount, boolean ignoreUnbreaking) {
         this.amount = amount;
         this.ignoreUnbreaking = ignoreUnbreaking;
     }

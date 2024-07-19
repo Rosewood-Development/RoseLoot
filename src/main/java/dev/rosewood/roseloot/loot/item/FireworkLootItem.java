@@ -23,7 +23,7 @@ public class FireworkLootItem implements TriggerableLootItem {
     private final List<FireworkEffect> effects;
     private final boolean dealDamage;
 
-    public FireworkLootItem(NumberProvider power, List<FireworkEffect> effects, boolean dealDamage) {
+    protected FireworkLootItem(NumberProvider power, List<FireworkEffect> effects, boolean dealDamage) {
         this.power = power;
         this.effects = new ArrayList<>(effects);
         this.dealDamage = dealDamage;

@@ -10,6 +10,7 @@ import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.ConfigurationManager;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import io.th0rgal.oraxen.api.events.noteblock.OraxenNoteBlockBreakEvent;
 import io.th0rgal.oraxen.api.events.stringblock.OraxenStringBlockBreakEvent;
@@ -61,7 +62,7 @@ public class OraxenBlockBreakListener extends LazyLootTableListener {
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(ORAXEN_BLOCK, itemId)
                 .build();
-        LootResult lootResult = LOOT_TABLE_MANAGER.getLoot(LootTableTypes.BLOCK, lootContext);
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
             return;
 

@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.generator.structure.Structure;
+import org.bukkit.StructureType;
 
-public class FeatureCondition extends BaseLootCondition {
+@SuppressWarnings("deprecation")
+public class LegacyFeatureCondition extends BaseLootCondition {
 
-    private List<Structure> features;
+    private List<StructureType> features;
 
-    public FeatureCondition(String tag) {
+    public LegacyFeatureCondition(String tag) {
         super(tag);
     }
 
@@ -26,8 +25,8 @@ public class FeatureCondition extends BaseLootCondition {
         if (origin.isEmpty())
             return false;
 
-        for (Structure structure : this.features)
-            if (StructureUtils.isWithinStructure(origin.get(), structure))
+        for (StructureType structureType : this.features)
+            if (StructureUtils.isWithinStructure(origin.get(), structureType))
                 return true;
 
         return false;
@@ -39,13 +38,9 @@ public class FeatureCondition extends BaseLootCondition {
 
         for (String value : values) {
             try {
-                NamespacedKey namespacedKey = NamespacedKey.fromString(value);
-                if (namespacedKey == null)
-                    continue;
-
-                Structure structure = Registry.STRUCTURE.get(namespacedKey);
-                if (structure != null)
-                    this.features.add(structure);
+                StructureType structureType = StructureType.getStructureTypes().get(value.toLowerCase());
+                if (structureType != null)
+                    this.features.add(structureType);
             } catch (Exception ignored) { }
         }
 

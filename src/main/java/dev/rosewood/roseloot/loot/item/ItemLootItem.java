@@ -1,5 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.hook.NBTAPIHook;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
 import dev.rosewood.roseloot.loot.condition.LootConditionParser;
@@ -11,9 +13,12 @@ import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.nms.EnchantingUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,47 +31,83 @@ import org.bukkit.inventory.Recipe;
 
 public class ItemLootItem implements ItemGenerativeLootItem {
 
-    protected Material item;
-    protected final ItemLootMeta itemLootMeta;
+    protected final StringProvider item;
     protected final NumberProvider amount;
     protected final NumberProvider maxAmount;
     protected final List<AmountModifier> amountModifiers;
     protected final EnchantmentBonus enchantmentBonus;
     protected final boolean smeltIfBurning;
     protected final StringProvider nbt;
+    private final Function<Material, ItemLootMeta> lootMetaFactoryFunction;
+    private final Map<Material, ItemLootMeta> itemLootMetaMap;
+    private boolean firstPlaceholderParseFailure;
 
-    public ItemLootItem(Material item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, ItemLootMeta itemLootMeta, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt) {
+    private ItemLootItem(StringProvider item, NumberProvider amount, NumberProvider maxAmount, List<AmountModifier> amountModifiers, EnchantmentBonus enchantmentBonus, boolean smeltIfBurning, StringProvider nbt, Function<Material, ItemLootMeta> lootMetaFactoryFunction, boolean tryResolve) {
         this.item = item;
         this.amount = amount;
         this.maxAmount = maxAmount;
         this.amountModifiers = amountModifiers;
-        this.itemLootMeta = itemLootMeta;
         this.enchantmentBonus = enchantmentBonus;
         this.smeltIfBurning = smeltIfBurning;
         this.nbt = nbt;
+        this.lootMetaFactoryFunction = lootMetaFactoryFunction;
+        this.itemLootMetaMap = new HashMap<>();
+        this.firstPlaceholderParseFailure = true;
+        if (tryResolve)
+            this.resolveItem(LootContext.none());
     }
 
-    protected ItemStack getCreationItem(LootContext context) {
-        Material item = this.item;
-        Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-        if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
-            Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
-            while (recipesIterator.hasNext()) {
-                Recipe recipe = recipesIterator.next();
-                if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item) {
-                    item = furnaceRecipe.getResult().getType();
-                    break;
+    protected ItemLootItem(ItemLootItem base) {
+        this(base.item, base.amount, base.maxAmount, base.amountModifiers, base.enchantmentBonus, base.smeltIfBurning, base.nbt, base.lootMetaFactoryFunction, false);
+    }
+
+    protected Optional<ItemStack> resolveItem(LootContext context) {
+        String itemId = this.item.get(context);
+        Material material = Material.matchMaterial(itemId);
+        if (material == null)
+            this.logFailToResolveMessage(itemId);
+        return Optional.ofNullable(material).map(ItemStack::new);
+    }
+
+    protected void logFailToResolveMessage(String itemId) {
+        // Only log for placeholders if this isn't the first time
+        if (!itemId.startsWith("%") && !itemId.endsWith("%") || !this.firstPlaceholderParseFailure)
+            RoseLoot.getInstance().getLogger().warning(this.getFailToResolveMessage(itemId));
+        this.firstPlaceholderParseFailure = false;
+    }
+
+    protected String getFailToResolveMessage(String itemId) {
+        return "Failed to resolve item [" + itemId + "]";
+    }
+
+    private Optional<ItemStack> getCreationItem(LootContext context) {
+        return this.resolveItem(context).map(item -> {
+            ItemStack result = item;
+            Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
+            if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
+                Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
+                while (recipesIterator.hasNext()) {
+                    Recipe recipe = recipesIterator.next();
+                    if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item.getType()) {
+                        if (NMSUtil.isPaper()) {
+                            result = result.withType(furnaceRecipe.getResult().getType());
+                        } else {
+                            result.setType(furnaceRecipe.getResult().getType());
+                        }
+                        break;
+                    }
                 }
             }
-        }
 
-        ItemStack itemStack = this.itemLootMeta.apply(new ItemStack(item), context);
-        if (this.nbt != null) {
-            String nbt = this.nbt.get(context);
-            NBTAPIHook.mergeItemNBT(itemStack, nbt);
-        }
+            ItemLootMeta itemLootMeta = this.itemLootMetaMap.computeIfAbsent(result.getType(), this.lootMetaFactoryFunction);
+            ItemStack itemStack = itemLootMeta.apply(item, context);
+            if (this.nbt != null) {
+                String nbt = this.nbt.get(context);
+                NBTAPIHook.mergeItemNBT(itemStack, nbt);
+            }
 
-        return itemStack;
+            return result;
+        });
     }
 
     @Override
@@ -88,27 +129,28 @@ public class ItemLootItem implements ItemGenerativeLootItem {
             amount += this.enchantmentBonus.getBonusAmount(context, amount);
         amount = Math.min(amount, this.maxAmount.getInteger(context));
 
-        ItemStack creationItem = this.getCreationItem(context);
-        List<ItemStack> generatedItems = new ArrayList<>(LootUtils.createItemStackCopies(creationItem, amount));
-
-        context.addPlaceholder("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
-
-        return generatedItems;
+        int finalAmount = amount;
+        return this.getCreationItem(context).map(item -> {
+            List<ItemStack> generatedItems = new ArrayList<>(LootUtils.createItemStackCopies(item, finalAmount));
+            context.addPlaceholder("item_amount", generatedItems.stream().mapToInt(ItemStack::getAmount).sum());
+            return generatedItems;
+        }).orElse(List.of());
     }
 
     @Override
     public List<ItemStack> getAllItems(LootContext context) {
         int amount = Math.min(this.amount.getInteger(context), this.maxAmount.getInteger(context));
-        ItemStack creationItem = this.getCreationItem(context);
-        return LootUtils.createItemStackCopies(creationItem, amount);
+        return this.getCreationItem(context)
+                .map(item -> LootUtils.createItemStackCopies(item, amount))
+                .orElse(List.of());
     }
 
     public static ItemLootItem fromSection(ConfigurationSection section) {
-        String itemString = section.getString("item");
-        if (itemString == null)
-            return null;
+        return fromSection(section, "item");
+    }
 
-        Material item = Material.matchMaterial(itemString);
+    public static ItemLootItem fromSection(ConfigurationSection section, String itemPropertyName) {
+        StringProvider item = StringProvider.fromSection(section, itemPropertyName, null);
         if (item == null)
             return null;
 
@@ -151,8 +193,9 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
-        ItemLootMeta itemLootMeta = ItemLootMeta.fromSection(item, section);
-        return new ItemLootItem(item, amount, maxAmount, amountModifiers, itemLootMeta, enchantmentBonus, smeltIfBurning, nbt);
+        StringProvider nbtComponents = StringProvider.fromSection(section, "nbt-components", null);
+        Function<Material, ItemLootMeta> lootMetaFactory = material -> ItemLootMeta.fromSection(material, section);
+        return new ItemLootItem(item, amount, maxAmount, amountModifiers, enchantmentBonus, smeltIfBurning, nbt, lootMetaFactory, true);
     }
 
     public static String toSection(ItemStack itemStack, boolean keepVanillaNBT) {

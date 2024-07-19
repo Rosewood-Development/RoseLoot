@@ -16,7 +16,7 @@ public class SoundLootItem implements TriggerableLootItem {
     private final NumberProvider pitch;
     private final boolean playerOnly;
 
-    private SoundLootItem(String sound, SoundCategory category, NumberProvider volume, NumberProvider pitch, boolean playerOnly) {
+    protected SoundLootItem(String sound, SoundCategory category, NumberProvider volume, NumberProvider pitch, boolean playerOnly) {
         this.sound = sound;
         this.category = category;
         this.volume = volume;
