@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
@@ -9,7 +10,6 @@ import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Bukkit;
@@ -31,7 +31,7 @@ public class EntityListener extends LazyLootTableListener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
             return;
 
         if (RoseStackerHook.shouldIgnoreNormalDeathEvent(entity))

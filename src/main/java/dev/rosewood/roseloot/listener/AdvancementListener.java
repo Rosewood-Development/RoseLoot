@@ -1,12 +1,12 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootResult;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class AdvancementListener extends LazyLootTableListener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAdvancementDone(PlayerAdvancementDoneEvent event) {
         Player player = event.getPlayer();
-        if (ConfigurationManager.Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(player.getWorld().getName())))
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(player.getWorld().getName())))
             return;
 
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))

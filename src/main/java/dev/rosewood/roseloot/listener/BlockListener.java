@@ -1,7 +1,9 @@
 package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.config.RoseConfig;
 import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.hook.CoreProtectRecentBlockHook;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.ExplosionType;
@@ -11,7 +13,6 @@ import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
@@ -50,8 +51,9 @@ public class BlockListener extends LazyLootTableListener {
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
+        RoseConfig config = this.rosePlugin.getRoseConfig();
         Block block = event.getBlock();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
+        if (config.get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
         Player player = event.getPlayer();
@@ -80,7 +82,7 @@ public class BlockListener extends LazyLootTableListener {
         lootContents.getItems().forEach(x -> droppedItems.add(block.getWorld().dropItemNaturally(dropLocation, x)));
 
         // Simulate a BlockDropItemEvent for each item dropped for better custom enchantment plugin support if enabled
-        if (!droppedItems.isEmpty() && Setting.SIMULATE_BLOCKDROPITEMEVENT.getBoolean()) {
+        if (!droppedItems.isEmpty() && config.get(SettingKey.SIMULATE_BLOCKDROPITEMEVENT)) {
             List<Item> eventItems = new ArrayList<>(droppedItems);
             BlockDropItemEvent blockDropItemEvent = new BlockDropItemEvent(block, block.getState(), player, eventItems);
             Bukkit.getPluginManager().callEvent(blockDropItemEvent);
@@ -106,8 +108,9 @@ public class BlockListener extends LazyLootTableListener {
         if (event instanceof LootedLeavesDecayEvent)
             return;
 
+        RoseConfig config = this.rosePlugin.getRoseConfig();
         Block block = event.getBlock();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
+        if (config.get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
         LootContext lootContext = LootContext.builder()
@@ -122,7 +125,7 @@ public class BlockListener extends LazyLootTableListener {
 
         // Overwrite existing drops if applicable
         if (lootResult.doesOverwriteExisting(OverwriteExisting.ITEMS)) {
-            if (Setting.SIMULATE_LEAVESDECAYEVENT.getBoolean()) {
+            if (config.get(SettingKey.SIMULATE_LEAVESDECAYEVENT)) {
                 LootedLeavesDecayEvent lootedEvent = new LootedLeavesDecayEvent(block);
                 Bukkit.getPluginManager().callEvent(lootedEvent);
                 if (lootedEvent.isCancelled()) {
@@ -147,11 +150,12 @@ public class BlockListener extends LazyLootTableListener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
-        if (!Setting.ALLOW_BLOCK_EXPLOSION_LOOT.getBoolean())
+        RoseConfig config = this.rosePlugin.getRoseConfig();
+        if (!config.get(SettingKey.ALLOW_BLOCK_EXPLOSION_LOOT))
             return;
 
         Block block = event.getBlock();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
+        if (config.get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
         Iterator<Block> iterator = event.blockList().iterator();
@@ -189,11 +193,12 @@ public class BlockListener extends LazyLootTableListener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (!Setting.ALLOW_BLOCK_EXPLOSION_LOOT.getBoolean())
+        RoseConfig config = this.rosePlugin.getRoseConfig();
+        if (config.get(SettingKey.ALLOW_BLOCK_EXPLOSION_LOOT))
             return;
 
         Entity looter = event.getEntity();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(event.getEntity().getWorld().getName())))
+        if (config.get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(event.getEntity().getWorld().getName())))
             return;
 
         if (looter instanceof TNTPrimed tnt) {

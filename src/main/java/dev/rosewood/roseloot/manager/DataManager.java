@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class DataManager extends AbstractDataManager {
 
@@ -19,16 +20,16 @@ public class DataManager extends AbstractDataManager {
     }
 
     @Override
-    public List<Class<? extends DataMigration>> getDataMigrations() {
-        return List.of(
-                _1_Add_Table_Cooldowns.class
-        );
-    }
-
-    @Override
     public void reload() {
         this.databaseConnector = new SQLiteConnector(this.rosePlugin);
         this.databaseConnector.cleanup();
+    }
+
+    @Override
+    public List<Supplier<? extends DataMigration>> getDataMigrations() {
+        return List.of(
+                _1_Add_Table_Cooldowns::new
+        );
     }
 
     public void setCooldowns(Collection<CooldownManager.Cooldown> cooldowns) {

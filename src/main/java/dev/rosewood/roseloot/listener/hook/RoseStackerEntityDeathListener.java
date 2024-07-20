@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener.hook;
 
 import com.google.common.collect.Multimap;
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -10,7 +11,6 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.rosestacker.event.EntityStackMultipleDeathEvent;
@@ -35,7 +35,7 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
     @EventHandler
     public void onEntityStackMultipleDeath(EntityStackMultipleDeathEvent event) {
         LivingEntity mainEntity = event.getStack().getEntity();
-        if (ConfigurationManager.Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(mainEntity.getWorld().getName())))
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(mainEntity.getWorld().getName())))
             return;
 
         Entity looter = null;

@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -9,12 +10,10 @@ import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -38,10 +37,7 @@ public class PiglinBarterListener extends LazyLootTableListener {
     public void enable() {
         super.enable();
 
-        this.piglinBarterItems = Setting.PIGLIN_BARTER_ITEMS.getStringList().stream()
-                .map(Material::matchMaterial)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        this.piglinBarterItems = new HashSet<>(this.rosePlugin.getRoseConfig().get(SettingKey.PIGLIN_BARTER_ITEMS));
 
         Bukkit.getWorlds().stream()
                 .flatMap(x -> x.getEntitiesByClass(Piglin.class).stream())
@@ -51,7 +47,7 @@ public class PiglinBarterListener extends LazyLootTableListener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPiglinBarter(PiglinBarterEvent event) {
         Piglin piglin = event.getEntity();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(piglin.getWorld().getName())))
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(piglin.getWorld().getName())))
             return;
 
         ItemStack inputItem = event.getInput();
@@ -93,7 +89,7 @@ public class PiglinBarterListener extends LazyLootTableListener {
             return;
 
         Piglin piglin = (Piglin) event.getEntity();
-        if (Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(piglin.getWorld().getName())))
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(piglin.getWorld().getName())))
             return;
 
         this.setPiglinBarterItems(piglin);

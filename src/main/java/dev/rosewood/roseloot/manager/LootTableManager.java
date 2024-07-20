@@ -9,6 +9,7 @@ import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.api.RoseLootAPI;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.LootTableTypeRegistrationEvent;
@@ -88,7 +89,6 @@ import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager.Setting;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VanillaLootTableConverter;
@@ -522,7 +522,7 @@ public class LootTableManager extends DelayedManager implements Listener {
      * @return The LootResult after the event has been called
      */
     private LootResult callEvent(LootResult lootResult) {
-        if (!Setting.CALL_POSTLOOTGENERATEEVENT.getBoolean())
+        if (!this.rosePlugin.getRoseConfig().get(SettingKey.CALL_POSTLOOTGENERATEEVENT))
             return lootResult;
 
         PostLootGenerateEvent event = new PostLootGenerateEvent(lootResult);

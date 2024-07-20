@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
+import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
@@ -9,7 +10,6 @@ import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
-import dev.rosewood.roseloot.manager.ConfigurationManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class HarvestBlockListener extends LazyLootTableListener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockHarvest(PlayerHarvestBlockEvent event) {
         Block block = event.getHarvestedBlock();
-        if (ConfigurationManager.Setting.DISABLED_WORLDS.getStringList().stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
         Player player = event.getPlayer();
