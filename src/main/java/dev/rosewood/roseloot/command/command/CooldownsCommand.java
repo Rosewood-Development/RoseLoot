@@ -10,7 +10,6 @@ import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
 import dev.rosewood.rosegarden.utils.StringPlaceholders;
 import dev.rosewood.roseloot.manager.CooldownManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
-import dev.rosewood.rosestacker.lib.rosegarden.command.framework.annotation.Optional;
 import java.util.Collection;
 import org.bukkit.entity.Player;
 
@@ -89,7 +88,7 @@ public class CooldownsCommand extends BaseRoseCommand {
         }
 
         @RoseExecutable
-        public void execute(CommandContext context, @Optional Player player) {
+        public void execute(CommandContext context, Player player) {
             CooldownManager cooldownManager = this.rosePlugin.getManager(CooldownManager.class);
             LocaleManager localeManager = this.rosePlugin.getManager(LocaleManager.class);
 
