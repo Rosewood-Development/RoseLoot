@@ -71,6 +71,7 @@ import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.ContainerContentsLootItem;
 import dev.rosewood.roseloot.loot.item.CustomItemLootItem;
 import dev.rosewood.roseloot.loot.item.DiscordWebhookLootItem;
+import dev.rosewood.roseloot.loot.item.EcoSkillsExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
 import dev.rosewood.roseloot.loot.item.EntityEquipmentLootItem;
 import dev.rosewood.roseloot.loot.item.ExperienceLootItem;
@@ -374,6 +375,9 @@ public class LootTableManager extends DelayedManager implements Listener {
 
         if (MMOCoreHook.isEnabled())
             event.registerLootItem("mmocore_experience", MMOCoreExperienceLootItem::fromSection);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("EcoSkills"))
+            event.registerLootItem("ecoskills_experience", EcoSkillsExperienceLootItem::fromSection);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

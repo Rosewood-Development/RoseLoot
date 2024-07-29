@@ -65,6 +65,7 @@ dependencies {
     compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
     compileOnly 'pers.neige.neigeitems:NeigeItems:1.14.27'
     compileOnly 'com.willfp:eco:6.71.4'
+    compileOnly 'com.willfp:EcoSkills:3.58.0'
     compileOnly 'me.wolfyscript:customcrafting:3.16.6.2'
     compileOnly 'com.wolfyscript:utilities:4.16.4.1'
     compileOnly 'dev.rosewood:rosestacker:1.5.24-SNAPSHOT'

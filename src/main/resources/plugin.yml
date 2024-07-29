@@ -17,6 +17,7 @@ softdepend:
   - eco
   - EcoBosses
   - EcoMobs
+  - EcoSkills
   - MythicLib
   - MMOItems
   - ItemBridge
