@@ -4,7 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ObjectArrays;
 import dev.rosewood.rosegarden.utils.NMSUtil;
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.NumberProvider;
@@ -387,7 +386,7 @@ public class ItemLootMeta {
         @SuppressWarnings("removal") // using correct API per version
         public AttributeModifier toAttributeModifier(LootContext context) {
             if (NMSUtil.getVersionNumber() >= 21) {
-                return new AttributeModifier(new NamespacedKey(RoseLoot.getInstance(), UUID.randomUUID().toString()), this.amount.getDouble(context), this.operation, this.slot.getGroup());
+                return new AttributeModifier(this.attribute.getKey(), this.amount.getDouble(context), this.operation, this.slot.getGroup());
             } else {
                 return new AttributeModifier(UUID.randomUUID(), this.attribute.getKey().getKey(), this.amount.getDouble(context), this.operation, this.slot);
             }
