@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,7 +32,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
                 possibleEnchantments.addAll(this.randomEnchantments);
             } else {
                 // Empty, pick from every enchantment
-                possibleEnchantments.addAll(List.of(Enchantment.values()));
+                possibleEnchantments.addAll(Arrays.asList(Enchantment.values()));
             }
 
             Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
