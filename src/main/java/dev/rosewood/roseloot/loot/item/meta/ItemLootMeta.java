@@ -101,6 +101,7 @@ public class ItemLootMeta {
     protected Boolean copyBlockState;
     protected Boolean copyBlockData;
     protected Boolean copyBlockName;
+    protected boolean restoreVanillaAttributes;
 
     public ItemLootMeta(ConfigurationSection section) {
         this.displayName = StringProvider.fromSection(section, "display-name", null);
@@ -226,6 +227,8 @@ public class ItemLootMeta {
 
         if (section.getBoolean("copy-block-name", false))
             this.copyBlockName = true;
+
+        this.restoreVanillaAttributes = section.getBoolean("restore-vanilla-attributes", true);
     }
 
     /**
@@ -252,7 +255,8 @@ public class ItemLootMeta {
             itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, world.orElse(null));
         }
 
-        if (itemStack.getType() != Material.ENCHANTED_BOOK) {
+        Material type = itemStack.getType();
+        if (type != Material.ENCHANTED_BOOK) {
             if (this.randomEnchantments != null) {
                 List<Enchantment> possibleEnchantments = new ArrayList<>();
                 if (!this.randomEnchantments.isEmpty()) {
@@ -284,11 +288,13 @@ public class ItemLootMeta {
         if (this.attributes != null) {
             Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
             this.attributes.forEach(x -> attributes.put(x.attribute(), x.toAttributeModifier(context)));
+            if (NMSUtil.getVersionNumber() >= 21 && this.restoreVanillaAttributes && type.isItem())
+                attributes.putAll(type.getDefaultAttributeModifiers());
             itemMeta.setAttributeModifiers(attributes);
         }
 
         if (itemMeta instanceof Damageable damageable && this.durability != null) {
-            int max = itemStack.getType().getMaxDurability();
+            int max = type.getMaxDurability();
             int durabilityValue;
             if (this.durability.isPercentage()) {
                 durabilityValue = (int) Math.round(this.durability.getDouble(context) * max);
@@ -302,7 +308,7 @@ public class ItemLootMeta {
             ((Repairable) itemMeta).setRepairCost(this.repairCost.getInteger(context));
 
         Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
-        if (lootedBlock.isPresent() && lootedBlock.get().getMaterial() == itemStack.getType()) {
+        if (lootedBlock.isPresent() && lootedBlock.get().getMaterial() == type) {
             BlockInfo block = lootedBlock.get();
             if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta blockStateMeta)
                 blockStateMeta.setBlockState(block.getState());
