@@ -1,8 +1,11 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
+import dev.rosewood.roseloot.loot.item.LootItem;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -24,9 +27,12 @@ public class BundleItemLootMeta extends ItemLootMeta {
             for (String key : contentsSection.getKeys(false)) {
                 ConfigurationSection itemSection = contentsSection.getConfigurationSection(key);
                 if (itemSection != null) {
-                    ItemGenerativeLootItem lootItem = ItemLootItem.fromSection(itemSection); // TODO: Allow any ItemGenerativeLootItem here
-                    if (lootItem != null)
-                        this.lootItems.add(lootItem);
+                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "bundle", key, itemSection);
+                    if (lootItem instanceof ItemGenerativeLootItem itemGenerativeLootItem) {
+                        this.lootItems.add(itemGenerativeLootItem);
+                    } else {
+                        RoseLoot.getInstance().getLogger().warning("Ignoring bundle item because it does not generate an ItemStack: " + key);
+                    }
                 }
             }
         }

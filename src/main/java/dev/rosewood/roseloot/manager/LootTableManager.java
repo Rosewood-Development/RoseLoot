@@ -228,7 +228,8 @@ public class LootTableManager extends DelayedManager implements Listener {
         return new LootTable(path, type, conditions, lootComponents, overwriteExisting, allowRecursion);
     }
 
-    private List<LootCondition> parseConditionsSection(String fileName, ConfigurationSection section) {
+    @ApiStatus.Internal
+    public List<LootCondition> parseConditionsSection(String fileName, ConfigurationSection section) {
         List<LootCondition> conditions = new ArrayList<>();
         List<String> conditionStrings = section.getStringList("conditions");
         for (String conditionString : conditionStrings) {
@@ -253,7 +254,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         Collections.reverse(pieces);
         StringBuilder stringBuilder = new StringBuilder();
         for (String piece : pieces) {
-            if (stringBuilder.length() > 0)
+            if (!stringBuilder.isEmpty())
                 stringBuilder.append('/');
             stringBuilder.append(piece);
         }
@@ -281,7 +282,8 @@ public class LootTableManager extends DelayedManager implements Listener {
         return foundSection;
     }
 
-    private List<LootComponent> getLootComponentsRecursively(String fileName, ConfigurationSection componentsSection, String parents) {
+    @ApiStatus.Internal
+    public List<LootComponent> getLootComponentsRecursively(String fileName, ConfigurationSection componentsSection, String parents) {
         List<LootComponent> lootComponents = new ArrayList<>();
         for (String entryKey : componentsSection.getKeys(false)) {
             ConfigurationSection componentSection = componentsSection.getConfigurationSection(entryKey);
@@ -297,37 +299,7 @@ public class LootTableManager extends DelayedManager implements Listener {
             NumberProvider rolls = NumberProvider.fromSection(componentSection, "rolls", 1);
             NumberProvider bonusRolls = NumberProvider.fromSection(componentSection, "bonus-rolls", 0);
 
-            ConfigurationSection itemsSection = componentSection.getConfigurationSection("items");
-            List<LootItem> lootItems = new ArrayList<>();
-            if (itemsSection != null) {
-                for (String itemKey : itemsSection.getKeys(false)) {
-                    ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
-                    if (itemSection == null) {
-                        this.issueLoading(fileName, "Invalid item section [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
-                        continue;
-                    }
-
-                    String lootItemType = itemSection.getString("type");
-                    if (lootItemType == null) {
-                        this.issueLoading(fileName, "Invalid item section, unset type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
-                        continue;
-                    }
-
-                    Function<ConfigurationSection, LootItem> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
-                    if (lootItemFunction == null) {
-                        this.issueLoading(fileName, "Invalid item section [pool: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
-                        continue;
-                    }
-
-                    LootItem lootItem = lootItemFunction.apply(itemSection);
-                    if (lootItem == null) {
-                        this.issueLoading(fileName, "Invalid item type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
-                        continue;
-                    }
-
-                    lootItems.add(lootItem);
-                }
-            }
+            List<LootItem> lootItems = this.parseLootItemsSection(fileName, parents, entryKey, componentSection);
 
             LootComponent.ChildrenStrategy childrenStrategy = LootComponent.ChildrenStrategy.fromString(componentSection.getString("children-strategy", LootComponent.ChildrenStrategy.NORMAL.name()));
             ConfigurationSection childrenSection = this.findNextComponentsSection(fileName, componentSection);
@@ -337,6 +309,47 @@ public class LootTableManager extends DelayedManager implements Listener {
         }
 
         return lootComponents;
+    }
+
+    @ApiStatus.Internal
+    public List<LootItem> parseLootItemsSection(String fileName, String parents, String entryKey, ConfigurationSection section) {
+        ConfigurationSection itemsSection = section.getConfigurationSection("items");
+        List<LootItem> lootItems = new ArrayList<>();
+        if (itemsSection != null) {
+            for (String itemKey : itemsSection.getKeys(false)) {
+                ConfigurationSection itemSection = itemsSection.getConfigurationSection(itemKey);
+                if (itemSection == null)
+                    continue;
+
+                LootItem lootItem = this.parseLootItem(fileName, parents, entryKey, itemKey, itemSection);
+                if (lootItem != null)
+                    lootItems.add(lootItem);
+            }
+        }
+        return lootItems;
+    }
+
+    @ApiStatus.Internal
+    public LootItem parseLootItem(String fileName, String parents, String entryKey, String itemKey, ConfigurationSection section) {
+        String lootItemType = section.getString("type");
+        if (lootItemType == null) {
+            this.issueLoading(fileName, "Invalid item section, unset type [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + "]");
+            return null;
+        }
+
+        Function<ConfigurationSection, LootItem> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
+        if (lootItemFunction == null) {
+            this.issueLoading(fileName, "Invalid item section, unknown type [pool: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
+            return null;
+        }
+
+        LootItem lootItem = lootItemFunction.apply(section);
+        if (lootItem == null) {
+            this.issueLoading(fileName, "Invalid item section, failed to parse [parent: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
+            return null;
+        }
+
+        return lootItem;
     }
 
     @Override

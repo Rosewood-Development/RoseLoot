@@ -193,7 +193,6 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
-        StringProvider nbtComponents = StringProvider.fromSection(section, "nbt-components", null);
         Function<Material, ItemLootMeta> lootMetaFactory = material -> ItemLootMeta.fromSection(material, section);
         return new ItemLootItem(item, amount, maxAmount, amountModifiers, enchantmentBonus, smeltIfBurning, nbt, lootMetaFactory, true);
     }

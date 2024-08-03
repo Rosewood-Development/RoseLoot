@@ -6,6 +6,8 @@ import com.google.common.collect.ObjectArrays;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.item.meta.component.ComponentLootMeta;
+import dev.rosewood.roseloot.loot.item.meta.component.FoodComponentLootMeta;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.BlockInfo;
@@ -86,6 +88,22 @@ public class ItemLootMeta {
         }
     }
 
+    private static class ComponentMappings {
+        private static final Map<String, Function<ConfigurationSection, ? extends ComponentLootMeta>> CONSTRUCTORS;
+        private static final Map<String, BiConsumer<ItemMeta, StringBuilder>> PROPERTY_APPLIERS;
+        static {
+            CONSTRUCTORS = new HashMap<>();
+            PROPERTY_APPLIERS = new HashMap<>();
+
+            mapComponent("food-component", FoodComponentLootMeta::new, FoodComponentLootMeta::applyProperties);
+        }
+
+        private static void mapComponent(String name, Function<ConfigurationSection, ? extends ComponentLootMeta> constructor, BiConsumer<ItemMeta, StringBuilder> propertyApplier) {
+            CONSTRUCTORS.put(name, constructor);
+            PROPERTY_APPLIERS.put(name, propertyApplier);
+        }
+    }
+
     private final StringProvider displayName;
     private final StringProvider lore;
     private final NumberProvider customModelData;
@@ -102,6 +120,7 @@ public class ItemLootMeta {
     protected Boolean copyBlockData;
     protected Boolean copyBlockName;
     protected boolean restoreVanillaAttributes;
+    protected List<ComponentLootMeta> components;
 
     public ItemLootMeta(ConfigurationSection section) {
         this.displayName = StringProvider.fromSection(section, "display-name", null);
@@ -228,6 +247,19 @@ public class ItemLootMeta {
         if (section.getBoolean("copy-block-name", false))
             this.copyBlockName = true;
 
+        if (NMSUtil.getVersionNumber() >= 21) {
+            this.components = new ArrayList<>();
+            for (var entry : ComponentMappings.CONSTRUCTORS.entrySet()) {
+                String key = entry.getKey();
+                if (section.isConfigurationSection(key)) {
+                    ConfigurationSection componentSection = section.getConfigurationSection(key);
+                    ComponentLootMeta componentLootMeta = entry.getValue().apply(componentSection);
+                    if (componentLootMeta != null)
+                        this.components.add(componentLootMeta);
+                }
+            }
+        }
+
         this.restoreVanillaAttributes = section.getBoolean("restore-vanilla-attributes", true);
     }
 
@@ -320,6 +352,9 @@ public class ItemLootMeta {
                 itemMeta.setDisplayName(nameable.getCustomName());
         }
 
+        if (NMSUtil.getVersionNumber() >= 21)
+            this.components.forEach(x -> x.apply(itemMeta, context));
+
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
@@ -383,6 +418,10 @@ public class ItemLootMeta {
                 }
             }
         }
+
+        if (NMSUtil.getVersionNumber() >= 21)
+            for (BiConsumer<ItemMeta, StringBuilder> propertyApplier : ComponentMappings.PROPERTY_APPLIERS.values())
+                propertyApplier.accept(itemMeta, stringBuilder);
 
         MaterialMappings.PROPERTY_APPLIERS.getOrDefault(material, (x, y) -> {}).accept(itemStack, stringBuilder);
     }
