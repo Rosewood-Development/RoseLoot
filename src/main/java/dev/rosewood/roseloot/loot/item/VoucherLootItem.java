@@ -13,7 +13,6 @@ public class VoucherLootItem extends ItemLootItem {
     protected VoucherLootItem(String lootTable, ItemLootItem base) {
         super(base);
         this.lootTable = lootTable;
-        this.resolveItem(LootContext.none());
     }
 
     @Override

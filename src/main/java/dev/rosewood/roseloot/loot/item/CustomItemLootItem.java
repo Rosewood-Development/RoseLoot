@@ -36,7 +36,7 @@ public class CustomItemLootItem extends ItemLootItem {
         if (customItemPlugin == null)
             return null;
 
-        ItemLootItem base = ItemLootItem.fromSection(section);
+        ItemLootItem base = ItemLootItem.fromSection(section, "item", false);
         if (base == null)
             return null;
 

@@ -49,7 +49,7 @@ public class TagLootItem extends ItemLootItem {
     }
 
     public static TagLootItem fromSection(ConfigurationSection section) {
-        ItemLootItem base = ItemLootItem.fromSection(section, "tag");
+        ItemLootItem base = ItemLootItem.fromSection(section, "tag", false);
         if (base == null)
             return null;
 

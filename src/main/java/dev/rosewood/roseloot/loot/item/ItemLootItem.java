@@ -146,10 +146,10 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     }
 
     public static ItemLootItem fromSection(ConfigurationSection section) {
-        return fromSection(section, "item");
+        return fromSection(section, "item", true);
     }
 
-    public static ItemLootItem fromSection(ConfigurationSection section, String itemPropertyName) {
+    public static ItemLootItem fromSection(ConfigurationSection section, String itemPropertyName, boolean resolveItem) {
         StringProvider item = StringProvider.fromSection(section, itemPropertyName, null);
         if (item == null)
             return null;
@@ -194,7 +194,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         boolean smeltIfBurning = section.getBoolean("smelt-if-burning", false);
         StringProvider nbt = StringProvider.fromSection(section, "nbt", null);
         Function<Material, ItemLootMeta> lootMetaFactory = material -> ItemLootMeta.fromSection(material, section);
-        return new ItemLootItem(item, amount, maxAmount, amountModifiers, enchantmentBonus, smeltIfBurning, nbt, lootMetaFactory, true);
+        return new ItemLootItem(item, amount, maxAmount, amountModifiers, enchantmentBonus, smeltIfBurning, nbt, lootMetaFactory, resolveItem);
     }
 
     public static String toSection(ItemStack itemStack, boolean keepVanillaNBT) {
