@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ObjectArrays;
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.meta.component.ComponentLootMeta;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
@@ -31,6 +33,7 @@ import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -41,6 +44,8 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.loot.LootTable;
+import org.bukkit.loot.Lootable;
 
 public class ItemLootMeta {
 
@@ -118,9 +123,10 @@ public class ItemLootMeta {
     protected List<Enchantment> randomEnchantments;
     protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
-    protected Boolean copyBlockState;
-    protected Boolean copyBlockData;
-    protected Boolean copyBlockName;
+    private Boolean copyBlockState;
+    private Boolean copyBlockData;
+    private Boolean copyBlockName;
+    private final StringProvider lootTable;
     protected boolean restoreVanillaAttributes;
     protected List<ComponentLootMeta> components;
 
@@ -249,6 +255,8 @@ public class ItemLootMeta {
         if (section.getBoolean("copy-block-name", false))
             this.copyBlockName = true;
 
+        this.lootTable = StringProvider.fromSection(section, "loot-table", null);
+
         if (NMSUtil.getVersionNumber() >= 21) {
             this.components = new ArrayList<>();
             for (var entry : ComponentMappings.CONSTRUCTORS.entrySet()) {
@@ -338,8 +346,8 @@ public class ItemLootMeta {
             damageable.setDamage(max - Math.max(0, Math.min(durabilityValue, max)));
         }
 
-        if (this.repairCost != null && itemMeta instanceof Repairable)
-            ((Repairable) itemMeta).setRepairCost(this.repairCost.getInteger(context));
+        if (this.repairCost != null && itemMeta instanceof Repairable repairable)
+            repairable.setRepairCost(this.repairCost.getInteger(context));
 
         Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
         if (lootedBlock.isPresent() && lootedBlock.get().getMaterial() == type) {
@@ -352,6 +360,22 @@ public class ItemLootMeta {
 
             if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable nameable)
                 itemMeta.setDisplayName(nameable.getCustomName());
+        }
+
+        if (this.lootTable != null && itemMeta instanceof BlockStateMeta blockStateMeta && blockStateMeta.getBlockState() instanceof Lootable lootable) {
+            String lootTableKeyString = this.lootTable.get(context);
+            NamespacedKey lootTableKey = NamespacedKey.fromString(lootTableKeyString);
+            if (lootTableKey != null) {
+                LootTable lootTable = Bukkit.getLootTable(lootTableKey);
+                if (lootTable != null) {
+                    lootable.setLootTable(lootTable);
+                    blockStateMeta.setBlockState((BlockState) lootable);
+                } else {
+                    RoseLoot.getInstance().getLogger().warning("Could not set loot-table on item, server loot table not found: " + lootTableKey);
+                }
+            } else {
+                RoseLoot.getInstance().getLogger().warning("Could not set loot-table on item, invalid loot table key: " + lootTableKeyString);
+            }
         }
 
         if (NMSUtil.getVersionNumber() >= 21)
