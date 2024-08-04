@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.meta.component.ComponentLootMeta;
 import dev.rosewood.roseloot.loot.item.meta.component.FoodComponentLootMeta;
+import dev.rosewood.roseloot.loot.item.meta.component.JukeboxPlayableComponentLootMeta;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.BlockInfo;
@@ -96,6 +97,7 @@ public class ItemLootMeta {
             PROPERTY_APPLIERS = new HashMap<>();
 
             mapComponent("food-component", FoodComponentLootMeta::new, FoodComponentLootMeta::applyProperties);
+            mapComponent("jukebox-playable-component", JukeboxPlayableComponentLootMeta::new, JukeboxPlayableComponentLootMeta::applyProperties);
         }
 
         private static void mapComponent(String name, Function<ConfigurationSection, ? extends ComponentLootMeta> constructor, BiConsumer<ItemMeta, StringBuilder> propertyApplier) {
