@@ -5,6 +5,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.NamespacedKey;
 
 public class VanillaLootTableCondition extends BaseLootCondition {
@@ -28,8 +29,18 @@ public class VanillaLootTableCondition extends BaseLootCondition {
 
         for (String value : values) {
             try {
-                this.vanillaLootTableKeys.add(NamespacedKey.fromString(value));
-            } catch (Exception ignored) { }
+                NamespacedKey namespacedKey;
+                if (value.indexOf(":") == -1) {
+                    namespacedKey = NamespacedKey.minecraft(value);
+                } else {
+                    String[] split = value.split(":", 2);
+                    String prefix = split[0];
+                    String key = split[1];
+                    namespacedKey = new NamespacedKey(prefix, key);
+                }
+                this.vanillaLootTableKeys.add(namespacedKey);
+            } catch (Exception ignored) {
+            }
         }
 
         return !this.vanillaLootTableKeys.isEmpty();
