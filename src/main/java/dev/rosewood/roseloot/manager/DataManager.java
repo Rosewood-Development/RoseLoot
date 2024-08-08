@@ -2,7 +2,6 @@ package dev.rosewood.roseloot.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.database.DataMigration;
-import dev.rosewood.rosegarden.database.SQLiteConnector;
 import dev.rosewood.rosegarden.manager.AbstractDataManager;
 import dev.rosewood.roseloot.database.migrations._1_Add_Table_Cooldowns;
 import java.sql.PreparedStatement;
@@ -17,12 +16,6 @@ public class DataManager extends AbstractDataManager {
 
     public DataManager(RosePlugin rosePlugin) {
         super(rosePlugin);
-    }
-
-    @Override
-    public void reload() {
-        this.databaseConnector = new SQLiteConnector(this.rosePlugin);
-        this.databaseConnector.cleanup();
     }
 
     @Override
