@@ -63,7 +63,6 @@ public class FoodComponentLootMeta implements ComponentLootMeta {
                     boolean ambient = effectSection.getBoolean("ambient", false);
                     boolean particles = effectSection.getBoolean("particles", true);
                     boolean icon = effectSection.getBoolean("icon", true);
-                    boolean overwrite = effectSection.getBoolean("overwrite", true);
 
                     this.effects.add(new FoodEffectData(new PotionItemLootMeta.PotionEffectData(effect, duration, amplifier, ambient, particles, icon), probability));
                 }

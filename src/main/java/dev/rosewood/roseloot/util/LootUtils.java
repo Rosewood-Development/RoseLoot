@@ -261,13 +261,15 @@ public final class LootUtils {
         return decimalFormat.format(value);
     }
 
-    public static <T extends Keyed> Set<T> getTags(String value, Class<T> clazz, String registry) {
+    public static <T extends Keyed> Set<T> getTagValues(String value, Class<T> clazz, String registry) {
+        Tag<T> tag = getTag(value, clazz, registry);
+        return tag == null ? null : tag.getValues();
+    }
+
+    public static <T extends Keyed> Tag<T> getTag(String value, Class<T> clazz, String registry) {
         NamespacedKey key = NamespacedKey.fromString(value);
-        if (key != null) {
-            Tag<T> tag = Bukkit.getTag(registry, key, clazz);
-            if (tag != null)
-                return tag.getValues();
-        }
+        if (key != null)
+            return Bukkit.getTag(registry, key, clazz);
         return null;
     }
 

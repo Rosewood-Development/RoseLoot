@@ -47,7 +47,7 @@ public class KilledByCondition extends BaseLootCondition {
         for (String value : values) {
             try {
                 if (value.startsWith("#")) {
-                    Set<EntityType> tagEntities = LootUtils.getTags(value.substring(1), EntityType.class, "entity_types");
+                    Set<EntityType> tagEntities = LootUtils.getTagValues(value.substring(1), EntityType.class, "entity_types");
                     if (tagEntities != null) {
                         this.entityTypes.addAll(tagEntities);
                         continue;

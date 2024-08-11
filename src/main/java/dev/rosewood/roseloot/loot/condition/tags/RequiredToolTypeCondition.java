@@ -31,7 +31,7 @@ public class RequiredToolTypeCondition extends BaseLootCondition {
 
         for (String value : values) {
             if (value.startsWith("#")) {
-                Set<Material> tagBlocks = LootUtils.getTags(value.substring(1), Material.class, "items");
+                Set<Material> tagBlocks = LootUtils.getTagValues(value.substring(1), Material.class, "items");
                 if (tagBlocks != null) {
                     this.toolTypes.addAll(tagBlocks);
                     continue;

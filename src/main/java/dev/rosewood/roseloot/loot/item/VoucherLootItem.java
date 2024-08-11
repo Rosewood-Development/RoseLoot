@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.VoucherUtils;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class VoucherLootItem extends ItemLootItem {
 
+    private static boolean displayedDeprecatedMessage;
     private final String lootTable;
 
     protected VoucherLootItem(String lootTable, ItemLootItem base) {
@@ -24,6 +26,11 @@ public class VoucherLootItem extends ItemLootItem {
     }
 
     public static VoucherLootItem fromSection(ConfigurationSection section) {
+        if (!displayedDeprecatedMessage) {
+            RoseLoot.getInstance().getLogger().severe("The voucher loot item is not supported and will be removed in a future version");
+            displayedDeprecatedMessage = true;
+        }
+
         String lootTable = section.getString("loottable");
         if (lootTable == null)
             return null;

@@ -33,7 +33,7 @@ public class ReplacedBlockTypeCondition extends BaseLootCondition {
         for (String value : values) {
             try {
                 if (value.startsWith("#")) {
-                    Set<Material> tagBlocks = LootUtils.getTags(value.substring(1), Material.class, "blocks");
+                    Set<Material> tagBlocks = LootUtils.getTagValues(value.substring(1), Material.class, "blocks");
                     if (tagBlocks != null) {
                         this.blockTypes.addAll(tagBlocks);
                         continue;

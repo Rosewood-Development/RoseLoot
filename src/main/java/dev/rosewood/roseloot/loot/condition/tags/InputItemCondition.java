@@ -33,13 +33,13 @@ public class InputItemCondition extends BaseLootCondition {
         for (String value : values) {
             try {
                 if (value.startsWith("#")) {
-                    Set<Material> tagBlocks = LootUtils.getTags(value.substring(1), Material.class, "blocks");
+                    Set<Material> tagBlocks = LootUtils.getTagValues(value.substring(1), Material.class, "blocks");
                     if (tagBlocks != null) {
                         this.materials.addAll(tagBlocks);
                         continue;
                     }
 
-                    Set<Material> tagItems = LootUtils.getTags(value.substring(1), Material.class, "items");
+                    Set<Material> tagItems = LootUtils.getTagValues(value.substring(1), Material.class, "items");
                     if (tagItems != null) {
                         this.materials.addAll(tagItems);
                         continue;
