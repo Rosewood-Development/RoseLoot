@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
+import dev.rosewood.rosegarden.compatibility.CompatibilityAdapter;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.BlockInfo;
@@ -21,7 +22,7 @@ public class SpawnerTypeCondition extends BaseLootCondition {
         return context.getLootedBlockInfo()
                 .map(BlockInfo::getState)
                 .map(x -> x instanceof CreatureSpawner ? ((CreatureSpawner) x) : null)
-                .map(CreatureSpawner::getSpawnedType)
+                .map(x -> CompatibilityAdapter.getCreatureSpawnerHandler().getSpawnedType(x))
                 .filter(x -> this.entityTypes.contains(x))
                 .isPresent();
     }

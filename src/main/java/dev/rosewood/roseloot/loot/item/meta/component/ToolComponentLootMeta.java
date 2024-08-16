@@ -98,7 +98,7 @@ public class ToolComponentLootMeta implements ComponentLootMeta {
                 stringBuilder.append("    correct-for-drops: ").append(toolRule.isCorrectForDrops()).append('\n');
                 Collection<Material> blocks = toolRule.getBlocks();
                 if (!blocks.isEmpty()) {
-                    stringBuilder.append("    blocks:");
+                    stringBuilder.append("    blocks:\n");
                     for (Material block : blocks)
                         stringBuilder.append("      - ").append(block).append('\n');
                 }

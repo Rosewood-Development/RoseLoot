@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.condition;
 
+import dev.rosewood.rosegarden.compatibility.CompatibilityAdapter;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.context.LootContext;
@@ -126,7 +127,7 @@ public class EntityPropertyConditions {
         registerBoolean(PigZombie.class, "angry", PigZombie::isAngry);
         registerInt(PufferFish.class, "puff-state", PufferFish::getPuffState);
         registerEnum(Rabbit.class, "type", Rabbit::getRabbitType, Rabbit.Type.class);
-        registerBoolean(Sheep.class, "sheared", Sheep::isSheared);
+        registerBoolean(Sheep.class, "sheared", CompatibilityAdapter.getShearedHandler()::isSheared);
         registerEnum(Sheep.class, "color", Sheep::getColor, DyeColor.class);
         registerInt(Slime.class, "size", Slime::getSize);
         registerBoolean(Snowman.class, "no-pumpkin", Snowman::isDerp);
