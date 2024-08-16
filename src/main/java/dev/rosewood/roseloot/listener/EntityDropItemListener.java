@@ -15,8 +15,10 @@ import dev.rosewood.roseloot.util.VersionUtils;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +28,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class EntityDropItemListener extends LazyLootTableListener {
 
@@ -65,6 +68,11 @@ public class EntityDropItemListener extends LazyLootTableListener {
         if (!(event.getEntity() instanceof LivingEntity entity))
             return;
 
+        Item item = event.getItemDrop();
+        ItemStack itemStack = item.getItemStack();
+        if (itemStack.getType() == Material.LEAD)
+            return;
+
         if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
             return;
 
@@ -79,7 +87,7 @@ public class EntityDropItemListener extends LazyLootTableListener {
                 .put(LootContextParams.ORIGIN, entity.getLocation())
                 .put(LootContextParams.LOOTER, shearer)
                 .put(LootContextParams.LOOTED_ENTITY, entity)
-                .put(LootContextParams.INPUT_ITEM, event.getItemDrop().getItemStack())
+                .put(LootContextParams.INPUT_ITEM, itemStack)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, true)
                 .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.ENTITY_DROP_ITEM, lootContext);
