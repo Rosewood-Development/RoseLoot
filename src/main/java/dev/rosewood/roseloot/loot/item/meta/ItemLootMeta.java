@@ -75,6 +75,9 @@ public class ItemLootMeta {
                 mapMaterials(BundleItemLootMeta::new, BundleItemLootMeta::applyProperties, Material.BUNDLE);
             }
 
+            if (NMSUtil.getVersionNumber() >= 19)
+                mapMaterials(MusicInstrumentItemLootMeta::new, MusicInstrumentItemLootMeta::applyProperties, Material.GOAT_HORN);
+
             Material[] leatherArmor = { Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS };
             if (NMSUtil.getVersionNumber() >= 20) {
                 mapMaterials(ArmorItemLootMeta::new, ArmorItemLootMeta::applyProperties, Tag.ITEMS_TRIMMABLE_ARMOR.getValues().toArray(Material[]::new));
