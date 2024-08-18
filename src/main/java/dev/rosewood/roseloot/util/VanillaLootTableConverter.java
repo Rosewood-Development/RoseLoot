@@ -124,7 +124,7 @@ public final class VanillaLootTableConverter {
                 writeBlockHeader(path, writer);
             } else if (path.equals("gameplay/fishing")) {
                 writeFishingHeader(path, writer);
-            } else if (path.startsWith("chests")) {
+            } else if (path.startsWith("chests") || path.startsWith("dispensers") || path.startsWith("pots")) {
                 writeContainerHeader(path, writer);
             } else if (path.equals("gameplay/piglin_bartering")) {
                 writePiglinBarteringHeader(path, writer);
@@ -215,7 +215,10 @@ public final class VanillaLootTableConverter {
     private static void writeArchaeologyHeader(String path, IndentedFileWriter writer) throws IOException {
         writer.write("type: ARCHAEOLOGY");
         writer.write("overwrite-existing: items");
-        writer.write("conditions: []");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        writer.write("- 'vanilla-loot-table:" + path + "'");
+        writer.decreaseIndentation();
     }
 
     private static void writeLootTableHeader(String path, IndentedFileWriter writer) throws IOException {
