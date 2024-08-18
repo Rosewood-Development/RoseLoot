@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 group = 'dev.rosewood'
-version = '1.2.17'
+version = '1.2.18'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
@@ -81,8 +81,8 @@ dependencies {
         exclude group: 'org.spigotmc'
     }
 
-    api 'dev.rosewood:rosegarden:1.4.1-SNAPSHOT'
-    api 'dev.rosewood:rosegarden-compatibility:1.4.1-SNAPSHOT'
+    api 'dev.rosewood:rosegarden:1.4.1'
+    api 'dev.rosewood:rosegarden-compatibility:1.4.1'
 }
 
 shadowJar {
