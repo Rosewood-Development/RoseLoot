@@ -81,8 +81,8 @@ dependencies {
         exclude group: 'org.spigotmc'
     }
 
-    api 'dev.rosewood:rosegarden:1.4.1'
-    api 'dev.rosewood:rosegarden-compatibility:1.4.1'
+    api 'dev.rosewood:rosegarden:1.4.2'
+    api 'dev.rosewood:rosegarden-compatibility:1.4.2'
 }
 
 shadowJar {

@@ -287,6 +287,11 @@ public class ItemLootMeta {
      */
     @SuppressWarnings("deprecation")
     public ItemStack apply(ItemStack itemStack, LootContext context) {
+        if (this.enchantmentLevel != null) {
+            Optional<World> world = context.get(LootContextParams.ORIGIN).map(Location::getWorld);
+            itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, world.orElse(null));
+        }
+
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta == null)
             return itemStack;
@@ -296,11 +301,6 @@ public class ItemLootMeta {
         if (this.customModelData != null) itemMeta.setCustomModelData(this.customModelData.getInteger(context));
         if (this.unbreakable != null) itemMeta.setUnbreakable(this.unbreakable);
         if (this.hideFlags != null) itemMeta.addItemFlags(this.hideFlags.toArray(new ItemFlag[0]));
-
-        if (this.enchantmentLevel != null) {
-            Optional<World> world = context.get(LootContextParams.ORIGIN).map(Location::getWorld);
-            itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, world.orElse(null));
-        }
 
         Material type = itemStack.getType();
         if (type != Material.ENCHANTED_BOOK) {

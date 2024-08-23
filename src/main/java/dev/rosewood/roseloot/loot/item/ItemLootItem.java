@@ -82,7 +82,6 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
     private Optional<ItemStack> getCreationItem(LootContext context) {
         return this.resolveItem(context).map(item -> {
-            ItemStack result = item;
             Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
             if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
                 Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
@@ -90,23 +89,23 @@ public class ItemLootItem implements ItemGenerativeLootItem {
                     Recipe recipe = recipesIterator.next();
                     if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item.getType()) {
                         if (NMSUtil.isPaper()) {
-                            result = result.withType(furnaceRecipe.getResult().getType());
+                            item = item.withType(furnaceRecipe.getResult().getType());
                         } else {
-                            result.setType(furnaceRecipe.getResult().getType());
+                            item.setType(furnaceRecipe.getResult().getType());
                         }
                         break;
                     }
                 }
             }
 
-            ItemLootMeta itemLootMeta = this.itemLootMetaMap.computeIfAbsent(result.getType(), this.lootMetaFactoryFunction);
-            ItemStack itemStack = itemLootMeta.apply(item, context);
+            ItemLootMeta itemLootMeta = this.itemLootMetaMap.computeIfAbsent(item.getType(), this.lootMetaFactoryFunction);
+            item = itemLootMeta.apply(item, context);
             if (this.nbt != null) {
                 String nbt = this.nbt.get(context);
-                NBTAPIHook.mergeItemNBT(itemStack, nbt);
+                NBTAPIHook.mergeItemNBT(item, nbt);
             }
 
-            return result;
+            return item;
         });
     }
 
