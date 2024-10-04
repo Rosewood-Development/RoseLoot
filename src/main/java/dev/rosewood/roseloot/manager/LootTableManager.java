@@ -9,6 +9,7 @@ import dev.rosewood.rosegarden.config.CommentedFileConfiguration;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.api.RoseLootAPI;
+import dev.rosewood.roseloot.command.command.LoggingReloadCommand;
 import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
@@ -111,6 +112,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Breedable;
@@ -612,15 +615,22 @@ public class LootTableManager extends DelayedManager implements Listener {
     }
 
     private void issueLoading(String fileName, String reason) {
-        this.rosePlugin.getLogger().warning("Skipped loading part of loottables/" + fileName + ": " + reason);
+        this.logMessage("Skipped loading part of loottables/" + fileName + ": " + reason);
     }
 
     private void failToLoad(String fileName, String reason) {
         if (reason != null) {
-            this.rosePlugin.getLogger().warning("Failed to load loottables/" + fileName + ": " + reason);
+            this.logMessage("Failed to load loottables/" + fileName + ": " + reason);
         } else {
-            this.rosePlugin.getLogger().warning("Failed to load loottables/" + fileName);
+            this.logMessage("Failed to load loottables/" + fileName);
         }
+    }
+
+    private void logMessage(String message) {
+        this.rosePlugin.getLogger().warning(message);
+        CommandSender sender = LoggingReloadCommand.getReloadSender();
+        if (sender != null && this.rosePlugin.getRoseConfig().get(SettingKey.LOG_LOOT_TABLE_WARNINGS))
+            this.rosePlugin.getManager(LocaleManager.class).sendPrefixedText(sender, ChatColor.YELLOW + message);
     }
 
 }
