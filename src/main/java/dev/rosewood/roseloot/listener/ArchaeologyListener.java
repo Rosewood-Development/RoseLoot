@@ -56,6 +56,7 @@ public class ArchaeologyListener extends LazyLootTableListener {
         Player player = event.getPlayer();
         LootContext.Builder lootContextBuilder = LootContext.builder(LootUtils.getEntityLuck(player))
                 .put(LootContextParams.ORIGIN, block.getLocation())
+                .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(LootContextParams.LOOTER, player);
 
         LootTable lootTable = brushableBlock.getLootTable();

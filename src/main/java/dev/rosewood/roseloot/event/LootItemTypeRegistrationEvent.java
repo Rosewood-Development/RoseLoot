@@ -39,7 +39,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @return true if registering the new LootItem type overwrote a different LootItem type with the same name, false otherwise
      */
     public boolean registerLootItem(@NotNull String name, @NotNull Function<ConfigurationSection, LootItem> function) {
-        return this.registeredLootItemsTypes.put(name.toUpperCase(), function) == null;
+        return this.registeredLootItemsTypes.put(name.toLowerCase(), function) == null;
     }
 
     /**
@@ -49,7 +49,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @return true if a LootItem type was unregistered, false otherwise
      */
     public boolean unregisterLootItem(@NotNull String name) {
-        return this.registeredLootItemsTypes.remove(name.toUpperCase()) != null;
+        return this.registeredLootItemsTypes.remove(name.toLowerCase()) != null;
     }
 
     @Override

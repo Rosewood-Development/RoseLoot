@@ -338,7 +338,7 @@ public class LootTableManager extends DelayedManager implements Listener {
             return null;
         }
 
-        Function<ConfigurationSection, LootItem> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toUpperCase());
+        Function<ConfigurationSection, LootItem> lootItemFunction = this.registeredLootItemFunctions.get(lootItemType.toLowerCase());
         if (lootItemFunction == null) {
             this.issueLoading(fileName, "Invalid item section, unknown type [pool: " + parents + ", component: " + entryKey + ", item: " + itemKey + ", type: " + lootItemType + "]");
             return null;
@@ -488,7 +488,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         int index = tag.indexOf(":");
         String tagPrefix = index == -1 ? tag : tag.substring(0, index);
 
-        Function<String, LootCondition> factory = this.registeredConditionFunctions.get(tagPrefix);
+        Function<String, LootCondition> factory = this.registeredConditionFunctions.get(tagPrefix.toLowerCase());
         if (factory == null)
             return null;
 
@@ -568,7 +568,7 @@ public class LootTableManager extends DelayedManager implements Listener {
     public LootTableType getLootTableType(String name) {
         if (name == null)
             return null;
-        return this.lootTableTypes.get(name.toUpperCase());
+        return this.lootTableTypes.get(name.toLowerCase());
     }
 
     public String getLootTableTypeName(LootTableType lootTableType) {

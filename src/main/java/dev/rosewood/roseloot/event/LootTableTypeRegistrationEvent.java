@@ -36,7 +36,7 @@ public class LootTableTypeRegistrationEvent extends Event {
      * @return true if registering the new LootTableType overwrote a different LootTableType with the same name, false otherwise
      */
     public boolean registerLootTableType(@NotNull String name, @NotNull LootTableType lootTableType) {
-        return this.registeredLootTableTypes.put(name.toUpperCase(), lootTableType) == null;
+        return this.registeredLootTableTypes.put(name.toLowerCase(), lootTableType) == null;
     }
 
     /**
@@ -46,7 +46,7 @@ public class LootTableTypeRegistrationEvent extends Event {
      * @return true if a LootItem type was unregistered, false otherwise
      */
     public boolean unregisterLootTableType(@NotNull String name) {
-        return this.registeredLootTableTypes.remove(name.toUpperCase()) != null;
+        return this.registeredLootTableTypes.remove(name.toLowerCase()) != null;
     }
 
     @Override

@@ -14,6 +14,7 @@ import dev.rosewood.roseloot.listener.FishingListener;
 import dev.rosewood.roseloot.listener.HarvestBlockListener;
 import dev.rosewood.roseloot.listener.LootGenerateListener;
 import dev.rosewood.roseloot.listener.PiglinBarterListener;
+import dev.rosewood.roseloot.listener.VaultListener;
 import dev.rosewood.roseloot.listener.helper.LazyListener;
 import dev.rosewood.roseloot.listener.hook.ItemsAdderBlockBreakListener;
 import dev.rosewood.roseloot.listener.hook.OraxenBlockBreakListener;
@@ -50,6 +51,8 @@ public class LazyListenerManager extends DelayedManager {
         }
         if (NMSUtil.getVersionNumber() >= 20)
             this.lazyListeners.add(new ArchaeologyListener(rosePlugin));
+        if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 1))
+            this.lazyListeners.add(new VaultListener(rosePlugin));
         if (RoseStackerHook.isEnabled())
             this.lazyListeners.add(new RoseStackerEntityDeathListener(rosePlugin));
         if (ItemsAdderHook.isEnabled())
