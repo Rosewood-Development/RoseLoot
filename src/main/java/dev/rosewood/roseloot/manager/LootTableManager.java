@@ -50,6 +50,7 @@ import dev.rosewood.roseloot.loot.condition.tags.LegacyFeatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LuckChanceCondition;
+import dev.rosewood.roseloot.loot.condition.tags.OminousCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RelativeBlockTypeCondition;
@@ -59,7 +60,9 @@ import dev.rosewood.roseloot.loot.condition.tags.RequiredToolTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnReasonCondition;
 import dev.rosewood.roseloot.loot.condition.tags.SpawnerTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
+import dev.rosewood.roseloot.loot.condition.tags.TrialSpawnerStateCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
+import dev.rosewood.roseloot.loot.condition.tags.VaultStateCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.BiomeKeyCondition;
@@ -436,6 +439,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition::new);
         event.registerLootCondition("luck-chance", LuckChanceCondition::new);
         this.registerBoolean(event, "on-ground", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(Entity::isOnGround).isPresent());
+        event.registerLootCondition("ominous", OminousCondition::new);
         this.registerBoolean(event, "open-water", context -> context.get(LootContextParams.FISH_HOOK).filter(FishHook::isInOpenWater).isPresent());
         this.registerBoolean(event, "patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
         this.registerStrings(event, "permission", (context, values) -> context.get(LootContextParams.LOOTER).filter(x -> values.stream().anyMatch(x::hasPermission)).isPresent());
@@ -454,7 +458,9 @@ public class LootTableManager extends DelayedManager implements Listener {
         this.registerBoolean(event, "tamed-pet-owner", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Tameable.class).map(Tameable::getOwner).flatMap(x -> context.get(LootContextParams.LOOTER).filter(y -> x.getUniqueId().equals(y.getUniqueId()))).isPresent());
         event.registerLootCondition("temperature", TemperatureCondition::new);
         this.registerBoolean(event, "trading", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Merchant.class).filter(Merchant::isTrading).isPresent());
+        event.registerLootCondition("trial-spawner-state", TrialSpawnerStateCondition::new);
         event.registerLootCondition("vanilla-loot-table", VanillaLootTableCondition::new);
+        event.registerLootCondition("vault-state", VaultStateCondition::new);
         event.registerLootCondition("weather", WeatherCondition::new);
         event.registerLootCondition("world", WorldCondition::new);
 

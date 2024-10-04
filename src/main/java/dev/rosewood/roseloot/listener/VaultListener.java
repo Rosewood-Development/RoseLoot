@@ -8,6 +8,7 @@ import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootResult;
+import dev.rosewood.roseloot.loot.LootTable;
 import dev.rosewood.roseloot.loot.OverwriteExisting;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -89,14 +90,20 @@ public class VaultListener extends LazyLootTableListener {
                     .put(LootContextParams.ORIGIN, block.getLocation())
                     .put(LootContextParams.LOOTED_BLOCK, block)
                     .build();
-            List<ItemStack> displayItems = lootTableManager.getLootTables(LootTableTypes.VAULT).stream()
+            List<LootTable> lootTables = lootTableManager.getLootTables(LootTableTypes.VAULT).stream()
                     .filter(lootTable -> lootTable.check(context))
+                    .toList();
+            boolean overwrite = lootTables.stream().anyMatch(x -> x.getOverwriteExistingValues().contains(OverwriteExisting.ITEMS));
+            List<ItemStack> displayItems = lootTables.stream()
                     .flatMap(lootTable -> lootTable.getAllItems(context).stream())
                     .toList();
 
-            itemTracker = new DisplayItemTracker(displayItems);
+            itemTracker = new DisplayItemTracker(displayItems, overwrite);
             this.displayItemTrackers.put(location, itemTracker);
         }
+
+        if (!itemTracker.passesOverwrite())
+            return;
 
         ItemStack displayItem = itemTracker.getNextItem();
         if (displayItem != null)
@@ -119,10 +126,12 @@ public class VaultListener extends LazyLootTableListener {
     private static class DisplayItemTracker {
 
         private final List<ItemStack> items;
+        private final boolean overwrite;
         private int currentIndex;
 
-        private DisplayItemTracker(List<ItemStack> items) {
+        private DisplayItemTracker(List<ItemStack> items, boolean overwrite) {
             this.items = items;
+            this.overwrite = overwrite;
             this.currentIndex = 0;
         }
 
@@ -134,6 +143,16 @@ public class VaultListener extends LazyLootTableListener {
             ItemStack itemStack = this.items.get(this.currentIndex);
             this.currentIndex = (this.currentIndex + 1) % this.items.size();
             return itemStack;
+        }
+
+        public boolean passesOverwrite() {
+            return this.overwrite || LootUtils.checkChance(this.getOverwriteChance());
+        }
+
+        private double getOverwriteChance() {
+            if (this.items.isEmpty())
+                return 0;
+            return Math.min(Math.log10(this.items.size() / 3.0 + 1), 0.9); // Just approximate a chance based on the number of items
         }
 
     }
