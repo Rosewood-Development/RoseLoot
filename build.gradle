@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 group = 'dev.rosewood'
-version = '1.2.18'
+version = '1.2.19'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
