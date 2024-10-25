@@ -42,6 +42,9 @@ softdepend:
   - NBTAPI
   - CoreProtect
   - DeezItems
+  - zItems
+  - zEssentials
+  - AdvancedItems
   - CustomFishing
   - BlockTracker
 permissions:

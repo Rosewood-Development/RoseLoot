@@ -26,7 +26,9 @@ public enum CustomItemPlugin {
     SLIMEFUN(SlimefunItemProvider::new),
     CUSTOMCRAFTING(CustomCraftingItemProvider::new),
     CUSTOMFISHING(CustomFishingItemProvider::new),
-    ADVANCEDITEMS(AdvancedItemsProvider::new);
+    ADVANCEDITEMS(AdvancedItemsProvider::new),
+    ZITEMS(ZItemProvider::new),
+    ZESSENTIALS(ZEssentialsItemProvider::new);
 
     private final Lazy<ItemProvider> itemProvider;
 
