@@ -128,11 +128,12 @@ public class ItemLootMeta {
     protected List<Enchantment> randomEnchantments;
     protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
-    private Boolean copyBlockState;
-    private Boolean copyBlockData;
-    private Boolean copyBlockName;
+    private final boolean copyBlockState;
+    private final boolean copyBlockData;
+    private final boolean copyBlockName;
     private final StringProvider lootTable;
     protected boolean restoreVanillaAttributes;
+    private final boolean looterPickupOnly;
     protected List<ComponentLootMeta> components;
 
     public ItemLootMeta(ConfigurationSection section) {
@@ -251,15 +252,9 @@ public class ItemLootMeta {
             this.attributes = attributeData;
         }
 
-        if (section.getBoolean("copy-block-state", false))
-            this.copyBlockState = true;
-
-        if (section.getBoolean("copy-block-data", false))
-            this.copyBlockData = true;
-
-        if (section.getBoolean("copy-block-name", false))
-            this.copyBlockName = true;
-
+        this.copyBlockState = section.getBoolean("copy-block-state", false);
+        this.copyBlockData = section.getBoolean("copy-block-data", false);
+        this.copyBlockName = section.getBoolean("copy-block-name", false);
         this.lootTable = StringProvider.fromSection(section, "loot-table", null);
 
         if (NMSUtil.getVersionNumber() >= 21) {
@@ -276,6 +271,7 @@ public class ItemLootMeta {
         }
 
         this.restoreVanillaAttributes = section.getBoolean("restore-vanilla-attributes", true);
+        this.looterPickupOnly = section.getBoolean("looter-pickup-only", false);
     }
 
     /**
@@ -357,13 +353,13 @@ public class ItemLootMeta {
         Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
         if (lootedBlock.isPresent() && lootedBlock.get().getMaterial() == type) {
             BlockInfo block = lootedBlock.get();
-            if (this.copyBlockState != null && this.copyBlockState && itemMeta instanceof BlockStateMeta blockStateMeta)
+            if (this.copyBlockState && itemMeta instanceof BlockStateMeta blockStateMeta)
                 blockStateMeta.setBlockState(block.getState());
 
-            if (this.copyBlockData != null && this.copyBlockData && itemMeta instanceof BlockDataMeta blockDataMeta)
+            if (this.copyBlockData && itemMeta instanceof BlockDataMeta blockDataMeta)
                 blockDataMeta.setBlockData(block.getData());
 
-            if (this.copyBlockName != null && this.copyBlockName && block.getState() instanceof Nameable nameable)
+            if (this.copyBlockName && block.getState() instanceof Nameable nameable)
                 itemMeta.setDisplayName(nameable.getCustomName());
         }
 
@@ -382,6 +378,9 @@ public class ItemLootMeta {
                 RoseLoot.getInstance().getLogger().warning("Could not set loot-table on item, invalid loot table key: " + lootTableKeyString);
             }
         }
+
+        if (this.looterPickupOnly)
+            context.getLootingPlayer().ifPresent(player -> LootUtils.setRestrictedItemPickup(itemMeta, player.getUniqueId()));
 
         if (NMSUtil.getVersionNumber() >= 21)
             this.components.forEach(x -> x.apply(itemMeta, context));

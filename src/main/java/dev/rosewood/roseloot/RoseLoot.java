@@ -7,6 +7,7 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.hook.conditions.HookConditionListener;
 import dev.rosewood.roseloot.listener.FireworkDamageListener;
+import dev.rosewood.roseloot.listener.ItemPickupListener;
 import dev.rosewood.roseloot.listener.VoucherListener;
 import dev.rosewood.roseloot.manager.CommandManager;
 import dev.rosewood.roseloot.manager.CooldownManager;
@@ -47,6 +48,7 @@ public class RoseLoot extends RosePlugin {
         pluginManager.registerEvents(new VoucherListener(this), this);
         pluginManager.registerEvents(new HookConditionListener(), this);
         pluginManager.registerEvents(new FireworkDamageListener(this), this);
+        pluginManager.registerEvents(new ItemPickupListener(), this);
     }
 
     @Override

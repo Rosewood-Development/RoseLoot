@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -21,7 +22,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.Tag;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
@@ -37,6 +37,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
@@ -45,17 +46,13 @@ import org.bukkit.util.Vector;
 @SuppressWarnings("unchecked")
 public final class LootUtils {
 
-    private static final DecimalFormatSymbols DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols();
-    static {
-        DECIMAL_FORMAT_SYMBOLS.setDecimalSeparator('.');
-    }
-
     private LootUtils() {
 
     }
 
     public static final Random RANDOM = new Random();
-    private static final String SPAWN_REASON_METADATA_NAME = "spawn_reason";
+    private static final NamespacedKey SPAWN_REASON_METADATA_KEY = new NamespacedKey(RoseLoot.getInstance(), "spawn_reason");
+    private static final NamespacedKey RESTRICTED_PICKUP_KEY = new NamespacedKey(RoseLoot.getInstance(), "restricted_pickup");
     private static final String REGEX_DECOLORIZE_HEX = "&x&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])&([0-9A-Fa-f])";
     public static final Map<String, Color> FIREWORK_COLORS = new HashMap<>() {{
         this.put("WHITE", Color.WHITE);
@@ -77,8 +74,12 @@ public final class LootUtils {
         this.put("ORANGE", Color.ORANGE);
     }};
 
+
+    private static final DecimalFormatSymbols DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols();
     public static final Map<Class<? extends LivingEntity>, EntityType> ENTITY_CLASS_TO_TYPE;
     static {
+        DECIMAL_FORMAT_SYMBOLS.setDecimalSeparator('.');
+
         ENTITY_CLASS_TO_TYPE = new HashMap<>();
         for (EntityType entityType : EntityType.values()) {
             Class<? extends Entity> entityClass = entityType.getEntityClass();
@@ -154,8 +155,7 @@ public final class LootUtils {
      */
     public static void setEntitySpawnReason(LivingEntity entity, SpawnReason spawnReason) {
         PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(RoseLoot.getInstance(), SPAWN_REASON_METADATA_NAME);
-        dataContainer.set(key, PersistentDataType.STRING, spawnReason.name());
+        dataContainer.set(SPAWN_REASON_METADATA_KEY, PersistentDataType.STRING, spawnReason.name());
     }
 
     /**
@@ -165,7 +165,7 @@ public final class LootUtils {
      * @return The SpawnReason, or SpawnReason.CUSTOM if none is saved
      */
     public static SpawnReason getEntitySpawnReason(LivingEntity entity) {
-        String reason = entity.getPersistentDataContainer().get(new NamespacedKey(RoseLoot.getInstance(), SPAWN_REASON_METADATA_NAME), PersistentDataType.STRING);
+        String reason = entity.getPersistentDataContainer().get(SPAWN_REASON_METADATA_KEY, PersistentDataType.STRING);
         SpawnReason spawnReason;
         if (reason != null) {
             try {
@@ -177,6 +177,24 @@ public final class LootUtils {
             spawnReason = SpawnReason.CUSTOM;
         }
         return spawnReason;
+    }
+
+    public static void setRestrictedItemPickup(ItemMeta itemMeta, UUID owner) {
+        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+        dataContainer.set(RESTRICTED_PICKUP_KEY, PersistentDataType.STRING, owner.toString());
+    }
+
+    public static UUID getRestrictedItemPickup(ItemMeta itemMeta) {
+        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+        String value = dataContainer.get(RESTRICTED_PICKUP_KEY, PersistentDataType.STRING);
+        if (value != null)
+            return UUID.fromString(value);
+        return null;
+    }
+
+    public static void removeRestrictedItemPickup(ItemMeta itemMeta) {
+        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+        dataContainer.remove(RESTRICTED_PICKUP_KEY);
     }
 
     public static List<File> listFiles(File current, List<String> excludedDirectories, List<String> extensions) {
