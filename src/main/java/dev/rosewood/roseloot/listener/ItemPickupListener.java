@@ -22,7 +22,6 @@ public class ItemPickupListener implements Listener {
         UUID owner = LootUtils.getRestrictedItemPickup(itemMeta);
         if (owner != null) {
             item.setOwner(owner);
-            item.
             LootUtils.removeRestrictedItemPickup(itemMeta);
             itemStack.setItemMeta(itemMeta);
         }
