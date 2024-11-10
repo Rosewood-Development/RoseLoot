@@ -285,7 +285,7 @@ public final class LootUtils {
             return 0;
 
         double luck = 0;
-        AttributeInstance attribute = livingEntity.getAttribute(Attribute.GENERIC_LUCK);
+        AttributeInstance attribute = livingEntity.getAttribute(VersionUtils.LUCK);
         if (attribute != null)
             luck += attribute.getValue();
 
