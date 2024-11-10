@@ -4,11 +4,12 @@ import dev.rosewood.rosegarden.utils.NMSUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Registry;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "removal", "UnstableApiUsage"})
 public class VersionUtils {
 
     public static final EntityType FIREWORK_ROCKET;
@@ -26,6 +27,7 @@ public class VersionUtils {
     public static final Enchantment SWEEPING_EDGE;
     public static final Enchantment UNBREAKING;
     public static final ItemFlag HIDE_ADDITIONAL_TOOLTIP;
+    public static final Attribute LUCK;
 
     static {
         if (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() >= 5)) {
@@ -60,6 +62,12 @@ public class VersionUtils {
             SWEEPING_EDGE = findEnchantmentLegacy("sweeping", "sweeping_edge");
             UNBREAKING = findEnchantmentLegacy("unbreaking", "durability");
             HIDE_ADDITIONAL_TOOLTIP = ItemFlag.valueOf("HIDE_POTION_EFFECTS");
+        }
+
+        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
+            LUCK = Attribute.LUCK;
+        } else {
+            LUCK = Attribute.valueOf("generic.luck");
         }
     }
 

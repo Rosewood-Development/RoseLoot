@@ -53,7 +53,7 @@ public final class VanillaLootTableConverter {
         vanillaDirectory.mkdirs();
 
         for (LootTables lootTables : LootTables.values()) {
-            if (lootTables == LootTables.EMPTY)
+            if (lootTables.name().equals("EMPTY"))
                 continue;
 
             String path = lootTables.getKey().getKey();
