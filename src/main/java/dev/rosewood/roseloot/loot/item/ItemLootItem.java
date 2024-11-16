@@ -115,7 +115,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
 
         for (AmountModifier amountModifier : this.amountModifiers) {
             if (!amountModifier.check(context))
-                break;
+                continue;
 
             if (amountModifier.additive()) {
                 amount += amountModifier.getValue(context);
