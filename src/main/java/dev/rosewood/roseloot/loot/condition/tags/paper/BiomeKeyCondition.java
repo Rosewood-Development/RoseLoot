@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags.paper;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
@@ -37,6 +38,13 @@ public class BiomeKeyCondition extends BaseLootCondition {
         }
 
         return !this.biomeKeys.isEmpty();
+    }
+
+    @Override
+    protected String getDeprecationReplacement() {
+        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3)
+            return "biome";
+        return super.getDeprecationReplacement();
     }
 
 }

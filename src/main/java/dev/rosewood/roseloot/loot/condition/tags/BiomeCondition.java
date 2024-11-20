@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
@@ -31,10 +32,9 @@ public class BiomeCondition extends BaseLootCondition {
         this.biomes = new ArrayList<>();
 
         for (String value : values) {
-            try {
-                Biome biome = Biome.valueOf(value.toUpperCase());
+            Biome biome = VersionUtils.getBiome(value);
+            if (biome != null)
                 this.biomes.add(biome);
-            } catch (Exception ignored) { }
         }
 
         return !this.biomes.isEmpty();
