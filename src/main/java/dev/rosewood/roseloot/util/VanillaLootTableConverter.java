@@ -132,7 +132,7 @@ public final class VanillaLootTableConverter {
                     || path.startsWith("gameplay/hero_of_the_village")
                     || path.startsWith("gameplay/panda_sneeze")
                     || path.startsWith("gameplay/sniffer_digging")
-                    || path.startsWith("shearing/bogged")) {
+                    || (path.startsWith("shearing/") && path.lastIndexOf('/') < 9)) {
                 writeEntityDropsHeader(path, writer);
             } else if (path.startsWith("archaeology")) {
                 writeArchaeologyHeader(path, writer);
@@ -206,6 +206,12 @@ public final class VanillaLootTableConverter {
             writer.write("- 'villager-profession:" + path.substring("gameplay/hero_of_the_village/".length(), path.length() - "_gift".length()) + "'");
         } else if (path.startsWith("shearing/bogged")) {
             writer.write("- 'entity-type:bogged'");
+        } else if (path.startsWith("shearing/snow_golem")) {
+            writer.write("- 'entity-type:snow_golem'");
+        } else if (path.startsWith("shearing/sheep")) {
+            writer.write("- 'entity-type:sheep'");
+        } else if (path.startsWith("shearing/mooshroom")) {
+            writer.write("- 'entity-type:mooshroom'");
         } else {
             RoseLoot.getInstance().getLogger().warning("Unhandled gameplay loot table type: " + path);
         }
@@ -750,7 +756,9 @@ public final class VanillaLootTableConverter {
                     JsonObject typeSpecificObject = propertiesPredicate.get("type_specific").getAsJsonObject();
                     String entityType = typeSpecificObject.get("type").getAsString().replace("minecraft:", "");
                     switch (entityType) {
-                        case "slime" -> stringBuilder.append("slime-size:1");
+                        case "slime" -> {
+                            stringBuilder.append("slime-size:1");
+                        }
                         case "fishing_hook" -> {
                             if (typeSpecificObject.get("in_open_water").getAsBoolean()) {
                                 stringBuilder.append("open-water");
@@ -759,6 +767,27 @@ public final class VanillaLootTableConverter {
                             }
                         }
                         case "raider" -> stringBuilder.append("patrol-leader");
+                        case "sheep" -> {
+                            boolean existing = false;
+                            if (typeSpecificObject.has("color")) {
+                                String color = typeSpecificObject.get("color").getAsString();
+                                stringBuilder.append("sheep-color:").append(color);
+                                existing = true;
+                            }
+                            if (typeSpecificObject.has("sheared")) {
+                                if (existing)
+                                    stringBuilder.append(" ").append(AND_PATTERN).append(" ");
+                                if (typeSpecificObject.get("sheared").getAsBoolean()) {
+                                    stringBuilder.append("sheep-sheared");
+                                } else {
+                                    stringBuilder.append("!sheep-sheared");
+                                }
+                            }
+                        }
+                        case "mooshroom" -> {
+                            String variant = typeSpecificObject.get("variant").getAsString();
+                            stringBuilder.append("mooshroom-variant:").append(variant);
+                        }
                         default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type_specific value: " + entityType + " | " + path);
                     }
                 } else if (propertiesPredicate.has("type")) {
@@ -1120,7 +1149,8 @@ public final class VanillaLootTableConverter {
                                  "minecraft:container_loot",
                                  "minecraft:bees",
                                  "minecraft:profile",
-                                 "minecraft:note_block_sound" -> valuesToWrite.add("copy-block-state: true");
+                                 "minecraft:note_block_sound",
+                                 "minecraft:rarity" -> valuesToWrite.add("copy-block-state: true");
                             case "minecraft:custom_name", "minecraft:item_name" -> valuesToWrite.add("copy-block-name: true");
                             default -> RoseLoot.getInstance().getLogger().warning("minecraft:copy_components unhandled include: " + value + " | " + path);
                         }

@@ -11,7 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 
-@SuppressWarnings({"deprecation", "removal", "UnstableApiUsage"})
+@SuppressWarnings({"deprecation", "removal"})
 public class VersionUtils {
 
     public static final EntityType FIREWORK_ROCKET;

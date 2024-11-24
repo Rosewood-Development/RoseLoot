@@ -250,7 +250,7 @@ public class EntityPropertyConditions {
             EntityType entityType = LootUtils.ENTITY_CLASS_TO_TYPE.get(this.entityClass);
             if (entityType == null)
                 throw new IllegalArgumentException("Invalid entity class: " + this.entityClass.getName());
-            return entityType.getKey().getKey().toLowerCase().replace('_', '-') + '-' + this.name;
+            return entityType.getKey().getKey().replace('_', '-') + '-' + this.name;
         }
 
     }
