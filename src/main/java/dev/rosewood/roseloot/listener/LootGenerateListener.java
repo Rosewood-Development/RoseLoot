@@ -28,7 +28,7 @@ public class LootGenerateListener extends LazyLootTableListener {
         super(rosePlugin, LootTableTypes.CONTAINER);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLootGenerate(LootGenerateEvent event) {
         if (event.getInventoryHolder() instanceof Container container) {
             Block block = container.getBlock();
