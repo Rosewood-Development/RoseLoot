@@ -80,6 +80,7 @@ dependencies {
     compileOnly 'net.advancedplugins:advanceditems:1.9.4'
     compileOnly 'fr.maxlego08:zitems:1.0.0'
     compileOnly 'fr.maxlego08:zessentials:1.0.1.3'
+    compileOnly 'com.nexomc:nexo:0.4'
     compileOnly 'com.arcaniax:HeadDatabase-API:1.3.1', {
         exclude group: 'org.spigotmc'
     }

@@ -28,7 +28,8 @@ public enum CustomItemPlugin {
     CUSTOMFISHING(CustomFishingItemProvider::new),
     ADVANCEDITEMS(AdvancedItemsProvider::new),
     ZITEMS(ZItemProvider::new),
-    ZESSENTIALS(ZEssentialsItemProvider::new);
+    ZESSENTIALS(ZEssentialsItemProvider::new),
+    NEXO(NexoItemProvider::new);
 
     private final Lazy<ItemProvider> itemProvider;
 
