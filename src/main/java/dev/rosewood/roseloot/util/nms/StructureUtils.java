@@ -62,7 +62,9 @@ public final class StructureUtils {
         if (structureHandler == null) {
             try {
                 StructureHandler handler;
-                if (NMSUtil.getVersionNumber() >= 19) {
+                if (NMSUtil.getVersionNumber() >= 21) {
+                    handler = new StructureHandler_v1_21();
+                } else if (NMSUtil.getVersionNumber() >= 19) {
                     handler = new StructureHandler_v1_19();
                 } else if (NMSUtil.getVersionNumber() >= 17) {
                     handler = new StructureHandler_v1_17();
@@ -81,6 +83,70 @@ public final class StructureUtils {
 
     private interface StructureHandler {
         boolean isWithinStructure(Location location, NamespacedKey structureKey) throws ReflectiveOperationException;
+    }
+
+    private static class StructureHandler_v1_21 implements StructureHandler {
+
+        private final Method method_CraftWorld_getHandle;
+        private final Method method_ServerLevel_structureManager;
+        private final Method method_ServerLevel_registryAccess;
+        private final Constructor<?> constructor_BlockPos;
+        private final Method method_Registry_getOrThrow;
+        private final Method method_StructureManager_getStructureWithPieceAt;
+        private final Method method_RegistryAccess_lookupOrThrow;
+        private final Field field_Registries_STRUCTURE;
+        private final Method method_ResourceLocation_parse;
+        private final Method method_ResourceKey_create;
+        private final Method method_HolderReference_value;
+        private final Field field_StructureStart_INVALID_START;
+
+        public StructureHandler_v1_21() throws ReflectiveOperationException {
+            String name = Bukkit.getServer().getClass().getPackage().getName();
+
+            Class<?> class_CraftWorld = Class.forName(name + ".CraftWorld");
+            Class<?> class_LevelReader = Class.forName("net.minecraft.world.level.LevelReader");
+            Class<?> class_ServerLevel = Class.forName("net.minecraft.server.level.WorldServer");
+            this.method_CraftWorld_getHandle = class_CraftWorld.getDeclaredMethod("getHandle");
+            this.method_ServerLevel_structureManager = class_ServerLevel.getDeclaredMethod("b");
+            Class<?> class_BlockPos = Class.forName("net.minecraft.core.BlockPosition");
+            this.constructor_BlockPos = class_BlockPos.getConstructor(int.class, int.class, int.class);
+            this.method_ServerLevel_registryAccess = class_LevelReader.getDeclaredMethod("K_");
+            Class<?> class_Registry = Class.forName("net.minecraft.core.HolderGetter");
+            Class<?> class_ResourceKey = Class.forName("net.minecraft.resources.ResourceKey");
+            this.method_Registry_getOrThrow = class_Registry.getDeclaredMethod("b", class_ResourceKey);
+            Class<?> class_StructureManager = Class.forName("net.minecraft.world.level.StructureManager");
+            Class<?> class_Structure = Class.forName("net.minecraft.world.level.levelgen.structure.Structure");
+            this.method_StructureManager_getStructureWithPieceAt = class_StructureManager.getDeclaredMethod("b", class_BlockPos, class_Structure);
+            Class<?> class_RegistryAccess = Class.forName("net.minecraft.core.RegistryAccess");
+            this.method_RegistryAccess_lookupOrThrow = class_RegistryAccess.getDeclaredMethod("b", class_ResourceKey);
+            Class<?> class_Registries = Class.forName("net.minecraft.core.registries.Registries");
+            this.field_Registries_STRUCTURE = class_Registries.getField("aU");
+            Class<?> class_ResourceLocation = Class.forName("net.minecraft.resources.MinecraftKey");
+            this.method_ResourceLocation_parse = class_ResourceLocation.getDeclaredMethod("a", String.class);
+            this.method_ResourceKey_create = class_ResourceKey.getDeclaredMethod("a", class_ResourceKey, class_ResourceLocation);
+            Class<?> class_HolderReference = Class.forName("net.minecraft.core.Holder$Reference");
+            this.method_HolderReference_value = class_HolderReference.getDeclaredMethod("a");
+            Class<?> class_StructureStart = Class.forName("net.minecraft.world.level.levelgen.structure.StructureStart");
+            this.field_StructureStart_INVALID_START = class_StructureStart.getField("b");
+        }
+
+        @Override
+        public boolean isWithinStructure(Location location, NamespacedKey namespacedKey) throws ReflectiveOperationException {
+            Object serverLevel = this.method_CraftWorld_getHandle.invoke(location.getWorld());
+            Object structureManager = this.method_ServerLevel_structureManager.invoke(serverLevel);
+            Object blockPos = this.constructor_BlockPos.newInstance(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+            Object registryAccess = this.method_ServerLevel_registryAccess.invoke(serverLevel);
+            Object resourceLocation = this.method_ResourceLocation_parse.invoke(null, namespacedKey.toString());
+            Object structureRegistryKey = this.field_Registries_STRUCTURE.get(null);
+            Object resourceKey = this.method_ResourceKey_create.invoke(null, structureRegistryKey, resourceLocation);
+            Object structureRegistry = this.method_RegistryAccess_lookupOrThrow.invoke(registryAccess, structureRegistryKey);
+            Object structureReference = this.method_Registry_getOrThrow.invoke(structureRegistry, resourceKey);
+            Object structure = this.method_HolderReference_value.invoke(structureReference);
+            Object structureStart = this.method_StructureManager_getStructureWithPieceAt.invoke(structureManager, blockPos, structure);
+            Object invalidStart = this.field_StructureStart_INVALID_START.get(null);
+            return !structureStart.equals(invalidStart);
+        }
+
     }
 
     private static class StructureHandler_v1_19 implements StructureHandler {
