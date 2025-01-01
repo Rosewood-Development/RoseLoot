@@ -33,7 +33,7 @@ repositories {
     maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
     maven { url = 'https://erethon.de/repo/' }
     maven { url = 'https://maven.playpro.com/' }
-    maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
+    maven { url = 'https://nexus.phoenixdevt.fr/repository/maven-public/' }
     maven { url = 'https://r.irepo.space/maven/' }
     maven { url = 'https://libraries.minecraft.net/' }
     maven { url = 'https://jitpack.io/' }
@@ -49,11 +49,14 @@ dependencies {
     compileOnly 'me.realized:tokenmanager:3.2.5'
     compileOnly 'su.nightexpress:coinsengine:2.2.0.1'
     compileOnly 'su.nightexpress:nightcore:2.5.1'
-    compileOnly 'io.lumine:MythicLib-dist:1.3.1'
-    compileOnly 'net.Indyuce:MMOItems:6.7.3'
-    compileOnly 'net.Indyuce:MMOCore:1.9.3'
+    compileOnly 'io.lumine:MythicLib-dist:1.7.1-SNAPSHOT'
+    compileOnly 'io.lumine:Mythic-Dist:5.4.0'
+    compileOnly 'net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT'
+    compileOnly 'net.Indyuce:MMOCore-API:1.13.1-SNAPSHOT'
     compileOnly 'com.github.jojodmo:ItemBridge:master-SNAPSHOT'
-    compileOnly 'com.ssomar:score:3.9.72'
+    compileOnly 'com.ssomar:score:5.24.12.29'
+    compileOnly 'com.ssomar:executableitems:7.24.12.29'
+    compileOnly 'com.ssomar:executableblocks:5.24.12.29'
     compileOnly 'com.github.LoneDev6:api-itemsadder:2.5.5'
     compileOnly 'de.erethon:caliburn:1.0.3'
     compileOnly 'com.github.oraxen:oraxen:1.161.0'

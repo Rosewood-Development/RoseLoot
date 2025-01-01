@@ -9,6 +9,11 @@ import org.bukkit.Location;
  */
 public interface GroupTriggerableLootItem<T extends GroupTriggerableLootItem<T>> extends TriggerableLootItem {
 
+    @Override
+    default void trigger(LootContext context, Location location) {
+        this.trigger(context, location, List.of());
+    }
+
     /**
      * Causes the LootItem to trigger its contents.
      * Allows for triggering multiple compatible GroupTriggerableLootItems at once.

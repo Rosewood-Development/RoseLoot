@@ -19,11 +19,6 @@ public class ExplosionLootItem implements GroupTriggerableLootItem<ExplosionLoot
     }
 
     @Override
-    public void trigger(LootContext context, Location location) {
-        this.trigger(context, location, List.of());
-    }
-
-    @Override
     public void trigger(LootContext context, Location location, List<ExplosionLootItem> others) {
         int power = this.power.getInteger(context) + others.stream().mapToInt(x -> x.power.getInteger(context)).sum();
         boolean fire = this.fire || others.stream().anyMatch(x -> x.fire);

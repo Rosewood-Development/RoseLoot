@@ -18,11 +18,6 @@ public class MMOCoreExperienceLootItem implements GroupTriggerableLootItem<MMOCo
     }
 
     @Override
-    public void trigger(LootContext context, Location location) {
-        this.trigger(context, location, List.of());
-    }
-
-    @Override
     public void trigger(LootContext context, Location location, List<MMOCoreExperienceLootItem> others) {
         double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
         context.getLootingPlayer().ifPresent(x -> MMOCoreHook.giveExperience(x, this.profession, amount));

@@ -23,11 +23,6 @@ public class EcoSkillsExperienceLootItem implements GroupTriggerableLootItem<Eco
     }
 
     @Override
-    public void trigger(LootContext context, Location location) {
-        this.trigger(context, location, List.of());
-    }
-
-    @Override
     public void trigger(LootContext context, Location location, List<EcoSkillsExperienceLootItem> others) {
         double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
         context.getLootingPlayer().ifPresent(player -> {
