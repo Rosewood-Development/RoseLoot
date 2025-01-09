@@ -1,9 +1,12 @@
 package dev.rosewood.roseloot.hook.items;
 
+import dev.rosewood.roseloot.loot.condition.LootCondition;
+import dev.rosewood.roseloot.loot.condition.tags.InventoryContainsCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.Lazy;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,11 +60,15 @@ public enum CustomItemPlugin {
         return this.itemProvider.get().getConditionSuffix();
     }
 
-    public BiPredicate<LootContext, List<String>> getLootConditionPredicate() {
+    public BiPredicate<LootContext, List<String>> getInHandLootConditionPredicate() {
         return (context, values) -> context.getItemUsed()
                 .map(this::resolveItemId)
                 .filter(x -> values.stream().anyMatch(x::equalsIgnoreCase))
                 .isPresent();
+    }
+
+    public Function<String, LootCondition> getInventoryContainsLootConditionFunction() {
+        return tag -> new InventoryContainsCondition(tag, this::resolveItem, this.name().toLowerCase());
     }
 
     public static CustomItemPlugin fromString(String name) {

@@ -46,6 +46,7 @@ import dev.rosewood.roseloot.loot.condition.tags.HasSaddleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.HumidityCondition;
 import dev.rosewood.roseloot.loot.condition.tags.InFluidCondition;
 import dev.rosewood.roseloot.loot.condition.tags.InputItemCondition;
+import dev.rosewood.roseloot.loot.condition.tags.InventoryContainsCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LegacyFeatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
@@ -441,6 +442,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("humidity", HumidityCondition::new);
         event.registerLootCondition("in-fluid", InFluidCondition::new);
         event.registerLootCondition("input-item", InputItemCondition::new);
+        event.registerLootCondition("inventory-contains", InventoryContainsCondition::new);
         event.registerLootCondition("killed-by", KilledByCondition::new);
         event.registerLootCondition("light-level", LightLevelCondition::new);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition::new);
