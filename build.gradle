@@ -115,7 +115,7 @@ processResources {
 
 publishing {
     publications {
-        shadow(MavenPublication) { publication ->
+        shadow(MavenPublication) {
             from components.shadow
             artifactId = 'roseloot'
             pom {
@@ -140,4 +140,4 @@ publishing {
 }
 
 build.dependsOn shadowJar
-publishShadowPublicationToMavenRepository.dependsOn jar
+generateMetadataFileForShadowPublication.dependsOn jar
