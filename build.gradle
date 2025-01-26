@@ -1,17 +1,17 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '8.3.5'
     id 'java-library'
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 group = 'dev.rosewood'
 version = '1.2.21-SNAPSHOT'
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     disableAutoTargetJvm()
 }
@@ -35,6 +35,7 @@ repositories {
     maven { url = 'https://maven.playpro.com/' }
     maven { url = 'https://nexus.phoenixdevt.fr/repository/maven-public/' }
     maven { url = 'https://r.irepo.space/maven/' }
+    maven { url = 'https://repo.momirealms.net/releases/' }
     maven { url = 'https://libraries.minecraft.net/' }
     maven { url = 'https://jitpack.io/' }
 }
@@ -80,7 +81,7 @@ dependencies {
     compileOnly 'com.dfsek.terra:bukkit:6.1.2-BETA+9abac34b8'
     compileOnly 'de.tr7zw:item-nbt-api-plugin:2.13.1'
     compileOnly 'net.coreprotect:coreprotect:21.0'
-    compileOnly 'com.github.Xiao-MoMi:Custom-Fishing:2.2.17'
+    compileOnly 'net.momirealms:custom-fishing:2.3.3'
     compileOnly 'dev.krakenied:blocktracker:1.0.5'
     compileOnly 'net.advancedplugins:advanceditems:1.9.4'
     compileOnly 'fr.maxlego08:zitems:1.0.0'
@@ -95,7 +96,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveClassifier.set(null)
+    archiveClassifier.set('')
     minimize()
 
     relocate('dev.rosewood.rosegarden', 'dev.rosewood.roseloot.lib.rosegarden')
@@ -115,7 +116,7 @@ processResources {
 publishing {
     publications {
         shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
+            from components.shadow
             artifactId = 'roseloot'
             pom {
                 name = 'roseloot'
@@ -139,3 +140,4 @@ publishing {
 }
 
 build.dependsOn shadowJar
+publishShadowPublicationToMavenRepository.dependsOn jar
