@@ -29,7 +29,8 @@ public class RoseStackerHook {
         // Don't ignore if single entity kill or not a stack
         if (!api.isEntityStackMultipleDeathEventCalled()
                 || stackedEntity == null
-                || stackedEntity.getStackSize() == 1)
+                || stackedEntity.getStackSize() == 1
+                || !SettingKey.ENTITY_DROP_ACCURATE_ITEMS.get())
             return false;
 
         // Ignore if entire stack kill
