@@ -57,6 +57,10 @@ public class HookConditionListener implements Listener {
             event.registerLootCondition("oraxen-block", OraxenBlockCondition::new);
         }
 
+        if (pluginManager.getPlugin("Nexo") != null) {
+            event.registerLootCondition("nexo-block", NexoBlockCondition::new);
+        }
+
         if (pluginManager.getPlugin("CoreProtect") != null) {
             event.registerLootCondition("coreprotect-natural-block", CoreProtectNaturalBlockCondition::new);
         }
