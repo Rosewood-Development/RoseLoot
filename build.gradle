@@ -29,6 +29,7 @@ repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://repo.rosewooddev.io/repository/public/' }
     maven { url = 'https://repo.codemc.org/repository/maven-public/' }
+    maven { url = 'https://maven.devs.beer/' }
     maven { url = 'https://repo.luminescent.dev/repository/public-releases/' }
     maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
     maven { url = 'https://erethon.de/repo/' }
@@ -58,7 +59,7 @@ dependencies {
     compileOnly 'com.ssomar:score:5.24.12.29'
     compileOnly 'com.ssomar:executableitems:7.24.12.29'
     compileOnly 'com.ssomar:executableblocks:5.24.12.29'
-    compileOnly 'com.github.LoneDev6:api-itemsadder:2.5.5'
+    compileOnly 'dev.lone:api-itemsadder:4.0.8'
     compileOnly 'de.erethon:caliburn:1.0.3'
     compileOnly 'com.github.oraxen:oraxen:1.161.0'
     compileOnly 'nl.knokko:customitems:9.18'
