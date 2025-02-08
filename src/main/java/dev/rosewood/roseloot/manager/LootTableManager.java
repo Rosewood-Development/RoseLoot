@@ -53,6 +53,7 @@ import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LuckChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.OminousCondition;
+import dev.rosewood.roseloot.loot.condition.tags.PlaceholderChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PotionEffectCondition;
 import dev.rosewood.roseloot.loot.condition.tags.RelativeBlockTypeCondition;
@@ -453,6 +454,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         this.registerBoolean(event, "patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
         this.registerStrings(event, "permission", (context, values) -> context.get(LootContextParams.LOOTER).filter(x -> values.stream().anyMatch(x::hasPermission)).isPresent());
         event.registerLootCondition("placeholder", PlaceholderCondition::new);
+        event.registerLootCondition("placeholder-chance", PlaceholderChanceCondition::new);
         event.registerLootCondition("potion-effect", PotionEffectCondition::new);
         event.registerLootCondition("relative-block-type", RelativeBlockTypeCondition::new);
         event.registerLootCondition("required-tool", RequiredToolCondition::new);
