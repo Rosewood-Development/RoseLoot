@@ -1,0 +1,74 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+compileJava {
+    options.compilerArgs += ['-parameters']
+    options.fork = true
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:$spigotVersion-R0.1-SNAPSHOT"
+    compileOnly 'com.mojang:authlib:1.5.21'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    compileOnly 'com.github.milkbowl:vault:1.7.3'
+    compileOnly 'me.lokka30:treasury-api:1.1.1'
+    compileOnly 'org.black_ixx:playerpoints:3.1.0'
+    compileOnly 'me.realized:tokenmanager:3.2.5'
+    compileOnly 'su.nightexpress:coinsengine:2.2.0.1'
+    compileOnly 'su.nightexpress:nightcore:2.5.1'
+    compileOnly 'io.lumine:MythicLib-dist:1.7.1-SNAPSHOT'
+    compileOnly 'io.lumine:Mythic-Dist:5.4.0'
+    compileOnly 'net.Indyuce:MMOItems-API:6.9.5-SNAPSHOT'
+    compileOnly 'net.Indyuce:MMOCore-API:1.13.1-SNAPSHOT'
+    compileOnly 'com.github.jojodmo:ItemBridge:master-SNAPSHOT'
+    compileOnly 'com.ssomar:score:5.24.12.29'
+    compileOnly 'com.ssomar:executableitems:7.24.12.29'
+    compileOnly 'com.ssomar:executableblocks:5.24.12.29'
+    compileOnly 'dev.lone:api-itemsadder:4.0.8'
+    compileOnly 'de.erethon:caliburn:1.0.3'
+    compileOnly 'com.github.oraxen:oraxen:1.161.0'
+    compileOnly 'nl.knokko:customitems:9.18'
+    compileOnly 'com.github.emanondev:ItemEdit:2.17', {
+        exclude group: 'org.spigotmc'
+    }
+    compileOnly 'thirtyvirus.uber:uberitems:2.6'
+    compileOnly 'dev.luminescent:DeezItems:1.1.1@jar'
+    compileOnly 'com.github.Slimefun:Slimefun4:RC-37'
+    compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
+    compileOnly 'pers.neige.neigeitems:NeigeItems:1.14.27'
+    compileOnly 'com.willfp:eco:6.71.4'
+    compileOnly 'com.willfp:EcoSkills:3.58.0'
+    compileOnly 'me.wolfyscript:customcrafting:3.16.6.2'
+    compileOnly 'com.wolfyscript:utilities:4.16.4.1'
+    compileOnly 'dev.rosewood:rosestacker:1.5.24-SNAPSHOT'
+    compileOnly 'me.casperge:realisticseasons:8.1.3'
+    compileOnly 'com.dfsek.terra:api:6.1.2-BETA+9abac34b8'
+    compileOnly 'com.dfsek.terra:common:6.1.2-BETA+9abac34b8'
+    compileOnly 'com.dfsek.terra:bukkit:6.1.2-BETA+9abac34b8'
+    compileOnly 'de.tr7zw:item-nbt-api-plugin:2.13.1'
+    compileOnly 'net.coreprotect:coreprotect:21.0'
+    compileOnly 'net.momirealms:custom-fishing:2.3.3'
+    compileOnly 'dev.krakenied:blocktracker:1.0.5'
+    compileOnly 'net.advancedplugins:advanceditems:1.9.4'
+    compileOnly 'fr.maxlego08:zitems:1.0.0'
+    compileOnly 'fr.maxlego08:zessentials:1.0.1.3'
+    compileOnly 'com.nexomc:nexo:0.4'
+    compileOnly 'com.arcaniax:HeadDatabase-API:1.3.1', {
+        exclude group: 'org.spigotmc'
+    }
+
+    api "dev.rosewood:rosegarden:$rosegardenVersion"
+    api "dev.rosewood:rosegarden-compatibility:$rosegardenVersion"
+}
+
+processResources {
+    from (sourceSets.main.resources.srcDirs) {
+        include '**/*.yml'
+        filter ReplaceTokens, tokens: ["version": project.property("version")]
+        duplicatesStrategy DuplicatesStrategy.INCLUDE
+    }
+}
+
+shadowJar {
+    archiveClassifier.set(null)
+}

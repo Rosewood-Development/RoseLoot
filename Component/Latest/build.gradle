@@ -1,0 +1,4 @@
+dependencies {
+    compileOnly project(':Plugin')
+    compileOnly "io.papermc.paper:paper-api:$spigotVersion-R0.1-SNAPSHOT"
+}
