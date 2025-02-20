@@ -22,6 +22,7 @@ public class LootItemComponentProviderImpl implements LootItemComponentProvider 
                 Map.entry("max-damage", MaxDamageComponent::new),
                 Map.entry("max-stack-size", MaxStackSizeComponent::new),
                 Map.entry("rarity", RarityComponent::new),
+                Map.entry("tooltip-style", TooltipStyleComponent::new),
                 Map.entry("unbreakable", UnbreakableComponent::new)
         );
     }
@@ -38,6 +39,7 @@ public class LootItemComponentProviderImpl implements LootItemComponentProvider 
                 Map.entry("max-damage", MaxDamageComponent::applyProperties),
                 Map.entry("max-stack-size", MaxStackSizeComponent::applyProperties),
                 Map.entry("rarity", RarityComponent::applyProperties),
+                Map.entry("tooltip-style", TooltipStyleComponent::applyProperties),
                 Map.entry("unbreakable", UnbreakableComponent::applyProperties)
         );
     }
