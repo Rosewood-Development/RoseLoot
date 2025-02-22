@@ -11,24 +11,31 @@ import org.bukkit.entity.Player;
 public class CommandLootItem implements TriggerableLootItem {
 
     private final StringProvider command;
+    private final boolean runAsPlayer;
 
-    protected CommandLootItem(StringProvider command) {
+    protected CommandLootItem(StringProvider command, boolean runAsPlayer) {
         this.command = command;
+        this.runAsPlayer = runAsPlayer;
     }
 
     @Override
     public void trigger(LootContext context, Location location) {
         Optional<Player> player = context.getLootingPlayer();
         String command = this.command.get(context);
-        if (!command.contains("%player%") || player.isPresent())
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.applyPlaceholders(command));
+        if (this.runAsPlayer) {
+            player.ifPresent(x -> Bukkit.dispatchCommand(x, context.applyPlaceholders(command)));
+        } else {
+            if (!command.contains("%player%") || player.isPresent())
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.applyPlaceholders(command));
+        }
     }
 
     public static CommandLootItem fromSection(ConfigurationSection section) {
         StringProvider value = StringProvider.fromSection(section, "value", null);
         if (value == null)
             return null;
-        return new CommandLootItem(value);
+        boolean runAsPlayer = section.getBoolean("run-as-player", false);
+        return new CommandLootItem(value, runAsPlayer);
     }
 
 }
