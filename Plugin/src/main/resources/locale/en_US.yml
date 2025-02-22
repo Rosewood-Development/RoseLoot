@@ -62,6 +62,11 @@ command-cooldowns-list-header: '&b%target% &ehas &b%amount% &ecooldowns active:'
 command-cooldowns-list-entry: '  &b%cooldown% &8- &7%time% remaining'
 command-cooldowns-reset: '&eCooldowns for &b%target% &ehave been reset.'
 
+# Convert Command
+command-convert-description: 'Runs the vanilla loot table converter'
+command-convert-no-files: '&cThere are no files in the plugins/RoseLoot/convert directory.'
+command-convert-finished: '&eThe vanilla loot table converter has been run and converted files will be in &bplugins/RoseLoot/convert_output&e. &7&oPlease note: The converter only implements the required properties to convert all loot tables in the vanilla server. Conversion may be incomplete or have warnings, check console to see if there are any.'
+
 # Voucher Messages
 voucher-expired: '&cThis voucher has either expired or was improperly configured and can no longer be redeemed. Please contact a server administrator.'
 

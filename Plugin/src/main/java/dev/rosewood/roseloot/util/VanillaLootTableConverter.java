@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
@@ -36,7 +38,8 @@ public final class VanillaLootTableConverter {
 
     private static final String OR_PATTERN = "||";
     private static final String AND_PATTERN = "&&";
-    private static final int NAMESPACE_LENGTH = "minecraft:".length();
+    private static final String NAMESPACE = "minecraft:";
+    private static final int NAMESPACE_LENGTH = NAMESPACE.length();
 
     private static final String[] HEADER = new String[] {
             "# ###################################################################################### #",
@@ -65,8 +68,8 @@ public final class VanillaLootTableConverter {
     }
 
     public static void convertDirectory(File directory, File destination) {
-        try {
-            Files.walk(Paths.get(directory.getPath())).filter(Files::isRegularFile).forEach(path -> {
+        try (Stream<Path> walker = Files.walk(Paths.get(directory.getPath()))) {
+            walker.filter(Files::isRegularFile).forEach(path -> {
                 File file = path.toFile();
                 if (!file.getName().endsWith(".json"))
                     return;
@@ -76,8 +79,10 @@ public final class VanillaLootTableConverter {
 
                 try (InputStream inputStream = Files.newInputStream(path, StandardOpenOption.READ)) {
                     File destinationFile = new File(destination, pathString + ".yml");
+                    destinationFile.delete();
                     handleInputStream(destinationFile, inputStream, pathString, false);
-                } catch (IOException e) {
+                } catch (Exception e) {
+                    RoseLoot.getInstance().getLogger().warning("Failed to convert loot table: " + directory.toPath().relativize(path));
                     e.printStackTrace();
                 }
             });
@@ -392,7 +397,7 @@ public final class VanillaLootTableConverter {
                     writer.write("0:");
                     writer.increaseIndentation();
                     writer.write("type: item");
-                    writer.write("item: " + entry.get("name").getAsString().substring(NAMESPACE_LENGTH));
+                    writer.write("item: " + trimNamespace(entry.get("name").getAsString()));
                     writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
                     writer.decreaseIndentation();
@@ -404,7 +409,7 @@ public final class VanillaLootTableConverter {
                     writer.write("0:");
                     writer.increaseIndentation();
                     writer.write("type: tag");
-                    writer.write("tag: " + entry.get("name").getAsString().substring(NAMESPACE_LENGTH));
+                    writer.write("tag: " + trimNamespace(entry.get("name").getAsString()));
                     writeAmountModifiers(path, writer, entry);
                     writeItemFunctions(path, writer, entry);
                     writer.decreaseIndentation();
@@ -422,10 +427,10 @@ public final class VanillaLootTableConverter {
                             JsonObject valueObject = valueElement.getAsJsonObject();
                             writeTableContents(path + "/$minecraft:loot_table", writer, valueObject);
                         } else {
-                            writer.write("value: " + entry.get("value").getAsString().substring(NAMESPACE_LENGTH));
+                            writer.write("value: " + trimNamespace(entry.get("value").getAsString()));
                         }
                     } else {
-                        writer.write("value: " + entry.get("name").getAsString().substring(NAMESPACE_LENGTH));
+                        writer.write("value: " + trimNamespace(entry.get("name").getAsString()));
                     }
                     writer.decreaseIndentation();
                     writer.decreaseIndentation();
@@ -486,8 +491,6 @@ public final class VanillaLootTableConverter {
         }
 
         if (element.isJsonObject()) {
-            writer.write(yamlName + ":");
-            writer.increaseIndentation();
             JsonObject object = element.getAsJsonObject();
             JsonElement typeElement = object.get("type");
             String type;
@@ -497,17 +500,31 @@ public final class VanillaLootTableConverter {
                 type = "minecraft:uniform";
             }
 
-            switch (type) {
-                case "minecraft:uniform" -> {
-                    writeNumberProvider("min", "min", writer, object, 0.0, multiplier);
-                    writeNumberProvider("max", "max", writer, object, 0.0, multiplier);
+            if (!type.equalsIgnoreCase("minecraft:constant")) {
+                writer.write(yamlName + ":");
+                writer.increaseIndentation();
+
+                switch (type) {
+                    case "minecraft:uniform" -> {
+                        writeNumberProvider("min", "min", writer, object, 0.0, multiplier);
+                        writeNumberProvider("max", "max", writer, object, 0.0, multiplier);
+                    }
+                    case "minecraft:binomial" -> {
+                        writeNumberProvider("n", "n", writer, object, 0.0, multiplier);
+                        writeNumberProvider("p", "p", writer, object, 0.0, multiplier);
+                    }
                 }
-                case "minecraft:binomial" -> {
-                    writeNumberProvider("n", "n", writer, object, 0.0, multiplier);
-                    writeNumberProvider("p", "p", writer, object, 0.0, multiplier);
+                writer.decreaseIndentation();
+            } else {
+                JsonElement valueElement = object.get("value");
+                int intValue = (int) (valueElement.getAsInt() * multiplier);
+                double doubleValue = valueElement.getAsDouble() * multiplier;
+                if (intValue == doubleValue) {
+                    writer.write(yamlName + ": " + intValue);
+                } else {
+                    writer.write(yamlName + ": " + doubleValue);
                 }
             }
-            writer.decreaseIndentation();
         } else if (element.isJsonPrimitive()) {
             int intValue = (int) (element.getAsInt() * multiplier);
             double doubleValue = element.getAsDouble() * multiplier;
@@ -592,8 +609,14 @@ public final class VanillaLootTableConverter {
                         stringBuilder.append(" " + AND_PATTERN + " ");
                 }
             }
-            case "minecraft:random_chance" ->
-                    stringBuilder.append("chance:").append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append('%');
+            case "minecraft:random_chance" -> {
+                JsonElement chanceElement = json.get("chance");
+                if (chanceElement.isJsonPrimitive()) {
+                    stringBuilder.append("chance:").append(LootUtils.getToMaximumDecimals(chanceElement.getAsDouble() * 100, 3)).append('%');
+                } else {
+                    RoseLoot.getInstance().getLogger().warning("minecraft:random_chance non-primitive values not supported");
+                }
+            }
             case "minecraft:random_chance_with_looting" -> {
                 stringBuilder.append("enchantment-chance:");
                 stringBuilder.append(LootUtils.getToMaximumDecimals(json.get("chance").getAsDouble() * 100, 3)).append("%,looting,");
@@ -601,7 +624,7 @@ public final class VanillaLootTableConverter {
             }
             case "minecraft:random_chance_with_enchanted_bonus" -> {
                 stringBuilder.append("enchantment-chance:");
-                String enchantment = json.get("enchantment").getAsString().substring(NAMESPACE_LENGTH);
+                String enchantment = trimNamespace(json.get("enchantment").getAsString());
                 double unenchantedChance = json.get("unenchanted_chance").getAsDouble();
                 JsonObject enchantedChanceElement = json.get("enchanted_chance").getAsJsonObject();
                 String chanceType = enchantedChanceElement.get("type").getAsString();
@@ -626,7 +649,7 @@ public final class VanillaLootTableConverter {
             }
             case "minecraft:table_bonus" -> {
                 stringBuilder.append("enchantment-chance-table:");
-                stringBuilder.append(json.get("enchantment").getAsString().substring(NAMESPACE_LENGTH)).append(',');
+                stringBuilder.append(trimNamespace(json.get("enchantment").getAsString())).append(',');
                 JsonArray chancesElement = json.get("chances").getAsJsonArray();
                 Iterator<JsonElement> chanceElementIterator = chancesElement.iterator();
                 while (chanceElementIterator.hasNext()) {
@@ -651,7 +674,7 @@ public final class VanillaLootTableConverter {
                 JsonElement tagElement = predicate.get("tag");
                 if (itemElement != null) {
                     stringBuilder.append("required-tool-type:");
-                    stringBuilder.append(itemElement.getAsString().substring(NAMESPACE_LENGTH));
+                    stringBuilder.append(trimNamespace(itemElement.getAsString()));
                 } else if (itemsElement != null) {
                     if (itemsElement.isJsonArray()) {
                         JsonArray items = itemsElement.getAsJsonArray();
@@ -659,26 +682,26 @@ public final class VanillaLootTableConverter {
                         stringBuilder.append("required-tool-type:");
                         while (toolsIterator.hasNext()) {
                             JsonElement toolElement = toolsIterator.next();
-                            stringBuilder.append(toolElement.getAsString().substring(NAMESPACE_LENGTH));
+                            stringBuilder.append(trimNamespace(toolElement.getAsString()));
                             if (toolsIterator.hasNext())
                                 stringBuilder.append(',');
                         }
                     } else {
                         stringBuilder.append("required-tool-type:");
-                        stringBuilder.append(itemsElement.getAsString().substring(NAMESPACE_LENGTH));
+                        stringBuilder.append(trimNamespace(itemsElement.getAsString()));
                     }
                 } else if (enchantmentsElement != null) {
                     JsonArray enchantments = enchantmentsElement.getAsJsonArray();
                     if (enchantments.size() > 0) {
                         JsonObject enchantment = enchantments.get(0).getAsJsonObject();
                         stringBuilder.append("enchantment:");
-                        stringBuilder.append(enchantment.get("enchantment").getAsString().substring(NAMESPACE_LENGTH));
+                        stringBuilder.append(trimNamespace(enchantment.get("enchantment").getAsString()));
                         JsonElement levels = enchantment.get("levels");
                         if (levels != null)
                             stringBuilder.append(',').append(levels.getAsJsonObject().get("min").getAsInt());
                     }
                 } else if (tagElement != null) {
-                    String tag = tagElement.getAsString().substring(NAMESPACE_LENGTH);
+                    String tag = trimNamespace(tagElement.getAsString());
                     stringBuilder.append("required-tool-type:#").append(tag);
                 } else if (predicatesElement != null) {
                     JsonObject predicatesObject = predicatesElement.getAsJsonObject();
@@ -691,7 +714,7 @@ public final class VanillaLootTableConverter {
                                 if (enchantment == null)
                                     enchantment = enchantmentObject.get("enchantments");
                                 stringBuilder.append("enchantment:");
-                                stringBuilder.append(enchantment.getAsString().substring(NAMESPACE_LENGTH));
+                                stringBuilder.append(trimNamespace(enchantment.getAsString()));
                                 JsonElement levels = enchantmentObject.get("levels");
                                 if (levels != null)
                                     stringBuilder.append(',').append(levels.getAsJsonObject().get("min").getAsInt());
@@ -812,13 +835,18 @@ public final class VanillaLootTableConverter {
             case "minecraft:location_check" -> {
                 JsonObject locationPredicate = json.get("predicate").getAsJsonObject();
                 if (locationPredicate.has("biome")) {
-                    stringBuilder.append("biome:").append(locationPredicate.get("biome").getAsString().substring(NAMESPACE_LENGTH));
+                    stringBuilder.append("biome:").append(trimNamespace(locationPredicate.get("biome").getAsString()));
                 } else if (locationPredicate.has("biomes")) {
-                    stringBuilder.append("biome:").append(locationPredicate.get("biomes").getAsJsonArray().asList()
-                            .stream()
-                            .map(JsonElement::getAsString)
-                            .map(x -> x.substring(NAMESPACE_LENGTH))
-                            .collect(Collectors.joining(",")));
+                    JsonElement biomesElement = locationPredicate.get("biomes");
+                    if (biomesElement.isJsonArray()) {
+                        stringBuilder.append("biome:").append(biomesElement.getAsJsonArray().asList()
+                                .stream()
+                                .map(JsonElement::getAsString)
+                                .map(VanillaLootTableConverter::trimNamespace)
+                                .collect(Collectors.joining(",")));
+                    } else {
+                        stringBuilder.append("biome:").append(trimNamespace(biomesElement.getAsString()));
+                    }
                 } else if (locationPredicate.has("block")) {
                     JsonObject blockObject = locationPredicate.get("block").getAsJsonObject();
                     if (blockObject.has("blocks")) {
@@ -840,13 +868,13 @@ public final class VanillaLootTableConverter {
 
                                 Iterator<JsonElement> blocksIterator = blocksArray.iterator();
                                 while (blocksIterator.hasNext()) {
-                                    stringBuilder.append(blocksIterator.next().getAsString().substring(NAMESPACE_LENGTH));
+                                    stringBuilder.append(trimNamespace(blocksIterator.next().getAsString()));
                                     if (blocksIterator.hasNext())
                                         stringBuilder.append(',');
                                 }
                             }
                         } else {
-                            stringBuilder.append("block-type:").append(blocksObject.getAsString().substring(NAMESPACE_LENGTH));
+                            stringBuilder.append("block-type:").append(trimNamespace(blocksObject.getAsString()));
                         }
                     }
                 } else if (locationPredicate.has("dimension")) {
@@ -943,13 +971,18 @@ public final class VanillaLootTableConverter {
                 }
                 case "minecraft:set_damage" -> {
                     JsonObject damageObject = function.get("damage").getAsJsonObject();
-                    double min = damageObject.get("min").getAsDouble() * 100;
-                    double max = damageObject.get("max").getAsDouble() * 100;
-                    writer.write("durability:");
-                    writer.increaseIndentation();
-                    writer.write("min: " + min + "%");
-                    writer.write("max: " + max + "%");
-                    writer.decreaseIndentation();
+                    JsonElement valueElement = damageObject.get("value");
+                    if (valueElement != null) {
+                         writer.write("durability: " + valueElement.getAsInt());
+                    } else {
+                        double min = damageObject.get("min").getAsDouble() * 100;
+                        double max = damageObject.get("max").getAsDouble() * 100;
+                        writer.write("durability:");
+                        writer.increaseIndentation();
+                        writer.write("min: " + min + "%");
+                        writer.write("max: " + max + "%");
+                        writer.decreaseIndentation();
+                    }
                 }
                 case "minecraft:set_contents" -> {
                     if (name.contains("shulker")) {
@@ -968,7 +1001,7 @@ public final class VanillaLootTableConverter {
                         JsonObject effectObject = effectElement.getAsJsonObject();
                         writer.write(i++ + ":");
                         writer.increaseIndentation();
-                        writer.write("effect: " + effectObject.get("type").getAsString().substring(NAMESPACE_LENGTH));
+                        writer.write("effect: " + trimNamespace(effectObject.get("type").getAsString()));
                         writeNumberProvider("duration", "duration", writer, effectObject, 8.0, 20);
                         writer.decreaseIndentation();
                     }
@@ -978,10 +1011,8 @@ public final class VanillaLootTableConverter {
                     JsonObject enchantments = function.get("enchantments").getAsJsonObject();
                     writer.write("enchantments:");
                     writer.increaseIndentation();
-                    for (Map.Entry<String, JsonElement> entry : enchantments.entrySet()) {
-                        int enchantmentLevel = entry.getValue().getAsInt();
-                        writer.write(entry.getKey().substring(NAMESPACE_LENGTH) + ": " + enchantmentLevel);
-                    }
+                    for (Map.Entry<String, JsonElement> entry : enchantments.entrySet())
+                        writeNumberProvider(trimNamespace(entry.getKey()), entry.getKey(), writer, enchantments, 0D);
                     writer.decreaseIndentation();
                 }
                 case "minecraft:set_name" -> {
@@ -991,7 +1022,7 @@ public final class VanillaLootTableConverter {
                     writer.write("display-name: '" + displayName.replaceAll(Pattern.quote("'"), "''") + "'");
 
                     // JsonObject nameObject = function.get("name").getAsJsonObject();
-                    // writer.write("display-name: #" + nameObject.get("translate").getAsString().substring(NAMESPACE_LENGTH));
+                    // writer.write("display-name: #" + trimNamespace(nameObject.get("translate").getAsString()));
                 }
                 case "minecraft:exploration_map" -> {
                     byte zoom = function.get("zoom").getAsByte();
@@ -1009,7 +1040,7 @@ public final class VanillaLootTableConverter {
                     writer.write("skip-known-structures: " + skipExistingChunks);
                 }
                 case "minecraft:set_potion" -> {
-                    String potionType = function.get("id").getAsString().substring(NAMESPACE_LENGTH);
+                    String potionType = trimNamespace(function.get("id").getAsString());
                     writer.write("potion-type: " + potionType);
                 }
                 case "minecraft:set_nbt", "minecraft:set_custom_data" -> {
@@ -1039,7 +1070,7 @@ public final class VanillaLootTableConverter {
                         writer.increaseIndentation();
                         JsonArray randomEnchantments = enchantmentsElement.getAsJsonArray();
                         for (JsonElement enchantmentElement : randomEnchantments) {
-                            String enchantment = enchantmentElement.getAsString().substring(NAMESPACE_LENGTH);
+                            String enchantment = trimNamespace(enchantmentElement.getAsString());
                             writer.write("- " + enchantment);
                         }
                         writer.decreaseIndentation();
@@ -1076,7 +1107,7 @@ public final class VanillaLootTableConverter {
                 case "minecraft:enchanted_count_increase" -> {
                     writer.write("enchantment-bonus:");
                     writer.increaseIndentation();
-                    writer.write("enchantment: " + function.get("enchantment").getAsString().substring(NAMESPACE_LENGTH));
+                    writer.write("enchantment: " + trimNamespace(function.get("enchantment").getAsString()));
                     writeNumberProvider("bonus-per-level", "count", writer, function, 0.0);
                     writeNumberProvider("max-bonus-levels", "limit", writer, function, null);
                     writer.decreaseIndentation();
@@ -1085,9 +1116,9 @@ public final class VanillaLootTableConverter {
                     writer.write("enchantment-bonus:");
                     writer.increaseIndentation();
 
-                    String formula = function.get("formula").getAsString().substring(NAMESPACE_LENGTH);
+                    String formula = trimNamespace(function.get("formula").getAsString());
                     writer.write("formula: " + formula);
-                    writer.write("enchantment: " + function.get("enchantment").getAsString().substring(NAMESPACE_LENGTH));
+                    writer.write("enchantment: " + trimNamespace(function.get("enchantment").getAsString()));
 
                     JsonElement parametersElement = function.get("parameters");
                     if (parametersElement != null) {
@@ -1123,7 +1154,7 @@ public final class VanillaLootTableConverter {
                         switch (key) {
                             case "minecraft:trim" -> {
                                 JsonObject trim = jsonObject.get("minecraft:trim").getAsJsonObject();
-                                String material = trim.get("material").getAsString().substring(NAMESPACE_LENGTH);
+                                String material = trimNamespace(trim.get("material").getAsString());
                                 String pattern = trim.get("pattern").getAsString();
                                 writer.write("trim: ");
                                 writer.increaseIndentation();
@@ -1175,6 +1206,12 @@ public final class VanillaLootTableConverter {
                 default -> entityType;
             };
         }
+    }
+
+    private static String trimNamespace(String input) {
+        if (input.startsWith(NAMESPACE))
+            return input.substring(NAMESPACE_LENGTH);
+        return input;
     }
 
     private static class IndentedFileWriter {

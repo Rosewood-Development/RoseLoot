@@ -21,6 +21,7 @@ public class BaseCommand extends PrimaryCommand {
                 .arguments(ArgumentsDefinition.builder()
                         .optionalSub(
                                 new CooldownsCommand(this.rosePlugin),
+                                new ConvertCommand(this.rosePlugin),
                                 new CopyCommand(this.rosePlugin),
                                 new GenerateCommand(this.rosePlugin),
                                 new GiveItemsCommand(this.rosePlugin),
