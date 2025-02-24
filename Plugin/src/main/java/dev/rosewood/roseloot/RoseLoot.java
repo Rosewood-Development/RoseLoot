@@ -15,6 +15,7 @@ import dev.rosewood.roseloot.manager.DataManager;
 import dev.rosewood.roseloot.manager.LazyListenerManager;
 import dev.rosewood.roseloot.manager.LocaleManager;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.manager.SupportedBlockManager;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -61,7 +62,8 @@ public class RoseLoot extends RosePlugin {
         return List.of(
                 LootTableManager.class,
                 LazyListenerManager.class,
-                CooldownManager.class
+                CooldownManager.class,
+                SupportedBlockManager.class
         );
     }
 

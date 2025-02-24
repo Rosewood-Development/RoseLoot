@@ -13,6 +13,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.manager.SupportedBlockManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import java.util.ArrayList;
@@ -90,8 +91,11 @@ public class PaperListener extends LazyLootTableListener {
         if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
+        Player player = this.rosePlugin.getManager(SupportedBlockManager.class).getSupportedBlockBreaker(block);
+
         LootContext lootContext = LootContext.builder()
                 .put(LootContextParams.ORIGIN, block.getLocation())
+                .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(LootContextParams.REPLACED_BLOCK_DATA, event.getNewState())
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !block.getDrops().isEmpty())

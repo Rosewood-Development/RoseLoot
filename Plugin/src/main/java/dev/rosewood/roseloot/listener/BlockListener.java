@@ -14,6 +14,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.manager.SupportedBlockManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -94,6 +96,10 @@ public class BlockListener extends LazyLootTableListener {
         }
 
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
+
+        Block above = block.getRelative(BlockFace.UP);
+        if (above.getType() == block.getType())
+            this.rosePlugin.getManager(SupportedBlockManager.class).handleSupportedBlock(player, block);
 
         lootContents.triggerExtras(dropLocation);
     }
