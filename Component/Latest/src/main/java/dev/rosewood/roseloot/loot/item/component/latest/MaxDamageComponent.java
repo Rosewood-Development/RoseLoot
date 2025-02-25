@@ -7,7 +7,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class MaxDamageComponent implements LootItemComponent {
+class MaxDamageComponent implements LootItemComponent {
 
     private final NumberProvider value;
 

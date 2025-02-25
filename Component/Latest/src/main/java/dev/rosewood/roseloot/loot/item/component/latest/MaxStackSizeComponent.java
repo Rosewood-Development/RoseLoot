@@ -7,7 +7,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class MaxStackSizeComponent implements LootItemComponent {
+class MaxStackSizeComponent implements LootItemComponent {
 
     private final NumberProvider value;
 

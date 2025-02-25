@@ -9,12 +9,12 @@ import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.NamespacedKey;
+import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-public class EnchantmentsComponent implements LootItemComponent {
+class EnchantmentsComponent implements LootItemComponent {
 
     private final Map<Enchantment, NumberProvider> enchantments;
     private final Boolean showInTooltip;
@@ -26,9 +26,7 @@ public class EnchantmentsComponent implements LootItemComponent {
             if (levelsSection != null) {
                 this.enchantments = new HashMap<>();
                 for (String key : levelsSection.getKeys(false)) {
-                    NamespacedKey namespacedKey = NamespacedKey.fromString(key);
-                    if (namespacedKey == null)
-                        continue;
+                    Key namespacedKey = Key.key(key);
                     Enchantment enchantment = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(namespacedKey);
                     NumberProvider levelProvider = NumberProvider.fromSection(levelsSection, key, null);
                     if (enchantment != null && levelProvider != null)

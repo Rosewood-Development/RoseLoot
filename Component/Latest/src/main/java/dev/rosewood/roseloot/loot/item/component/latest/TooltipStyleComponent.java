@@ -8,7 +8,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class TooltipStyleComponent implements LootItemComponent {
+class TooltipStyleComponent implements LootItemComponent {
 
     private final StringProvider value;
 

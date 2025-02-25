@@ -7,7 +7,7 @@ import io.papermc.paper.datacomponent.item.Unbreakable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class UnbreakableComponent implements LootItemComponent {
+class UnbreakableComponent implements LootItemComponent {
 
     private final Boolean showInTooltip;
 

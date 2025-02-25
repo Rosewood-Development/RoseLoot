@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 
-public class RarityComponent implements LootItemComponent {
+class RarityComponent implements LootItemComponent {
 
     private final ItemRarity rarity;
 

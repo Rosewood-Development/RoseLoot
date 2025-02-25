@@ -8,7 +8,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class ItemNameComponent implements LootItemComponent {
+class ItemNameComponent implements LootItemComponent {
 
     private final StringProvider value;
 

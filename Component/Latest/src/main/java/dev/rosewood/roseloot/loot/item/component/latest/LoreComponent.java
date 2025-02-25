@@ -10,7 +10,7 @@ import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public class LoreComponent implements LootItemComponent {
+class LoreComponent implements LootItemComponent {
 
     private final StringProvider lines;
 
