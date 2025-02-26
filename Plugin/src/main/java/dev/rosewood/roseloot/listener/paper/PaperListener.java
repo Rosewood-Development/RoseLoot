@@ -18,7 +18,6 @@ import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.event.block.PlayerShearBlockEvent;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ExperienceOrb;
@@ -119,7 +118,7 @@ public class PaperListener extends LazyLootTableListener {
 
         // Due to the way Paper's BlockDestroyEvent is implemented, we need to delay the item drops by a tick
         // otherwise they will get destroyed immediately by the BlockBreakEvent's item cancellation
-        Bukkit.getScheduler().runTask(this.rosePlugin, () -> lootContents.dropAtLocation(block.getLocation()));
+        this.rosePlugin.getScheduler().runTask(() -> lootContents.dropAtLocation(block.getLocation()));
     }
 
 }

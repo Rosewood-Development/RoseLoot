@@ -99,7 +99,7 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
 
         Runnable task = () -> groupedExtras.triggerExtras(mainEntity.getLocation());
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTask(this.rosePlugin, task);
+            this.rosePlugin.getScheduler().runTask(task);
         } else {
             task.run();
         }

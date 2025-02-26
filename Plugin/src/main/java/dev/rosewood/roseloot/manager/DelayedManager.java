@@ -2,7 +2,6 @@ package dev.rosewood.roseloot.manager;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
-import org.bukkit.Bukkit;
 
 public abstract class DelayedManager extends Manager {
 
@@ -12,7 +11,7 @@ public abstract class DelayedManager extends Manager {
 
     @Override
     public final void reload() {
-        Bukkit.getScheduler().runTask(this.rosePlugin, this::delayedReload);
+        this.rosePlugin.getScheduler().runTask(this::delayedReload);
     }
 
     protected abstract void delayedReload();

@@ -68,7 +68,7 @@ public class EntityListener extends LazyLootTableListener {
 
         Runnable task = () -> lootContents.triggerExtras(entity.getLocation());
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTask(this.rosePlugin, task);
+            this.rosePlugin.getScheduler().runTask(task);
         } else {
             task.run();
         }

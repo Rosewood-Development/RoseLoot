@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import javax.net.ssl.HttpsURLConnection;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -33,7 +32,7 @@ public class DiscordWebhookLootItem implements TriggerableLootItem {
         if (this.url == null || this.content == null)
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
 
-        Bukkit.getScheduler().runTaskAsynchronously(RoseLoot.getInstance(), () -> {
+        RoseLoot.getInstance().getScheduler().runTaskAsync(() -> {
             try {
                 JsonObject json = new JsonObject();
                 json.add("content", new JsonPrimitive(this.content.get(context)));

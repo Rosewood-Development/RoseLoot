@@ -4,7 +4,6 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.command.ReloadCommand;
 import dev.rosewood.rosegarden.command.framework.CommandContext;
 import dev.rosewood.rosegarden.command.framework.annotation.RoseExecutable;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,7 +21,7 @@ public class LoggingReloadCommand extends ReloadCommand {
         if (context.getSender() instanceof Player sender) {
             reloadSender = sender;
             super.execute(context);
-            Bukkit.getScheduler().runTaskLater(this.rosePlugin, () -> {
+            this.rosePlugin.getScheduler().runTaskLater(() -> {
                 reloadSender = null;
             }, 10L);
         } else {
