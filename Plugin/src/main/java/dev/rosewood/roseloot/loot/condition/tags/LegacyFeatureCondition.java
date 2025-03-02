@@ -3,7 +3,8 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
-import dev.rosewood.roseloot.util.nms.StructureUtils;
+import dev.rosewood.roseloot.nms.NMSAdapter;
+import dev.rosewood.roseloot.nms.NMSHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +26,9 @@ public class LegacyFeatureCondition extends BaseLootCondition {
         if (origin.isEmpty())
             return false;
 
+        NMSHandler nmsHandler = NMSAdapter.getHandler();
         for (StructureType structureType : this.features)
-            if (StructureUtils.isWithinStructure(origin.get(), structureType))
+            if (nmsHandler.isWithinStructure(origin.get(), structureType.getKey()))
                 return true;
 
         return false;

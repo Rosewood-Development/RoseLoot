@@ -3,7 +3,8 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
-import dev.rosewood.roseloot.util.nms.StructureUtils;
+import dev.rosewood.roseloot.nms.NMSAdapter;
+import dev.rosewood.roseloot.nms.NMSHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ import org.bukkit.generator.structure.Structure;
 
 public class FeatureCondition extends BaseLootCondition {
 
-    private List<Structure> features;
+    private List<NamespacedKey> features;
 
     public FeatureCondition(String tag) {
         super(tag);
@@ -26,8 +27,9 @@ public class FeatureCondition extends BaseLootCondition {
         if (origin.isEmpty())
             return false;
 
-        for (Structure structure : this.features)
-            if (StructureUtils.isWithinStructure(origin.get(), structure))
+        NMSHandler nmsHandler = NMSAdapter.getHandler();
+        for (NamespacedKey structure : this.features)
+            if (nmsHandler.isWithinStructure(origin.get(), structure))
                 return true;
 
         return false;
@@ -45,7 +47,7 @@ public class FeatureCondition extends BaseLootCondition {
 
                 Structure structure = Registry.STRUCTURE.get(namespacedKey);
                 if (structure != null)
-                    this.features.add(structure);
+                    this.features.add(namespacedKey);
             } catch (Exception ignored) { }
         }
 
