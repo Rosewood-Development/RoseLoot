@@ -206,7 +206,7 @@ public class BlockListener extends LazyLootTableListener {
     public void onEntityExplode(EntityExplodeEvent event) {
         if (NMSUtil.getVersionNumber() >= 21 && !(event.getExplosionResult() == ExplosionResult.DESTROY || event.getExplosionResult() == ExplosionResult.DESTROY_WITH_DECAY))
             return;
-        
+
         RoseConfig config = this.rosePlugin.getRoseConfig();
         if (config.get(SettingKey.ALLOW_BLOCK_EXPLOSION_LOOT))
             return;

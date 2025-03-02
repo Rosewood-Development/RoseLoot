@@ -3,7 +3,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.nms.EnchantingUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import org.bukkit.enchantments.Enchantment;
 
 /**
@@ -44,7 +44,7 @@ public class EnchantmentChanceCondition extends BaseLootCondition {
                 value2 = value2.substring(0, value2.length() - 1);
 
             this.chance = Double.parseDouble(value1) / 100;
-            this.enchantment = EnchantingUtils.getEnchantmentByName(values[1]);
+            this.enchantment = VersionUtils.getEnchantmentByName(values[1]);
             this.chancePerLevel = Double.parseDouble(value2) / 100;
             this.maxCountedLevels = values.length == 4 ? Integer.parseInt(values[3]) : Integer.MAX_VALUE;
             return true;

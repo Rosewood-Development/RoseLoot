@@ -3,7 +3,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.nms.EnchantingUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.enchantments.Enchantment;
@@ -40,7 +40,7 @@ public class EnchantmentChanceTableCondition extends BaseLootCondition {
         this.chances = new ArrayList<>();
 
         try {
-            this.enchantment = EnchantingUtils.getEnchantmentByName(values[0]);
+            this.enchantment = VersionUtils.getEnchantmentByName(values[0]);
 
             for (int i = 1; i < values.length; i++) {
                 String value = values[i];

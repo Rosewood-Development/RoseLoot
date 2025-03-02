@@ -9,11 +9,12 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponentProvider;
+import dev.rosewood.roseloot.nms.NMSAdapter;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.nms.EnchantingUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +110,7 @@ public class ItemLootMeta {
                     int major = NMSUtil.getVersionNumber();
                     int minor = NMSUtil.getMinorVersionNumber();
                     if (major == 21 && minor == 3) {
-                        name = "v1_21_R2";
+                        name = "1_21_R2";
                     } else if (major >= 21) {
                         name = "latest";
                     }
@@ -197,7 +198,7 @@ public class ItemLootMeta {
         if (enchantmentsSection != null) {
             List<EnchantmentData> enchantments = new ArrayList<>();
             for (String enchantmentName : enchantmentsSection.getKeys(false)) {
-                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentName);
+                Enchantment enchantment = VersionUtils.getEnchantmentByName(enchantmentName);
                 if (enchantment == null)
                     continue;
 
@@ -295,7 +296,7 @@ public class ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         if (this.enchantmentLevel != null) {
             Optional<World> world = context.get(LootContextParams.ORIGIN).map(Location::getWorld);
-            itemStack = EnchantingUtils.randomlyEnchant(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, world.orElse(null));
+            itemStack = NMSAdapter.getHandler().enchantWithLevels(itemStack, this.enchantmentLevel.getInteger(context), this.includeTreasureEnchantments, world.orElse(null));
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();

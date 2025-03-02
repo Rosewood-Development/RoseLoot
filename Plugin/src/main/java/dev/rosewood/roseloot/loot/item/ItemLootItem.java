@@ -11,7 +11,7 @@ import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
-import dev.rosewood.roseloot.util.nms.EnchantingUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -182,7 +182,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
             BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
-                Enchantment enchantment = EnchantingUtils.getEnchantmentByName(enchantmentString);
+                Enchantment enchantment = VersionUtils.getEnchantmentByName(enchantmentString);
                 NumberProvider bonusPerLevel = NumberProvider.fromSection(enchantmentBonusSection, "bonus-per-level", 0);
                 NumberProvider probability = NumberProvider.fromSection(enchantmentBonusSection, "probability", 0);
                 if (enchantment != null)

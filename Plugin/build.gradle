@@ -6,7 +6,14 @@ compileJava {
     options.encoding = 'UTF-8'
 }
 
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    disableAutoTargetJvm()
+}
+
 dependencies {
+    compileOnly project(':NMS:Wrapper')
+
     compileOnly "io.papermc.paper:paper-api:$spigotVersion-R0.1-SNAPSHOT"
     compileOnly 'com.mojang:authlib:1.5.21'
     compileOnly 'org.jetbrains:annotations:23.0.0'

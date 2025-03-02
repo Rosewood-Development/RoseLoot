@@ -1,7 +1,24 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://repo.rosewooddev.io/repository/public/' }
+    }
+}
+
 rootProject.name = 'RoseLoot'
 
 include(
         'Plugin',
-        'Component:v1_21_R2',
-        'Component:Latest'
+        'Component:1_21_R2',
+        'Component:Latest',
+        'NMS:Wrapper',
+        'NMS:v1_16_R3',
+        'NMS:v1_17_R1',
+        'NMS:v1_18_R2',
+        'NMS:v1_19_R3',
+        'NMS:v1_20_R3',
+        'NMS:v1_20_R4',
+        'NMS:v1_21_R1',
+        'NMS:v1_21_R2',
+        'NMS:v1_21_R3'
 )

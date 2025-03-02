@@ -2,7 +2,7 @@ package dev.rosewood.roseloot.loot.condition.tags;
 
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.util.nms.EnchantingUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import org.bukkit.enchantments.Enchantment;
 
 /**
@@ -29,7 +29,7 @@ public class EnchantmentCondition extends BaseLootCondition {
         if (values.length == 0)
             return false;
 
-        this.enchantment = EnchantingUtils.getEnchantmentByName(values[0]);
+        this.enchantment = VersionUtils.getEnchantmentByName(values[0]);
 
         if (values.length > 1) {
             try {

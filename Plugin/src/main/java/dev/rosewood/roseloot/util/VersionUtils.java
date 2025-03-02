@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.util;
 
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Registry;
@@ -41,12 +42,12 @@ public class VersionUtils {
             PARTICLE_ITEM = Particle.ITEM;
             POOF = Particle.POOF;
             SMOKE = Particle.SMOKE;
-            FORTUNE = Registry.ENCHANTMENT.get(NamespacedKey.minecraft("fortune"));
-            INFINITY = Registry.ENCHANTMENT.get(NamespacedKey.minecraft("infinity"));
-            LOOTING = Registry.ENCHANTMENT.get(NamespacedKey.minecraft("looting"));
-            LUCK_OF_THE_SEA = Registry.ENCHANTMENT.get(NamespacedKey.minecraft("luck_of_the_sea"));
-            SWEEPING_EDGE = Registry.ENCHANTMENT.get(NamespacedKey.minecraft("sweeping_edge"));
-            UNBREAKING = Registry.ENCHANTMENT.get(NamespacedKey.minecraft("unbreaking"));
+            FORTUNE = getEnchantmentByName("fortune");
+            INFINITY = getEnchantmentByName("infinity");
+            LOOTING = getEnchantmentByName("looting");
+            LUCK_OF_THE_SEA = getEnchantmentByName("luck_of_the_sea");
+            SWEEPING_EDGE = getEnchantmentByName("sweeping_edge");
+            UNBREAKING = getEnchantmentByName("unbreaking");
             HIDE_ADDITIONAL_TOOLTIP = ItemFlag.HIDE_ADDITIONAL_TOOLTIP;
         } else {
             FIREWORK_ROCKET = EntityType.valueOf("FIREWORK");
@@ -75,7 +76,7 @@ public class VersionUtils {
 
     private static Enchantment findEnchantmentLegacy(String... names) {
         for (String name : names) {
-            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(name));
+            Enchantment enchantment = getEnchantmentByName(name);
             if (enchantment != null)
                 return enchantment;
         }
@@ -105,6 +106,31 @@ public class VersionUtils {
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    /**
+     * Gets an Enchantment by its registered key
+     *
+     * @param name The name of the enchantment
+     * @return The Enchantment, or null if not found
+     */
+    public static Enchantment getEnchantmentByName(String name) {
+        NamespacedKey key = NamespacedKey.fromString(name.toLowerCase());
+        if (key == null)
+            return null;
+
+        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
+            return Registry.ENCHANTMENT.get(key);
+        } else {
+            Enchantment byKey = Enchantment.getByKey(key);
+            if (byKey != null)
+                return byKey;
+
+            return Arrays.stream(Enchantment.values())
+                    .filter(x -> x.getKey().getKey().equalsIgnoreCase(name))
+                    .findFirst()
+                    .orElse(null);
         }
     }
 
