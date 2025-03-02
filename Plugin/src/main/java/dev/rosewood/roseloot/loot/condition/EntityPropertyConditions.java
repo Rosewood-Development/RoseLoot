@@ -23,6 +23,7 @@ import org.bukkit.Registry;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Bee;
+import org.bukkit.entity.Bogged;
 import org.bukkit.entity.Camel;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Creeper;
@@ -53,6 +54,7 @@ import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Sniffer;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Strider;
 import org.bukkit.entity.TraderLlama;
@@ -72,6 +74,18 @@ public class EntityPropertyConditions {
         ENTITY_PROPERTIES = new ArrayList<>();
 
         // Register conditions for specific entities
+        if (NMSUtil.getVersionNumber() >= 21) {
+            registerBoolean(Bogged.class, "sheared", Bogged::isSheared);
+        }
+
+        if (NMSUtil.getVersionNumber() >= 20) {
+            registerEnum(Sniffer.class, "state", Sniffer::getState, Sniffer.State.class);
+
+            if (NMSUtil.getVersionNumber() > 20 || NMSUtil.getMinorVersionNumber() == 6) {
+                registerEnum(Wolf.class, "variant", Wolf::getVariant, Wolf.Variant.class);
+            }
+        }
+
         if (NMSUtil.getVersionNumber() >= 19) {
             registerEnum(Frog.class, "variant", Frog::getVariant, Frog.Variant.class);
             registerBoolean(Goat.class, "has-left-horn", Goat::hasLeftHorn);
