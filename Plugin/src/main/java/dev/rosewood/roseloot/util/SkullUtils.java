@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.util.nms;
+package dev.rosewood.roseloot.util;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;

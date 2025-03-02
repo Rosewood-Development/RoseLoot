@@ -3,7 +3,7 @@ package dev.rosewood.roseloot.loot.item.meta;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.provider.StringProvider;
-import dev.rosewood.roseloot.util.nms.SkullUtils;
+import dev.rosewood.roseloot.util.SkullUtils;
 import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.Bukkit;
