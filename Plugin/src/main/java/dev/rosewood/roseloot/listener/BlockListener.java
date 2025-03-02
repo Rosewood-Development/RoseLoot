@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.listener;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.RoseConfig;
 import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.hook.CoreProtectRecentBlockHook;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.ExplosionResult;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -156,6 +158,9 @@ public class BlockListener extends LazyLootTableListener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
+        if (NMSUtil.getVersionNumber() >= 21 && !(event.getExplosionResult() == ExplosionResult.DESTROY || event.getExplosionResult() == ExplosionResult.DESTROY_WITH_DECAY))
+            return;
+
         RoseConfig config = this.rosePlugin.getRoseConfig();
         if (!config.get(SettingKey.ALLOW_BLOCK_EXPLOSION_LOOT))
             return;
@@ -199,6 +204,9 @@ public class BlockListener extends LazyLootTableListener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (NMSUtil.getVersionNumber() >= 21 && !(event.getExplosionResult() == ExplosionResult.DESTROY || event.getExplosionResult() == ExplosionResult.DESTROY_WITH_DECAY))
+            return;
+        
         RoseConfig config = this.rosePlugin.getRoseConfig();
         if (config.get(SettingKey.ALLOW_BLOCK_EXPLOSION_LOOT))
             return;
