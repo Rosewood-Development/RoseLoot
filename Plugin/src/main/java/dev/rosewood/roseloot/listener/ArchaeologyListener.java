@@ -82,7 +82,7 @@ public class ArchaeologyListener extends LazyLootTableListener {
         } else if (hasExistingLootTable) {
             // Unfortunately for us the loot table hasn't been run yet, so we have to run it ourselves, hopefully
             // this doesn't introduce any compatibility issues
-            org.bukkit.loot.LootContext bukkitLootContext = new org.bukkit.loot.LootContext.Builder(block.getLocation()).build();
+            org.bukkit.loot.LootContext bukkitLootContext = new org.bukkit.loot.LootContext.Builder(block.getLocation()).lootedEntity(player).killer(player).build();
             Collection<ItemStack> vanillaItems = brushableBlock.getLootTable().populateLoot(LootUtils.RANDOM, bukkitLootContext);
             if (!vanillaItems.isEmpty()) {
                 brushableBlock.setItem(Iterables.get(vanillaItems, 0));

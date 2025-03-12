@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class LootTableLootItem implements RecursiveLootItem {
@@ -91,9 +92,10 @@ public class LootTableLootItem implements RecursiveLootItem {
                 if (origin.isEmpty())
                     return List.of();
 
+                Player lootingPlayer = context.getLootingPlayer().orElse(null);
                 org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())
-                        .lootedEntity(context.get(LootContextParams.LOOTED_ENTITY).orElse(null))
-                        .killer(context.getLootingPlayer().orElse(null))
+                        .lootedEntity(context.get(LootContextParams.LOOTED_ENTITY).orElse(lootingPlayer))
+                        .killer(lootingPlayer)
                         .lootingModifier(lootingModifier)
                         .luck((float) context.getLuckLevel())
                         .build();

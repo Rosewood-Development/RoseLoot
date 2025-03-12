@@ -88,7 +88,7 @@ abstract class ItemAdventureComponent implements LootItemComponent {
             stringBuilder.append(configKey).append(":\n");
             stringBuilder.append("  predicates:\n");
             for (RegistryKeySet<BlockType> keySet : predicates) {
-                if (keySet instanceof Tag tag) {
+                if (keySet instanceof Tag<?> tag) {
                     String name = tag.tagKey().key().asMinimalString();
                     stringBuilder.append("    - '").append(name).append("'\n");
                 } else {
