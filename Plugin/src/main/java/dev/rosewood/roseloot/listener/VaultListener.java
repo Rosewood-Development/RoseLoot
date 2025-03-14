@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.config.SettingKey;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.LootContents;
@@ -19,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.Vault;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,11 +54,27 @@ public class VaultListener extends LazyLootTableListener {
         List<ItemStack> dispensedLoot = event.getDispensedLoot();
         Player player = event.getPlayer();
 
+        NamespacedKey vanillaLootTableKey;
+        if (NMSUtil.isPaper()) {
+            if (block.getState(false) instanceof Vault vault) {
+                vanillaLootTableKey = vault.getLootTable().getKey();
+            } else {
+                vanillaLootTableKey = null;
+            }
+        } else {
+            if (block.getState() instanceof Vault vault) {
+                vanillaLootTableKey = vault.getLootTable().getKey();
+            } else {
+                vanillaLootTableKey = null;
+            }
+        }
+
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
                 .put(LootContextParams.ORIGIN, block.getLocation())
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !dispensedLoot.isEmpty())
+                .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, vanillaLootTableKey)
                 .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.VAULT, lootContext);
         LootContents lootContents = lootResult.getLootContents();
@@ -83,12 +102,28 @@ public class VaultListener extends LazyLootTableListener {
         Location location = block.getLocation();
         DisplayItemTracker itemTracker = this.displayItemTrackers.getIfPresent(location);
         if (itemTracker == null) {
+            NamespacedKey vanillaLootTableKey;
+            if (NMSUtil.isPaper()) {
+                if (block.getState(false) instanceof Vault vault) {
+                    vanillaLootTableKey = vault.getLootTable().getKey();
+                } else {
+                    vanillaLootTableKey = null;
+                }
+            } else {
+                if (block.getState() instanceof Vault vault) {
+                    vanillaLootTableKey = vault.getLootTable().getKey();
+                } else {
+                    vanillaLootTableKey = null;
+                }
+            }
+
             // Only parse the top level conditions of all VAULT loot tables and display all items when the conditions pass
             // Ignore inner loot table conditions as those are more complex to parse and are usually chance based, which we want to ignore anyway
             LootTableManager lootTableManager = this.rosePlugin.getManager(LootTableManager.class);
             LootContext context = LootContext.builder()
                     .put(LootContextParams.ORIGIN, block.getLocation())
                     .put(LootContextParams.LOOTED_BLOCK, block)
+                    .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, vanillaLootTableKey)
                     .build();
             List<LootTable> lootTables = lootTableManager.getLootTables(LootTableTypes.VAULT).stream()
                     .filter(lootTable -> lootTable.check(context))
