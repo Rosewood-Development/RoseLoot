@@ -118,7 +118,7 @@ public class PaperListener extends LazyLootTableListener {
 
         // Due to the way Paper's BlockDestroyEvent is implemented, we need to delay the item drops by a tick
         // otherwise they will get destroyed immediately by the BlockBreakEvent's item cancellation
-        this.rosePlugin.getScheduler().runTask(() -> lootContents.dropAtLocation(block.getLocation()));
+        this.rosePlugin.getScheduler().runTask(() -> lootContents.dropAtLocation(block.getLocation().add(0.5, 0.5, 0.5)));
     }
 
 }

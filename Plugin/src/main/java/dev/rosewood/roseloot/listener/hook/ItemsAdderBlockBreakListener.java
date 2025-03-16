@@ -63,7 +63,7 @@ public class ItemsAdderBlockBreakListener extends LazyLootTableListener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Drop items and experience
-        Location dropLocation = block.getLocation();
+        Location dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
         List<Item> droppedItems = new ArrayList<>();
         lootContents.getItems().forEach(x -> droppedItems.add(block.getWorld().dropItemNaturally(dropLocation, x)));
 
