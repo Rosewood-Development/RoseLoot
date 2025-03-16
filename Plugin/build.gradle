@@ -1,16 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-compileJava {
-    options.compilerArgs += ['-parameters']
-    options.fork = true
-    options.encoding = 'UTF-8'
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-    disableAutoTargetJvm()
-}
-
 dependencies {
     compileOnly project(':NMS:Wrapper')
 
