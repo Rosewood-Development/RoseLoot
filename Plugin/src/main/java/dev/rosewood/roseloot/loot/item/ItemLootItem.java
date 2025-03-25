@@ -88,7 +88,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
                 while (recipesIterator.hasNext()) {
                     Recipe recipe = recipesIterator.next();
                     if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item.getType()) {
-                        if (NMSUtil.isPaper()) {
+                        if (NMSUtil.isPaper() && (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() >= 4))) {
                             item = item.withType(furnaceRecipe.getResult().getType());
                         } else {
                             item.setType(furnaceRecipe.getResult().getType());
