@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -39,7 +40,12 @@ public final class LootContextParams {
             builder.withPlayer(LivingEntity::getKiller).withPlaceholders((x, y) -> {
                 y.add("entity_type", x.getType().name().toLowerCase());
                 y.add("entity_key", x.getType().getKey().getKey());
-                Optional.ofNullable(x.getCustomName()).ifPresent(name -> y.add("entity_name", name));
+                String entityName = x.getCustomName();
+                if (entityName == null)
+                    entityName = x.getName();
+                y.add("entity_name", entityName);
+                y.add("entity_name_unformatted", ChatColor.stripColor(entityName));
+                Optional.ofNullable(x.getCustomName()).or(() -> Optional.of(x.getName())).ifPresent(name -> y.add("entity_name", name));
             }));
     public static final LootContextParam<Block> LOOTED_BLOCK = create("looted_block", Block.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("block_type", x.getType().name().toLowerCase())).withBlockInfo(BlockInfo::of));

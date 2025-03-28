@@ -26,6 +26,8 @@ import org.bukkit.entity.Bee;
 import org.bukkit.entity.Bogged;
 import org.bukkit.entity.Camel;
 import org.bukkit.entity.Cat;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Cow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Enderman;
@@ -46,6 +48,7 @@ import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Panda;
 import org.bukkit.entity.Parrot;
 import org.bukkit.entity.Phantom;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Piglin;
 import org.bukkit.entity.PiglinBrute;
@@ -76,6 +79,12 @@ public class EntityPropertyConditions {
         // Register conditions for specific entities
         if (NMSUtil.getVersionNumber() >= 21) {
             registerBoolean(Bogged.class, "sheared", Bogged::isSheared);
+
+            if (NMSUtil.getMinorVersionNumber() >= 5) {
+                registerEnum(Chicken.class, "variant", Chicken::getVariant, Chicken.Variant.class);
+                registerEnum(Cow.class, "variant", Cow::getVariant, Cow.Variant.class);
+                registerEnum(Pig.class, "variant", Pig::getVariant, Pig.Variant.class);
+            }
         }
 
         if (NMSUtil.getVersionNumber() >= 20) {

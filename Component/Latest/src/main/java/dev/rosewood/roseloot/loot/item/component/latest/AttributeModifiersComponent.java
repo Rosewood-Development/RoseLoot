@@ -125,7 +125,11 @@ class AttributeModifiersComponent implements LootItemComponent {
         }
     }
 
-    private record AttributeModifierData(Attribute attribute, NamespacedKey key, NumberProvider amount, AttributeModifier.Operation operation, EquipmentSlotGroup equipmentSlotGroup) {
+    private record AttributeModifierData(Attribute attribute,
+                                         NamespacedKey key,
+                                         NumberProvider amount,
+                                         AttributeModifier.Operation operation,
+                                         EquipmentSlotGroup equipmentSlotGroup) {
 
         public AttributeModifier toAttributeModifier(LootContext context) {
             return new AttributeModifier(this.key, this.amount.getDouble(context), this.operation, this.equipmentSlotGroup);
