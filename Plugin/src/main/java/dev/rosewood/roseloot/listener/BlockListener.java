@@ -26,7 +26,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -52,15 +51,17 @@ public class BlockListener extends LazyLootTableListener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
+        Block block = event.getBlock();
+        Player player = event.getPlayer();
+        this.rosePlugin.getManager(SupportedBlockManager.class).handleSupportedBlock(player, block);
+
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
 
         RoseConfig config = this.rosePlugin.getRoseConfig();
-        Block block = event.getBlock();
         if (config.get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
             return;
 
-        Player player = event.getPlayer();
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
                 .put(LootContextParams.ORIGIN, block.getLocation())
                 .put(LootContextParams.LOOTER, player)
@@ -98,10 +99,6 @@ public class BlockListener extends LazyLootTableListener {
         }
 
         event.setExpToDrop(event.getExpToDrop() + lootContents.getExperience());
-
-        Block above = block.getRelative(BlockFace.UP);
-        if (above.getType() == block.getType())
-            this.rosePlugin.getManager(SupportedBlockManager.class).handleSupportedBlock(player, block);
 
         lootContents.triggerExtras(dropLocation);
     }
