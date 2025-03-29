@@ -4,7 +4,9 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.scheduler.task.ScheduledTask;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -39,13 +41,23 @@ public class SupportedBlockManager extends Manager {
     }
 
     public Player getSupportedBlockBreaker(Block block) {
-        Block below = block.getRelative(BlockFace.DOWN);
-        Entry entry = this.supportedBlockMap.get(below);
-        if (entry != null) {
-            Player player = entry.player();
-            this.handleSupportedBlock(player, block);
-            return player;
+        List<BlockFace> directionsToCheck;
+        if (block.getType() == Material.CHORUS_FLOWER || block.getType() == Material.CHORUS_PLANT) {
+            directionsToCheck = List.of(BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST);
+        } else {
+            directionsToCheck = List.of(BlockFace.DOWN);
         }
+
+        for (BlockFace direction : directionsToCheck) {
+            Block relative = block.getRelative(direction);
+            Entry entry = this.supportedBlockMap.get(relative);
+            if (entry != null) {
+                Player player = entry.player();
+                this.handleSupportedBlock(player, block);
+                return player;
+            }
+        }
+
         return null;
     }
 
