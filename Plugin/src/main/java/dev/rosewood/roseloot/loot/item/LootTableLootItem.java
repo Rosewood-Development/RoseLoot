@@ -29,8 +29,6 @@ public class LootTableLootItem implements RecursiveLootItem {
     private LootTable lootTable;
     private org.bukkit.loot.LootTable vanillaLootTable;
 
-    private boolean running;
-
     protected LootTableLootItem(LootTable lootTable) {
         this.lootTableName = lootTable.getName();
         this.lootTable = lootTable;
@@ -49,15 +47,17 @@ public class LootTableLootItem implements RecursiveLootItem {
         if (this.invalid)
             return List.of();
 
-        if (this.running && !context.getCurrentLootTable().map(LootTable::allowsRecursion).orElse(false)) {
-            RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
-                    "This loot table will be empty unless the recursion issue is fixed. If recursion was intentional, you can set `allow-recursion: true` " +
-                    "in the loot table file to allow it. Please note this can create the potential to crash your server if you create an infinite loop.");
-            this.running = false;
-            return List.of();
+        Optional<LootTable> currentLootTableOptional = context.getCurrentLootTable();
+        if (this.lootTable != null && currentLootTableOptional.isPresent()) {
+            LootTable currentLootTable = currentLootTableOptional.get();
+            if (currentLootTable.equals(this.lootTable) && !this.lootTable.allowsRecursion()) {
+                RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
+                        "This loot table will be empty unless the recursion issue is fixed. If recursion was intentional, you can set `allow-recursion: true` " +
+                        "in the loot table file to allow it. Please note this can create the potential to crash your server if you create an infinite loop.");
+                return List.of();
+            }
         }
 
-        this.running = true;
         List<LootItem> lootItems;
         if (this.lootTable != null) {
             if (this.lootTable.check(context)) {
@@ -83,8 +83,9 @@ public class LootTableLootItem implements RecursiveLootItem {
 
             try {
                 Optional<Location> origin = context.get(LootContextParams.ORIGIN);
-                if (origin.isEmpty())
+                if (origin.isEmpty()) {
                     return List.of();
+                }
 
                 Player lootingPlayer = context.getLootingPlayer().orElse(null);
                 org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())
@@ -102,7 +103,6 @@ public class LootTableLootItem implements RecursiveLootItem {
                 lootItems = List.of();
             }
         }
-        this.running = false;
 
         return lootItems;
     }
