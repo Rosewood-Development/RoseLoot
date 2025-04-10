@@ -15,4 +15,12 @@ public non-sealed interface RecursiveLootItem extends LootItem, LootItemGenerato
         return List.of();
     }
 
+    /**
+     * Checks if this recursive loot item passes conditions
+     *
+     * @param context The LootContext
+     * @return true if conditions pass, false otherwise
+     */
+    boolean check(LootContext context);
+
 }

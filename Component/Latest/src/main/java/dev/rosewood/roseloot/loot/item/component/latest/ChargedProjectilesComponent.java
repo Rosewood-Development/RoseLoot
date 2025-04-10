@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.loot.item.component.latest;
 
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 class ChargedProjectilesComponent implements LootItemComponent {
 
-    private final List<ItemGenerativeLootItem> projectiles;
+    private final List<LootItem> projectiles;
 
     public ChargedProjectilesComponent(ConfigurationSection section) {
         ConfigurationSection chargedProjectilesSection = section.getConfigurationSection("charged-projectiles");
@@ -25,11 +25,11 @@ class ChargedProjectilesComponent implements LootItemComponent {
             for (String key : chargedProjectilesSection.getKeys(false)) {
                 ConfigurationSection projectileSection = chargedProjectilesSection.getConfigurationSection(key);
                 if (projectileSection != null) {
-                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "none", "charged-projectiles", projectileSection);
-                    if (lootItem instanceof ItemGenerativeLootItem itemGenerativeLootItem) {
-                        this.projectiles.add(itemGenerativeLootItem);
+                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "bundle", key, projectileSection);
+                    if (lootItem != null) {
+                        this.projectiles.add(lootItem);
                     } else {
-                        RoseLoot.getInstance().getLogger().warning("Ignoring charged-projectiles entry because it does not generate an ItemStack");
+                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid bundle item: " + key);
                     }
                 }
             }
@@ -42,9 +42,11 @@ class ChargedProjectilesComponent implements LootItemComponent {
     public void apply(ItemStack itemStack, LootContext context) {
         ChargedProjectiles.Builder builder = ChargedProjectiles.chargedProjectiles();
 
-        if (this.projectiles != null)
-            for (ItemGenerativeLootItem projectile : this.projectiles)
-                builder.addAll(projectile.generate(context));
+        if (this.projectiles != null) {
+            LootContents lootContents = new LootContents(context);
+            lootContents.add(this.projectiles);
+            builder.addAll(lootContents.getItems());
+        }
 
         itemStack.setData(DataComponentTypes.CHARGED_PROJECTILES, builder.build());
     }

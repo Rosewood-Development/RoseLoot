@@ -25,8 +25,10 @@ public class LootTableLootItem implements RecursiveLootItem {
 
     private final String lootTableName;
     private boolean invalid;
+
     private LootTable lootTable;
     private org.bukkit.loot.LootTable vanillaLootTable;
+
     private boolean running;
 
     protected LootTableLootItem(LootTable lootTable) {
@@ -43,21 +45,9 @@ public class LootTableLootItem implements RecursiveLootItem {
         if (this.invalid)
             return List.of();
 
-        if (this.lootTable == null && this.vanillaLootTable == null) {
-            RosePlugin rosePlugin = RoseLoot.getInstance();
-            this.lootTable = rosePlugin.getManager(LootTableManager.class).getLootTable(LootTableTypes.LOOT_TABLE, this.lootTableName);
-            if (this.lootTable == null) {
-                NamespacedKey key = NamespacedKey.fromString(this.lootTableName);
-                if (key != null)
-                    this.vanillaLootTable = Bukkit.getLootTable(key);
-
-                if (this.vanillaLootTable == null) {
-                    this.invalid = true;
-                    rosePlugin.getLogger().warning("Could not find loot table specified: " + this.lootTableName);
-                    return List.of();
-                }
-            }
-        }
+        this.resolveLootTable();
+        if (this.invalid)
+            return List.of();
 
         if (this.running && !context.getCurrentLootTable().map(LootTable::allowsRecursion).orElse(false)) {
             RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
@@ -70,11 +60,15 @@ public class LootTableLootItem implements RecursiveLootItem {
         this.running = true;
         List<LootItem> lootItems;
         if (this.lootTable != null) {
-            LootTable currentLootTable = context.getCurrentLootTable().orElse(null);
-            LootContents lootContents = new LootContents(context);
-            this.lootTable.populate(context, lootContents);
-            lootItems = lootContents.getContents();
-            context.setCurrentLootTable(currentLootTable);
+            if (this.lootTable.check(context)) {
+                LootTable currentLootTable = context.getCurrentLootTable().orElse(null);
+                LootContents lootContents = new LootContents(context);
+                this.lootTable.populate(context, lootContents);
+                lootItems = lootContents.getContents();
+                context.setCurrentLootTable(currentLootTable);
+            } else {
+                lootItems = List.of();
+            }
         } else {
             int lootingModifier = 0;
             Optional<ItemStack> itemUsed = context.getItemUsed();
@@ -111,6 +105,32 @@ public class LootTableLootItem implements RecursiveLootItem {
         this.running = false;
 
         return lootItems;
+    }
+
+    private void resolveLootTable() {
+        if (this.lootTable == null && this.vanillaLootTable == null) {
+            RosePlugin rosePlugin = RoseLoot.getInstance();
+            this.lootTable = rosePlugin.getManager(LootTableManager.class).getLootTable(LootTableTypes.LOOT_TABLE, this.lootTableName);
+
+            if (this.lootTable == null) {
+                NamespacedKey key = NamespacedKey.fromString(this.lootTableName);
+                if (key != null)
+                    this.vanillaLootTable = Bukkit.getLootTable(key);
+
+                if (this.vanillaLootTable == null) {
+                    this.invalid = true;
+                    rosePlugin.getLogger().warning("Could not find loot table specified: " + this.lootTableName);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean check(LootContext context) {
+        this.resolveLootTable();
+        if (this.invalid || this.lootTable == null)
+            return true;
+        return this.lootTable.check(context);
     }
 
     public static LootTableLootItem fromSection(ConfigurationSection section) {

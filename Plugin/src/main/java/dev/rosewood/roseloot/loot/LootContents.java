@@ -71,7 +71,7 @@ public class LootContents {
     }
 
     /**
-     * Gets a List of ItemStacks created by this LootContents.
+     * Triggers a generation of ItemStacks of all ItemGenerativeLootItems contained within this LootContents.
      * Handled separately from {@link LootContents#triggerExtras(Location)}.
      *
      * @return the items of this loot contents
@@ -85,7 +85,7 @@ public class LootContents {
     }
 
     /**
-     * Gets the experience amount created by this LootContents.
+     * Triggers a generation of the experience of all ExperienceGenerativeLootItem contained within this LootContents.
      * Handled separately from {@link LootContents#triggerExtras(Location)}.
      *
      * @return the experience amount of this loot contents

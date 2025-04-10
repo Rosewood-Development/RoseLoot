@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.loot.item.component.latest;
 
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 class BundleContentsComponent implements LootItemComponent {
 
-    private final List<ItemGenerativeLootItem> contents;
+    private final List<LootItem> contents;
 
     public BundleContentsComponent(ConfigurationSection section) {
         ConfigurationSection bundleContentsSection = section.getConfigurationSection("bundle-contents");
@@ -25,11 +25,11 @@ class BundleContentsComponent implements LootItemComponent {
             for (String key : bundleContentsSection.getKeys(false)) {
                 ConfigurationSection contentSection = bundleContentsSection.getConfigurationSection(key);
                 if (contentSection != null) {
-                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "none", "bundle-contents", contentSection);
-                    if (lootItem instanceof ItemGenerativeLootItem itemGenerativeLootItem) {
-                        this.contents.add(itemGenerativeLootItem);
+                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "bundle", key, contentSection);
+                    if (lootItem != null) {
+                        this.contents.add(lootItem);
                     } else {
-                        RoseLoot.getInstance().getLogger().warning("Ignoring bundle-contents entry because it does not generate an ItemStack");
+                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid bundle item: " + key);
                     }
                 }
             }
@@ -42,9 +42,11 @@ class BundleContentsComponent implements LootItemComponent {
     public void apply(ItemStack itemStack, LootContext context) {
         BundleContents.Builder builder = BundleContents.bundleContents();
 
-        if (this.contents != null)
-            for (ItemGenerativeLootItem content : this.contents)
-                builder.addAll(content.generate(context));
+        if (this.contents != null) {
+            LootContents lootContents = new LootContents(context);
+            lootContents.add(this.contents);
+            builder.addAll(lootContents.getItems());
+        }
 
         itemStack.setData(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
     }

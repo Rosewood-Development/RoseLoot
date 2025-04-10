@@ -1,8 +1,8 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import dev.rosewood.roseloot.loot.item.ItemGenerativeLootItem;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.manager.LootTableManager;
@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.BundleMeta;
 
 public class BundleItemLootMeta extends ItemLootMeta {
 
-    private final List<ItemGenerativeLootItem> lootItems;
+    private final List<LootItem> lootItems;
 
     public BundleItemLootMeta(ConfigurationSection section) {
         super(section);
@@ -28,10 +28,10 @@ public class BundleItemLootMeta extends ItemLootMeta {
                 ConfigurationSection itemSection = contentsSection.getConfigurationSection(key);
                 if (itemSection != null) {
                     LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "bundle", key, itemSection);
-                    if (lootItem instanceof ItemGenerativeLootItem itemGenerativeLootItem) {
-                        this.lootItems.add(itemGenerativeLootItem);
+                    if (lootItem != null) {
+                        this.lootItems.add(lootItem);
                     } else {
-                        RoseLoot.getInstance().getLogger().warning("Ignoring bundle item because it does not generate an ItemStack: " + key);
+                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid bundle item: " + key);
                     }
                 }
             }
@@ -46,9 +46,10 @@ public class BundleItemLootMeta extends ItemLootMeta {
         if (itemMeta == null)
             return itemStack;
 
-        for (ItemGenerativeLootItem lootItem : this.lootItems)
-            for (ItemStack item : lootItem.generate(context))
-                itemMeta.addItem(item);
+        LootContents lootContents = new LootContents(context);
+        lootContents.add(this.lootItems);
+        List<ItemStack> items = lootContents.getItems();
+        items.forEach(itemMeta::addItem);
 
         itemStack.setItemMeta(itemMeta);
 
