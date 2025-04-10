@@ -6,10 +6,13 @@ import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.util.LootUtils;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -72,9 +75,11 @@ import org.bukkit.inventory.ItemStack;
 public class EntityPropertyConditions {
 
     private static final List<EntityProperties<?, ?>> ENTITY_PROPERTIES;
+    private static final Map<Class<?>, Method> KEYED_VALUE_METHOD_LOOKUP_MAP;
 
     static {
         ENTITY_PROPERTIES = new ArrayList<>();
+        KEYED_VALUE_METHOD_LOOKUP_MAP = new HashMap<>();
 
         // Register conditions for specific entities
         if (NMSUtil.getVersionNumber() >= 21) {
@@ -82,7 +87,8 @@ public class EntityPropertyConditions {
 
             if (NMSUtil.getMinorVersionNumber() >= 5) {
                 registerEnum(Chicken.class, "variant", Chicken::getVariant, Chicken.Variant.class);
-                registerEnum(Cow.class, "variant", Cow::getVariant, Cow.Variant.class);
+                // hot garbage served right up courtesy of spigot 1.21.5 commodore rewrites, what's a cow, anyway?
+                registerEnum(Cow.class, "org.bukkit.entity.Cow", "variant", x -> getReturnValueReflectively(Cow.class, "org.bukkit.entity.Cow", x, Cow.Variant.class, "getVariant"), Cow.Variant.class);
                 registerEnum(Pig.class, "variant", Pig::getVariant, Pig.Variant.class);
             }
         }
@@ -241,6 +247,15 @@ public class EntityPropertyConditions {
         registerEnum(entityClass, name, supplier, enumClass, false);
     }
 
+    private static <T extends Entity, E> void registerEnum(Class<T> entityClass0, String className, String name, Function<T, E> supplier, Class<E> enumClass) {
+        try {
+            Class<T> clazz = (Class<T>) Class.forName(className);
+            registerEnum(clazz, name, supplier, enumClass, false);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static <T extends Entity> void registerInt(Class<T> entityClass, String name, Function<T, Integer> supplier) {
         register(entityClass, name, (entity, values) -> values.contains(supplier.apply(entity)), values -> {
             List<Integer> intValues = new ArrayList<>();
@@ -265,6 +280,22 @@ public class EntityPropertyConditions {
         if (allowEmptyValues && values.isEmpty())
             return value != null;
         return values.contains(value);
+    }
+
+    // Fix for java.lang.NoSuchMethodError: 'org.bukkit.entity.Cow$Variant org.bukkit.entity.AbstractCow.getVariant()' on 1.21.5 due to Spigot rewrites
+    @SuppressWarnings("unchecked")
+    private static <T, R> R getReturnValueReflectively(Class<T> classType0, String className, T value, Class<R> returnType, String methodName) {
+        try {
+            Class<?> classType = Class.forName(className);
+            Method method = KEYED_VALUE_METHOD_LOOKUP_MAP.get(classType);
+            if (method == null) {
+                method = classType.getMethod(methodName);
+                KEYED_VALUE_METHOD_LOOKUP_MAP.put(classType, method);
+            }
+            return (R) method.invoke(value);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public record EntityProperties<T extends Entity, V>(Class<T> entityClass, String name, BiPredicate<T, Collection<V>> predicate, @Nullable Function<String[], Collection<V>> valuesValidator, boolean allowEmptyValues) {

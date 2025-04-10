@@ -16,6 +16,7 @@ import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +167,7 @@ public class ItemLootMeta {
 
         if (section.isBoolean("hide-flags")) {
             if (section.getBoolean("hide-flags"))
-                this.hideFlags = List.of(ItemFlag.values());
+                this.hideFlags = Arrays.asList(ItemFlag.values());
         } else if (section.isList("hide-flags")) {
             List<String> flagNames = section.getStringList("hide-flags");
             List<ItemFlag> hideFlags = new ArrayList<>();
@@ -342,7 +343,7 @@ public class ItemLootMeta {
         if (this.attributes != null) {
             Multimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
             this.attributes.forEach(x -> attributes.put(x.attribute(), x.toAttributeModifier(context)));
-            if (NMSUtil.getVersionNumber() >= 21 && this.restoreVanillaAttributes && type.isItem())
+            if (NMSUtil.getVersionNumber() >= 21 && NMSUtil.isPaper() && this.restoreVanillaAttributes && type.isItem())
                 attributes.putAll(type.getDefaultAttributeModifiers());
             itemMeta.setAttributeModifiers(attributes);
         }
