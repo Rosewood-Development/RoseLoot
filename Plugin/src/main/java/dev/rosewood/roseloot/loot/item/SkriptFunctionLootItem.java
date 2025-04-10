@@ -35,10 +35,10 @@ public class SkriptFunctionLootItem implements TriggerableLootItem {
             if (type.equals("player") && name.equals("player") && player.isPresent()) {
                 parameters[i] = new Player[] {player.get()};
             }
-            if (type.equals("location") && name.equals("location") && location != null) {
+            if (type.equals("location") && name.equals("location")) {
                 parameters[i] = new Location[] {location};
             }
-            if (type.equals("string") && name.equals("params") && params != null) {
+            if (type.equals("string") && name.equals("params")) {
                 parameters[i] = new String[] {params};
             }
             if (type.equals("object") && name.equals("context")) {
@@ -53,7 +53,7 @@ public class SkriptFunctionLootItem implements TriggerableLootItem {
     public static SkriptFunctionLootItem fromSection(ConfigurationSection section) {
         String functionName = section.getString("functionName");
         if (functionName == null) return null;
-        String params = section.getString("params");
+        String params = section.getString("params", "");
         return new SkriptFunctionLootItem(functionName, params);
     }
 }
