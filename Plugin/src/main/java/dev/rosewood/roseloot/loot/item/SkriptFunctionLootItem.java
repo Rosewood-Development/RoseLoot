@@ -24,7 +24,6 @@ public class SkriptFunctionLootItem implements TriggerableLootItem {
 
     @Override
     public void trigger(LootContext context, Location location) {
-        Optional<Player> player = context.getLootingPlayer();
         function = Functions.getGlobalFunction(functionName);
         if (function == null) {
             RoseLoot.getInstance().getLogger().warning("Skript function " + functionName + " does not exist!");
@@ -36,8 +35,8 @@ public class SkriptFunctionLootItem implements TriggerableLootItem {
         for(int i=0;i<function.getParameters().length;i++) {
             String type = function.getParameter(i).getType().getCodeName();
             String name = function.getParameter(i).getName();
-            if (type.equals("player") && name.equals("player") && player.isPresent()) {
-                parameters[i] = new Player[] {player.get()};
+            if (type.equals("player") && name.equals("player") && context.getLootingPlayer().isPresent()) {
+                parameters[i] = new Player[] {context.getLootingPlayer().get()};
             }
             else if (type.equals("location") && name.equals("location")) {
                 parameters[i] = new Location[] {location};
