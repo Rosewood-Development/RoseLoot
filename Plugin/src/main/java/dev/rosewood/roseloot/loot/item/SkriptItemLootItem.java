@@ -71,7 +71,7 @@ public class SkriptItemLootItem implements ItemGenerativeLootItem {
     }
 
     public static SkriptItemLootItem fromSection(ConfigurationSection section) {
-        String functionName = section.getString("functionName");
+        String functionName = section.getString("function");
         if (functionName == null) return null;
         String params = section.getString("params", "");
         return new SkriptItemLootItem(functionName, params);
