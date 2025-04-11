@@ -39,6 +39,7 @@ allprojects {
         maven { url = 'https://repo.momirealms.net/releases/' }
         maven { url = 'https://libraries.minecraft.net/' }
         maven { url = 'https://jitpack.io/' }
+        maven { url = 'https://repo.skriptlang.org/releases'}
     }
 
     dependencies {
