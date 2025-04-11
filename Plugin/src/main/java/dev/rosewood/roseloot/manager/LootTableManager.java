@@ -320,8 +320,10 @@ public class LootTableManager extends DelayedManager implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("SCore"))
             event.registerLootItem("score_variable", SCoreVariableLootItem::fromSection);
 
-        if (Bukkit.getPluginManager().isPluginEnabled("Skript"))
+        if (Bukkit.getPluginManager().isPluginEnabled("Skript")) {
             event.registerLootItem("skript_function", SkriptFunctionLootItem::fromSection);
+            event.registerLootItem("skript_item", SkriptItemLootItem::fromSection);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

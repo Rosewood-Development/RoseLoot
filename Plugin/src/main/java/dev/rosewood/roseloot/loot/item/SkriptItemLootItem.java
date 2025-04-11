@@ -4,43 +4,46 @@ import ch.njol.skript.lang.function.Function;
 import ch.njol.skript.lang.function.Functions;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class SkriptFunctionLootItem implements TriggerableLootItem {
+public class SkriptItemLootItem implements ItemGenerativeLootItem {
 
     Function<?> function;
     Object[][] parameters;
     String params;
     private final String functionName;
 
-    protected SkriptFunctionLootItem(String functionName, String params) {
+    protected SkriptItemLootItem(String functionName, String params) {
         this.functionName = functionName;
         this.params = params;
     }
 
     @Override
-    public void trigger(LootContext context, Location location) {
+    public List<ItemStack> generate(LootContext context) {
         Optional<Player> player = context.getLootingPlayer();
+        List<ItemStack> droppedContents = new ArrayList<>();
         function = Functions.getGlobalFunction(functionName);
         if (function == null) {
             RoseLoot.getInstance().getLogger().warning("Skript function " + functionName + " does not exist!");
-            return;
+            return droppedContents;
         }
-        parameters = new Object[function.getParameters().length][];
+        if (function.getReturnType() == null || !function.getReturnType().getCodeName().equals("itemstack")) {
+            RoseLoot.getInstance().getLogger().warning("Skript function " + functionName + " does not return an itemstack!");
+            return droppedContents;
+        }
 
         // Fill parameters
+        parameters = new Object[function.getParameters().length][];
         for(int i=0;i<function.getParameters().length;i++) {
             String type = function.getParameter(i).getType().getCodeName();
             String name = function.getParameter(i).getName();
             if (type.equals("player") && name.equals("player") && player.isPresent()) {
                 parameters[i] = new Player[] {player.get()};
-            }
-            else if (type.equals("location") && name.equals("location")) {
-                parameters[i] = new Location[] {location};
             }
             else if (type.equals("string") && name.equals("params")) {
                 parameters[i] = new String[] {params};
@@ -53,14 +56,24 @@ public class SkriptFunctionLootItem implements TriggerableLootItem {
             }
         }
 
-        // Execute function
-        function.execute(parameters);
+        Object[] execute = function.execute(parameters);
+        return Optional.ofNullable(execute).stream()
+                .flatMap(Arrays::stream)
+                .filter(Objects::nonNull)
+                .filter(ItemStack.class::isInstance)
+                .map(ItemStack.class::cast)
+                .collect(Collectors.toList());
     }
 
-    public static SkriptFunctionLootItem fromSection(ConfigurationSection section) {
+    @Override
+    public List<ItemStack> getAllItems(LootContext context) {
+        return this.generate(context);
+    }
+
+    public static SkriptItemLootItem fromSection(ConfigurationSection section) {
         String functionName = section.getString("functionName");
         if (functionName == null) return null;
         String params = section.getString("params", "");
-        return new SkriptFunctionLootItem(functionName, params);
+        return new SkriptItemLootItem(functionName, params);
     }
 }
