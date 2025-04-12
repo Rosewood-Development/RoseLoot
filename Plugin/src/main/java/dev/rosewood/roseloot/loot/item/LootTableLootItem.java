@@ -51,6 +51,7 @@ public class LootTableLootItem implements RecursiveLootItem {
         if (this.lootTable != null && currentLootTableOptional.isPresent()) {
             LootTable currentLootTable = currentLootTableOptional.get();
             if (currentLootTable.equals(this.lootTable) && !this.lootTable.allowsRecursion()) {
+                // TODO: This really should be keeping track of the current loot table stack, we can still have infinite loops of non-direct references
                 RoseLoot.getInstance().getLogger().severe("Detected and blocked potential infinite recursion for loot table: " + this.lootTableName + ". " +
                         "This loot table will be empty unless the recursion issue is fixed. If recursion was intentional, you can set `allow-recursion: true` " +
                         "in the loot table file to allow it. Please note this can create the potential to crash your server if you create an infinite loop.");
@@ -83,9 +84,8 @@ public class LootTableLootItem implements RecursiveLootItem {
 
             try {
                 Optional<Location> origin = context.get(LootContextParams.ORIGIN);
-                if (origin.isEmpty()) {
+                if (origin.isEmpty())
                     return List.of();
-                }
 
                 Player lootingPlayer = context.getLootingPlayer().orElse(null);
                 org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())

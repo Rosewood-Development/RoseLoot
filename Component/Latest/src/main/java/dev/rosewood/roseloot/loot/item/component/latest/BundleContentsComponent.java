@@ -7,6 +7,7 @@ import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.BundleContents;
 import java.util.ArrayList;
@@ -45,7 +46,8 @@ class BundleContentsComponent implements LootItemComponent {
         if (this.contents != null) {
             LootContents lootContents = new LootContents(context);
             lootContents.add(this.contents);
-            builder.addAll(lootContents.getItems());
+            List<ItemStack> items = LootUtils.combineSimilarItems(lootContents.getItems());
+            builder.addAll(items);
         }
 
         itemStack.setData(DataComponentTypes.BUNDLE_CONTENTS, builder.build());

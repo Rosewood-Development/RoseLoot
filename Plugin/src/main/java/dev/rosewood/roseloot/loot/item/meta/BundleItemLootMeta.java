@@ -6,6 +6,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.manager.LootTableManager;
+import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -48,7 +49,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
 
         LootContents lootContents = new LootContents(context);
         lootContents.add(this.lootItems);
-        List<ItemStack> items = lootContents.getItems();
+        List<ItemStack> items = LootUtils.combineSimilarItems(lootContents.getItems());
         items.forEach(itemMeta::addItem);
 
         itemStack.setItemMeta(itemMeta);

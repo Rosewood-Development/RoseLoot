@@ -6,11 +6,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -394,6 +396,32 @@ public final class LootUtils {
             }
         }
         return items;
+    }
+
+    public static List<ItemStack> combineSimilarItems(List<ItemStack> items) {
+        Map<ItemStack, Integer> combined = items.stream()
+                .filter(x -> x != null && x.getAmount() > 0)
+                .collect(Collectors.toMap(x -> {
+                    ItemStack key = x.clone();
+                    key.setAmount(1);
+                    return key;
+                }, ItemStack::getAmount, Integer::sum, LinkedHashMap::new));
+
+        return combined.entrySet().stream().flatMap(x -> {
+            ItemStack template = x.getKey();
+            int total = x.getValue();
+            int maxStack = template.getMaxStackSize();
+
+            List<ItemStack> stacks = new ArrayList<>();
+            while (total > 0) {
+                int amount = Math.min(total, maxStack);
+                ItemStack stack = template.clone();
+                stack.setAmount(amount);
+                stacks.add(stack);
+                total -= amount;
+            }
+            return stacks.stream();
+        }).collect(Collectors.toList());
     }
 
 }
