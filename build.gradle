@@ -85,8 +85,8 @@ publishing {
         if (project.hasProperty('mavenUser') && project.hasProperty('mavenPassword')) {
             maven {
                 credentials {
-                    username project.mavenUser
-                    password project.mavenPassword
+                    username = project.mavenUser
+                    password = project.mavenPassword
                 }
 
                 def releasesRepoUrl = 'https://repo.rosewooddev.io/repository/public-releases/'

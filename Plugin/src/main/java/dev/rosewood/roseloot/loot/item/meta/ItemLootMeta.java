@@ -57,6 +57,9 @@ public class ItemLootMeta {
             CONSTRUCTORS = new HashMap<>();
             PROPERTY_APPLIERS = new HashMap<>();
 
+            if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 5))
+                mapMaterials(BundleItemLootMeta::new, BundleItemLootMeta::applyProperties, Tag.ITEMS_BUNDLES.getValues().toArray(Material[]::new));
+
             mapMaterials(BookItemLootMeta::new, BookItemLootMeta::applyProperties, Material.WRITABLE_BOOK, Material.WRITTEN_BOOK);
             mapMaterials(EnchantmentStorageItemLootMeta::new, EnchantmentStorageItemLootMeta::applyProperties, Material.ENCHANTED_BOOK);
             mapMaterials(FireworkEffectItemLootMeta::new, FireworkEffectItemLootMeta::applyProperties, Material.FIREWORK_STAR);

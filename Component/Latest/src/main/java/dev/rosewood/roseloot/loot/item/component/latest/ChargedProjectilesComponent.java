@@ -25,11 +25,11 @@ class ChargedProjectilesComponent implements LootItemComponent {
             for (String key : chargedProjectilesSection.getKeys(false)) {
                 ConfigurationSection projectileSection = chargedProjectilesSection.getConfigurationSection(key);
                 if (projectileSection != null) {
-                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "bundle", key, projectileSection);
+                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "charged-projectile", key, projectileSection);
                     if (lootItem != null) {
                         this.projectiles.add(lootItem);
                     } else {
-                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid bundle item: " + key);
+                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid charged-projectile item: " + key);
                     }
                 }
             }

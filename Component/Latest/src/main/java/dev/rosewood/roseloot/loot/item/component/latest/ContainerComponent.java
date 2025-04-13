@@ -24,11 +24,11 @@ class ContainerComponent implements LootItemComponent {
             for (String key : containerSection.getKeys(false)) {
                 ConfigurationSection contentSection = containerSection.getConfigurationSection(key);
                 if (contentSection != null) {
-                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "bundle", key, contentSection);
+                    LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "container", key, contentSection);
                     if (lootItem != null) {
                         this.contents.add(lootItem);
                     } else {
-                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid bundle item: " + key);
+                        RoseLoot.getInstance().getLogger().warning("Ignoring invalid container item: " + key);
                     }
                 }
             }
