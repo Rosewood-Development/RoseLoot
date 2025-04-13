@@ -57,7 +57,7 @@ public class ItemLootMeta {
             CONSTRUCTORS = new HashMap<>();
             PROPERTY_APPLIERS = new HashMap<>();
 
-            if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 5))
+            if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3))
                 mapMaterials(BundleItemLootMeta::new, BundleItemLootMeta::applyProperties, Tag.ITEMS_BUNDLES.getValues().toArray(Material[]::new));
 
             mapMaterials(BookItemLootMeta::new, BookItemLootMeta::applyProperties, Material.WRITABLE_BOOK, Material.WRITTEN_BOOK);
