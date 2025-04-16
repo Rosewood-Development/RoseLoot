@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.util;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Registry;
@@ -131,6 +132,14 @@ public class VersionUtils {
                     .filter(x -> x.getKey().getKey().equalsIgnoreCase(name))
                     .findFirst()
                     .orElse(null);
+        }
+    }
+
+    public static List<Enchantment> getAllEnchantments() {
+        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
+            return Registry.ENCHANTMENT.stream().toList();
+        } else {
+            return Arrays.asList(Enchantment.values());
         }
     }
 

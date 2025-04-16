@@ -9,5 +9,5 @@ paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getREOBF_PRO
 dependencies {
     compileOnly project(':NMS:Wrapper')
     compileOnly "dev.rosewood:rosegarden:$rosegardenVersion"
-    paperweight.paperDevBundle("1.21.5-no-moonrise-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
 }

@@ -2,10 +2,11 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -32,12 +33,19 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
                 possibleEnchantments.addAll(this.randomEnchantments);
             } else {
                 // Empty, pick from every enchantment
-                possibleEnchantments.addAll(Arrays.asList(Enchantment.values()));
+                possibleEnchantments.addAll(VersionUtils.getAllEnchantments());
             }
 
-            Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
-            int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
-            itemMeta.addStoredEnchant(enchantment, level, true);
+            int amount = this.randomEnchantmentsAmount.getInteger(context);
+            for (int i = 0; i < amount; i++) {
+                possibleEnchantments = possibleEnchantments.stream().filter(Predicate.not(itemMeta::hasConflictingStoredEnchant)).toList();
+                if (possibleEnchantments.isEmpty())
+                    break;
+
+                Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
+                int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
+                itemMeta.addStoredEnchant(enchantment, level, false);
+            }
         }
 
         if (this.enchantments != null) {

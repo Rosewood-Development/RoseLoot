@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -144,6 +145,7 @@ public class ItemLootMeta {
     private boolean includeTreasureEnchantments;
     private List<ItemFlag> hideFlags;
     protected List<Enchantment> randomEnchantments;
+    protected NumberProvider randomEnchantmentsAmount;
     protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
     private final boolean copyBlockState;
@@ -197,6 +199,8 @@ public class ItemLootMeta {
                     this.randomEnchantments.add(enchantment);
             }
         }
+
+        this.randomEnchantmentsAmount = NumberProvider.fromSection(section, "random-enchantments-amount", 1);
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
         if (enchantmentsSection != null) {
@@ -316,21 +320,32 @@ public class ItemLootMeta {
         Material type = itemStack.getType();
         if (type != Material.ENCHANTED_BOOK) {
             if (this.randomEnchantments != null) {
-                List<Enchantment> possibleEnchantments = new ArrayList<>();
+                List<Enchantment> enchantmentsSource;
                 if (!this.randomEnchantments.isEmpty()) {
                     // Not empty, use the suggested
-                    possibleEnchantments.addAll(this.randomEnchantments);
+                    enchantmentsSource = this.randomEnchantments;
                 } else {
                     // Empty, pick from every applicable enchantment for the item
-                    for (Enchantment enchantment : Enchantment.values())
-                        if (enchantment.canEnchantItem(itemStack) && enchantment.isDiscoverable())
-                            possibleEnchantments.add(enchantment);
+                    enchantmentsSource = VersionUtils.getAllEnchantments();
                 }
 
-                if (!possibleEnchantments.isEmpty()) {
+                // Filter out enchantments that can't go on the item
+                List<Enchantment> possibleEnchantments = new ArrayList<>();
+                for (Enchantment enchantment : enchantmentsSource)
+                    if (enchantment.canEnchantItem(itemStack) && enchantment.isDiscoverable())
+                        possibleEnchantments.add(enchantment);
+
+                // Apply the number of enchantments desired
+                int amount = this.randomEnchantmentsAmount.getInteger(context);
+                for (int i = 0; i < amount; i++) {
+                    // Filter out enchantments that conflict with enchantments already on the item
+                    possibleEnchantments = possibleEnchantments.stream().filter(Predicate.not(itemMeta::hasConflictingEnchant)).toList();
+                    if (possibleEnchantments.isEmpty())
+                        break;
+
                     Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
                     int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
-                    itemMeta.addEnchant(enchantment, level, true);
+                    itemMeta.addEnchant(enchantment, level, false);
                 }
             }
 
