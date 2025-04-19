@@ -452,7 +452,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("ominous", OminousCondition::new);
         this.registerBoolean(event, "open-water", context -> context.get(LootContextParams.FISH_HOOK).filter(FishHook::isInOpenWater).isPresent());
         this.registerBoolean(event, "patrol-leader", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Raider.class).filter(Raider::isPatrolLeader).isPresent());
-        this.registerStrings(event, "permission", (context, values) -> context.get(LootContextParams.LOOTER).filter(x -> values.stream().anyMatch(x::hasPermission)).isPresent());
+        this.registerStrings(event, "permission", (context, values) -> context.getLootingPlayer().filter(x -> values.stream().anyMatch(x::hasPermission)).isPresent());
         event.registerLootCondition("placeholder", PlaceholderCondition::new);
         event.registerLootCondition("placeholder-chance", PlaceholderChanceCondition::new);
         event.registerLootCondition("potion-effect", PotionEffectCondition::new);

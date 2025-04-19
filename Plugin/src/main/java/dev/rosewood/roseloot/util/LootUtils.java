@@ -229,24 +229,17 @@ public final class LootUtils {
      * @return The Entity that ultimated caused the death
      */
     public static Entity propagateKiller(Entity entity) {
-        if (entity instanceof LivingEntity && ((LivingEntity) entity).getKiller() != null)
-            return ((LivingEntity) entity).getKiller();
-
         if (entity instanceof TNTPrimed tntPrimed) {
             // Propagate the igniter of the tnt up the stack
             Entity tntSource = tntPrimed.getSource();
             if (tntSource != null)
                 entity = tntSource;
-        }
-
-        if (entity instanceof Projectile projectile) {
+        } else if (entity instanceof Projectile projectile) {
             // Check for the projectile type first, if not fall back to the shooter
             ProjectileSource source = projectile.getShooter();
-            if (source instanceof Entity)
-                entity = (Entity) source;
-        }
-
-        if (entity instanceof Tameable tameable) {
+            if (source instanceof Entity sourceEntity)
+                entity = sourceEntity;
+        } else if (entity instanceof Tameable tameable) {
             // Propagate to the tamed entity's owner (if they're online)
             AnimalTamer tamer = tameable.getOwner();
             if (tamer != null) {
@@ -255,7 +248,6 @@ public final class LootUtils {
                     entity = player;
             }
         }
-
         return entity;
     }
 
