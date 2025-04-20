@@ -23,7 +23,7 @@ command-help-list-description: '&8 - &d/%cmd% %subcmd% %args% &7- %desc%'
 command-help-list-description-no-args: '&8 - &d/%cmd% %subcmd% &7- %desc%'
 command-help-wiki: '&9&o&nClick here to learn how to create loot tables.'
 command-help-wiki-hover: '&7%url%'
-command-help-wiki-url: 'https://github.com/Rosewood-Development/RoseLoot/wiki/Loot-Tables-Overview'
+command-help-wiki-url: 'https://wiki.rosewooddev.io/RoseLoot/overview/'
 
 # Reload Command
 command-reload-description: 'Reloads the plugin'

@@ -5,7 +5,7 @@ Thanks for downloading RoseLoot!
 This plugin has some fairly advanced configuration files, and as such it will be required for you to read through the
 wiki in order to fully grasp all the concepts.
 
-Wiki: <https://github.com/Rosewood-Development/RoseLoot/wiki>
+Wiki: <https://wiki.rosewooddev.io/RoseLoot/>
 
 If you decide you would like help creating the perfect loot table to suit your needs, you can join our Discord server
 for support.  Just ask in our discussion channel!
