@@ -6,6 +6,7 @@ main: dev.rosewood.roseloot.RoseLoot
 api-version: '1.13'
 libraries:
   - 'org.xerial:sqlite-jdbc:3.42.0.0'
+folia-supported: true
 description: Manipulate loot of mobs, blocks, fishing, chests, piglin bartering, advancements, archaeology, and more!
 softdepend:
   - PlaceholderAPI
