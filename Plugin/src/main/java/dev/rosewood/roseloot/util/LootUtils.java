@@ -204,7 +204,7 @@ public final class LootUtils {
         for (File file : files) {
             if (file.isDirectory() && !excludedDirectories.contains(file.getName())) {
                 listedFiles.addAll(listFiles(file, excludedDirectories, extensions));
-            } else if (file.isFile() && extensions.stream().anyMatch(x -> file.getName().endsWith(x))) {
+            } else if (file.isFile() && extensions.stream().anyMatch(x -> file.getName().toLowerCase().endsWith(x.toLowerCase()))) {
                 listedFiles.add(file);
             }
         }

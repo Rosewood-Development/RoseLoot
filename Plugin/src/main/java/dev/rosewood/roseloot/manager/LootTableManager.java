@@ -184,7 +184,7 @@ public class LootTableManager extends DelayedManager implements Listener {
 
         VanillaLootTableConverter.convertVanilla(examplesDirectory);
 
-        List<File> files = LootUtils.listFiles(this.directory, List.of("examples", "disabled"), List.of("yml"));
+        List<File> files = LootUtils.listFiles(this.directory, List.of("examples", "disabled"), List.of(".yml", ".yaml"));
         for (File file : files) {
             try {
                 this.loadFile(file);

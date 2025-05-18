@@ -83,7 +83,9 @@ public class EntityPropertyConditions {
 
         // Register conditions for specific entities
         if (NMSUtil.getVersionNumber() >= 21) {
-            registerBoolean(Bogged.class, "sheared", Bogged::isSheared);
+            if (NMSUtil.getMinorVersionNumber() >= 4) {
+                registerBoolean(Bogged.class, "sheared", Bogged::isSheared);
+            }
 
             if (NMSUtil.getMinorVersionNumber() >= 5) {
                 registerEnum(Chicken.class, "variant", Chicken::getVariant, Chicken.Variant.class);
