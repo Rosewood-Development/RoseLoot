@@ -32,7 +32,8 @@ public enum CustomItemPlugin {
     ADVANCEDITEMS(AdvancedItemsProvider::new),
     ZITEMS(ZItemProvider::new),
     ZESSENTIALS(ZEssentialsItemProvider::new),
-    NEXO(NexoItemProvider::new);
+    NEXO(NexoItemProvider::new),
+    CRAZYVOUCHERS(CrazyVouchersItemProvider::new);
 
     private final Lazy<ItemProvider> itemProvider;
 
