@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.util;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -164,17 +165,14 @@ public final class LootUtils {
      */
     public static SpawnReason getEntitySpawnReason(LivingEntity entity) {
         String reason = entity.getPersistentDataContainer().get(SPAWN_REASON_METADATA_KEY, PersistentDataType.STRING);
-        SpawnReason spawnReason;
         if (reason != null) {
             try {
-                spawnReason = SpawnReason.valueOf(reason);
-            } catch (Exception ex) {
-                spawnReason = SpawnReason.CUSTOM;
-            }
-        } else {
-            spawnReason = SpawnReason.CUSTOM;
+                return SpawnReason.valueOf(reason);
+            } catch (Exception ignored) { }
         }
-        return spawnReason;
+        if (NMSUtil.isPaper())
+            return entity.getEntitySpawnReason();
+        return SpawnReason.CUSTOM;
     }
 
     public static void setRestrictedItemPickup(ItemMeta itemMeta, UUID owner) {
