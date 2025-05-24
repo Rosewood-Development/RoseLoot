@@ -4,7 +4,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import org.bukkit.Location;
 
 /**
- * Represents a LootItem that can trigger its contents.
+ * Represents a LootItem that can trigger its contents at a location.
  */
 public non-sealed interface TriggerableLootItem extends LootItem {
 

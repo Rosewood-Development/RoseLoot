@@ -6,13 +6,12 @@ import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
-import java.util.List;
 import java.util.Optional;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class SCoreVariableLootItem implements GroupTriggerableLootItem<SCoreVariableLootItem> {
+public class SCoreVariableLootItem implements AutoTriggerableLootItem {
 
     private final String variable;
     private final boolean global;
@@ -20,7 +19,7 @@ public class SCoreVariableLootItem implements GroupTriggerableLootItem<SCoreVari
     private final NumberProvider amount;
     private final StringProvider value;
 
-    public SCoreVariableLootItem(String variable, boolean global, boolean set, NumberProvider amount, StringProvider value) {
+    protected SCoreVariableLootItem(String variable, boolean global, boolean set, NumberProvider amount, StringProvider value) {
         this.variable = variable;
         this.global = global;
         this.set = set;
@@ -29,7 +28,7 @@ public class SCoreVariableLootItem implements GroupTriggerableLootItem<SCoreVari
     }
 
     @Override
-    public void trigger(LootContext context, Location location, List<SCoreVariableLootItem> others) {
+    public void trigger(LootContext context, Location location) {
         VariablesManager variablesManager = VariablesManager.getInstance();
         Optional<Variable> variableOptional = variablesManager.getVariable(this.variable);
         if (variableOptional.isEmpty()) {
@@ -44,8 +43,6 @@ public class SCoreVariableLootItem implements GroupTriggerableLootItem<SCoreVari
         Variable variable = variableOptional.get();
         if (this.value == null) {
             double offsetAmount = this.amount.getDouble(context);
-            for (SCoreVariableLootItem other : others)
-                offsetAmount += other.amount.getDouble(context);
             Optional<String> result;
             if (this.set) {
                 result = variable.setValue(this.global ? Optional.empty() : Optional.of(looterOptional.get()), String.valueOf(offsetAmount));
@@ -57,11 +54,6 @@ public class SCoreVariableLootItem implements GroupTriggerableLootItem<SCoreVari
             Optional<String> result = variable.setValue(this.global ? Optional.empty() : Optional.of(looterOptional.get()), this.value.get(context));
             result.ifPresent(x -> RoseLoot.getInstance().getLogger().warning("Couldn't modify SCore variable: " + x));
         }
-    }
-
-    @Override
-    public boolean canTriggerWith(SCoreVariableLootItem other) {
-        return this.variable.equals(other.variable) && this.global == other.global && !this.set && !other.set && this.value == null && other.value == null;
     }
 
     public static SCoreVariableLootItem fromSection(ConfigurationSection section) {

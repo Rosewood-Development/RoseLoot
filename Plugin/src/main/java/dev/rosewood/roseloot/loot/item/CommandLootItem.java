@@ -8,7 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class CommandLootItem implements TriggerableLootItem {
+public class CommandLootItem implements AutoTriggerableLootItem {
 
     private final StringProvider command;
     private final boolean runAsPlayer;

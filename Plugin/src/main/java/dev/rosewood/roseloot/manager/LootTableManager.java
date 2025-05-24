@@ -93,6 +93,7 @@ import dev.rosewood.roseloot.loot.item.PotionEffectLootItem;
 import dev.rosewood.roseloot.loot.item.RandomNumberLootItem;
 import dev.rosewood.roseloot.loot.item.RoseStackerLootItem;
 import dev.rosewood.roseloot.loot.item.SCoreVariableLootItem;
+import dev.rosewood.roseloot.loot.item.ServerVariableLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
@@ -407,6 +408,9 @@ public class LootTableManager extends DelayedManager implements Listener {
 
         if (Bukkit.getPluginManager().isPluginEnabled("SCore"))
             event.registerLootItem("score_variable", SCoreVariableLootItem::fromSection);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("ServerVariables"))
+            event.registerLootItem("server_variable", ServerVariableLootItem::fromSection);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
