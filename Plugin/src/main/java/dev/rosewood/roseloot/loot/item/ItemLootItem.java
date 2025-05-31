@@ -13,11 +13,11 @@ import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
@@ -51,7 +51,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         this.smeltIfBurning = smeltIfBurning;
         this.nbt = nbt;
         this.lootMetaFactoryFunction = lootMetaFactoryFunction;
-        this.itemLootMetaMap = new HashMap<>();
+        this.itemLootMetaMap = new ConcurrentHashMap<>();
         this.firstPlaceholderParseFailure = true;
         if (tryResolve)
             this.resolveItem(LootContext.none());

@@ -75,7 +75,7 @@ public class ServerVariableLootItem implements AutoTriggerableLootItem {
     public static ServerVariableLootItem fromSection(ConfigurationSection section) {
         String variable = section.getString("variable");
         VariableType variableType = EnumHelper.valueOf(VariableType.class, section.getString("variable-type", "player"));
-        ValueType valueType = EnumHelper.valueOf(ValueType.class, section.getString("value-type"));
+        ValueType valueType = EnumHelper.valueOf(ValueType.class, section.getString("value-type", "integer"));
         ValueOperation valueOperation = EnumHelper.valueOf(ValueOperation.class, section.getString("value-operation", "add"));
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 0);
         StringProvider value = StringProvider.fromSection(section, "value", null);
