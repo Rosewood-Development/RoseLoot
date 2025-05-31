@@ -35,7 +35,7 @@ public class EntityListener extends LazyLootTableListener {
         if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
             return;
 
-        if (RoseStackerHook.shouldIgnoreNormalDeathEvent(entity))
+        if (RoseStackerHook.shouldIgnoreNormalDeathEvent(event))
             return;
 
         Entity looter = null;
