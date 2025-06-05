@@ -48,6 +48,7 @@ softdepend:
   - AdvancedItems
   - CustomFishing
   - BlockTracker
+  - CraftEngine
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
