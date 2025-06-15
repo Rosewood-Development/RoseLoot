@@ -171,7 +171,7 @@ public class LootTableManager extends DelayedManager implements Listener {
 
         LootItemTypeRegistrationEvent lootItemTypeRegistrationEvent = new LootItemTypeRegistrationEvent();
         Bukkit.getPluginManager().callEvent(lootItemTypeRegistrationEvent);
-        this.registeredLootItemFunctions.putAll(lootItemTypeRegistrationEvent.getRegisteredLootItemsTypes());
+        this.registeredLootItemFunctions.putAll(lootItemTypeRegistrationEvent.getRegisteredLootItemTypes());
         RoseLoot.getInstance().getLogger().info("Registered " + this.registeredLootItemFunctions.size() + " loot item types.");
 
         File examplesDirectory = new File(this.directory, "examples");
@@ -373,6 +373,8 @@ public class LootTableManager extends DelayedManager implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLootTableTypeRegistration(LootTableTypeRegistrationEvent event) {
         LootTableTypes.values().forEach(event::registerLootTableType);
+
+        RoseLootAPI.getInstance().getRegisteredCustomLootTableTypes().forEach(event::registerLootTableType);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -411,6 +413,8 @@ public class LootTableManager extends DelayedManager implements Listener {
 
         if (Bukkit.getPluginManager().isPluginEnabled("ServerVariables"))
             event.registerLootItem("server_variable", ServerVariableLootItem::fromSection);
+
+        RoseLootAPI.getInstance().getRegisteredCustomLootItemTypes().forEach(event::registerLootItem);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

@@ -9,7 +9,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An event that gets called during the RoseLoot LootTableType registrations
+ * An event that gets called during the RoseLoot LootTableType registration
  */
 public class LootTableTypeRegistrationEvent extends Event {
 

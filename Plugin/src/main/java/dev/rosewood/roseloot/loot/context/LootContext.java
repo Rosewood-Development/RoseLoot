@@ -275,6 +275,17 @@ public class LootContext {
         return new Builder(0);
     }
 
+    /**
+     * Allows creating a LootContext.
+     * Usage example for running a block loot table type:
+     * <pre>
+     * LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
+     *         .put(LootContextParams.ORIGIN, block.getLocation())
+     *         .put(LootContextParams.LOOTER, player)
+     *         .put(LootContextParams.LOOTED_BLOCK, block)
+     *         .build();
+     * </pre>
+     */
     public static class Builder {
 
         private final LootContext context;
@@ -288,7 +299,8 @@ public class LootContext {
         }
 
         /**
-         * Puts a LootContextParam value into the LootContext
+         * Puts a LootContextParam value into the LootContext.
+         * Default LootContextParams are available at {@link LootContextParams}.
          *
          * @param param the LootContextParam to put the value for
          * @param value the value to put

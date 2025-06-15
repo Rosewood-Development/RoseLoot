@@ -17,18 +17,18 @@ public class LootItemTypeRegistrationEvent extends Event {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
-    private final Map<String, Function<ConfigurationSection, LootItem>> registeredLootItemsTypes;
+    private final Map<String, Function<ConfigurationSection, LootItem>> registeredLootItemTypes;
 
     public LootItemTypeRegistrationEvent() {
-        this.registeredLootItemsTypes = new HashMap<>();
+        this.registeredLootItemTypes = new HashMap<>();
     }
 
     /**
      * @return an unmodifiable map of registered LootItem types
      */
     @NotNull
-    public Map<String, Function<ConfigurationSection, LootItem>> getRegisteredLootItemsTypes() {
-        return Collections.unmodifiableMap(this.registeredLootItemsTypes);
+    public Map<String, Function<ConfigurationSection, LootItem>> getRegisteredLootItemTypes() {
+        return Collections.unmodifiableMap(this.registeredLootItemTypes);
     }
 
     /**
@@ -39,7 +39,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @return true if registering the new LootItem type overwrote a different LootItem type with the same name, false otherwise
      */
     public boolean registerLootItem(@NotNull String name, @NotNull Function<ConfigurationSection, LootItem> function) {
-        return this.registeredLootItemsTypes.put(name.toLowerCase(), function) == null;
+        return this.registeredLootItemTypes.put(name.toLowerCase(), function) == null;
     }
 
     /**
@@ -49,7 +49,7 @@ public class LootItemTypeRegistrationEvent extends Event {
      * @return true if a LootItem type was unregistered, false otherwise
      */
     public boolean unregisterLootItem(@NotNull String name) {
-        return this.registeredLootItemsTypes.remove(name.toLowerCase()) != null;
+        return this.registeredLootItemTypes.remove(name.toLowerCase()) != null;
     }
 
     @Override

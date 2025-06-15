@@ -23,6 +23,14 @@ public class LootConditionRegistrationEvent extends Event {
     }
 
     /**
+     * @return an unmodifiable map of registered LootConditions
+     */
+    @NotNull
+    public Map<String, Function<String, LootCondition>> getRegisteredConditions() {
+        return Collections.unmodifiableMap(this.registeredConditions);
+    }
+
+    /**
      * Registers a LootCondtion by its Class, overwriting any existing LootConditions with the same name.
      * The given class must have a constructor accepting a single String.
      *
@@ -41,13 +49,6 @@ public class LootConditionRegistrationEvent extends Event {
      */
     public boolean unregisterLootCondition(@NotNull String name) {
         return this.registeredConditions.remove(name.toLowerCase()) != null;
-    }
-
-    /**
-     * @return A map of all registered LootConditions
-     */
-    public Map<String, Function<String, LootCondition>> getRegisteredConditions() {
-        return Collections.unmodifiableMap(this.registeredConditions);
     }
 
     @Override
