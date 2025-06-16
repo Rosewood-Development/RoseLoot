@@ -114,10 +114,8 @@ public class ItemLootMeta {
                     String name = null;
                     int major = NMSUtil.getVersionNumber();
                     int minor = NMSUtil.getMinorVersionNumber();
-                    if (major == 21 && minor == 3) {
-                        name = "1_21_R2";
-                    } else if (major >= 21) {
-                        name = "latest";
+                    if (major == 21 && minor == 4) {
+                        name = "1_21_R3";
                     }
 
                     if (name != null) {
