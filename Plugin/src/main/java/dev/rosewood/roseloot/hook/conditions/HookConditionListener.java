@@ -61,6 +61,10 @@ public class HookConditionListener implements Listener {
             event.registerLootCondition("nexo-block", NexoBlockCondition::new);
         }
 
+        if (pluginManager.getPlugin("CraftEngine") != null) {
+            event.registerLootCondition("craftengine-block", CraftEngineBlockCondition::new);
+        }
+
         if (pluginManager.getPlugin("CoreProtect") != null) {
             event.registerLootCondition("coreprotect-natural-block", CoreProtectNaturalBlockCondition::new);
         }

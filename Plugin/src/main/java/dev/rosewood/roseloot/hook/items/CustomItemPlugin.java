@@ -33,7 +33,8 @@ public enum CustomItemPlugin {
     ZITEMS(ZItemProvider::new),
     ZESSENTIALS(ZEssentialsItemProvider::new),
     NEXO(NexoItemProvider::new),
-    CRAZYVOUCHERS(CrazyVouchersItemProvider::new);
+    CRAZYVOUCHERS(CrazyVouchersItemProvider::new),
+    CRAFTENGINE(CraftEngineItemProvider::new);
 
     private final Lazy<ItemProvider> itemProvider;
 
