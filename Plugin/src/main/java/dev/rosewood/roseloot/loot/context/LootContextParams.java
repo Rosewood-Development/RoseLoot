@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootPlaceholders;
 import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -57,6 +58,7 @@ public final class LootContextParams {
     public static final LootContextParam<ItemStack> INPUT_ITEM = create("input_item", ItemStack.class);
     public static final LootContextParam<NamespacedKey> VANILLA_LOOT_TABLE_KEY = create("vanilla_loot_table_key", NamespacedKey.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("vanilla_loot_table_name", x.toString())));
+    public static final LootContextParam<List<NamespacedKey>> TRIAL_SPAWNER_LOOT_TABLE_KEYS = create("vanilla_loot_table_keys", (Class<List<NamespacedKey>>) (Class<?>) List.class);
     public static final LootContextParam<NamespacedKey> ADVANCEMENT_KEY = create("advancement_key", NamespacedKey.class, builder ->
             builder.withPlaceholders((x, y) -> y.add("advancement_name", x.toString())));
     public static final LootContextParam<ExplosionType> EXPLOSION_TYPE = create("explosion_type", ExplosionType.class, builder ->

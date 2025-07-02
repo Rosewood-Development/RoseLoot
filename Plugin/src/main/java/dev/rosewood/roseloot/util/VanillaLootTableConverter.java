@@ -129,6 +129,12 @@ public final class VanillaLootTableConverter {
                 writeBlockHeader(path, writer);
             } else if (path.equals("gameplay/fishing")) {
                 writeFishingHeader(path, writer);
+            } else if (path.contains("chests/trial_chambers/reward")) {
+                if (path.equals("chests/trial_chambers/reward") || path.equals("chests/trial_chambers/reward_ominous")) {
+                    writeVaultHeader(path, writer);
+                } else {
+                    writeLootTableHeader(path, writer);
+                }
             } else if (path.startsWith("chests") || path.startsWith("dispensers") || path.startsWith("pots")) {
                 writeContainerHeader(path, writer);
             } else if (path.equals("gameplay/piglin_bartering")) {
@@ -229,6 +235,25 @@ public final class VanillaLootTableConverter {
         writer.write("conditions:");
         writer.increaseIndentation();
         writer.write("- 'vanilla-loot-table:" + path + "'");
+        writer.decreaseIndentation();
+    }
+
+    private static void writeVaultHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: VAULT");
+        writer.write("overwrite-existing: items");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        if (path.contains("spawners/")) {
+            writer.write("- 'block-type:trial_spawner'");
+        } else {
+            writer.write("- 'block-type:vault'");
+        }
+        //writer.write("- 'vanilla-loot-table:" + path + "'");
+        if (path.contains("ominous")) {
+            writer.write("- 'ominous'");
+        } else {
+            writer.write("- '!ominous'");
+        }
         writer.decreaseIndentation();
     }
 
@@ -1181,7 +1206,8 @@ public final class VanillaLootTableConverter {
                                  "minecraft:bees",
                                  "minecraft:profile",
                                  "minecraft:note_block_sound",
-                                 "minecraft:rarity" -> valuesToWrite.add("copy-block-state: true");
+                                 "minecraft:rarity",
+                                 "minecraft:tooltip_display" -> valuesToWrite.add("copy-block-state: true");
                             case "minecraft:custom_name", "minecraft:item_name" -> valuesToWrite.add("copy-block-name: true");
                             default -> RoseLoot.getInstance().getLogger().warning("minecraft:copy_components unhandled include: " + value + " | " + path);
                         }

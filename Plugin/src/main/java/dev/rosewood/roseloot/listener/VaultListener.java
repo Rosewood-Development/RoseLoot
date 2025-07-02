@@ -19,9 +19,12 @@ import dev.rosewood.roseloot.util.LootUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.TrialSpawner;
 import org.bukkit.block.Vault;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
@@ -30,6 +33,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockDispenseLootEvent;
 import org.bukkit.event.block.VaultDisplayItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.spawner.TrialSpawnerConfiguration;
 import org.jetbrains.annotations.Nullable;
 
 public class VaultListener extends LazyLootTableListener {
@@ -54,19 +58,14 @@ public class VaultListener extends LazyLootTableListener {
         List<ItemStack> dispensedLoot = event.getDispensedLoot();
         Player player = event.getPlayer();
 
-        NamespacedKey vanillaLootTableKey;
-        if (NMSUtil.isPaper()) {
-            if (block.getState(false) instanceof Vault vault) {
-                vanillaLootTableKey = vault.getLootTable().getKey();
-            } else {
-                vanillaLootTableKey = null;
-            }
-        } else {
-            if (block.getState() instanceof Vault vault) {
-                vanillaLootTableKey = vault.getLootTable().getKey();
-            } else {
-                vanillaLootTableKey = null;
-            }
+        NamespacedKey vanillaLootTableKey = null;
+        List<NamespacedKey> trialSpawnerKeys = null;
+        BlockState state = NMSUtil.isPaper() ? block.getState(false) : block.getState();
+        if (state instanceof Vault vault) {
+            vanillaLootTableKey = vault.getLootTable().getKey();
+        } else if (state instanceof TrialSpawner trialSpawner) {
+            TrialSpawnerConfiguration configuration = trialSpawner.isOminous() ? trialSpawner.getOminousConfiguration() : trialSpawner.getNormalConfiguration();
+            trialSpawnerKeys = configuration.getPossibleRewards().keySet().stream().map(Keyed::getKey).toList();
         }
 
         LootContext lootContext = LootContext.builder(LootUtils.getEntityLuck(player))
@@ -75,6 +74,7 @@ public class VaultListener extends LazyLootTableListener {
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.HAS_EXISTING_ITEMS, !dispensedLoot.isEmpty())
                 .put(LootContextParams.VANILLA_LOOT_TABLE_KEY, vanillaLootTableKey)
+                .put(LootContextParams.TRIAL_SPAWNER_LOOT_TABLE_KEYS, trialSpawnerKeys)
                 .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.VAULT, lootContext);
         LootContents lootContents = lootResult.getLootContents();
@@ -102,19 +102,10 @@ public class VaultListener extends LazyLootTableListener {
         Location location = block.getLocation();
         DisplayItemTracker itemTracker = this.displayItemTrackers.getIfPresent(location);
         if (itemTracker == null) {
-            NamespacedKey vanillaLootTableKey;
-            if (NMSUtil.isPaper()) {
-                if (block.getState(false) instanceof Vault vault) {
-                    vanillaLootTableKey = vault.getLootTable().getKey();
-                } else {
-                    vanillaLootTableKey = null;
-                }
-            } else {
-                if (block.getState() instanceof Vault vault) {
-                    vanillaLootTableKey = vault.getLootTable().getKey();
-                } else {
-                    vanillaLootTableKey = null;
-                }
+            NamespacedKey vanillaLootTableKey = null;
+            BlockState state = NMSUtil.isPaper() ? block.getState(false) : block.getState();
+            if (state instanceof Vault vault) {
+                vanillaLootTableKey = vault.getLootTable().getKey();
             }
 
             // Only parse the top level conditions of all VAULT loot tables and display all items when the conditions pass
