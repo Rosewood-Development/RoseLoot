@@ -61,6 +61,7 @@ dependencies {
     implementation project(path: ':NMS:v1_21_R2', configuration: 'reobf')
     implementation project(path: ':NMS:v1_21_R3', configuration: 'reobf')
     implementation project(path: ':NMS:v1_21_R4', configuration: 'reobf')
+    implementation project(path: ':NMS:v1_21_R5', configuration: 'reobf')
 }
 
 shadowJar {

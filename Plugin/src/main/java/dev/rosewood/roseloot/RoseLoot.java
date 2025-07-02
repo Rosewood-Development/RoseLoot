@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot;
 
 import dev.rosewood.rosegarden.RosePlugin;
-import dev.rosewood.rosegarden.config.RoseSetting;
+import dev.rosewood.rosegarden.config.SettingHolder;
 import dev.rosewood.rosegarden.manager.Manager;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.config.SettingKey;
@@ -73,8 +73,8 @@ public class RoseLoot extends RosePlugin {
     }
 
     @Override
-    protected List<RoseSetting<?>> getRoseConfigSettings() {
-        return SettingKey.getKeys();
+    protected SettingHolder getRoseConfigSettingHolder() {
+        return SettingKey.INSTANCE;
     }
 
     @Override
