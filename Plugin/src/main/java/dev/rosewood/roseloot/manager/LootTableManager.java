@@ -97,6 +97,7 @@ import dev.rosewood.roseloot.loot.item.ServerVariableLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
 import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
+import dev.rosewood.roseloot.loot.item.ZMenuPlayerDataLootItem;
 import dev.rosewood.roseloot.loot.table.LootTableType;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.provider.NumberProvider;
@@ -133,6 +134,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Merchant;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.ApiStatus;
 
 public class LootTableManager extends DelayedManager implements Listener {
@@ -402,17 +404,21 @@ public class LootTableManager extends DelayedManager implements Listener {
         if (MMOCoreHook.isEnabled())
             event.registerLootItem("mmocore_experience", MMOCoreExperienceLootItem::fromSection);
 
-        if (Bukkit.getPluginManager().isPluginEnabled("EcoSkills"))
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        if (pluginManager.isPluginEnabled("EcoSkills"))
             event.registerLootItem("ecoskills_experience", EcoSkillsExperienceLootItem::fromSection);
 
-        if (Bukkit.getPluginManager().isPluginEnabled("RoseStacker"))
+        if (pluginManager.isPluginEnabled("RoseStacker"))
             event.registerLootItem("rosestacker_stack_item", RoseStackerLootItem::fromSection);
 
-        if (Bukkit.getPluginManager().isPluginEnabled("SCore"))
+        if (pluginManager.isPluginEnabled("SCore"))
             event.registerLootItem("score_variable", SCoreVariableLootItem::fromSection);
 
-        if (Bukkit.getPluginManager().isPluginEnabled("ServerVariables"))
+        if (pluginManager.isPluginEnabled("ServerVariables"))
             event.registerLootItem("server_variable", ServerVariableLootItem::fromSection);
+
+        if (pluginManager.isPluginEnabled("zMenu"))
+            event.registerLootItem("zmenu_playerdata", ZMenuPlayerDataLootItem::fromSection);
 
         RoseLootAPI.getInstance().getRegisteredCustomLootItemTypes().forEach(event::registerLootItem);
     }
