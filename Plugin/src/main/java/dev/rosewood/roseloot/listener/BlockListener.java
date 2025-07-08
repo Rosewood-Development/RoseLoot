@@ -82,7 +82,7 @@ public class BlockListener extends LazyLootTableListener {
             event.setExpToDrop(0);
 
         // Drop items and experience
-        Location dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
+        Location dropLocation = LootUtils.adjustBlockLocation(block.getLocation());
         List<Item> droppedItems = new ArrayList<>();
         lootContents.getItems().forEach(x -> droppedItems.add(block.getWorld().dropItemNaturally(dropLocation, x)));
 
@@ -143,7 +143,7 @@ public class BlockListener extends LazyLootTableListener {
         }
 
         // Drop items and experience
-        Location dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
+        Location dropLocation = LootUtils.adjustBlockLocation(block.getLocation());
         lootContents.getItems().forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
 
         int experience = lootContents.getExperience();

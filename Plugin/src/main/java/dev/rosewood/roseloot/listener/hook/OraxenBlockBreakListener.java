@@ -71,7 +71,7 @@ public class OraxenBlockBreakListener extends LazyLootTableListener {
         LootContents lootContents = lootResult.getLootContents();
 
         // Drop items and experience
-        Location dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
+        Location dropLocation = LootUtils.adjustBlockLocation(block.getLocation());
         List<Item> droppedItems = new ArrayList<>();
         lootContents.getItems().forEach(x -> droppedItems.add(block.getWorld().dropItemNaturally(dropLocation, x)));
 

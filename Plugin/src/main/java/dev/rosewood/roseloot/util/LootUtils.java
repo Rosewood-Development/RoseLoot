@@ -145,6 +145,14 @@ public final class LootUtils {
         return RANDOM.nextDouble() * (max - min) + min;
     }
 
+    public static Location adjustBlockLocation(Location location) {
+        if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3)) {
+            return location.add(0.5, 0.5, 0.5);
+        } else {
+            return location;
+        }
+    }
+
     /**
      * Sets the spawn reason for the given LivingEntity.
      * Does not overwrite an existing spawn reason.

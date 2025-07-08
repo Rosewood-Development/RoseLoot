@@ -96,7 +96,7 @@ public class ArchaeologyListener extends LazyLootTableListener {
         brushableBlock.setLootTable(null);
         brushableBlock.update();
 
-        Location dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
+        Location dropLocation = LootUtils.adjustBlockLocation(block.getLocation());
         items.forEach(x -> block.getWorld().dropItemNaturally(dropLocation, x));
 
         int experience = lootContents.getExperience();
