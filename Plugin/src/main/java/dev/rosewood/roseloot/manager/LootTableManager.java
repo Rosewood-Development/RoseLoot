@@ -32,6 +32,7 @@ import dev.rosewood.roseloot.loot.condition.tags.BiomeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.BlockTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.ChanceCondition;
+import dev.rosewood.roseloot.loot.condition.tags.ConditionChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CooldownCondition;
 import dev.rosewood.roseloot.loot.condition.tags.CustomModelDataCondition;
 import dev.rosewood.roseloot.loot.condition.tags.DeathCauseCondition;
@@ -437,6 +438,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         this.registerBoolean(event, "charged-explosion", context -> context.get(LootContextParams.EXPLOSION_TYPE).filter(x -> x == ExplosionType.CHARGED_ENTITY).isPresent());
         this.registerBoolean(event, "chested", context -> context.getAs(LootContextParams.LOOTED_ENTITY, ChestedHorse.class).filter(ChestedHorse::isCarryingChest).isPresent());
         event.registerLootCondition("cooldown", CooldownCondition::new);
+        event.registerLootCondition("condition-chance", ConditionChanceCondition::new);
         event.registerLootCondition("custom-model-data", CustomModelDataCondition::new);
         event.registerLootCondition("death-cause", DeathCauseCondition::new);
         event.registerLootCondition("dimension", DimensionCondition::new);
