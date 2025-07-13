@@ -239,19 +239,19 @@ public final class LootUtils {
             // Propagate the igniter of the tnt up the stack
             Entity tntSource = tntPrimed.getSource();
             if (tntSource != null)
-                entity = tntSource;
+                return propagateKiller(tntSource);
         } else if (entity instanceof Projectile projectile) {
             // Check for the projectile type first, if not fall back to the shooter
             ProjectileSource source = projectile.getShooter();
             if (source instanceof Entity sourceEntity)
-                entity = sourceEntity;
+                return sourceEntity;
         } else if (entity instanceof Tameable tameable) {
             // Propagate to the tamed entity's owner (if they're online)
             AnimalTamer tamer = tameable.getOwner();
             if (tamer != null) {
                 Player player = Bukkit.getPlayer(tamer.getUniqueId());
                 if (player != null)
-                    entity = player;
+                    return player;
             }
         }
         return entity;

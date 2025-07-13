@@ -52,6 +52,7 @@ import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LegacyFeatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
+import dev.rosewood.roseloot.loot.condition.tags.LooterVehicleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LuckChanceCondition;
 import dev.rosewood.roseloot.loot.condition.tags.OminousCondition;
 import dev.rosewood.roseloot.loot.condition.tags.PlaceholderChanceCondition;
@@ -67,6 +68,7 @@ import dev.rosewood.roseloot.loot.condition.tags.TemperatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.TrialSpawnerStateCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VanillaLootTableCondition;
 import dev.rosewood.roseloot.loot.condition.tags.VaultStateCondition;
+import dev.rosewood.roseloot.loot.condition.tags.VehicleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WeatherCondition;
 import dev.rosewood.roseloot.loot.condition.tags.WorldCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.BiomeKeyCondition;
@@ -463,6 +465,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("killed-by", KilledByCondition::new);
         event.registerLootCondition("light-level", LightLevelCondition::new);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition::new);
+        event.registerLootCondition("looter-vehicle", LooterVehicleCondition::new);
         event.registerLootCondition("luck-chance", LuckChanceCondition::new);
         this.registerBoolean(event, "on-ground", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(Entity::isOnGround).isPresent());
         event.registerLootCondition("ominous", OminousCondition::new);
@@ -488,6 +491,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("trial-spawner-state", TrialSpawnerStateCondition::new);
         event.registerLootCondition("vanilla-loot-table", VanillaLootTableCondition::new);
         event.registerLootCondition("vault-state", VaultStateCondition::new);
+        event.registerLootCondition("vehicle", VehicleCondition::new);
         event.registerLootCondition("weather", WeatherCondition::new);
         event.registerLootCondition("world", WorldCondition::new);
 
