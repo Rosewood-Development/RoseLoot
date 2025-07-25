@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 
 public final class TimeUtils {
 
-    private static final Pattern ENTIRE_DURATION_PATTERN = Pattern.compile("((\\d+)(ms|[smhd]))+");
-    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)(ms|[smhd])");
+    private static final Pattern ENTIRE_DURATION_PATTERN = Pattern.compile("((\\d+)(ms|[smhdwy]))+");
+    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)(ms|[smhdwy])");
 
     private TimeUtils() {
 
@@ -34,6 +34,7 @@ public final class TimeUtils {
                 case "m" -> duration += TimeUnit.MINUTES.toMillis(value);
                 case "h" -> duration += TimeUnit.HOURS.toMillis(value);
                 case "d" -> duration += TimeUnit.DAYS.toMillis(value);
+                case "w" -> duration += TimeUnit.DAYS.toMillis(value) * 7;
                 case "y" -> duration += TimeUnit.DAYS.toMillis(value) * 365;
                 default -> {
                     return -1;
@@ -60,6 +61,12 @@ public final class TimeUtils {
             long years = TimeUnit.DAYS.toDays(difference) / 365;
             builder.append(years).append("y");
             difference -= TimeUnit.DAYS.toMillis(years * 365);
+        }
+
+        if (difference >= TimeUnit.DAYS.toMillis(7)) {
+            long weeks = TimeUnit.DAYS.toDays(difference) / 7;
+            builder.append(weeks).append("w");
+            difference -= TimeUnit.DAYS.toMillis(weeks * 7);
         }
 
         if (difference >= TimeUnit.DAYS.toMillis(1)) {
