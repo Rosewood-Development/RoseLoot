@@ -75,10 +75,12 @@ import dev.rosewood.roseloot.loot.condition.tags.paper.BiomeKeyCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.MoonPhaseCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.item.BreakBlockLootItem;
 import dev.rosewood.roseloot.loot.item.ChangeToolDurabilityLootItem;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
 import dev.rosewood.roseloot.loot.item.ContainerContentsLootItem;
 import dev.rosewood.roseloot.loot.item.CustomItemLootItem;
+import dev.rosewood.roseloot.loot.item.DelayLootItem;
 import dev.rosewood.roseloot.loot.item.DiscordWebhookLootItem;
 import dev.rosewood.roseloot.loot.item.EcoSkillsExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.EconomyLootItem;
@@ -97,7 +99,9 @@ import dev.rosewood.roseloot.loot.item.RandomNumberLootItem;
 import dev.rosewood.roseloot.loot.item.RoseStackerLootItem;
 import dev.rosewood.roseloot.loot.item.SCoreVariableLootItem;
 import dev.rosewood.roseloot.loot.item.ServerVariableLootItem;
+import dev.rosewood.roseloot.loot.item.SetBlockLootItem;
 import dev.rosewood.roseloot.loot.item.SoundLootItem;
+import dev.rosewood.roseloot.loot.item.SpawnEntityLootItem;
 import dev.rosewood.roseloot.loot.item.TagLootItem;
 import dev.rosewood.roseloot.loot.item.VoucherLootItem;
 import dev.rosewood.roseloot.loot.item.ZMenuPlayerDataLootItem;
@@ -403,6 +407,10 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootItem("change_tool_durability", ChangeToolDurabilityLootItem::fromSection);
         event.registerLootItem("random_number", RandomNumberLootItem::fromSection);
         event.registerLootItem("discord_webhook", DiscordWebhookLootItem::fromSection);
+        event.registerLootItem("delay", DelayLootItem::fromSection);
+        event.registerLootItem("set_block", SetBlockLootItem::fromSection);
+        event.registerLootItem("break_block", BreakBlockLootItem::fromSection);
+        event.registerLootItem("spawn_entity", SpawnEntityLootItem::fromSection);
 
         if (MMOCoreHook.isEnabled())
             event.registerLootItem("mmocore_experience", MMOCoreExperienceLootItem::fromSection);
