@@ -62,11 +62,16 @@ public class EntityListener extends LazyLootTableListener {
         if (lootResult.doesOverwriteExisting(OverwriteExisting.EXPERIENCE))
             event.setDroppedExp(0);
 
-        // Add items to drops and adjust experience
-        event.getDrops().addAll(lootContents.getItems());
-        event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
+        Runnable task;
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.MODIFY_ENTITYDEATHEVENT_DROPS)) {
+            // Add items to drops and adjust experience
+            event.getDrops().addAll(lootContents.getItems());
+            event.setDroppedExp(event.getDroppedExp() + lootContents.getExperience());
+            task = () -> lootContents.triggerExtras(entity.getLocation());
+        } else {
+            task = () -> lootContents.dropAtLocation(entity.getLocation());
+        }
 
-        Runnable task = () -> lootContents.triggerExtras(entity.getLocation());
         if (!Bukkit.isPrimaryThread()) {
             this.rosePlugin.getScheduler().runTask(task);
         } else {
