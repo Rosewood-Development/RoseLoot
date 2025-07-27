@@ -37,7 +37,7 @@ public class CooldownCondition extends BaseLootCondition {
 
     @Override
     public boolean parseValues(String[] values) {
-        if (values.length != 3)
+        if (values.length != 2 && values.length != 3)
             return false;
 
         this.cooldownId = values[0];
@@ -51,12 +51,13 @@ public class CooldownCondition extends BaseLootCondition {
             return false;
         }
 
-        String stringDuration = values[2];
-        long duration = TimeUtils.getDuration(stringDuration);
-        if (duration <= 0)
-            return false;
+        if (values.length == 3) {
+            String stringDuration = values[2];
+            this.cooldownLength = TimeUtils.getDuration(stringDuration);
+        } else {
+            this.cooldownLength = 0;
+        }
 
-        this.cooldownLength = duration;
         return true;
     }
 

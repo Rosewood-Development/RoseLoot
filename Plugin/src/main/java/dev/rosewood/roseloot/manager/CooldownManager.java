@@ -24,10 +24,10 @@ public class CooldownManager extends Manager {
      *
      * @param cooldownId The ID of the cooldown
      * @param player The player to check, null for global
-     * @param expiration The expiration time of the cooldown
+     * @param cooldownLengthMs The expiration time of the cooldown in ms
      * @return true if a new cooldown was started, false if one already existed
      */
-    public boolean checkCooldown(String cooldownId, UUID player, long expiration) {
+    public boolean checkCooldown(String cooldownId, UUID player, long cooldownLengthMs) {
         // Remove any expired cooldowns
         this.cooldowns.values().removeIf(Cooldown::isExpired);
 
@@ -39,7 +39,9 @@ public class CooldownManager extends Manager {
         if (cooldown != null)
             return false;
 
-        this.cooldowns.put(cooldownId, new Cooldown(cooldownId, player, System.currentTimeMillis() + expiration));
+        if (cooldownLengthMs > 0)
+            this.cooldowns.put(cooldownId, new Cooldown(cooldownId, player, System.currentTimeMillis() + cooldownLengthMs));
+
         return true;
     }
 
