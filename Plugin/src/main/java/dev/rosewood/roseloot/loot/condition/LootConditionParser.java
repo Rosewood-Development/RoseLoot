@@ -135,11 +135,17 @@ public final class LootConditionParser {
             }
 
             if (c == '(' || c == ')' || c == '!') {
-                if (!currentToken.isEmpty()) {
-                    tokens.add(currentToken.toString());
-                    currentToken.setLength(0);
+                if (c == '!' && i + 1 < input.length() && input.charAt(i + 1) == '=') {
+                    currentToken.append("!=");
+                    i++;
+                    continue;
+                } else {
+                    if (!currentToken.isEmpty()) {
+                        tokens.add(currentToken.toString());
+                        currentToken.setLength(0);
+                    }
+                    tokens.add(String.valueOf(c));
                 }
-                tokens.add(String.valueOf(c));
                 continue;
             }
 
