@@ -74,15 +74,8 @@ public class SpawnEntityLootItem implements TriggerableLootItem {
             if (entityString == null)
                 return null;
 
-            String entityDataString = null;
-            int dataIndex = entityString.indexOf("{");
-            if (dataIndex != -1) {
-                entityDataString = entityString.substring(dataIndex);
-                entityString = entityString.substring(0, dataIndex);
-            }
-
-            if (HAS_ENTITY_SNAPSHOT && entityDataString != null) {
-                spawner = EntitySnapshotSpawner.parse(entityDataString);
+            if (entityString.startsWith("{") && HAS_ENTITY_SNAPSHOT) {
+                spawner = EntitySnapshotSpawner.parse(entityString);
             } else {
                 EntityType entityType = EnumHelper.valueOf(EntityType.class, entityString);
                 if (entityType == null)
