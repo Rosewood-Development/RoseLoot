@@ -25,7 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.CookingRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
@@ -87,13 +87,18 @@ public class ItemLootItem implements ItemGenerativeLootItem {
                 Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
                 while (recipesIterator.hasNext()) {
                     Recipe recipe = recipesIterator.next();
-                    if (recipe instanceof FurnaceRecipe furnaceRecipe && furnaceRecipe.getInput().getType() == item.getType()) {
-                        if (NMSUtil.isPaper() && (NMSUtil.getVersionNumber() > 20 || (NMSUtil.getVersionNumber() == 20 && NMSUtil.getMinorVersionNumber() >= 4))) {
-                            item = item.withType(furnaceRecipe.getResult().getType());
+                    if (recipe instanceof CookingRecipe<?> cookingRecipe) {
+                        if (NMSUtil.isPaper()) {
+                            if (cookingRecipe.getInputChoice().test(item)) {
+                                item = cookingRecipe.getResult();
+                                break;
+                            }
                         } else {
-                            item.setType(furnaceRecipe.getResult().getType());
+                            if (cookingRecipe.getInput().getType() == item.getType()) {
+                                item = cookingRecipe.getResult();
+                                break;
+                            }
                         }
-                        break;
                     }
                 }
             }
