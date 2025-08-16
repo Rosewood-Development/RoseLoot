@@ -44,7 +44,7 @@ public class EnchantmentChanceCondition extends BaseLootCondition {
                 value2 = value2.substring(0, value2.length() - 1);
 
             this.chance = Double.parseDouble(value1) / 100;
-            this.enchantment = VersionUtils.getEnchantmentByName(values[1]);
+            this.enchantment = VersionUtils.getEnchantment(values[1]);
             this.chancePerLevel = Double.parseDouble(value2) / 100;
             this.maxCountedLevels = values.length == 4 ? Integer.parseInt(values[3]) : Integer.MAX_VALUE;
             return true;

@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.BlockInfo;
@@ -16,6 +17,7 @@ public class VaultStateCondition extends BaseLootCondition {
         super(tag);
     }
 
+    @SuppressWarnings("removal") // using correct method per version, will use reflection after removal
     @Override
     public boolean check(LootContext context) {
         Optional<BlockInfo> lootedBlock = context.getLootedBlockInfo();
@@ -26,7 +28,11 @@ public class VaultStateCondition extends BaseLootCondition {
         if (!(blockInfo.getData() instanceof Vault vault))
             return false;
 
-        return this.states.contains(vault.getTrialSpawnerState());
+        if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3)) {
+            return this.states.contains(vault.getVaultState());
+        } else {
+            return this.states.contains(vault.getTrialSpawnerState());
+        }
     }
 
     @Override

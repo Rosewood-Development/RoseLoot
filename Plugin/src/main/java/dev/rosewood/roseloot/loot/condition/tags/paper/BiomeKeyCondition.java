@@ -18,6 +18,7 @@ public class BiomeKeyCondition extends BaseLootCondition {
         super(tag);
     }
 
+    @SuppressWarnings("removal") // using correct method per version, will use reflection after removal
     @Override
     public boolean check(LootContext context) {
         return context.get(LootContextParams.ORIGIN)

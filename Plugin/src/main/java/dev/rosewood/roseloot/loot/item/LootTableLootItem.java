@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item;
 
 import dev.rosewood.rosegarden.RosePlugin;
+import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.LootTable;
@@ -38,6 +39,7 @@ public class LootTableLootItem implements RecursiveLootItem {
         this.lootTableName = lootTableName;
     }
 
+    @SuppressWarnings("removal") // using correct method per version, will use reflection after removal
     @Override
     public List<LootItem> generate(LootContext context) {
         if (this.invalid)
@@ -88,14 +90,15 @@ public class LootTableLootItem implements RecursiveLootItem {
                     return List.of();
 
                 Player lootingPlayer = context.getLootingPlayer().orElse(null);
-                org.bukkit.loot.LootContext vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())
+                org.bukkit.loot.LootContext.Builder vanillaContext = new org.bukkit.loot.LootContext.Builder(origin.get())
                         .lootedEntity(context.get(LootContextParams.LOOTED_ENTITY).orElse(lootingPlayer))
                         .killer(lootingPlayer)
-                        .lootingModifier(lootingModifier)
-                        .luck((float) context.getLuckLevel())
-                        .build();
+                        .luck((float) context.getLuckLevel());
 
-                lootItems = List.of(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext)));
+                if (NMSUtil.getVersionNumber() < 21)
+                    vanillaContext.lootingModifier(lootingModifier);
+
+                lootItems = List.of(new VanillaItemLootItem(this.vanillaLootTable.populateLoot(LootUtils.RANDOM, vanillaContext.build())));
             } catch (Exception e) {
                 RoseLoot.getInstance().getLogger().warning("Failed to generate loot from vanilla loot table: [" + this.vanillaLootTable.getKey() + "]. Reason: " + e.getMessage());
                 if (e.getMessage().contains("<parameter minecraft:tool>"))

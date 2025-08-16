@@ -4,6 +4,7 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -33,7 +34,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
                 possibleEnchantments.addAll(this.randomEnchantments);
             } else {
                 // Empty, pick from every enchantment
-                possibleEnchantments.addAll(VersionUtils.getAllEnchantments());
+                possibleEnchantments.addAll(Arrays.asList(VersionUtils.getEnchantments()));
             }
 
             int amount = this.randomEnchantmentsAmount.getInteger(context);

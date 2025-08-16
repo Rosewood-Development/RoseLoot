@@ -115,7 +115,7 @@ public class ItemLootMeta {
                     int major = NMSUtil.getVersionNumber();
                     int minor = NMSUtil.getMinorVersionNumber();
                     if (major == 21 && minor == 4) {
-                        name = "1_21_R3";
+                        name = "v1_21_3";
                     }
 
                     if (name != null) {
@@ -192,7 +192,7 @@ public class ItemLootMeta {
             List<String> randomEnchantments = section.getStringList("random-enchantments");
             this.randomEnchantments = new ArrayList<>();
             for (String enchantmentName : randomEnchantments) {
-                Enchantment enchantment = Enchantment.getByKey(NamespacedKey.fromString(enchantmentName));
+                Enchantment enchantment = VersionUtils.getEnchantment(enchantmentName);
                 if (enchantment != null)
                     this.randomEnchantments.add(enchantment);
             }
@@ -204,7 +204,7 @@ public class ItemLootMeta {
         if (enchantmentsSection != null) {
             List<EnchantmentData> enchantments = new ArrayList<>();
             for (String enchantmentName : enchantmentsSection.getKeys(false)) {
-                Enchantment enchantment = VersionUtils.getEnchantmentByName(enchantmentName);
+                Enchantment enchantment = VersionUtils.getEnchantment(enchantmentName);
                 if (enchantment == null)
                     continue;
 
@@ -226,15 +226,7 @@ public class ItemLootMeta {
                 if (name == null || name.isEmpty())
                     continue;
 
-                NamespacedKey nameKey = NamespacedKey.fromString(name.toLowerCase());
-                Attribute attribute = null;
-                for (Attribute value : Attribute.values()) {
-                    if (value.getKey().equals(nameKey)) {
-                        attribute = value;
-                        break;
-                    }
-                }
-
+                Attribute attribute = VersionUtils.getAttribute(name);
                 if (attribute == null)
                     continue;
 
@@ -324,7 +316,7 @@ public class ItemLootMeta {
                     enchantmentsSource = this.randomEnchantments;
                 } else {
                     // Empty, pick from every applicable enchantment for the item
-                    enchantmentsSource = VersionUtils.getAllEnchantments();
+                    enchantmentsSource = Arrays.asList(VersionUtils.getEnchantments());
                 }
 
                 // Filter out enchantments that can't go on the item
@@ -478,7 +470,9 @@ public class ItemLootMeta {
         }
 
         MaterialMappings.PROPERTY_APPLIERS.getOrDefault(material, (x, y) -> {}).accept(itemStack, stringBuilder);
+    }
 
+    public static void applyComponentProperties(ItemStack itemStack, StringBuilder stringBuilder) {
         StringBuilder componentBuilder = new StringBuilder();
         for (BiConsumer<ItemStack, StringBuilder> propertyApplier : ComponentMappings.PROPERTY_APPLIERS.values())
             propertyApplier.accept(itemStack, componentBuilder);

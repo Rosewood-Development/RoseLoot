@@ -1,11 +1,10 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
-import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.StringProvider;
+import dev.rosewood.roseloot.util.NewerVersionUtils;
 import org.bukkit.MusicInstrument;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MusicInstrumentMeta;
@@ -29,16 +28,7 @@ public class MusicInstrumentItemLootMeta extends ItemLootMeta {
             return itemStack;
 
         if (this.musicInstrument != null) {
-            MusicInstrument musicInstrument = null;
-            NamespacedKey namespacedKey = NamespacedKey.fromString(this.musicInstrument.get(context));
-            if (namespacedKey != null) {
-                if (NMSUtil.getVersionNumber() >= 21) {
-                    musicInstrument = Registry.INSTRUMENT.get(namespacedKey);
-                } else {
-                    musicInstrument = MusicInstrument.getByKey(namespacedKey);
-                }
-            }
-
+            MusicInstrument musicInstrument = NewerVersionUtils.getMusicInstrument(this.musicInstrument.get(context));
             if (musicInstrument != null)
                 itemMeta.setInstrument(musicInstrument);
         }
@@ -54,7 +44,11 @@ public class MusicInstrumentItemLootMeta extends ItemLootMeta {
             return;
 
         MusicInstrument instrument = itemMeta.getInstrument();
-        if (instrument != null) stringBuilder.append("music-instrument: ").append(instrument.getKey().getKey()).append('\n');
+        if (instrument != null) {
+            NamespacedKey key = NewerVersionUtils.getMusicInstrumentKey(instrument);
+            if (key != null)
+                stringBuilder.append("music-instrument: ").append(key.getKey()).append('\n');
+        }
     }
 
 }

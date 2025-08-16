@@ -62,7 +62,7 @@ public class ChangeToolDurabilityLootItem implements TriggerableLootItem {
      * @param context The LootContext
      * @return true if the ItemMeta needs to be applied, false otherwise
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal") // using correct method per version, will use reflection after removal
     private boolean applyDurability(Player player, ItemStack itemStack, Damageable damageable, int unbreakingLevel, LootContext context) {
         int originalDamage = -this.amount.getInteger(context);
         if (originalDamage == 0)

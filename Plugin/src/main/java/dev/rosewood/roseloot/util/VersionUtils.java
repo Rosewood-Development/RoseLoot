@@ -3,18 +3,21 @@ package dev.rosewood.roseloot.util;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 
-@SuppressWarnings({"deprecation", "removal"})
-public class VersionUtils {
+@SuppressWarnings("deprecation")
+public final class VersionUtils {
+
+    private static final boolean HAS_REGISTRY = NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3);
+    private static final boolean HAS_REGISTRY_GET_KEY = NMSUtil.isPaper() && HAS_REGISTRY;
 
     public static final EntityType FIREWORK_ROCKET;
     public static final EntityType ITEM;
@@ -43,12 +46,12 @@ public class VersionUtils {
             PARTICLE_ITEM = Particle.ITEM;
             POOF = Particle.POOF;
             SMOKE = Particle.SMOKE;
-            FORTUNE = getEnchantmentByName("fortune");
-            INFINITY = getEnchantmentByName("infinity");
-            LOOTING = getEnchantmentByName("looting");
-            LUCK_OF_THE_SEA = getEnchantmentByName("luck_of_the_sea");
-            SWEEPING_EDGE = getEnchantmentByName("sweeping_edge");
-            UNBREAKING = getEnchantmentByName("unbreaking");
+            FORTUNE = getEnchantment("fortune");
+            INFINITY = getEnchantment("infinity");
+            LOOTING = getEnchantment("looting");
+            LUCK_OF_THE_SEA = getEnchantment("luck_of_the_sea");
+            SWEEPING_EDGE = getEnchantment("sweeping_edge");
+            UNBREAKING = getEnchantment("unbreaking");
             HIDE_ADDITIONAL_TOOLTIP = ItemFlag.HIDE_ADDITIONAL_TOOLTIP;
         } else {
             FIREWORK_ROCKET = EntityType.valueOf("FIREWORK");
@@ -71,75 +74,124 @@ public class VersionUtils {
         if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
             LUCK = Attribute.LUCK;
         } else {
-            LUCK = findAttributeLegacy("GENERIC_LUCK");
+            LUCK = getAttribute("GENERIC_LUCK");
+        }
+    }
+
+    private VersionUtils() {
+
+    }
+
+    private static Method attributeValueOf;
+    public static Attribute getAttribute(String id) {
+        if (HAS_REGISTRY) {
+            NamespacedKey key = NamespacedKey.fromString(id.toLowerCase());
+            if (key == null)
+                return null;
+            return Registry.ATTRIBUTE.get(key);
+        }
+
+        try {
+            if (attributeValueOf == null)
+                attributeValueOf = Attribute.class.getMethod("valueOf", String.class);
+            return (Attribute) attributeValueOf.invoke(null, id);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Method biomeValueOf;
+    public static Biome getBiome(String id) {
+        if (HAS_REGISTRY) {
+            NamespacedKey key = NamespacedKey.fromString(id.toLowerCase());
+            if (key == null)
+                return null;
+            return Registry.BIOME.get(key);
+        }
+
+        try {
+            if (biomeValueOf == null)
+                biomeValueOf = Biome.class.getMethod("valueOf", String.class);
+            return (Biome) biomeValueOf.invoke(null, id.toUpperCase());
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+    }
+
+    public static Enchantment getEnchantment(String id) {
+        NamespacedKey key = NamespacedKey.fromString(id.toLowerCase());
+        if (key == null)
+            return null;
+
+        if (HAS_REGISTRY)
+            return Registry.ENCHANTMENT.get(key);
+
+        Enchantment byKey = Enchantment.getByKey(key);
+        if (byKey != null)
+            return byKey;
+
+        return Arrays.stream(Enchantment.values())
+                .filter(x -> x.getKey().getKey().equalsIgnoreCase(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static Method enchantmentValues;
+    public static Enchantment[] getEnchantments() {
+        if (HAS_REGISTRY)
+            return Registry.ENCHANTMENT.stream().toArray(Enchantment[]::new);
+
+        try {
+            if (enchantmentValues == null)
+                enchantmentValues = Enchantment.class.getMethod("values", Enchantment[].class);
+            return (Enchantment[]) enchantmentValues.invoke(null);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            return new Enchantment[0];
         }
     }
 
     private static Enchantment findEnchantmentLegacy(String... names) {
         for (String name : names) {
-            Enchantment enchantment = getEnchantmentByName(name);
+            Enchantment enchantment = getEnchantment(name);
             if (enchantment != null)
                 return enchantment;
         }
         return null;
     }
 
-    private static Method attributeValueOf;
-    private static Attribute findAttributeLegacy(String name) {
+    private static Method patternTypeValueOf;
+    public static PatternType getPatternType(String id) {
+        if (HAS_REGISTRY) {
+            NamespacedKey key = NamespacedKey.fromString(id.toLowerCase());
+            if (key == null)
+                return null;
+            return Registry.BANNER_PATTERN.get(key);
+        }
+
         try {
-            if (attributeValueOf == null)
-                attributeValueOf = Attribute.class.getMethod("valueOf", String.class);
-            return (Attribute) attributeValueOf.invoke(null, name);
+            if (patternTypeValueOf == null)
+                patternTypeValueOf = PatternType.class.getMethod("valueOf", String.class);
+            return (PatternType) patternTypeValueOf.invoke(null, id.toUpperCase());
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Method biomeValueOf;
-    public static Biome getBiome(String name) {
-        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
-            return Registry.BIOME.match(name);
-        } else {
-            try {
-                if (biomeValueOf == null)
-                    biomeValueOf = Biome.class.getMethod("valueOf", String.class);
-                return (Biome) biomeValueOf.invoke(null, name.toUpperCase());
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Gets an Enchantment by its registered key
-     *
-     * @param name The name of the enchantment
-     * @return The Enchantment, or null if not found
-     */
-    public static Enchantment getEnchantmentByName(String name) {
-        NamespacedKey key = NamespacedKey.fromString(name.toLowerCase());
-        if (key == null)
+            e.printStackTrace();
             return null;
-
-        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
-            return Registry.ENCHANTMENT.get(key);
-        } else {
-            Enchantment byKey = Enchantment.getByKey(key);
-            if (byKey != null)
-                return byKey;
-
-            return Arrays.stream(Enchantment.values())
-                    .filter(x -> x.getKey().getKey().equalsIgnoreCase(name))
-                    .findFirst()
-                    .orElse(null);
         }
     }
 
-    public static List<Enchantment> getAllEnchantments() {
-        if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3) {
-            return Registry.ENCHANTMENT.stream().toList();
-        } else {
-            return Arrays.asList(Enchantment.values());
+    private static Method patternTypeGetKey;
+    public static NamespacedKey getPatternTypeKey(PatternType patternType) {
+        if (HAS_REGISTRY_GET_KEY)
+            return Registry.BANNER_PATTERN.getKey(patternType);
+
+        try {
+            if (patternTypeGetKey == null)
+                patternTypeGetKey = PatternType.class.getMethod("getKey", NamespacedKey.class);
+            return (NamespacedKey) patternTypeGetKey.invoke(patternType);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

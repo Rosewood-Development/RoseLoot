@@ -187,7 +187,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
             BonusFormula formula = BonusFormula.fromString(enchantmentBonusSection.getString("formula", BonusFormula.UNIFORM.name()));
             String enchantmentString = enchantmentBonusSection.getString("enchantment");
             if (enchantmentString != null) {
-                Enchantment enchantment = VersionUtils.getEnchantmentByName(enchantmentString);
+                Enchantment enchantment = VersionUtils.getEnchantment(enchantmentString);
                 NumberProvider bonusPerLevel = NumberProvider.fromSection(enchantmentBonusSection, "bonus-per-level", 0);
                 NumberProvider probability = NumberProvider.fromSection(enchantmentBonusSection, "probability", 0);
                 if (enchantment != null)

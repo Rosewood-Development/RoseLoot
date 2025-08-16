@@ -40,7 +40,7 @@ public class EnchantmentChanceTableCondition extends BaseLootCondition {
         this.chances = new ArrayList<>();
 
         try {
-            this.enchantment = VersionUtils.getEnchantmentByName(values[0]);
+            this.enchantment = VersionUtils.getEnchantment(values[0]);
 
             for (int i = 1; i < values.length; i++) {
                 String value = values[i];

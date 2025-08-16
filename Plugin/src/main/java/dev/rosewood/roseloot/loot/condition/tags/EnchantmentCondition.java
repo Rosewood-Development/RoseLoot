@@ -29,7 +29,7 @@ public class EnchantmentCondition extends BaseLootCondition {
         if (values.length == 0)
             return false;
 
-        this.enchantment = VersionUtils.getEnchantmentByName(values[0]);
+        this.enchantment = VersionUtils.getEnchantment(values[0]);
 
         if (values.length > 1) {
             try {

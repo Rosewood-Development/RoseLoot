@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.util.VersionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.DyeColor;
@@ -36,16 +37,7 @@ public class BannerItemLootMeta extends ItemLootMeta {
                     }
                 }
 
-                PatternType pattern = PatternType.getByIdentifier(patternString);
-                if (pattern == null) {
-                    for (PatternType value : PatternType.values()) {
-                        if (value.name().equalsIgnoreCase(patternString)) {
-                            pattern = value;
-                            break;
-                        }
-                    }
-                }
-
+                PatternType pattern = VersionUtils.getPatternType(patternString);
                 if (dyeColor != null && pattern != null)
                     this.patterns.add(new Pattern(dyeColor, pattern));
             }
@@ -79,7 +71,7 @@ public class BannerItemLootMeta extends ItemLootMeta {
                 Pattern pattern = patterns.get(i);
                 stringBuilder.append("  ").append(i).append(":\n");
                 stringBuilder.append("    color: ").append(pattern.getColor().name().toLowerCase()).append('\n');
-                stringBuilder.append("    pattern: ").append(pattern.getPattern().name().toLowerCase()).append('\n');
+                stringBuilder.append("    pattern: ").append(VersionUtils.getPatternTypeKey(pattern.getPattern()).toString().toLowerCase()).append('\n');
             }
         }
     }
