@@ -48,7 +48,7 @@ public class PotDecorationsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.POT_DECORATIONS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.POT_DECORATIONS))
             return;
 
         PotDecorations decorations = itemStack.getData(DataComponentTypes.POT_DECORATIONS);

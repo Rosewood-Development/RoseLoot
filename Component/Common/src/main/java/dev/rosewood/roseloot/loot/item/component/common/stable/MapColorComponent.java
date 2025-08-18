@@ -43,7 +43,7 @@ public class MapColorComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.MAP_COLOR))
+        if (!itemStack.isDataOverridden(DataComponentTypes.MAP_COLOR))
             return;
 
         MapItemColor mapColor = itemStack.getData(DataComponentTypes.MAP_COLOR);

@@ -23,7 +23,7 @@ public class MaxStackSizeComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.MAX_STACK_SIZE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.MAX_STACK_SIZE))
             return;
 
         stringBuilder.append("max-stack-size: ").append(itemStack.getData(DataComponentTypes.MAX_STACK_SIZE)).append('\n');

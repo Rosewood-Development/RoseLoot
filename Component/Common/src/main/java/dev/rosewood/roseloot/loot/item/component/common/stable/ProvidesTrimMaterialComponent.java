@@ -33,7 +33,7 @@ public class ProvidesTrimMaterialComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.PROVIDES_TRIM_MATERIAL))
+        if (!itemStack.isDataOverridden(DataComponentTypes.PROVIDES_TRIM_MATERIAL))
             return;
 
         Registry<TrimMaterial> registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_MATERIAL);

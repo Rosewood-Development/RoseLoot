@@ -22,7 +22,7 @@ public class PotionDurationScaleComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.POTION_DURATION_SCALE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.POTION_DURATION_SCALE))
             return;
 
         stringBuilder.append("potion-duration-scale: ").append(itemStack.getData(DataComponentTypes.POTION_DURATION_SCALE)).append('\n');

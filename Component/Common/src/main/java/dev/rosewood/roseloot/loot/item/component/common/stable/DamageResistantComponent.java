@@ -34,7 +34,7 @@ public class DamageResistantComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.DAMAGE_RESISTANT))
+        if (!itemStack.isDataOverridden(DataComponentTypes.DAMAGE_RESISTANT))
             return;
 
         DamageResistant damageResistant = itemStack.getData(DataComponentTypes.DAMAGE_RESISTANT);

@@ -61,7 +61,7 @@ public class RepairableComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.REPAIRABLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.REPAIRABLE))
             return;
 
         Repairable repairable = itemStack.getData(DataComponentTypes.REPAIRABLE);

@@ -31,7 +31,7 @@ public class EnchantableComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.ENCHANTABLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.ENCHANTABLE))
             return;
 
         Enchantable enchantable = itemStack.getData(DataComponentTypes.ENCHANTABLE);

@@ -45,7 +45,7 @@ public class UseCooldownComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.USE_COOLDOWN))
+        if (!itemStack.isDataOverridden(DataComponentTypes.USE_COOLDOWN))
             return;
 
         UseCooldown useCooldown = itemStack.getData(DataComponentTypes.USE_COOLDOWN);

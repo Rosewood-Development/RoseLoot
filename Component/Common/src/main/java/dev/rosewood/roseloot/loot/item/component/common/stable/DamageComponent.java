@@ -23,7 +23,7 @@ public class DamageComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.DAMAGE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.DAMAGE))
             return;
 
         stringBuilder.append("damage: ").append(itemStack.getData(DataComponentTypes.DAMAGE)).append('\n');

@@ -24,7 +24,7 @@ public class ItemNameComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.ITEM_NAME))
+        if (!itemStack.isDataOverridden(DataComponentTypes.ITEM_NAME))
             return;
 
         stringBuilder.append("item-name: '").append(ComponentUtil.decomponentifyAndDecolorify(itemStack.getData(DataComponentTypes.ITEM_NAME)).replace("'", "''")).append("'\n");

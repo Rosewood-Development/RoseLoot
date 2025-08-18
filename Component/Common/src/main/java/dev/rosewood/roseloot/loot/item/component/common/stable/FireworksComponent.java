@@ -81,7 +81,7 @@ public class FireworksComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.FIREWORKS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.FIREWORKS))
             return;
 
         Fireworks fireworks = itemStack.getData(DataComponentTypes.FIREWORKS);

@@ -23,7 +23,7 @@ public class BreakSoundComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.BREAK_SOUND))
+        if (!itemStack.isDataOverridden(DataComponentTypes.BREAK_SOUND))
             return;
 
         stringBuilder.append("break-sound: ").append(itemStack.getData(DataComponentTypes.BREAK_SOUND).asMinimalString()).append('\n');

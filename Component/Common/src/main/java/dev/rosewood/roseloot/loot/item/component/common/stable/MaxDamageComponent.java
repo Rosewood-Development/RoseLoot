@@ -23,7 +23,7 @@ public class MaxDamageComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.MAX_DAMAGE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.MAX_DAMAGE))
             return;
 
         stringBuilder.append("max-damage: ").append(itemStack.getData(DataComponentTypes.MAX_DAMAGE)).append('\n');

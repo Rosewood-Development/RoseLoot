@@ -128,7 +128,7 @@ public class ToolComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.TOOL))
+        if (!itemStack.isDataOverridden(DataComponentTypes.TOOL))
             return;
 
         Tool tool = itemStack.getData(DataComponentTypes.TOOL);

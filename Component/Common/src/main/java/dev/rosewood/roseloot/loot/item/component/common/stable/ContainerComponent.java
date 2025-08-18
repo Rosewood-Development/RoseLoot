@@ -3,6 +3,7 @@ package dev.rosewood.roseloot.loot.item.component.common.stable;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.manager.LootTableManager;
@@ -51,16 +52,17 @@ public class ContainerComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.CONTAINER))
+        if (!itemStack.isDataOverridden(DataComponentTypes.CONTAINER))
             return;
 
         ItemContainerContents container = itemStack.getData(DataComponentTypes.CONTAINER);
         if (!container.contents().isEmpty()) {
             stringBuilder.append("container:\n");
-            int index = 0;
-            for (ItemStack item : container.contents()) {
-                stringBuilder.append("  ").append(index++).append(":\n");
-                stringBuilder.append("    item: ").append(item).append('\n');
+            List<ItemStack> contents = container.contents();
+            for (int i = 0; i < contents.size(); i++) {
+                stringBuilder.append("  ").append(i).append(":\n");
+                String itemConfig = ItemLootItem.toComponentsSection(contents.get(i));
+                stringBuilder.append(itemConfig.indent(4));
             }
         }
     }

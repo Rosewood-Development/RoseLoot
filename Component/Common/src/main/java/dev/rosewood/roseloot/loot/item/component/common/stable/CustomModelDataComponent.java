@@ -58,7 +58,7 @@ public class CustomModelDataComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.CUSTOM_MODEL_DATA))
+        if (!itemStack.isDataOverridden(DataComponentTypes.CUSTOM_MODEL_DATA))
             return;
 
         CustomModelData customModelData = itemStack.getData(DataComponentTypes.CUSTOM_MODEL_DATA);

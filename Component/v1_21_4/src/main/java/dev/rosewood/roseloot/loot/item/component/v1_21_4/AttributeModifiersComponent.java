@@ -87,7 +87,7 @@ class AttributeModifiersComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.ATTRIBUTE_MODIFIERS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.ATTRIBUTE_MODIFIERS))
             return;
 
         ItemAttributeModifiers itemAttributeModifiers = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
@@ -101,8 +101,8 @@ class AttributeModifiersComponent implements LootItemComponent {
                 stringBuilder.append("    ").append("attribute: '").append(entry.attribute().getKey().asMinimalString()).append("'\n");
                 stringBuilder.append("    ").append("identifier: '").append(modifier.key().asMinimalString()).append("'\n");
                 stringBuilder.append("    ").append("amount: ").append(modifier.getAmount()).append('\n');
-                stringBuilder.append("    ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append("'\n");
-                stringBuilder.append("    ").append("slot-group: ").append(modifier.getSlotGroup()).append("'\n");
+                stringBuilder.append("    ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append('\n');
+                stringBuilder.append("    ").append("slot-group: ").append(modifier.getSlotGroup()).append('\n');
             }
         }
     }

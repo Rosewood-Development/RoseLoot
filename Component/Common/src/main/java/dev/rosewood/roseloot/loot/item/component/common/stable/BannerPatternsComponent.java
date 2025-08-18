@@ -54,7 +54,7 @@ public class BannerPatternsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.BANNER_PATTERNS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.BANNER_PATTERNS))
             return;
 
         BannerPatternLayers layers = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);

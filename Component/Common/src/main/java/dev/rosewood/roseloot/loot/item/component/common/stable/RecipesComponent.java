@@ -35,7 +35,7 @@ public class RecipesComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.RECIPES))
+        if (!itemStack.isDataOverridden(DataComponentTypes.RECIPES))
             return;
 
         List<Key> recipes = itemStack.getData(DataComponentTypes.RECIPES);

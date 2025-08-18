@@ -66,7 +66,7 @@ public class ConsumableComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.CONSUMABLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.CONSUMABLE))
             return;
 
         Consumable consumable = itemStack.getData(DataComponentTypes.CONSUMABLE);

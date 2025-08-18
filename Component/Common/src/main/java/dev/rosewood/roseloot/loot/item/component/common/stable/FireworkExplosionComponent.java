@@ -71,7 +71,7 @@ public class FireworkExplosionComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.FIREWORK_EXPLOSION))
+        if (!itemStack.isDataOverridden(DataComponentTypes.FIREWORK_EXPLOSION))
             return;
 
         FireworkEffect effect = itemStack.getData(DataComponentTypes.FIREWORK_EXPLOSION);

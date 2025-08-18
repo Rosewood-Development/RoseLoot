@@ -29,7 +29,7 @@ public class RarityComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.RARITY))
+        if (!itemStack.isDataOverridden(DataComponentTypes.RARITY))
             return;
 
         ItemRarity rarity = itemStack.getData(DataComponentTypes.RARITY);

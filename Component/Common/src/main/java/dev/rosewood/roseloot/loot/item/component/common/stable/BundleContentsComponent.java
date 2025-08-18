@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.loot.item.component.common.stable;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
-import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -54,7 +54,7 @@ public class BundleContentsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.BUNDLE_CONTENTS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.BUNDLE_CONTENTS))
             return;
 
         BundleContents bundleContents = itemStack.getData(DataComponentTypes.BUNDLE_CONTENTS);
@@ -62,12 +62,12 @@ public class BundleContentsComponent implements LootItemComponent {
             return;
             
         stringBuilder.append("bundle-contents:\n");
-        
-        for (int i = 0; i < bundleContents.contents().size(); i++) {
+
+        List<ItemStack> contents = bundleContents.contents();
+        for (int i = 0; i < contents.size(); i++) {
             stringBuilder.append("  ").append(i).append(":\n");
-            StringBuilder subBuilder = new StringBuilder();
-            ItemLootMeta.applyComponentProperties(bundleContents.contents().get(i), subBuilder);
-            stringBuilder.append(subBuilder.toString().indent(4));
+            String itemConfig = ItemLootItem.toComponentsSection(contents.get(i));
+            stringBuilder.append(itemConfig.indent(4));
         }
     }
 

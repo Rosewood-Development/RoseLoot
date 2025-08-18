@@ -29,7 +29,7 @@ public class LoreComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.LORE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.LORE))
             return;
 
         ItemLore itemLore = itemStack.getData(DataComponentTypes.LORE);

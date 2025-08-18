@@ -31,7 +31,7 @@ public class MapPostProcessingComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.MAP_POST_PROCESSING))
+        if (!itemStack.isDataOverridden(DataComponentTypes.MAP_POST_PROCESSING))
             return;
 
         MapPostProcessing postProcessing = itemStack.getData(DataComponentTypes.MAP_POST_PROCESSING);

@@ -48,7 +48,7 @@ public class WritableBookContentComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.WRITABLE_BOOK_CONTENT))
+        if (!itemStack.isDataOverridden(DataComponentTypes.WRITABLE_BOOK_CONTENT))
             return;
 
         WritableBookContent writableBookContent = itemStack.getData(DataComponentTypes.WRITABLE_BOOK_CONTENT);

@@ -33,7 +33,7 @@ public class BaseColorComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.BASE_COLOR))
+        if (!itemStack.isDataOverridden(DataComponentTypes.BASE_COLOR))
             return;
 
         DyeColor color = itemStack.getData(DataComponentTypes.BASE_COLOR);

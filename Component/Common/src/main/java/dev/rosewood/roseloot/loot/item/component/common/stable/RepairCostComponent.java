@@ -23,7 +23,7 @@ public class RepairCostComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.REPAIR_COST))
+        if (!itemStack.isDataOverridden(DataComponentTypes.REPAIR_COST))
             return;
 
         stringBuilder.append("repair-cost: ").append(itemStack.getData(DataComponentTypes.REPAIR_COST)).append('\n');

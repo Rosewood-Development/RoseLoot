@@ -61,7 +61,7 @@ public class ProfileComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.PROFILE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.PROFILE))
             return;
 
         ResolvableProfile profile = itemStack.getData(DataComponentTypes.PROFILE);

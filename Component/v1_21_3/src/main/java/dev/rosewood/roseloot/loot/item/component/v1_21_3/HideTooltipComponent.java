@@ -21,7 +21,7 @@ class HideTooltipComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.HIDE_TOOLTIP))
+        if (!itemStack.isDataOverridden(DataComponentTypes.HIDE_TOOLTIP))
             return;
 
         stringBuilder.append("hide-tooltip: true\n");

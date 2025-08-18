@@ -57,7 +57,7 @@ public class TooltipDisplayComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
+        if (!itemStack.isDataOverridden(DataComponentTypes.TOOLTIP_DISPLAY))
             return;
 
         TooltipDisplay tooltipDisplay = itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY);

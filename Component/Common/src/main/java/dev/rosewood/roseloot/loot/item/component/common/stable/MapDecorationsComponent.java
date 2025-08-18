@@ -55,7 +55,7 @@ public class MapDecorationsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.MAP_DECORATIONS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.MAP_DECORATIONS))
             return;
 
         MapDecorations mapDecorations = itemStack.getData(DataComponentTypes.MAP_DECORATIONS);

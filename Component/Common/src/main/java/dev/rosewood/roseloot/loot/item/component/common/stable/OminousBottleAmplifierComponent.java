@@ -30,7 +30,7 @@ public class OminousBottleAmplifierComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER))
+        if (!itemStack.isDataOverridden(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER))
             return;
 
         OminousBottleAmplifier amplifier = itemStack.getData(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER);

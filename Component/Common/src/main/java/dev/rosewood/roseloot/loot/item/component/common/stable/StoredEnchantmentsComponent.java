@@ -52,7 +52,7 @@ public class StoredEnchantmentsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.STORED_ENCHANTMENTS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.STORED_ENCHANTMENTS))
             return;
 
         ItemEnchantments itemEnchantments = itemStack.getData(DataComponentTypes.STORED_ENCHANTMENTS);

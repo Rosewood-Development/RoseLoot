@@ -12,6 +12,7 @@ include(
         'Component:Common',
         'Component:v1_21_3',
         'Component:v1_21_4',
+        'Component:v1_21_5',
         'NMS:Wrapper',
         'NMS:v1_16_R3',
         'NMS:v1_17_R1',

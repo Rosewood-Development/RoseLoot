@@ -46,7 +46,7 @@ public class FoodComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.FOOD))
+        if (!itemStack.isDataOverridden(DataComponentTypes.FOOD))
             return;
 
         FoodProperties food = itemStack.getData(DataComponentTypes.FOOD);

@@ -113,7 +113,7 @@ public class PotionContentsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.POTION_CONTENTS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.POTION_CONTENTS))
             return;
 
         PotionContents potionContents = itemStack.getData(DataComponentTypes.POTION_CONTENTS);

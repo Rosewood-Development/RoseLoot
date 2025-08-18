@@ -51,7 +51,7 @@ public class TrimComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.TRIM))
+        if (!itemStack.isDataOverridden(DataComponentTypes.TRIM))
             return;
 
         ItemArmorTrim itemArmorTrim = itemStack.getData(DataComponentTypes.TRIM);

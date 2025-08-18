@@ -35,7 +35,7 @@ class UnbreakableComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.UNBREAKABLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.UNBREAKABLE))
             return;
 
         Unbreakable unbreakable = itemStack.getData(DataComponentTypes.UNBREAKABLE);

@@ -24,7 +24,7 @@ public class TooltipStyleComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.TOOLTIP_STYLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.TOOLTIP_STYLE))
             return;
 
         stringBuilder.append("tooltip-style: '").append(itemStack.getData(DataComponentTypes.TOOLTIP_STYLE).asMinimalString()).append("'\n");

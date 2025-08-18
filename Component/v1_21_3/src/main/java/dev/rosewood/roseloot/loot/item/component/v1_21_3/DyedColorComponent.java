@@ -49,7 +49,7 @@ class DyedColorComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.DYED_COLOR))
+        if (!itemStack.isDataOverridden(DataComponentTypes.DYED_COLOR))
             return;
 
         DyedItemColor dyedColor = itemStack.getData(DataComponentTypes.DYED_COLOR);

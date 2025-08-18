@@ -21,7 +21,7 @@ public class GliderComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.GLIDER))
+        if (!itemStack.isDataOverridden(DataComponentTypes.GLIDER))
             return;
 
         stringBuilder.append("glider: true\n");

@@ -40,7 +40,7 @@ public class ContainerLootComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.CONTAINER_LOOT))
+        if (!itemStack.isDataOverridden(DataComponentTypes.CONTAINER_LOOT))
             return;
 
         SeededContainerLoot loot = itemStack.getData(DataComponentTypes.CONTAINER_LOOT);

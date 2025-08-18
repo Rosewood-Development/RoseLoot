@@ -106,7 +106,7 @@ public class BlocksAttacksComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.BLOCKS_ATTACKS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.BLOCKS_ATTACKS))
             return;
 
         BlocksAttacks blocksAttacks = itemStack.getData(DataComponentTypes.BLOCKS_ATTACKS);

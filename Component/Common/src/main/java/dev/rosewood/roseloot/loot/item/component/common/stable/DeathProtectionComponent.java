@@ -33,7 +33,7 @@ public class DeathProtectionComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.DEATH_PROTECTION))
+        if (!itemStack.isDataOverridden(DataComponentTypes.DEATH_PROTECTION))
             return;
 
         DeathProtection deathProtection = itemStack.getData(DataComponentTypes.DEATH_PROTECTION);

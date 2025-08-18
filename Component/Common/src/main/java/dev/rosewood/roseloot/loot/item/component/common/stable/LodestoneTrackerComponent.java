@@ -61,7 +61,7 @@ public class LodestoneTrackerComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.LODESTONE_TRACKER))
+        if (!itemStack.isDataOverridden(DataComponentTypes.LODESTONE_TRACKER))
             return;
 
         LodestoneTracker tracker = itemStack.getData(DataComponentTypes.LODESTONE_TRACKER);

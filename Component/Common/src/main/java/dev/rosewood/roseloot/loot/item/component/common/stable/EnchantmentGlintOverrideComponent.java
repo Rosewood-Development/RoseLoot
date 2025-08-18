@@ -20,7 +20,7 @@ public class EnchantmentGlintOverrideComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE))
             return;
 
         stringBuilder.append("enchantment-glint-override: ").append(itemStack.getData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE)).append('\n');

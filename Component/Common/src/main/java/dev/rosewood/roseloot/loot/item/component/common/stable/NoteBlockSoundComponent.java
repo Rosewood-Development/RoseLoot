@@ -25,7 +25,7 @@ public class NoteBlockSoundComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.NOTE_BLOCK_SOUND))
+        if (!itemStack.isDataOverridden(DataComponentTypes.NOTE_BLOCK_SOUND))
             return;
 
         Key sound = itemStack.getData(DataComponentTypes.NOTE_BLOCK_SOUND);

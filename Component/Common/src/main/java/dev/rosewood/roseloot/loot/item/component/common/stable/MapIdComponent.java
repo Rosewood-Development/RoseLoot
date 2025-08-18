@@ -29,7 +29,7 @@ public class MapIdComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.MAP_ID))
+        if (!itemStack.isDataOverridden(DataComponentTypes.MAP_ID))
             return;
 
         MapId mapId = itemStack.getData(DataComponentTypes.MAP_ID);

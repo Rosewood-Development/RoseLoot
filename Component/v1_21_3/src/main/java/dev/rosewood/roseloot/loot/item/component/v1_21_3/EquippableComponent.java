@@ -100,7 +100,7 @@ class EquippableComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.EQUIPPABLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.EQUIPPABLE))
             return;
 
         Equippable equippable = itemStack.getData(DataComponentTypes.EQUIPPABLE);

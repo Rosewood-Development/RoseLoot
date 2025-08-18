@@ -42,7 +42,7 @@ public class WeaponComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.WEAPON))
+        if (!itemStack.isDataOverridden(DataComponentTypes.WEAPON))
             return;
 
         Weapon weapon = itemStack.getData(DataComponentTypes.WEAPON);

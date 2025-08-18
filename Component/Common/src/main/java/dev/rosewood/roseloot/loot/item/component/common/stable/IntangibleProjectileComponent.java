@@ -21,7 +21,7 @@ public class IntangibleProjectileComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.INTANGIBLE_PROJECTILE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.INTANGIBLE_PROJECTILE))
             return;
 
         stringBuilder.append("intangible-projectile: true\n");

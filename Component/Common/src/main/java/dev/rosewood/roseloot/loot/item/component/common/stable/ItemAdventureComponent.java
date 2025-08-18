@@ -59,7 +59,7 @@ abstract class ItemAdventureComponent implements LootItemComponent {
     }
 
     public static void applyProperties(DataComponentType.Valued<ItemAdventurePredicate> dataComponentType, String configKey, ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(dataComponentType))
+        if (!itemStack.isDataOverridden(dataComponentType))
             return;
 
         ItemAdventurePredicate itemAdventurePredicate = itemStack.getData(dataComponentType);

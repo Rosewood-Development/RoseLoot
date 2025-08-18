@@ -30,7 +30,7 @@ public class ProvidesBannerPatternsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.PROVIDES_BANNER_PATTERNS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.PROVIDES_BANNER_PATTERNS))
             return;
 
         stringBuilder.append("provides-banner-patterns: '#").append(itemStack.getData(DataComponentTypes.PROVIDES_BANNER_PATTERNS).key().asMinimalString()).append("'\n");

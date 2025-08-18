@@ -54,7 +54,7 @@ class JukeboxPlayableComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.JUKEBOX_PLAYABLE))
+        if (!itemStack.isDataOverridden(DataComponentTypes.JUKEBOX_PLAYABLE))
             return;
 
         JukeboxPlayable jukeboxPlayable = itemStack.getData(DataComponentTypes.JUKEBOX_PLAYABLE);

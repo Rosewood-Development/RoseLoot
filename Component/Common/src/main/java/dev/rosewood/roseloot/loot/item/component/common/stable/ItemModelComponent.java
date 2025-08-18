@@ -24,7 +24,7 @@ public class ItemModelComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.ITEM_MODEL))
+        if (!itemStack.isDataOverridden(DataComponentTypes.ITEM_MODEL))
             return;
 
         stringBuilder.append("item-model: '").append(itemStack.getData(DataComponentTypes.ITEM_MODEL).asMinimalString()).append("'\n");

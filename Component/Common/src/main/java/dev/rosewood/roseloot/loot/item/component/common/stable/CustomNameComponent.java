@@ -24,7 +24,7 @@ public class CustomNameComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.CUSTOM_NAME))
+        if (!itemStack.isDataOverridden(DataComponentTypes.CUSTOM_NAME))
             return;
 
         stringBuilder.append("custom-name: '").append(ComponentUtil.decomponentifyAndDecolorify(itemStack.getData(DataComponentTypes.CUSTOM_NAME)).replace("'", "''")).append("'\n");

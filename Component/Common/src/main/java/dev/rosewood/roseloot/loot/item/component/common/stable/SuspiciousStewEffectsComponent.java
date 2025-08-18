@@ -58,7 +58,7 @@ public class SuspiciousStewEffectsComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS))
+        if (!itemStack.isDataOverridden(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS))
             return;
 
         SuspiciousStewEffects suspiciousStewEffects = itemStack.getData(DataComponentTypes.SUSPICIOUS_STEW_EFFECTS);

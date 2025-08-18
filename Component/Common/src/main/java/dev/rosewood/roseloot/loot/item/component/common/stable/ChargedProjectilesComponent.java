@@ -3,9 +3,9 @@ package dev.rosewood.roseloot.loot.item.component.common.stable;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.LootContents;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.loot.item.ItemLootItem;
 import dev.rosewood.roseloot.loot.item.LootItem;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
-import dev.rosewood.roseloot.loot.item.meta.ItemLootMeta;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ChargedProjectiles;
@@ -52,18 +52,18 @@ public class ChargedProjectilesComponent implements LootItemComponent {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        if (!itemStack.hasData(DataComponentTypes.CHARGED_PROJECTILES))
+        if (!itemStack.isDataOverridden(DataComponentTypes.CHARGED_PROJECTILES))
             return;
 
         ChargedProjectiles chargedProjectiles = itemStack.getData(DataComponentTypes.CHARGED_PROJECTILES);
         if (!chargedProjectiles.projectiles().isEmpty()) {
             stringBuilder.append("charged-projectiles:\n");
 
-            for (int i = 0; i < chargedProjectiles.projectiles().size(); i++) {
+            List<ItemStack> projectiles = chargedProjectiles.projectiles();
+            for (int i = 0; i < projectiles.size(); i++) {
                 stringBuilder.append("  ").append(i).append(":\n");
-                StringBuilder subBuilder = new StringBuilder();
-                ItemLootMeta.applyComponentProperties(chargedProjectiles.projectiles().get(i), subBuilder);
-                stringBuilder.append(subBuilder.toString().indent(4));
+                String itemConfig = ItemLootItem.toComponentsSection(projectiles.get(i));
+                stringBuilder.append(itemConfig.indent(4));
             }
         }
     }
