@@ -4,8 +4,10 @@ import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemArmorTrim;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.key.Key;
-import org.bukkit.Registry;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
@@ -25,7 +27,7 @@ class TrimComponent implements LootItemComponent {
             TrimMaterial material = null;
             if (materialString != null) {
                 try {
-                    material = Registry.TRIM_MATERIAL.get(Key.key(materialString));
+                    material = RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_MATERIAL).get(Key.key(materialString));
                 } catch (IllegalArgumentException ignored) { }
             }
 
@@ -34,7 +36,7 @@ class TrimComponent implements LootItemComponent {
             TrimPattern pattern = null;
             if (patternString != null) {
                 try {
-                    pattern = Registry.TRIM_PATTERN.get(Key.key(patternString));
+                    pattern = RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_PATTERN).get(Key.key(patternString));
                 } catch (IllegalArgumentException ignored) { }
             }
 
@@ -64,8 +66,12 @@ class TrimComponent implements LootItemComponent {
         ArmorTrim armorTrim = itemArmorTrim.armorTrim();
         
         stringBuilder.append("armor-trim:\n");
-        stringBuilder.append("  material: ").append(armorTrim.getMaterial().getKey().getKey()).append("\n");
-        stringBuilder.append("  pattern: ").append(armorTrim.getPattern().getKey().getKey()).append("\n");
+        NamespacedKey materialKey = RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_MATERIAL).getKey(armorTrim.getMaterial());
+        if (materialKey != null)
+            stringBuilder.append("  material: ").append(materialKey.asMinimalString()).append("\n");
+        NamespacedKey patternKey = RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_PATTERN).getKey(armorTrim.getPattern());
+        if (patternKey != null)
+            stringBuilder.append("  pattern: ").append(patternKey.asMinimalString()).append("\n");
         stringBuilder.append("  show-in-tooltip: ").append(itemArmorTrim.showInTooltip()).append("\n");
     }
 

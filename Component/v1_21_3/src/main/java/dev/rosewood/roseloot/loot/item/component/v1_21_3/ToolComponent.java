@@ -59,8 +59,8 @@ class ToolComponent implements LootItemComponent {
         Tool.Builder builder = Tool.tool();
 
         if (this.defaultMiningSpeed != null) {
-            double speed = this.defaultMiningSpeed.getDouble(context);
-            builder.defaultMiningSpeed((float) speed);
+            float speed = this.defaultMiningSpeed.getFloat(context);
+            builder.defaultMiningSpeed(speed);
         }
 
         if (this.damagePerBlock != null) {

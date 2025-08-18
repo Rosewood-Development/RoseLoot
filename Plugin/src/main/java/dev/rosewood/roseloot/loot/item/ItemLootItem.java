@@ -218,6 +218,23 @@ public class ItemLootItem implements ItemGenerativeLootItem {
         return stringBuilder.toString();
     }
 
+    public static String toComponentsSection(ItemStack itemStack) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("item: ").append(itemStack.getType().name().toLowerCase()).append('\n');
+        stringBuilder.append("amount: ").append(itemStack.getAmount()).append('\n');
+
+        ItemLootMeta.applyComponentProperties(itemStack, stringBuilder);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("NBTAPI")) {
+            String customNBT = NBTAPIHook.getCustomNBTString(itemStack, true);
+            if (customNBT != null && customNBT.trim().length() > 2)
+                stringBuilder.append("nbt: '").append(customNBT.replaceAll(Pattern.quote("'"), "''")).append("'").append('\n');
+        }
+
+        return stringBuilder.toString();
+    }
+
     public record AmountModifier(List<LootCondition> conditions, NumberProvider value, boolean additive) {
 
         public boolean check(LootContext context) {

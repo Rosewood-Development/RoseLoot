@@ -116,6 +116,8 @@ public class ItemLootMeta {
                     int minor = NMSUtil.getMinorVersionNumber();
                     if (major == 21 && minor == 4) {
                         name = "v1_21_3";
+                    } else if (major == 21 && minor == 5) {
+                        name = "v1_21_4";
                     }
 
                     if (name != null) {
@@ -405,7 +407,13 @@ public class ItemLootMeta {
         itemStack.setItemMeta(itemMeta);
 
         ItemStack componentItemStack = itemStack;
-        this.components.forEach(x -> x.apply(componentItemStack, context));
+        this.components.forEach(x -> {
+            try {
+                x.apply(componentItemStack, context);
+            } catch (Exception e) {
+                e.printStackTrace(); // Log exception but continue
+            }
+        });
 
         return componentItemStack;
     }

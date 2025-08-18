@@ -49,6 +49,12 @@ command-copy-success: '&eClick to copy the loot table entry to your clipboard.'
 command-copy-hover: '&7Click to copy'
 command-copy-no-item: '&cYou must be holding an item in your main hand to use this command.'
 
+# Copy Components Command
+command-copy-components-description: 'Get the item in your hand as a components loot item'
+command-copy-components-success: '&eClick to copy the loot table entry to your clipboard.'
+command-copy-components-hover: '&7Click to copy'
+command-copy-components-no-item: '&cYou must be holding an item in your main hand to use this command.'
+
 # Give Items Command
 command-giveitems-description: 'Gives all items listed in a loot table'
 command-giveitems-requires-player: '&cYou must specify a player when running this command through the console.'

@@ -8,9 +8,12 @@ import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.set.RegistryKeySet;
 import io.papermc.paper.registry.set.RegistrySet;
+import io.papermc.paper.registry.tag.Tag;
+import io.papermc.paper.registry.tag.TagKey;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.key.Key;
+import org.bukkit.Keyed;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.potion.PotionEffect;
@@ -95,26 +98,7 @@ public final class ParsingUtils {
         return potionEffects;
     }
 
-    public static List<ConsumeEffect> translateEffects(List<EffectConfig> effectConfigs, LootContext context) {
-        List<ConsumeEffect> effects = new ArrayList<>();
-        for (EffectConfig effectConfig : effectConfigs) {
-            if (effectConfig instanceof EffectConfig.TeleportRandomlyConfig teleport) {
-                effects.add(ConsumeEffect.teleportRandomlyEffect((float) teleport.diameter().getDouble(context)));
-            } else if (effectConfig instanceof EffectConfig.RemoveEffectsConfig remove) {
-                RegistryKeySet<PotionEffectType> registryKeySet = RegistrySet.keySetFromValues(RegistryKey.MOB_EFFECT, remove.effects());
-                effects.add(ConsumeEffect.removeEffects(registryKeySet));
-            } else if (effectConfig instanceof EffectConfig.PlaySoundConfig sound) {
-                effects.add(ConsumeEffect.playSoundConsumeEffect(Key.key(sound.sound().get(context))));
-            } else if (effectConfig instanceof EffectConfig.ClearAllEffectsConfig) {
-                effects.add(ConsumeEffect.clearAllStatusEffects());
-            } else if (effectConfig instanceof EffectConfig.ApplyEffectsConfig apply) {
-                effects.add(ConsumeEffect.applyStatusEffects(apply.effects(), (float) apply.probability().getDouble(context)));
-            }
-        }
-        return effects;
-    }
-
-    public static void applyProperties(List<ConsumeEffect> effects, int indent, StringBuilder stringBuilder) {
+    public static void applyEffectProperties(List<ConsumeEffect> effects, int indent, StringBuilder stringBuilder) {
         String padding = indent == 0 ? "" : " ".repeat(indent - 1);
         if (!effects.isEmpty()) {
             stringBuilder.append(padding).append("effects:\n");
@@ -152,6 +136,44 @@ public final class ParsingUtils {
                 }
             }
         }
+    }
+
+    public static <T extends Keyed> RegistryKeySet<T> parseRegistryTags(StringProvider provider, RegistryKey<T> registryKey, LootContext context) {
+        List<String> typeStrings = provider.getList(context);
+        Registry<T> registry = RegistryAccess.registryAccess().getRegistry(registryKey);
+        if (typeStrings.size() == 1 && typeStrings.getFirst().startsWith("#")) {
+            String tag = typeStrings.getFirst().toLowerCase();
+            TagKey<T> tagKey = TagKey.create(registryKey, Key.key(tag.substring(1)));
+            return registry.getTag(tagKey);
+        } else {
+            List<T> values = new ArrayList<>();
+            for (String value : typeStrings) {
+                if (value.startsWith("#")) {
+                    TagKey<T> tagKey = TagKey.create(registryKey, Key.key(value.substring(1)));
+                    Tag<T> tag = registry.getTag(tagKey);
+                    values.addAll(tag.resolve(registry));
+                } else {
+                    Key key = Key.key(value.toLowerCase());
+                    T damageType = registry.get(key);
+                    if (damageType != null)
+                        values.add(damageType);
+                }
+            }
+            return RegistrySet.keySetFromValues(registryKey, values);
+        }
+    }
+
+    public static <T extends Keyed> TagKey<T> parseRegistryTag(StringProvider provider, RegistryKey<T> registryKey, LootContext context) {
+        String tagString = provider.get(context);
+        if (tagString.startsWith("#"))
+            tagString = tagString.substring(1).toLowerCase();
+        return TagKey.create(registryKey, Key.key(tagString));
+    }
+
+    public static <T extends Keyed> T parseRegistryValue(StringProvider provider, RegistryKey<T> registryKey, LootContext context) {
+        String key = provider.get(context);
+        Registry<T> registry = RegistryAccess.registryAccess().getRegistry(registryKey);
+        return registry.get(Key.key(key));
     }
 
 }

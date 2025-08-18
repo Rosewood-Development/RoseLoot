@@ -52,6 +52,7 @@ dependencies {
     implementation project(':Plugin')
     implementation project(':Component:Common')
     implementation project(':Component:v1_21_3')
+    implementation project(':Component:v1_21_4')
     implementation project(':NMS:Wrapper')
     implementation project(':NMS:v1_16_R3')
     implementation project(path: ':NMS:v1_17_R1', configuration: 'reobf')

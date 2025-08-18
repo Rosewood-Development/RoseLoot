@@ -25,6 +25,16 @@ public interface NumberProvider {
     double getDouble(LootContext context);
 
     /**
+     * Gets a float number from this provider
+     *
+     * @param context The LootContext
+     * @return The number
+     */
+    default float getFloat(LootContext context) {
+        return (float) this.getDouble(context);
+    }
+
+    /**
      * @return true if this number provider's input was represented with a percentage, false otherwise
      */
     boolean isPercentage();

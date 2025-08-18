@@ -124,7 +124,7 @@ public class ParticleLootItem implements TriggerableLootItem {
             int g = LootUtils.clamp(this.green.getInteger(context), 0, 255);
             int b = LootUtils.clamp(this.blue.getInteger(context), 0, 255);
 
-            return new Particle.DustOptions(Color.fromRGB(r, g, b), (float) this.size.getDouble(context));
+            return new Particle.DustOptions(Color.fromRGB(r, g, b), this.size.getFloat(context));
         }
 
     }
@@ -149,7 +149,7 @@ public class ParticleLootItem implements TriggerableLootItem {
             int g2 = LootUtils.clamp(this.greenFade.getInteger(context), 0, 255);
             int b2 = LootUtils.clamp(this.blueFade.getInteger(context), 0, 255);
 
-            return new Particle.DustTransition(Color.fromRGB(r, g, b), Color.fromRGB(r2, g2, b2), (float) this.size.getDouble(context));
+            return new Particle.DustTransition(Color.fromRGB(r, g, b), Color.fromRGB(r2, g2, b2), this.size.getFloat(context));
         }
 
     }
@@ -223,7 +223,7 @@ public class ParticleLootItem implements TriggerableLootItem {
 
         @Override
         public Object buildData(Location location, LootContext context) {
-            return (float) this.value.getDouble(context);
+            return this.value.getFloat(context);
         }
 
     }
