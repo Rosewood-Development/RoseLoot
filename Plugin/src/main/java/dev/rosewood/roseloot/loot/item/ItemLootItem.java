@@ -204,6 +204,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     public static String toSection(ItemStack itemStack, boolean keepVanillaNBT) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("type: item\n");
         stringBuilder.append("item: ").append(itemStack.getType().name().toLowerCase()).append('\n');
         stringBuilder.append("amount: ").append(itemStack.getAmount()).append('\n');
 
@@ -221,6 +222,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     public static String toComponentsSection(ItemStack itemStack) {
         StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("type: item\n");
         stringBuilder.append("item: ").append(itemStack.getType().name().toLowerCase()).append('\n');
         stringBuilder.append("amount: ").append(itemStack.getAmount()).append('\n');
 
