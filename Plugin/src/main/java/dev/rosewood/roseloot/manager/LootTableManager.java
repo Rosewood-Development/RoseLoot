@@ -235,7 +235,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         }
 
         boolean allowRecursion = configuration.getBoolean("allow-recursion", false);
-        List<LootCondition> conditions = this.parseConditionsSection(fileName, configuration);
+        List<LootCondition> conditions = this.parseConditionsSection(fileName, configuration, "/", "/");
 
         // Find the first section key, if there are any more than one throw an error, if there are none throw an error
         ConfigurationSection rootComponentSection = this.findNextComponentsSection(fileName, configuration);
@@ -249,9 +249,12 @@ public class LootTableManager extends DelayedManager implements Listener {
     }
 
     @ApiStatus.Internal
-    public List<LootCondition> parseConditionsSection(String fileName, ConfigurationSection section) {
+    public List<LootCondition> parseConditionsSection(String fileName, ConfigurationSection section, String parents, String entryKey) {
         List<LootCondition> conditions = new ArrayList<>();
         List<String> conditionStrings = section.getStringList("conditions");
+        if (section.contains("conditions") && !section.isList("conditions"))
+            this.issueLoading(fileName, "Invalid conditions section, not a string list [parents: " + parents + ", component: " + entryKey + "]");
+
         for (String conditionString : conditionStrings) {
             LootCondition condition = LootConditionParser.parse(conditionString);
             if (condition != null)  {
@@ -312,7 +315,9 @@ public class LootTableManager extends DelayedManager implements Listener {
                 continue;
             }
 
-            List<LootCondition> entryConditions = this.parseConditionsSection(fileName, componentSection);
+            parents = componentSection.getCurrentPath();
+
+            List<LootCondition> entryConditions = this.parseConditionsSection(fileName, componentSection, parents, entryKey);
 
             NumberProvider weight = NumberProvider.fromSection(componentSection, "weight", null);
             NumberProvider quality = NumberProvider.fromSection(componentSection, "quality", 0);
