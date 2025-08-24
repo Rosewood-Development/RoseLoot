@@ -30,10 +30,14 @@ command-reload-description: 'Reloads the plugin'
 command-reload-reloaded: '&eConfiguration and locale files were reloaded.'
 
 # Generate Command
-command-generate-description: 'Runs a loot table'
+command-generate-description: 'Runs a loot table for a player'
 command-generate-requires-player: '&cYou must specify a player when running this command through the console.'
 command-generate-invalid-loot-table-type: '&cOnly loot tables of type LOOT_TABLE can be used with this command.'
 command-generate-success: '&eLoot was generated for &b%player%&e using &b%loottable%&e.'
+
+# Spawn Command
+command-spawn-description: 'Runs a loot table at a location'
+command-spawn-invalid-loot-table-type: '&cOnly loot tables of type LOOT_TABLE can be used with this command.'
 
 # List Command
 command-list-description: 'Display a list of active loot tables'
@@ -78,4 +82,5 @@ voucher-expired: '&cThis voucher has either expired or was improperly configured
 
 # Argument Handler Error Messages
 argument-handler-loot-table: 'LootTable [%input%] does not exist'
+argument-handler-world: 'World [%input%] does not exist or isn''t loaded'
 argument-handler-player: 'No Player with the username [%input%] was found online'

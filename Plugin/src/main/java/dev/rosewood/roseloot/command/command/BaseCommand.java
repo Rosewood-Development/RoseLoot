@@ -25,7 +25,8 @@ public class BaseCommand extends PrimaryCommand {
                 new GiveItemsCommand(this.rosePlugin),
                 new HelpCommand(this.rosePlugin, this),
                 new ListCommand(this.rosePlugin),
-                new LoggingReloadCommand(this.rosePlugin)
+                new LoggingReloadCommand(this.rosePlugin),
+                new SpawnCommand(this.rosePlugin)
         ));
 
         if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3))
