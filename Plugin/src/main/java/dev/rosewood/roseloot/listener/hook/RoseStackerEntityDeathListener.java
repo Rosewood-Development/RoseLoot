@@ -21,6 +21,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -33,7 +34,7 @@ public class RoseStackerEntityDeathListener extends LazyLootTableListener {
         super(rosePlugin, LootTableTypes.ENTITY);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onEntityStackMultipleDeath(EntityStackMultipleDeathEvent event) {
         LivingEntity mainEntity = event.getStack().getEntity();
         if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(mainEntity.getWorld().getName())))
