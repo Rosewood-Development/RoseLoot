@@ -13,12 +13,7 @@ public class OminousBottleAmplifierComponent implements LootItemComponent {
     private final NumberProvider value;
 
     public OminousBottleAmplifierComponent(ConfigurationSection section) {
-        ConfigurationSection amplifierSection = section.getConfigurationSection("ominous-bottle-amplifier");
-        if (amplifierSection != null) {
-            this.value = NumberProvider.fromSection(amplifierSection, "value", null);
-        } else {
-            this.value = null;
-        }
+        this.value = NumberProvider.fromSection(section, "ominous-bottle-amplifier", null);
     }
 
     @Override

@@ -57,7 +57,7 @@ public class TrimComponent implements LootItemComponent {
         ItemArmorTrim itemArmorTrim = itemStack.getData(DataComponentTypes.TRIM);
         ArmorTrim armorTrim = itemArmorTrim.armorTrim();
 
-        stringBuilder.append("armor-trim:\n");
+        stringBuilder.append("trim:\n");
         NamespacedKey materialKey = RegistryAccess.registryAccess().getRegistry(RegistryKey.TRIM_MATERIAL).getKey(armorTrim.getMaterial());
         if (materialKey != null)
             stringBuilder.append("  material: ").append(materialKey.asMinimalString()).append("\n");

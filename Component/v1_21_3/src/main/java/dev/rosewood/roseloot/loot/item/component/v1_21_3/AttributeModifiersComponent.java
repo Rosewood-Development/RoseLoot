@@ -36,11 +36,11 @@ class AttributeModifiersComponent implements LootItemComponent {
                     if (modifierSection == null)
                         continue;
 
-                    String attributeKey = modifierSection.getString("attribute");
+                    String attributeKey = modifierSection.getString("type");
                     if (attributeKey == null || attributeKey.isEmpty())
                         continue;
 
-                    String identifier = modifierSection.getString("identifier");
+                    String identifier = modifierSection.getString("id");
                     if (identifier == null)
                         identifier = "roseloot:" + UUID.randomUUID();
                     NamespacedKey namespacedKey = NamespacedKey.fromString(identifier);
@@ -66,7 +66,7 @@ class AttributeModifiersComponent implements LootItemComponent {
                     if (operation == null)
                         break;
 
-                    String group = modifierSection.getString("slot-group");
+                    String group = modifierSection.getString("slot");
                     EquipmentSlotGroup equipmentSlotGroup = EquipmentSlotGroup.getByName(group);
                     if (equipmentSlotGroup == null)
                         equipmentSlotGroup = EquipmentSlotGroup.ANY;
@@ -115,11 +115,11 @@ class AttributeModifiersComponent implements LootItemComponent {
             for (ItemAttributeModifiers.Entry entry : modifiers) {
                 AttributeModifier modifier = entry.modifier();
                 stringBuilder.append("    ").append(i++).append(":\n");
-                stringBuilder.append("      ").append("attribute: '").append(entry.attribute().getKey().asMinimalString()).append("'\n");
-                stringBuilder.append("      ").append("identifier: '").append(modifier.key().asMinimalString()).append("'\n");
+                stringBuilder.append("      ").append("type: '").append(entry.attribute().getKey().asMinimalString()).append("'\n");
+                stringBuilder.append("      ").append("id: '").append(modifier.key().asMinimalString()).append("'\n");
                 stringBuilder.append("      ").append("amount: ").append(modifier.getAmount()).append('\n');
                 stringBuilder.append("      ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append('\n');
-                stringBuilder.append("      ").append("slot-group: ").append(modifier.getSlotGroup()).append('\n');
+                stringBuilder.append("      ").append("slot: ").append(modifier.getSlotGroup()).append('\n');
             }
             stringBuilder.append("  show-in-tooltip: ").append(itemAttributeModifiers.showInTooltip()).append('\n');
         }

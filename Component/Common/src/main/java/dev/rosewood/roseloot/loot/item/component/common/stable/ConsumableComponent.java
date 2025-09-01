@@ -33,7 +33,7 @@ public class ConsumableComponent implements LootItemComponent {
             } else {
                 this.hasConsumeParticles = null;
             }
-            this.effects = ParsingUtils.parseEffectConfigs(consumableSection.getConfigurationSection("effects"));
+            this.effects = ParsingUtils.parseEffectConfigs(consumableSection, "on-consume-effects");
         } else {
             this.consumeSeconds = null;
             this.animation = null;
@@ -76,7 +76,7 @@ public class ConsumableComponent implements LootItemComponent {
         stringBuilder.append("  sound: '").append(consumable.sound().asMinimalString()).append("'\n");
         stringBuilder.append("  has-consume-particles: ").append(consumable.hasConsumeParticles()).append('\n');
 
-        ParsingUtils.applyEffectProperties(consumable.consumeEffects(), 2, stringBuilder);
+        ParsingUtils.applyEffectProperties(consumable.consumeEffects(), 2, "on-consume-effects", stringBuilder);
     }
 
 } 

@@ -49,7 +49,7 @@ public class PotionContentsComponent implements LootItemComponent {
                     for (String key : effectsSection.getKeys(false)) {
                         ConfigurationSection effectSection = effectsSection.getConfigurationSection(key);
                         if (effectSection != null) {
-                            String effectType = effectSection.getString("type");
+                            String effectType = effectSection.getString("id");
                             if (effectType != null) {
                                 try {
                                     NamespacedKey namespacedKey = NamespacedKey.minecraft(effectType.toLowerCase());
@@ -132,7 +132,7 @@ public class PotionContentsComponent implements LootItemComponent {
             for (int i = 0; i < potionContents.customEffects().size(); i++) {
                 PotionEffect effect = potionContents.customEffects().get(i);
                 stringBuilder.append("    ").append(i).append(":\n");
-                stringBuilder.append("      type: ").append(effect.getType().getKey().getKey()).append("\n");
+                stringBuilder.append("      id: ").append(effect.getType().getKey().getKey()).append("\n");
                 stringBuilder.append("      duration: ").append(effect.getDuration()).append("\n");
                 stringBuilder.append("      amplifier: ").append(effect.getAmplifier()).append("\n");
                 stringBuilder.append("      ambient: ").append(effect.isAmbient()).append("\n");

@@ -66,7 +66,7 @@ public class AttributeModifiersComponent implements LootItemComponent {
                 if (operation == null)
                     break;
 
-                String group = modifierSection.getString("slot-group");
+                String group = modifierSection.getString("slot");
                 EquipmentSlotGroup equipmentSlotGroup = EquipmentSlotGroup.getByName(group);
                 if (equipmentSlotGroup == null)
                     equipmentSlotGroup = EquipmentSlotGroup.ANY;
@@ -83,7 +83,7 @@ public class AttributeModifiersComponent implements LootItemComponent {
                         display = switch (displayType.toLowerCase()) {
                             case "hidden" -> AttributeModifierDisplay.hidden();
                             case "override" -> {
-                                String overrideText = displaySection.getString("override", "");
+                                String overrideText = displaySection.getString("value", "");
                                 Component overrideComponent = ComponentUtil.colorifyAndComponentify(overrideText);
                                 yield AttributeModifierDisplay.override(overrideComponent);
                             }
@@ -122,11 +122,11 @@ public class AttributeModifiersComponent implements LootItemComponent {
             for (ItemAttributeModifiers.Entry entry : modifiers) {
                 AttributeModifier modifier = entry.modifier();
                 stringBuilder.append("  ").append(i++).append(":\n");
-                stringBuilder.append("    ").append("attribute: '").append(entry.attribute().getKey().asMinimalString()).append("'\n");
-                stringBuilder.append("    ").append("identifier: '").append(modifier.key().asMinimalString()).append("'\n");
+                stringBuilder.append("    ").append("type: '").append(entry.attribute().getKey().asMinimalString()).append("'\n");
+                stringBuilder.append("    ").append("id: '").append(modifier.key().asMinimalString()).append("'\n");
                 stringBuilder.append("    ").append("amount: ").append(modifier.getAmount()).append('\n');
                 stringBuilder.append("    ").append("operation: ").append(modifier.getOperation().name().toLowerCase()).append('\n');
-                stringBuilder.append("    ").append("slot-group: ").append(modifier.getSlotGroup()).append('\n');
+                stringBuilder.append("    ").append("slot: ").append(modifier.getSlotGroup()).append('\n');
                 AttributeModifierDisplay display = entry.display();
                 if (display instanceof AttributeModifierDisplay.Default) {
                     stringBuilder.append("    ").append("display: default").append('\n');
@@ -135,7 +135,7 @@ public class AttributeModifiersComponent implements LootItemComponent {
                 } else if (display instanceof AttributeModifierDisplay.OverrideText overrideText) {
                     stringBuilder.append("    ").append("display:\n");
                     stringBuilder.append("      ").append("type: override\n");
-                    stringBuilder.append("      ").append("override: '").append(ComponentUtil.decomponentifyAndDecolorify(overrideText.text()).replace("'", "''")).append("'\n");
+                    stringBuilder.append("      ").append("value: '").append(ComponentUtil.decomponentifyAndDecolorify(overrideText.text()).replace("'", "''")).append("'\n");
                 }
             }
         }

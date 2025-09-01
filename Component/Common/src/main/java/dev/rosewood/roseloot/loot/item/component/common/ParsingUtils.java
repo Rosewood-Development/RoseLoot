@@ -21,24 +21,28 @@ import org.bukkit.potion.PotionEffectType;
 
 public final class ParsingUtils {
 
-    public static List<EffectConfig> parseEffectConfigs(ConfigurationSection section) {
+    public static List<EffectConfig> parseEffectConfigs(ConfigurationSection section, String propertyName) {
         List<EffectConfig> effects = new ArrayList<>();
         if (section == null)
             return effects;
 
+        ConfigurationSection effectsSection = section.getConfigurationSection(propertyName);
+        if (effectsSection == null)
+            return effects;
+
         Registry<PotionEffectType> registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT);
-        for (String effectKey : section.getKeys(false)) {
-            ConfigurationSection effectSection = section.getConfigurationSection(effectKey);
+        for (String effectKey : effectsSection.getKeys(false)) {
+            ConfigurationSection effectSection = effectsSection.getConfigurationSection(effectKey);
             if (effectSection == null)
                 continue;
 
             String type = effectSection.getString("type", "");
             switch (type.toLowerCase()) {
-                case "teleport-randomly" -> {
+                case "teleport_randomly" -> {
                     NumberProvider diameter = NumberProvider.fromSection(effectSection, "diameter", 16.0);
                     effects.add(new EffectConfig.TeleportRandomlyConfig(diameter));
                 }
-                case "remove-effects" -> {
+                case "remove_effects" -> {
                     List<PotionEffectType> removeEffects = new ArrayList<>();
                     for (String effectType : effectSection.getStringList("effects")) {
                         try {
@@ -51,13 +55,13 @@ public final class ParsingUtils {
                     if (!removeEffects.isEmpty())
                         effects.add(new EffectConfig.RemoveEffectsConfig(removeEffects));
                 }
-                case "play-sound" -> {
+                case "play_sound" -> {
                     StringProvider soundKey = StringProvider.fromSection(effectSection, "sound", null);
                     if (soundKey != null)
                         effects.add(new EffectConfig.PlaySoundConfig(soundKey));
                 }
-                case "clear-all-effects" -> effects.add(new EffectConfig.ClearAllEffectsConfig());
-                case "apply-effects" -> {
+                case "clear_all_effects" -> effects.add(new EffectConfig.ClearAllEffectsConfig());
+                case "apply_effects" -> {
                     List<PotionEffect> potionEffects = parsePotionEffects(effectSection.getConfigurationSection("effects"), registry);
                     if (!potionEffects.isEmpty()) {
                         NumberProvider probability = NumberProvider.fromSection(effectSection, "probability", 1.0);
@@ -81,7 +85,7 @@ public final class ParsingUtils {
         for (String key : section.getKeys(false)) {
             ConfigurationSection potionEffectSection = section.getConfigurationSection(key);
             if (potionEffectSection != null) {
-                String effectType = potionEffectSection.getString("type");
+                String effectType = potionEffectSection.getString("id");
                 if (effectType != null) {
                     PotionEffectType potionEffectType = registry.get(Key.key(effectType.toLowerCase()));
                     if (potionEffectType != null) {
@@ -98,15 +102,15 @@ public final class ParsingUtils {
         return potionEffects;
     }
 
-    public static void applyEffectProperties(List<ConsumeEffect> effects, int indent, StringBuilder stringBuilder) {
+    public static void applyEffectProperties(List<ConsumeEffect> effects, int indent, String propertyName, StringBuilder stringBuilder) {
         String padding = indent == 0 ? "" : " ".repeat(indent - 1);
         if (!effects.isEmpty()) {
-            stringBuilder.append(padding).append("effects:\n");
+            stringBuilder.append(padding).append(propertyName).append(":\n");
             int i = 0;
             for (ConsumeEffect effect : effects) {
                 stringBuilder.append(padding).append("  ").append(i++).append(":\n");
                 if (effect instanceof ConsumeEffect.TeleportRandomly teleport) {
-                    stringBuilder.append(padding).append("    type: teleport-randomly\n");
+                    stringBuilder.append(padding).append("    type: teleport_randomly\n");
                     stringBuilder.append(padding).append("    diameter: ").append(teleport.diameter()).append('\n');
                 } else if (effect instanceof ConsumeEffect.RemoveStatusEffects remove) {
                     stringBuilder.append(padding).append("    type: remove-effects\n");

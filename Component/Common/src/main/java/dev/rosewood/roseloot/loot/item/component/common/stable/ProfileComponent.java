@@ -20,7 +20,7 @@ public class ProfileComponent implements LootItemComponent {
     public ProfileComponent(ConfigurationSection section) {
         ConfigurationSection profileSection = section.getConfigurationSection("profile");
         if (profileSection != null) {
-            String uuidString = profileSection.getString("uuid");
+            String uuidString = profileSection.getString("id");
             this.uuid = uuidString != null ? UUID.fromString(uuidString) : null;
             this.name = profileSection.getString("name");
             
@@ -68,7 +68,7 @@ public class ProfileComponent implements LootItemComponent {
         stringBuilder.append("profile:\n");
         
         if (profile.uuid() != null)
-            stringBuilder.append("  uuid: ").append(profile.uuid()).append('\n');
+            stringBuilder.append("  id: ").append(profile.uuid()).append('\n');
             
         if (profile.name() != null)
             stringBuilder.append("  name: ").append(profile.name()).append('\n');

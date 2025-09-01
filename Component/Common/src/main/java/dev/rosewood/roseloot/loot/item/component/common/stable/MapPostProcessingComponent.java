@@ -12,13 +12,13 @@ public class MapPostProcessingComponent implements LootItemComponent {
     private final MapPostProcessing postProcessing;
 
     public MapPostProcessingComponent(ConfigurationSection section) {
-        ConfigurationSection mapPostProcessingSection = section.getConfigurationSection("map-post-processing");
-        this.postProcessing = mapPostProcessingSection != null ? parsePostProcessing(mapPostProcessingSection) : null;
+        String value = section.getString("map-post-processing");
+        this.postProcessing = value != null ? parsePostProcessing(value) : null;
     }
 
-    private static MapPostProcessing parsePostProcessing(ConfigurationSection section) {
+    private static MapPostProcessing parsePostProcessing(String value) {
         try {
-            return MapPostProcessing.valueOf(section.getString("type", "LOCK").toUpperCase());
+            return MapPostProcessing.valueOf(value);
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -35,8 +35,7 @@ public class MapPostProcessingComponent implements LootItemComponent {
             return;
 
         MapPostProcessing postProcessing = itemStack.getData(DataComponentTypes.MAP_POST_PROCESSING);
-        stringBuilder.append("map-post-processing:\n");
-        stringBuilder.append("  type: ").append(postProcessing.name().toLowerCase()).append("\n");
+        stringBuilder.append("map-post-processing: ").append(postProcessing.name().toLowerCase()).append('\n');
     }
 
 } 

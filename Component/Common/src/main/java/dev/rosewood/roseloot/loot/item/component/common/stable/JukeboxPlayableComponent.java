@@ -19,12 +19,7 @@ public class JukeboxPlayableComponent implements LootItemComponent {
     private final StringProvider song;
 
     public JukeboxPlayableComponent(ConfigurationSection section) {
-        ConfigurationSection jukeboxSection = section.getConfigurationSection("jukebox-playable");
-        if (jukeboxSection != null) {
-            this.song = StringProvider.fromSection(jukeboxSection, "song", null);
-        } else {
-            this.song = null;
-        }
+        this.song = StringProvider.fromSection(section, "jukebox-playable", null);
     }
 
     @Override
@@ -47,10 +42,9 @@ public class JukeboxPlayableComponent implements LootItemComponent {
             return;
 
         JukeboxPlayable jukeboxPlayable = itemStack.getData(DataComponentTypes.JUKEBOX_PLAYABLE);
-        stringBuilder.append("jukebox-playable:\n");
         NamespacedKey key = RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG).getKey(jukeboxPlayable.jukeboxSong());
         if (key != null)
-            stringBuilder.append("  song: '").append(key.asMinimalString()).append("'\n");
+            stringBuilder.append("  jukebox-playable: '").append(key.asMinimalString()).append("'\n");
     }
 
 } 

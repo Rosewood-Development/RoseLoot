@@ -13,12 +13,7 @@ public class MapIdComponent implements LootItemComponent {
     private final NumberProvider id;
 
     public MapIdComponent(ConfigurationSection section) {
-        ConfigurationSection mapIdSection = section.getConfigurationSection("map-id");
-        if (mapIdSection != null) {
-            this.id = NumberProvider.fromSection(mapIdSection, "id", null);
-        } else {
-            this.id = null;
-        }
+        this.id = NumberProvider.fromSection(section, "map-id", null);
     }
 
     @Override
@@ -33,8 +28,7 @@ public class MapIdComponent implements LootItemComponent {
             return;
 
         MapId mapId = itemStack.getData(DataComponentTypes.MAP_ID);
-        stringBuilder.append("map-id:\n");
-        stringBuilder.append("  id: ").append(mapId.id()).append("\n");
+        stringBuilder.append("map-id: ").append(mapId.id()).append('\n');
     }
 
 } 

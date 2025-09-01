@@ -20,16 +20,11 @@ public class UseRemainderComponent implements LootItemComponent {
     public UseRemainderComponent(ConfigurationSection section) {
         ConfigurationSection useRemainderSection = section.getConfigurationSection("use-remainder");
         if (useRemainderSection != null) {
-            ConfigurationSection transformIntoSection = useRemainderSection.getConfigurationSection("transform-into");
-            if (transformIntoSection != null) {
-                LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "none", "use-remainder", transformIntoSection);
-                if (lootItem instanceof ItemGenerativeLootItem itemGenerativeLootItem) {
-                    this.transformInto = itemGenerativeLootItem;
-                } else {
-                    RoseLoot.getInstance().getLogger().warning("Ignoring use-remainder transform-into because it does not generate an ItemStack");
-                    this.transformInto = null;
-                }
+            LootItem lootItem = RoseLoot.getInstance().getManager(LootTableManager.class).parseLootItem("$internal", "none", "none", "use-remainder", useRemainderSection);
+            if (lootItem instanceof ItemGenerativeLootItem itemGenerativeLootItem) {
+                this.transformInto = itemGenerativeLootItem;
             } else {
+                RoseLoot.getInstance().getLogger().warning("Ignoring use-remainder because it does not generate an ItemStack");
                 this.transformInto = null;
             }
         } else {
@@ -52,11 +47,10 @@ public class UseRemainderComponent implements LootItemComponent {
 
         UseRemainder useRemainder = itemStack.getData(DataComponentTypes.USE_REMAINDER);
         stringBuilder.append("use-remainder:\n");
-        stringBuilder.append("  transform-into:\n");
 
         ItemStack transformIntoItem = useRemainder.transformInto();
         String itemConfig = ItemLootItem.toComponentsSection(transformIntoItem);
-        stringBuilder.append(itemConfig.indent(4));
+        stringBuilder.append(itemConfig.indent(2));
     }
 
 } 

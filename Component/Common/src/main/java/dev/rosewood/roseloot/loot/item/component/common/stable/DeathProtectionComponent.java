@@ -18,7 +18,7 @@ public class DeathProtectionComponent implements LootItemComponent {
     public DeathProtectionComponent(ConfigurationSection section) {
         ConfigurationSection deathProtectionSection = section.getConfigurationSection("death-protection");
         if (deathProtectionSection != null) {
-            this.deathEffects = ParsingUtils.parseEffectConfigs(deathProtectionSection.getConfigurationSection("effects"));
+            this.deathEffects = ParsingUtils.parseEffectConfigs(deathProtectionSection, "death-effects");
         } else {
             this.deathEffects = null;
         }
@@ -39,7 +39,7 @@ public class DeathProtectionComponent implements LootItemComponent {
         DeathProtection deathProtection = itemStack.getData(DataComponentTypes.DEATH_PROTECTION);
         if (!deathProtection.deathEffects().isEmpty()) {
             stringBuilder.append("death-protection:\n");
-            ParsingUtils.applyEffectProperties(deathProtection.deathEffects(), 2, stringBuilder);
+            ParsingUtils.applyEffectProperties(deathProtection.deathEffects(), 2, "death-effects", stringBuilder);
         }
     }
 

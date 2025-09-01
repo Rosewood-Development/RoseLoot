@@ -26,7 +26,7 @@ public class RepairableComponent implements LootItemComponent {
     public RepairableComponent(ConfigurationSection section) {
         ConfigurationSection repairableSection = section.getConfigurationSection("repairable");
         if (repairableSection != null) {
-            this.repairableTypes = StringProvider.fromSection(repairableSection, "types", null);
+            this.repairableTypes = StringProvider.fromSection(repairableSection, "items", null);
         } else {
             this.repairableTypes = null;
         }
@@ -68,9 +68,9 @@ public class RepairableComponent implements LootItemComponent {
         stringBuilder.append("repairable:\n");
         
         if (repairable.types() instanceof io.papermc.paper.registry.tag.Tag<?> tag) {
-            stringBuilder.append("  types: '#").append(tag.tagKey().key().asMinimalString()).append("'\n");
+            stringBuilder.append("  items: '#").append(tag.tagKey().key().asMinimalString()).append("'\n");
         } else {
-            stringBuilder.append("  types:\n");
+            stringBuilder.append("  items:\n");
             for (TypedKey<ItemType> key : repairable.types().values())
                 stringBuilder.append("    - '").append(key.asMinimalString()).append("'\n");
         }

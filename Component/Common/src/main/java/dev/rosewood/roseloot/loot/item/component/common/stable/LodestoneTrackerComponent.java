@@ -22,7 +22,7 @@ public class LodestoneTrackerComponent implements LootItemComponent {
     public LodestoneTrackerComponent(ConfigurationSection section) {
         ConfigurationSection trackerSection = section.getConfigurationSection("lodestone-tracker");
         if (trackerSection != null) {
-            ConfigurationSection locationSection = trackerSection.getConfigurationSection("location");
+            ConfigurationSection locationSection = trackerSection.getConfigurationSection("target");
             if (locationSection != null) {
                 this.x = NumberProvider.fromSection(locationSection, "x", null);
                 this.y = NumberProvider.fromSection(locationSection, "y", null);
@@ -56,8 +56,10 @@ public class LodestoneTrackerComponent implements LootItemComponent {
                     this.z.getDouble(context)
                 );
                 itemStack.setData(DataComponentTypes.LODESTONE_TRACKER, LodestoneTracker.lodestoneTracker(location, this.tracked));
+                return;
             }
         }
+        itemStack.setData(DataComponentTypes.LODESTONE_TRACKER, LodestoneTracker.lodestoneTracker(null, this.tracked));
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
@@ -69,7 +71,7 @@ public class LodestoneTrackerComponent implements LootItemComponent {
         
         stringBuilder.append("lodestone-tracker:\n");
         if (location != null) {
-            stringBuilder.append("  location:\n");
+            stringBuilder.append("  target:\n");
             stringBuilder.append("    world: '").append(location.getWorld().getName()).append("'\n");
             stringBuilder.append("    x: ").append(location.getX()).append('\n');
             stringBuilder.append("    y: ").append(location.getY()).append('\n');
