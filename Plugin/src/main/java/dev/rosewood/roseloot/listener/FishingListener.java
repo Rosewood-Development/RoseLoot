@@ -43,7 +43,8 @@ public class FishingListener extends LazyLootTableListener {
                 .put(LootContextParams.ORIGIN, fishHook.getLocation())
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.FISH_HOOK, fishHook)
-                .put(LootContextParams.HAS_EXISTING_ITEMS, fishHook.getHookedEntity() instanceof Item)
+                .put(LootContextParams.HAS_EXISTING_ITEMS, true)
+                .put(LootContextParams.INPUT_ITEM, itemCaught.getItemStack())
                 .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.FISHING, lootContext);
         if (lootResult.isEmpty())
