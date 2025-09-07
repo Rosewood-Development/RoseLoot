@@ -1,10 +1,13 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.StringProvider;
 import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -23,10 +26,18 @@ public class CommandLootItem implements AutoTriggerableLootItem {
         Optional<Player> player = context.getLootingPlayer();
         String command = this.command.get(context);
         if (this.runAsPlayer) {
-            player.ifPresent(x -> Bukkit.dispatchCommand(x, context.applyPlaceholders(command)));
+            player.ifPresent(x -> this.dispatchCommand(x, context.applyPlaceholders(command)));
         } else {
             if (!command.contains("%player%") || player.isPresent())
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), context.applyPlaceholders(command));
+                this.dispatchCommand(Bukkit.getConsoleSender(), context.applyPlaceholders(command));
+        }
+    }
+
+    private void dispatchCommand(CommandSender sender, String command) {
+        if (NMSUtil.isFolia()) {
+            RoseLoot.getInstance().getScheduler().runTask(() -> Bukkit.dispatchCommand(sender, command));
+        } else {
+            Bukkit.dispatchCommand(sender, command);
         }
     }
 
