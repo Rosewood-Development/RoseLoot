@@ -56,6 +56,9 @@ public class LootContents {
 
     private List<LootItem> recursivelyGenerateLootItems(RecursiveLootItem recursiveLootItem) {
         List<LootItem> lootItems = new ArrayList<>();
+        if (!recursiveLootItem.check(this.context))
+            return lootItems;
+
         for (LootItem lootItem : recursiveLootItem.generate(this.context)) {
             if (lootItem instanceof RecursiveLootItem generated) {
                 lootItems.addAll(this.recursivelyGenerateLootItems(generated));

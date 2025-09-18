@@ -63,15 +63,11 @@ public class LootTableLootItem implements RecursiveLootItem {
 
         List<LootItem> lootItems;
         if (this.lootTable != null) {
-            if (this.lootTable.check(context)) {
-                LootTable currentLootTable = context.getCurrentLootTable().orElse(null);
-                LootContents lootContents = new LootContents(context);
-                this.lootTable.populate(context, lootContents);
-                lootItems = lootContents.getContents();
-                context.setCurrentLootTable(currentLootTable);
-            } else {
-                lootItems = List.of();
-            }
+            LootTable currentLootTable = context.getCurrentLootTable().orElse(null);
+            LootContents lootContents = new LootContents(context);
+            this.lootTable.populate(context, lootContents);
+            lootItems = lootContents.getContents();
+            context.setCurrentLootTable(currentLootTable);
         } else {
             int lootingModifier = 0;
             Optional<ItemStack> itemUsed = context.getItemUsed();
@@ -108,6 +104,29 @@ public class LootTableLootItem implements RecursiveLootItem {
         }
 
         return lootItems;
+    }
+
+    @Override
+    public List<ItemStack> getAllItems(LootContext context) {
+        this.resolveLootTable();
+        if (this.invalid)
+            return List.of();
+
+        Optional<LootTable> currentLootTableOptional = context.getCurrentLootTable();
+        if (this.lootTable != null && currentLootTableOptional.isPresent()) {
+            LootTable currentLootTable = currentLootTableOptional.get();
+            if (currentLootTable.equals(this.lootTable))
+                return List.of();
+        }
+
+        if (this.lootTable != null) {
+            context.setCurrentLootTable(this.lootTable);
+            List<ItemStack> items = this.lootTable.getAllItems(context);
+            currentLootTableOptional.ifPresent(context::setCurrentLootTable);
+            return items;
+        }
+
+        return List.of();
     }
 
     private void resolveLootTable() {
@@ -147,16 +166,11 @@ public class LootTableLootItem implements RecursiveLootItem {
         } catch (Exception e) {
             RoseLoot.getInstance().getLogger().warning("Failed to load internal loot table: " + e.getMessage());
         }
+
         return null;
     }
 
-    private static class VanillaItemLootItem implements ItemGenerativeLootItem {
-
-        private final Collection<ItemStack> items;
-
-        public VanillaItemLootItem(Collection<ItemStack> items) {
-            this.items = items;
-        }
+    private record VanillaItemLootItem(Collection<ItemStack> items) implements ItemGenerativeLootItem {
 
         @Override
         public List<ItemStack> generate(LootContext context) {
