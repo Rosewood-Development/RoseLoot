@@ -41,6 +41,8 @@ public class GiveItemsCommand extends BaseRoseCommand {
                 .put(LootContextParams.LOOTER, target)
                 .build();
 
+        lootContext.setCurrentLootTable(lootTable);
+
         List<ItemStack> items = lootTable.getAllItems(lootContext);
         if (items.isEmpty()) {
             localeManager.sendMessage(sender, "command-giveitems-empty");

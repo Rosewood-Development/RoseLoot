@@ -33,7 +33,8 @@ command-reload-reloaded: '&eConfiguration and locale files were reloaded.'
 command-generate-description: 'Runs a loot table for a player'
 command-generate-requires-player: '&cYou must specify a player when running this command through the console.'
 command-generate-invalid-loot-table-type: '&cOnly loot tables of type LOOT_TABLE can be used with this command.'
-command-generate-success: '&eLoot was generated for &b%player%&e using &b%loottable%&e.'
+command-generate-failed-conditions: '&cLoot was not generated for &b%player% &cusing &b%loottable% &cbecause top-level conditions did not pass.'
+command-generate-success: '&eLoot was generated for &b%player% &eusing &b%loottable%&e.'
 
 # Spawn Command
 command-spawn-description: 'Runs a loot table at a location'

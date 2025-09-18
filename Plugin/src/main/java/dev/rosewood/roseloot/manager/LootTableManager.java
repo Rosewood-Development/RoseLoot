@@ -51,6 +51,7 @@ import dev.rosewood.roseloot.loot.condition.tags.InventoryContainsCondition;
 import dev.rosewood.roseloot.loot.condition.tags.KilledByCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LegacyFeatureCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LightLevelCondition;
+import dev.rosewood.roseloot.loot.condition.tags.LogCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterEntityTypeCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LooterVehicleCondition;
 import dev.rosewood.roseloot.loot.condition.tags.LuckChanceCondition;
@@ -477,6 +478,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("inventory-contains", InventoryContainsCondition::new);
         event.registerLootCondition("killed-by", KilledByCondition::new);
         event.registerLootCondition("light-level", LightLevelCondition::new);
+        event.registerLootCondition("log", LogCondition::new);
         event.registerLootCondition("looter-entity-type", LooterEntityTypeCondition::new);
         event.registerLootCondition("looter-vehicle", LooterVehicleCondition::new);
         event.registerLootCondition("luck-chance", LuckChanceCondition::new);
@@ -562,6 +564,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         LootContents lootContents = new LootContents(lootContext);
         Set<OverwriteExisting> overwriteExisting = OverwriteExisting.none();
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
+            lootContext.setCurrentLootTable(lootTable);
             if (!lootTable.check(lootContext))
                 continue;
 
@@ -580,6 +583,7 @@ public class LootTableManager extends DelayedManager implements Listener {
      * @return A LootResult containing all generated loot
      */
     public LootResult getLoot(LootTable lootTable, LootContext lootContext) {
+        lootContext.setCurrentLootTable(lootTable);
         LootContents lootContents = new LootContents(lootContext);
         lootTable.populate(lootContext, lootContents);
         return this.callEvent(new LootResult(lootContext, lootContents, OverwriteExisting.none()));

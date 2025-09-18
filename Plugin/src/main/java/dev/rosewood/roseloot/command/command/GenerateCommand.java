@@ -46,6 +46,15 @@ public class GenerateCommand extends BaseRoseCommand {
                 .put(LootContextParams.ORIGIN, target.getLocation())
                 .put(LootContextParams.LOOTER, target)
                 .build();
+
+        lootContext.setCurrentLootTable(lootTable);
+
+        if (!lootTable.check(lootContext)) {
+            if (silent == null || !silent)
+                localeManager.sendMessage(sender, "command-generate-failed-conditions", StringPlaceholders.of("player", target.getName(), "loottable", lootTable.getName()));
+            return;
+        }
+
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
         lootResult.getLootContents().dropForPlayer(target);
 
