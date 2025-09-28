@@ -30,7 +30,6 @@ allprojects {
         maven { url = 'https://repo.rosewooddev.io/repository/public/' }
         maven { url = 'https://repo.codemc.org/repository/maven-public/' }
         maven { url = 'https://maven.devs.beer/' }
-        maven { url = 'https://repo.luminescent.dev/repository/public-releases/' }
         maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
         maven { url = 'https://erethon.de/repo/' }
         maven { url = 'https://maven.playpro.com/' }
