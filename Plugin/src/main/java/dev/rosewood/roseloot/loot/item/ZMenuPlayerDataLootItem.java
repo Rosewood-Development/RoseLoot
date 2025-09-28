@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class ZMenuPlayerDataLootItem implements AutoTriggerableLootItem {
+public class ZMenuPlayerDataLootItem implements TriggerableLootItem {
 
     private final String variable;
     private final boolean set;

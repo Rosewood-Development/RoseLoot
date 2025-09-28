@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class CommandLootItem implements AutoTriggerableLootItem {
+public class CommandLootItem implements TriggerableLootItem {
 
     private final StringProvider command;
     private final boolean runAsPlayer;

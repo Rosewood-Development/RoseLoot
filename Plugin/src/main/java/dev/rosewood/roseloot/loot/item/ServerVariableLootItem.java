@@ -15,7 +15,7 @@ import svar.ajneb97.managers.ServerVariablesManager;
 import svar.ajneb97.model.structure.ValueType;
 import svar.ajneb97.model.structure.VariableType;
 
-public class ServerVariableLootItem implements AutoTriggerableLootItem {
+public class ServerVariableLootItem implements TriggerableLootItem {
 
     private final String variable;
     private final VariableType variableType;

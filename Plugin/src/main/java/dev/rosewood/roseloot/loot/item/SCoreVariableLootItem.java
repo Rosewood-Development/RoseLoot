@@ -11,7 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class SCoreVariableLootItem implements AutoTriggerableLootItem {
+public class SCoreVariableLootItem implements TriggerableLootItem {
 
     private final String variable;
     private final boolean global;

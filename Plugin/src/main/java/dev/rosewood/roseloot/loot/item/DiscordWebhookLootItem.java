@@ -13,7 +13,7 @@ import javax.net.ssl.HttpsURLConnection;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class DiscordWebhookLootItem implements AutoTriggerableLootItem {
+public class DiscordWebhookLootItem implements TriggerableLootItem {
 
     private final StringProvider url;
     private final StringProvider content;
