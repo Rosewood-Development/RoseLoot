@@ -5,6 +5,8 @@ import dev.rosewood.roseloot.loot.condition.tags.InventoryContainsCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.Lazy;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -50,8 +52,8 @@ public enum CustomItemPlugin {
         return this.itemProvider.get().getItem(context, id);
     }
 
-    public String resolveItemId(ItemStack itemStack) {
-        return this.itemProvider.get().getItemId(itemStack);
+    public Set<String> resolveItemIds(ItemStack itemStack) {
+        return this.itemProvider.get().getItemIds(itemStack);
     }
 
     public boolean supportsIdLookup() {
@@ -63,10 +65,19 @@ public enum CustomItemPlugin {
     }
 
     public BiPredicate<LootContext, List<String>> getInHandLootConditionPredicate() {
-        return (context, values) -> context.getItemUsed()
-                .map(this::resolveItemId)
-                .filter(x -> values.stream().anyMatch(x::equalsIgnoreCase))
-                .isPresent();
+        return (context, values) -> {
+            Optional<ItemStack> itemUsed = context.getItemUsed();
+            if (itemUsed.isEmpty())
+                return false;
+
+            ItemStack item = itemUsed.get();
+            List<String> ids = this.resolveItemIds(item).stream().map(String::toLowerCase).toList();
+            for (String value : values) {
+                if (ids.contains(value.toLowerCase()))
+                    return true;
+            }
+            return false;
+        };
     }
 
     public Function<String, LootCondition> getInventoryContainsLootConditionFunction() {

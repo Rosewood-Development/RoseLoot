@@ -1,6 +1,7 @@
 package dev.rosewood.roseloot.hook.items;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,13 +39,26 @@ public abstract class ItemProvider {
     public abstract ItemStack getItem(LootContext context, String id);
 
     /**
-     * Gets the item ID for the given ItemStack.
+     * Gets the item ID for the given ItemStack
      *
      * @param item The ItemStack to look up
-     * @return The item ID for the given ItemStack, or null if no item ID matching the ItemStack could be found
+     * @return The item ID for the given ItemStack, or null if no item IDs matching the ItemStack could be found
      */
     public String getItemId(ItemStack item) {
         return null;
+    }
+
+    /**
+     * Gets the item IDs for the given ItemStack, may include subtypes
+     *
+     * @param item The ItemStack to look up
+     * @return The item ID for the given ItemStack, or an empty set if no item IDs matching the ItemStack could be found
+     */
+    public Set<String> getItemIds(ItemStack item) {
+        String id = this.getItemId(item);
+        if (id != null)
+            return Set.of(id);
+        return Set.of();
     }
 
     /**

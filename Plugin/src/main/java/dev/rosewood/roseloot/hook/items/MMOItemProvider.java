@@ -1,10 +1,10 @@
 package dev.rosewood.roseloot.hook.items;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
-import io.lumine.mythic.lib.api.item.NBTItem;
+import java.util.HashSet;
+import java.util.Set;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.Type;
-import net.Indyuce.mmoitems.api.item.mmoitem.VolatileMMOItem;
 import org.bukkit.inventory.ItemStack;
 
 public class MMOItemProvider extends ItemProvider {
@@ -34,16 +34,35 @@ public class MMOItemProvider extends ItemProvider {
         if (type == null)
             return null;
 
-        NBTItem nbtItem = NBTItem.get(item);
-        if (nbtItem == null)
-            return null;
+        String typeId = MMOItems.getTypeName(item);
+        String itemId = MMOItems.getID(item);
 
-        VolatileMMOItem mmoItem = new VolatileMMOItem(nbtItem);
-        String id = mmoItem.getId();
-        if (id == null)
-            return null;
+        if (typeId != null && itemId != null) {
+            return typeId + ":" + itemId;
+        } else {
+            return itemId;
+        }
+    }
 
-        return type.getId() + ":" + id;
+    @Override
+    public Set<String> getItemIds(ItemStack item) {
+        if (!this.isEnabled())
+            return Set.of();
+
+        String typeId = MMOItems.getTypeName(item);
+        String itemId = MMOItems.getID(item);
+
+        Set<String> ids = new HashSet<>();
+        if (typeId != null) {
+            ids.add(typeId);
+            if (itemId != null)
+                ids.add(typeId + ":" + itemId);
+        } else {
+            if (itemId != null)
+                ids.add(itemId);
+        }
+
+        return ids;
     }
 
 }
