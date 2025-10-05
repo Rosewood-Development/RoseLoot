@@ -80,10 +80,8 @@ public class ItemsAdderBlockBreakListener extends LazyLootTableListener {
         }
 
         int experience = lootContents.getExperience();
-        if (experience > 0) {
-            Location location = player.getLocation();
-            EntitySpawnUtil.spawn(location, ExperienceOrb.class, x -> x.setExperience(experience));
-        }
+        if (experience > 0)
+            EntitySpawnUtil.spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
         lootContents.triggerExtras(dropLocation);
     }
