@@ -120,6 +120,8 @@ public class ItemLootMeta {
                         name = "v1_21_4";
                     } else if (major == 21 && (minor == 6 || minor == 7 || minor == 8)) {
                         name = "v1_21_5";
+                    } else if (major == 21 && (minor == 9 || minor == 10)) {
+                        name = "v1_21_6";
                     }
 
                     if (name != null) {

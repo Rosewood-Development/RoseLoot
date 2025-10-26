@@ -1,5 +1,5 @@
 plugins {
-    id 'com.gradleup.shadow' version '8.3.5' apply false
+    id 'com.gradleup.shadow' version '9.2.2' apply false
     id 'maven-publish'
     id 'java'
 }
@@ -53,6 +53,7 @@ dependencies {
     implementation project(':Component:v1_21_3')
     implementation project(':Component:v1_21_4')
     implementation project(':Component:v1_21_5')
+    implementation project(':Component:v1_21_6')
     implementation project(':NMS:Wrapper')
     implementation project(':NMS:v1_16_R3')
     implementation project(path: ':NMS:v1_17_R1', configuration: 'reobf')
@@ -65,6 +66,7 @@ dependencies {
     implementation project(path: ':NMS:v1_21_R3', configuration: 'reobf')
     implementation project(path: ':NMS:v1_21_R4', configuration: 'reobf')
     implementation project(path: ':NMS:v1_21_R5', configuration: 'reobf')
+    implementation project(path: ':NMS:v1_21_R6', configuration: 'reobf')
 }
 
 shadowJar {
@@ -78,8 +80,8 @@ shadowJar {
 
 publishing {
     publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
+        shadow(MavenPublication) {
+            from components.shadow
             artifactId = 'roseloot'
             pom {
                 name = 'roseloot'

@@ -30,7 +30,7 @@ public class BaseCommand extends PrimaryCommand {
         ));
 
         if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3))
-            subcommands.add(new CopyComponentsCommand(this.rosePlugin));
+            subcommands.add(3, new CopyComponentsCommand(this.rosePlugin));
 
         return CommandInfo.builder("loot")
                 .permission("roseloot.basecommand")

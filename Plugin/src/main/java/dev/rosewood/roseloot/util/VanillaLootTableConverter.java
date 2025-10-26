@@ -123,7 +123,8 @@ public final class VanillaLootTableConverter {
                 for (String headerLine : HEADER)
                     writer.write(headerLine);
 
-            if (path.startsWith("entities") && !path.equals("entities/sheep")) {
+            if ((path.startsWith("entities") && !path.equals("entities/sheep"))
+                    || path.equals("charged_creeper/root")) {
                 writeEntityHeader(path, writer);
             } else if (path.startsWith("blocks")) {
                 writeBlockHeader(path, writer);
@@ -143,10 +144,14 @@ public final class VanillaLootTableConverter {
                     || path.startsWith("gameplay/hero_of_the_village")
                     || path.startsWith("gameplay/panda_sneeze")
                     || path.startsWith("gameplay/sniffer_digging")
-                    || (path.startsWith("shearing/") && path.lastIndexOf('/') < 9)) {
+                    || (path.startsWith("shearing/") && path.lastIndexOf('/') < 9)
+                    || path.startsWith("gameplay/turtle_grow")
+                    || path.startsWith("gameplay/brush/armadillo")) {
                 writeEntityDropsHeader(path, writer);
             } else if (path.startsWith("archaeology")) {
                 writeArchaeologyHeader(path, writer);
+            } else if (path.startsWith("harvest/") || path.startsWith("carve/")) {
+                writeHarvestHeader(path, writer);
             } else {
                 writeLootTableHeader(path, writer);
             }
@@ -223,8 +228,23 @@ public final class VanillaLootTableConverter {
             writer.write("- 'entity-type:sheep'");
         } else if (path.startsWith("shearing/mooshroom")) {
             writer.write("- 'entity-type:mooshroom'");
+            if (!path.equals("shearing/mooshroom")) {
+                if (path.endsWith("red")) {
+                    writer.write("- 'mooshroom-variant:red'");
+                } else if (path.endsWith("brown")) {
+                    writer.write("- 'mooshroom-variant:brown'");
+                } else {
+                    RoseLoot.getInstance().getLogger().warning("Unhandled entity drops mooshroom type: " + path);
+                }
+            }
+        } else if (path.startsWith("brush/armadillo")) {
+            writer.write("- 'entity-type:armadillo'");
+        } else if (path.startsWith("gameplay/turtle_grow")) {
+            writer.write("- 'entity-type:turtle'");
+        } else if (path.startsWith("charged_creeper/root")) {
+            writer.write("- 'charged-explosion'");
         } else {
-            RoseLoot.getInstance().getLogger().warning("Unhandled gameplay loot table type: " + path);
+            RoseLoot.getInstance().getLogger().warning("Unhandled entity drops loot table type: " + path);
         }
         writer.decreaseIndentation();
     }
@@ -253,6 +273,27 @@ public final class VanillaLootTableConverter {
             writer.write("- 'ominous'");
         } else {
             writer.write("- '!ominous'");
+        }
+        writer.decreaseIndentation();
+    }
+
+    private static void writeHarvestHeader(String path, IndentedFileWriter writer) throws IOException {
+        writer.write("type: HARVEST");
+        writer.write("overwrite-existing: items");
+        writer.write("conditions:");
+        writer.increaseIndentation();
+        if (path.startsWith("harvest/beehive")) {
+            writer.write("- 'block-type:#beehives'");
+        } else if (path.startsWith("harvest/cave_vine")) {
+            writer.write("- 'block-type:#cave_vines'");
+        } else if (path.startsWith("harvest/sweet_berry_bush")) {
+            writer.write("- 'block-type:sweet_berry_bush'");
+        } else if (path.startsWith("carve/pumpkin")) {
+            writer.write("- 'block-type:pumpkin'");
+        }
+
+        else {
+            RoseLoot.getInstance().getLogger().warning("Unhandled harvest loot table type: " + path);
         }
         writer.decreaseIndentation();
     }
@@ -355,7 +396,7 @@ public final class VanillaLootTableConverter {
         }
 
         // Charged creeper drops
-        if (path.startsWith("entities/")) {
+        if (path.startsWith("entities/") && (NMSUtil.getVersionNumber() < 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() < 9))) {
             String entityType = path.substring(path.indexOf("/") + 1);
             String skullItem = switch (entityType) {
                 case "zombie" -> "zombie_head";
@@ -799,63 +840,97 @@ public final class VanillaLootTableConverter {
                 }
             }
             case "minecraft:entity_properties" -> {
+                List<String> propertyConditions = new ArrayList<>();
                 JsonObject propertiesPredicate = json.get("predicate").getAsJsonObject();
-                if (propertiesPredicate.has("type_specific")) {
-                    JsonObject typeSpecificObject = propertiesPredicate.get("type_specific").getAsJsonObject();
-                    String entityType = typeSpecificObject.get("type").getAsString().replace("minecraft:", "");
-                    switch (entityType) {
-                        case "slime" -> {
-                            stringBuilder.append("slime-size:1");
+                for (String propertyKey : propertiesPredicate.keySet()) {
+                    switch (propertyKey.toLowerCase()) {
+                        case "type_specific" -> {
+                            JsonObject typeSpecificObject = propertiesPredicate.get("type_specific").getAsJsonObject();
+                            String entityType = typeSpecificObject.get("type").getAsString().replace("minecraft:", "");
+                            switch (entityType) {
+                                case "slime" -> {
+                                    propertyConditions.add("slime-size:1");
+                                }
+                                case "fishing_hook" -> {
+                                    if (typeSpecificObject.get("in_open_water").getAsBoolean()) {
+                                        propertyConditions.add("open-water");
+                                    } else {
+                                        propertyConditions.add("!open-water");
+                                    }
+                                }
+                                case "raider" -> stringBuilder.append("patrol-leader");
+                                case "sheep" -> {
+                                    if (typeSpecificObject.has("color")) {
+                                        String color = typeSpecificObject.get("color").getAsString();
+                                        propertyConditions.add("sheep-color:" + color);
+                                    }
+                                    if (typeSpecificObject.has("sheared")) {
+                                        if (typeSpecificObject.get("sheared").getAsBoolean()) {
+                                            propertyConditions.add("sheep-sheared");
+                                        } else {
+                                            propertyConditions.add("!sheep-sheared");
+                                        }
+                                    }
+                                }
+                                case "mooshroom" -> {
+                                    String variant = typeSpecificObject.get("variant").getAsString();
+                                    propertyConditions.add("mooshroom-variant:" + variant);
+                                }
+                                default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type_specific value: " + entityType + " | " + path);
+                            }
+                        }
+                        case "type" -> {
+                            String entityType = propertiesPredicate.get("type").getAsString().replace("minecraft:", "");
+                            entityType = fixEntityNames(entityType);
+
+                            String entityTarget = json.get("entity").getAsString();
+                            if (entityTarget.equals("killer")) {
+                                propertyConditions.add("killed-by:" + entityType);
+                            } else if (entityTarget.equals("this")) {
+                                propertyConditions.add("entity-type:" + entityType);
+                            }
                         }
                         case "fishing_hook" -> {
-                            if (typeSpecificObject.get("in_open_water").getAsBoolean()) {
-                                stringBuilder.append("open-water");
+                            JsonObject fishingHookObject = propertiesPredicate.get("fishing_hook").getAsJsonObject();
+                            if (fishingHookObject.get("in_open_water").getAsBoolean()) {
+                                propertyConditions.add("open-water");
                             } else {
-                                stringBuilder.append("!open-water");
+                                propertyConditions.add("!open-water");
                             }
                         }
-                        case "raider" -> stringBuilder.append("patrol-leader");
-                        case "sheep" -> {
-                            boolean existing = false;
-                            if (typeSpecificObject.has("color")) {
-                                String color = typeSpecificObject.get("color").getAsString();
-                                stringBuilder.append("sheep-color:").append(color);
-                                existing = true;
-                            }
-                            if (typeSpecificObject.has("sheared")) {
-                                if (existing)
-                                    stringBuilder.append(" ").append(AND_PATTERN).append(" ");
-                                if (typeSpecificObject.get("sheared").getAsBoolean()) {
-                                    stringBuilder.append("sheep-sheared");
-                                } else {
-                                    stringBuilder.append("!sheep-sheared");
+                        case "flags" -> {
+                            JsonObject flagsObject = propertiesPredicate.get("flags").getAsJsonObject();
+                            for (String flagKey : flagsObject.keySet()) {
+                                boolean flag = flagsObject.get(flagKey).getAsBoolean();
+                                switch (flagKey) {
+                                    case "is_baby" -> propertyConditions.add((flag ? "" : "!") + "baby");
+                                    default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties flag type: " + flagKey + " | " + path);
                                 }
                             }
                         }
-                        case "mooshroom" -> {
-                            String variant = typeSpecificObject.get("variant").getAsString();
-                            stringBuilder.append("mooshroom-variant:").append(variant);
+                        case "vehicle" -> {
+                            JsonObject vehicleObject = propertiesPredicate.get("vehicle").getAsJsonObject();
+                            String vehicleType = vehicleObject.get("type").getAsString().replace("minecraft:", "");
+                            propertyConditions.add("vehicle:" + vehicleType);
                         }
-                        default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type_specific value: " + entityType + " | " + path);
-                    }
-                } else if (propertiesPredicate.has("type")) {
-                    String entityType = propertiesPredicate.get("type").getAsString().replace("minecraft:", "");
-                    entityType = fixEntityNames(entityType);
-
-                    String entityTarget = json.get("entity").getAsString();
-                    if (entityTarget.equals("killer")) {
-                        stringBuilder.append("killed-by:").append(entityType);
-                    } else if (entityTarget.equals("this")) {
-                        stringBuilder.append("entity-type:").append(entityType);
-                    }
-                } else if (propertiesPredicate.has("fishing_hook")) {
-                    JsonObject fishingHookObject = propertiesPredicate.get("fishing_hook").getAsJsonObject();
-                    if (fishingHookObject.get("in_open_water").getAsBoolean()) {
-                        stringBuilder.append("open-water");
-                    } else {
-                        stringBuilder.append("!open-water");
+                        case "components" -> {
+                            JsonObject componentsObject = propertiesPredicate.get("components").getAsJsonObject();
+                            for (String componentKey : componentsObject.keySet()) {
+                                String componentValue = componentsObject.get(componentKey).getAsString().replace("minecraft:", "");
+                                switch (componentKey.replace("minecraft:", "")) {
+                                    case "sheep/color" -> propertyConditions.add("sheep-color:" + componentValue);
+                                    case "chicken/variant" -> propertyConditions.add("chicken-variant:" + componentValue);
+                                    case "mooshroom/variant" -> propertyConditions.add("mooshroom-variant:" + componentValue);
+                                    default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties components type: " + componentKey + " | " + path);
+                                }
+                            }
+                        }
+                        default -> RoseLoot.getInstance().getLogger().warning("Unhandled minecraft:entity_properties type: " + propertiesPredicate + " | " + path);
                     }
                 }
+
+                if (!propertyConditions.isEmpty())
+                    stringBuilder.append(String.join(" && ", propertyConditions));
             }
             case "minecraft:location_check" -> {
                 JsonObject locationPredicate = json.get("predicate").getAsJsonObject();
