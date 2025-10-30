@@ -1,6 +1,5 @@
 package dev.rosewood.roseloot.loot.condition;
 
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.condition.predicate.AndLootCondition;
 import dev.rosewood.roseloot.loot.condition.predicate.InvertedLootCondition;
 import dev.rosewood.roseloot.loot.condition.predicate.OrLootCondition;
@@ -9,12 +8,18 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 
-// Uses the Shunting Yard algorithm to tokenize the input string
+/**
+ * Uses the Shunting Yard algorithm to tokenize the input string
+ */
 public final class LootConditionParser {
 
-    private LootConditionParser() {
+    private final LootTableManager lootTableManager;
 
+    @ApiStatus.Internal
+    public LootConditionParser(LootTableManager lootTableManager) {
+        this.lootTableManager = lootTableManager;
     }
 
     /**
@@ -31,10 +36,9 @@ public final class LootConditionParser {
      * @param condition The condition String to parse
      * @return The parsed {@link LootCondition} or <code>null</code> if the condition String is invalid
      */
-    public static LootCondition parse(String condition) {
-        LootTableManager lootTableManager = RoseLoot.getInstance().getManager(LootTableManager.class);
+    public LootCondition parse(String condition) {
         try {
-            List<String> tokens = tokenize(condition);
+            List<String> tokens = this.tokenize(condition);
 
             Deque<LootCondition> conditions = new ArrayDeque<>();
             Deque<String> operators = new ArrayDeque<>();
@@ -43,20 +47,20 @@ public final class LootConditionParser {
                     case "(", "!" -> operators.push(token);
                     case ")" -> {
                         while (!operators.peek().equals("("))
-                            conditions.push(getLootCondition(operators.pop(), conditions));
+                            conditions.push(this.getLootCondition(operators.pop(), conditions));
                         operators.pop();
                     }
                     case "&&", "||" -> {
-                        while (!operators.isEmpty() && hasPrecedence(token, operators.peek()))
-                            conditions.push(getLootCondition(operators.pop(), conditions));
+                        while (!operators.isEmpty() && this.hasPrecedence(token, operators.peek()))
+                            conditions.push(this.getLootCondition(operators.pop(), conditions));
                         operators.push(token);
                     }
-                    default -> conditions.push(lootTableManager.parseCondition(token));
+                    default -> conditions.push(this.lootTableManager.parseCondition(token));
                 }
             }
 
             while (!operators.isEmpty())
-                conditions.push(getLootCondition(operators.pop(), conditions));
+                conditions.push(this.getLootCondition(operators.pop(), conditions));
 
             return conditions.pop();
         } catch (Exception e) {
@@ -64,12 +68,12 @@ public final class LootConditionParser {
         }
     }
 
-    private static boolean hasPrecedence(String incomingOp, String stackOp) {
+    private boolean hasPrecedence(String incomingOp, String stackOp) {
         if (stackOp.equals("(") || stackOp.equals(")"))
             return false;
 
-        int precIncoming = getPrecedence(incomingOp);
-        int precStack = getPrecedence(stackOp);
+        int precIncoming = this.getPrecedence(incomingOp);
+        int precStack = this.getPrecedence(stackOp);
 
         if (incomingOp.equals("!"))
             return precIncoming < precStack;
@@ -77,7 +81,7 @@ public final class LootConditionParser {
         return precIncoming <= precStack;
     }
 
-    private static int getPrecedence(String op) {
+    private int getPrecedence(String op) {
         return switch (op) {
             case "!" -> 3;
             case "&&" -> 2;
@@ -86,7 +90,7 @@ public final class LootConditionParser {
         };
     }
 
-    private static LootCondition getLootCondition(String operator, Deque<LootCondition> conditions) {
+    private LootCondition getLootCondition(String operator, Deque<LootCondition> conditions) {
         return switch (operator) {
             case "&&" -> new AndLootCondition(conditions.pop(), conditions.pop());
             case "||" -> new OrLootCondition(conditions.pop(), conditions.pop());
@@ -95,25 +99,42 @@ public final class LootConditionParser {
         };
     }
 
-    private static List<String> tokenize(String input) {
+    private List<String> tokenize(String input) {
         List<String> tokens = new ArrayList<>();
         StringBuilder currentToken = new StringBuilder();
+        int nextPlaceholder;
+        boolean insidePlaceholder = false;
         int braceDepth = 0;
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
 
-            if (Character.isWhitespace(c))
-                continue;
+            if (!insidePlaceholder) {
+                if (c == '%') {
+                    nextPlaceholder = input.indexOf('%', i + 1);
+                    if (nextPlaceholder > i) {
+                        insidePlaceholder = true;
+                        currentToken.append(c);
+                        continue;
+                    }
+                }
 
-            if (c == '{') {
-                braceDepth++;
-                if (braceDepth == 1)
+                if (Character.isWhitespace(c))
                     continue;
-            } else if (c == '}') {
-                braceDepth--;
-                if (braceDepth == 0)
-                    continue;
+
+                if (c == '{') {
+                    braceDepth++;
+                    if (braceDepth == 1)
+                        continue;
+                } else if (c == '}') {
+                    braceDepth--;
+                    if (braceDepth == 0)
+                        continue;
+                }
+            } else if (c == '%') {
+                insidePlaceholder = false;
+                currentToken.append(c);
+                continue;
             }
 
             if (braceDepth > 0) {

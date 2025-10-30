@@ -154,6 +154,7 @@ public class LootTableManager extends DelayedManager implements Listener {
     private final Map<String, Function<ConfigurationSection, LootItem>> registeredLootItemFunctions;
     private final Map<String, Function<String, LootCondition>> registeredConditionFunctions;
     private final File directory;
+    private final LootConditionParser lootConditionParser;
 
     public LootTableManager(RosePlugin rosePlugin) {
         super(rosePlugin);
@@ -163,6 +164,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         this.registeredLootItemFunctions = new HashMap<>();
         this.registeredConditionFunctions = new LinkedHashMap<>();
         this.directory = new File(this.rosePlugin.getDataFolder(), "loottables");
+        this.lootConditionParser = new LootConditionParser(this);
 
         Bukkit.getPluginManager().registerEvents(this, rosePlugin);
     }
@@ -257,7 +259,7 @@ public class LootTableManager extends DelayedManager implements Listener {
             this.issueLoading(fileName, "Invalid conditions section, not a string list [parents: " + parents + ", component: " + entryKey + "]");
 
         for (String conditionString : conditionStrings) {
-            LootCondition condition = LootConditionParser.parse(conditionString);
+            LootCondition condition = this.parseConditionExpression(conditionString);
             if (condition != null)  {
                 conditions.add(condition);
             } else {
@@ -551,6 +553,15 @@ public class LootTableManager extends DelayedManager implements Listener {
         }
 
         return null;
+    }
+
+    /**
+     * Parses a condition expression into a LootCondition.
+     * @param expression The condition expression, see {@link LootConditionParser} for supported options
+     * @return A parsed LootCondition, or null if it was unable to be parsed successfully
+     */
+    public LootCondition parseConditionExpression(String expression) {
+        return this.lootConditionParser.parse(expression);
     }
 
     /**

@@ -60,9 +60,18 @@ dependencies {
     compileOnly 'net.momirealms:craft-engine-core:0.0.56'
     compileOnly 'net.momirealms:craft-engine-bukkit:0.0.56'
 
-
     api "dev.rosewood:rosegarden:$rosegardenVersion"
     api "dev.rosewood:rosegarden-compatibility:$rosegardenVersion"
+
+    // Test dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testImplementation 'io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 processResources {

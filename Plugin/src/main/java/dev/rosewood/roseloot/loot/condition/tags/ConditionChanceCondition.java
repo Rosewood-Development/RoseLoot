@@ -1,9 +1,10 @@
 package dev.rosewood.roseloot.loot.condition.tags;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.condition.BaseLootCondition;
 import dev.rosewood.roseloot.loot.condition.LootCondition;
-import dev.rosewood.roseloot.loot.condition.LootConditionParser;
 import dev.rosewood.roseloot.loot.context.LootContext;
+import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class ConditionChanceCondition extends BaseLootCondition {
             return false;
 
         String condition = Arrays.stream(values, 1, values.length - 1).collect(Collectors.joining(","));
-        this.condition = LootConditionParser.parse(condition);
+        this.condition = RoseLoot.getInstance().getManager(LootTableManager.class).parseConditionExpression(condition);
         if (this.condition == null)
             return false;
 
