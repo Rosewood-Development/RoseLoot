@@ -88,6 +88,7 @@ public class CraftEngineBlockBreakListener extends LazyLootTableListener  {
     private List<String> getBlockDataProperties(ImmutableBlockState blockState) {
         return blockState.propertyEntries().entrySet().stream()
                 .map(x -> x.getKey().name() + "=" + x.getValue())
+                .map(String::toLowerCase)
                 .toList();
     }
 
