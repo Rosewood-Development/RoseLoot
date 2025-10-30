@@ -1,13 +1,18 @@
 package dev.rosewood.roseloot.loot.item.meta;
 
+import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VersionUtils;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.tag.TagKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -28,22 +33,39 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
             return itemStack;
 
         if (this.randomEnchantments != null) {
-            List<Enchantment> possibleEnchantments = new ArrayList<>();
-            if (!this.randomEnchantments.isEmpty()) {
-                // Not empty, use the suggested
-                possibleEnchantments.addAll(this.randomEnchantments);
-            } else {
-                // Empty, pick from every enchantment
-                possibleEnchantments.addAll(Arrays.asList(VersionUtils.getEnchantments()));
+            List<Enchantment> enchantmentsSource = new ArrayList<>();
+            List<String> enchantmentKeys = this.randomEnchantments.getList(context);
+            for (String key : enchantmentKeys) {
+                if (key.startsWith("#")) {
+                    if (!NMSUtil.isPaper() && NMSUtil.getVersionNumber() < 21) {
+                        RoseLoot.getInstance().getLogger().warning("Enchantment tag key '" + key + "' was provided but tags are only supported on Paper servers running 1.21 or newer.");
+                        continue;
+                    }
+
+                    try {
+                        TagKey<Enchantment> tagKey = TagKey.create(RegistryKey.ENCHANTMENT, key.substring(1));
+                        enchantmentsSource.addAll(Registry.ENCHANTMENT.getTagValues(tagKey));
+                    } catch (Exception e) {
+                        RoseLoot.getInstance().getLogger().warning("Enchantment tag key '" + key + "' was provided but is invalid.");
+                    }
+                } else {
+                    Enchantment enchantment = VersionUtils.getEnchantment(key);
+                    if (enchantment != null)
+                        enchantmentsSource.add(enchantment);
+                }
+            }
+            if (enchantmentsSource.isEmpty() && enchantmentKeys.isEmpty()) {
+                // Empty, pick from every applicable enchantment for the item
+                enchantmentsSource = Arrays.asList(VersionUtils.getEnchantments());
             }
 
             int amount = this.randomEnchantmentsAmount.getInteger(context);
             for (int i = 0; i < amount; i++) {
-                possibleEnchantments = possibleEnchantments.stream().filter(Predicate.not(itemMeta::hasConflictingStoredEnchant)).toList();
-                if (possibleEnchantments.isEmpty())
+                enchantmentsSource = enchantmentsSource.stream().filter(Predicate.not(itemMeta::hasConflictingStoredEnchant)).toList();
+                if (enchantmentsSource.isEmpty())
                     break;
 
-                Enchantment enchantment = possibleEnchantments.get(LootUtils.RANDOM.nextInt(possibleEnchantments.size()));
+                Enchantment enchantment = enchantmentsSource.get(LootUtils.RANDOM.nextInt(enchantmentsSource.size()));
                 int level = LootUtils.RANDOM.nextInt(enchantment.getMaxLevel()) + 1;
                 itemMeta.addStoredEnchant(enchantment, level, false);
             }

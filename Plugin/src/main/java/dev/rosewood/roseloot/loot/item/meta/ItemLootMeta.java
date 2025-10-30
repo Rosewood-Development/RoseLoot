@@ -15,6 +15,8 @@ import dev.rosewood.roseloot.provider.StringProvider;
 import dev.rosewood.roseloot.util.BlockInfo;
 import dev.rosewood.roseloot.util.LootUtils;
 import dev.rosewood.roseloot.util.VersionUtils;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.tag.TagKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -148,7 +151,7 @@ public class ItemLootMeta {
     private NumberProvider enchantmentLevel;
     private boolean includeTreasureEnchantments;
     private List<ItemFlag> hideFlags;
-    protected List<Enchantment> randomEnchantments;
+    protected StringProvider randomEnchantments;
     protected NumberProvider randomEnchantmentsAmount;
     protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
@@ -194,16 +197,7 @@ public class ItemLootMeta {
                 this.hideFlags = hideFlags;
         }
 
-        if (section.contains("random-enchantments")) {
-            List<String> randomEnchantments = section.getStringList("random-enchantments");
-            this.randomEnchantments = new ArrayList<>();
-            for (String enchantmentName : randomEnchantments) {
-                Enchantment enchantment = VersionUtils.getEnchantment(enchantmentName);
-                if (enchantment != null)
-                    this.randomEnchantments.add(enchantment);
-            }
-        }
-
+        this.randomEnchantments = StringProvider.fromSection(section, "random-enchantments", null);
         this.randomEnchantmentsAmount = NumberProvider.fromSection(section, "random-enchantments-amount", 1);
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
@@ -316,11 +310,28 @@ public class ItemLootMeta {
         Material type = itemStack.getType();
         if (type != Material.ENCHANTED_BOOK) {
             if (this.randomEnchantments != null) {
-                List<Enchantment> enchantmentsSource;
-                if (!this.randomEnchantments.isEmpty()) {
-                    // Not empty, use the suggested
-                    enchantmentsSource = this.randomEnchantments;
-                } else {
+                List<Enchantment> enchantmentsSource = new ArrayList<>();
+                List<String> enchantmentKeys = this.randomEnchantments.getList(context);
+                for (String key : enchantmentKeys) {
+                    if (key.startsWith("#")) {
+                        if (!NMSUtil.isPaper() && NMSUtil.getVersionNumber() < 21) {
+                            RoseLoot.getInstance().getLogger().warning("Enchantment tag key '" + key + "' was provided but tags are only supported on Paper servers running 1.21 or newer.");
+                            continue;
+                        }
+
+                        try {
+                            TagKey<Enchantment> tagKey = TagKey.create(RegistryKey.ENCHANTMENT, key.substring(1));
+                            enchantmentsSource.addAll(Registry.ENCHANTMENT.getTagValues(tagKey));
+                        } catch (Exception e) {
+                            RoseLoot.getInstance().getLogger().warning("Enchantment tag key '" + key + "' was provided but is invalid.");
+                        }
+                    } else {
+                        Enchantment enchantment = VersionUtils.getEnchantment(key);
+                        if (enchantment != null)
+                            enchantmentsSource.add(enchantment);
+                    }
+                }
+                if (enchantmentsSource.isEmpty() && enchantmentKeys.isEmpty()) {
                     // Empty, pick from every applicable enchantment for the item
                     enchantmentsSource = Arrays.asList(VersionUtils.getEnchantments());
                 }
@@ -328,7 +339,7 @@ public class ItemLootMeta {
                 // Filter out enchantments that can't go on the item
                 List<Enchantment> possibleEnchantments = new ArrayList<>();
                 for (Enchantment enchantment : enchantmentsSource)
-                    if (enchantment.canEnchantItem(itemStack) && enchantment.isDiscoverable())
+                    if (enchantment.canEnchantItem(itemStack) && (!NMSUtil.isPaper() || enchantment.isDiscoverable()))
                         possibleEnchantments.add(enchantment);
 
                 // Apply the number of enchantments desired
