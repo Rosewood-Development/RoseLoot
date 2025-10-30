@@ -63,6 +63,7 @@ public class HookConditionListener implements Listener {
 
         if (pluginManager.getPlugin("CraftEngine") != null) {
             event.registerLootCondition("craftengine-block", CraftEngineBlockCondition::new);
+            event.registerLootCondition("craftengine-block-data", CraftEngineBlockDataCondition::new);
         }
 
         if (pluginManager.getPlugin("CoreProtect") != null) {

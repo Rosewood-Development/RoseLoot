@@ -13,7 +13,10 @@ import dev.rosewood.roseloot.loot.context.LootContextParams;
 import dev.rosewood.roseloot.loot.table.LootTableTypes;
 import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
+import java.util.ArrayList;
+import java.util.List;
 import net.momirealms.craftengine.bukkit.api.event.CustomBlockBreakEvent;
+import net.momirealms.craftengine.core.block.ImmutableBlockState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -24,12 +27,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockDropItemEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@SuppressWarnings("unchecked")
 public class CraftEngineBlockBreakListener extends LazyLootTableListener  {
 
     public static final LootContextParam<String> CRAFTENGINE_BLOCK = LootContextParams.create("craftengine_block", String.class);
+    public static final LootContextParam<List<String>> CRAFTENGINE_BLOCK_DATA = LootContextParams.create("craftengine_block_data", (Class<List<String>>) (Class<?>) List.class);
 
     public CraftEngineBlockBreakListener(RosePlugin rosePlugin) {
         super(rosePlugin, LootTableTypes.BLOCK);
@@ -51,6 +53,7 @@ public class CraftEngineBlockBreakListener extends LazyLootTableListener  {
                 .put(LootContextParams.LOOTER, player)
                 .put(LootContextParams.LOOTED_BLOCK, block)
                 .put(CRAFTENGINE_BLOCK, event.customBlock().id().asString())
+                .put(CRAFTENGINE_BLOCK_DATA, this.getBlockDataProperties(event.blockState()))
                 .build();
         LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(LootTableTypes.BLOCK, lootContext);
         if (lootResult.isEmpty())
@@ -80,6 +83,12 @@ public class CraftEngineBlockBreakListener extends LazyLootTableListener  {
             EntitySpawnUtil.spawn(dropLocation, ExperienceOrb.class, x -> x.setExperience(experience));
 
         lootContents.triggerExtras(dropLocation);
+    }
+
+    private List<String> getBlockDataProperties(ImmutableBlockState blockState) {
+        return blockState.propertyEntries().entrySet().stream()
+                .map(x -> x.getKey().name() + "=" + x.getValue())
+                .toList();
     }
 
 }
