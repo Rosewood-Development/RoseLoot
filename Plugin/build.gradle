@@ -51,6 +51,7 @@ dependencies {
     compileOnly 'com.nexomc:nexo:0.4'
     compileOnly 'svar.ajneb97:servervariables:2.6.2'
     compileOnly 'fr.maxlego08.menu:zmenu-api:1.1.0.0'
+    compileOnly 'dev.aurelium:auraskills-api-bukkit:2.3.5'
     compileOnly 'com.badbones69.crazyvouchers:crazyvouchers-paper-api:3.6.4', {
         exclude module: 'crazyvouchers-core'
     }

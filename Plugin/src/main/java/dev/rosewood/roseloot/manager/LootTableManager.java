@@ -15,7 +15,6 @@ import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.LootTableTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.PostLootGenerateEvent;
-import dev.rosewood.roseloot.hook.MMOCoreHook;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootComponent;
 import dev.rosewood.roseloot.loot.LootContents;
@@ -76,6 +75,7 @@ import dev.rosewood.roseloot.loot.condition.tags.paper.BiomeKeyCondition;
 import dev.rosewood.roseloot.loot.condition.tags.paper.MoonPhaseCondition;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.item.AuraSkillsExperienceLootItem;
 import dev.rosewood.roseloot.loot.item.BreakBlockLootItem;
 import dev.rosewood.roseloot.loot.item.ChangeToolDurabilityLootItem;
 import dev.rosewood.roseloot.loot.item.CommandLootItem;
@@ -420,12 +420,15 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootItem("break_block", BreakBlockLootItem::fromSection);
         event.registerLootItem("spawn_entity", SpawnEntityLootItem::fromSection);
 
-        if (MMOCoreHook.isEnabled())
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        if (pluginManager.isPluginEnabled("MMOCore"))
             event.registerLootItem("mmocore_experience", MMOCoreExperienceLootItem::fromSection);
 
-        PluginManager pluginManager = Bukkit.getPluginManager();
         if (pluginManager.isPluginEnabled("EcoSkills"))
             event.registerLootItem("ecoskills_experience", EcoSkillsExperienceLootItem::fromSection);
+
+        if (pluginManager.isPluginEnabled("AuraSkills"))
+            event.registerLootItem("auraskills_experience", AuraSkillsExperienceLootItem::fromSection);
 
         if (pluginManager.isPluginEnabled("RoseStacker"))
             event.registerLootItem("rosestacker_stack_item", RoseStackerLootItem::fromSection);

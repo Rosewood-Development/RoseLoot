@@ -49,6 +49,7 @@ softdepend:
   - CustomFishing
   - BlockTracker
   - CraftEngine
+  - AuraSkills
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
