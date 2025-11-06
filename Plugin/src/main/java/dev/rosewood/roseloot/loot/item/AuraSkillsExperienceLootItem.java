@@ -30,6 +30,7 @@ public class AuraSkillsExperienceLootItem implements GroupTriggerableLootItem<Au
             double amount = this.amount.getDouble(context) + others.stream().mapToDouble(x -> x.amount.getDouble(context)).sum();
             SkillsUser user = api.getUser(player.getUniqueId());
             Skill skill = api.getGlobalRegistry().getSkill(NamespacedId.fromDefault(this.skill));
+
             if (skill == null) {
                 RoseLoot.getInstance().getLogger().warning("Invalid AuraSkills skill: " + this.skill);
                 return;
@@ -49,10 +50,10 @@ public class AuraSkillsExperienceLootItem implements GroupTriggerableLootItem<Au
     }
 
     public static AuraSkillsExperienceLootItem fromSection(ConfigurationSection section) {
-        String profession = section.getString("skill");
+        String skill = section.getString("skill");
         NumberProvider amount = NumberProvider.fromSection(section, "amount", 0);
         boolean giveNaturally = section.getBoolean("raw", true);
-        return new AuraSkillsExperienceLootItem(profession, amount, giveNaturally);
+        return new AuraSkillsExperienceLootItem(skill, amount, giveNaturally);
     }
 
 }
