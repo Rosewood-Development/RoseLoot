@@ -145,6 +145,7 @@ public final class LootConditionParser {
             if (i + 1 < input.length()) {
                 String twoCharOp = input.substring(i, i + 2);
                 if (twoCharOp.equals("&&") || twoCharOp.equals("||")) {
+                    insidePlaceholder = false;
                     if (!currentToken.isEmpty()) {
                         tokens.add(currentToken.toString());
                         currentToken.setLength(0);
@@ -161,6 +162,7 @@ public final class LootConditionParser {
                     i++;
                     continue;
                 } else {
+                    insidePlaceholder = false;
                     if (!currentToken.isEmpty()) {
                         tokens.add(currentToken.toString());
                         currentToken.setLength(0);

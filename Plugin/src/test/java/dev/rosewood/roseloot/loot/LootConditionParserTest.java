@@ -140,4 +140,10 @@ public class LootConditionParserTest {
         assertEquals(placeholder, testCondition.getArguments().getFirst());
     }
 
+    @Test
+    public void testCompoundWithPlaceholders() {
+        LootCondition condition = PARSER.parse("(placeholder:%vault_eco_balance%<=1000 && chance:1%) || (placeholder:%vault_eco_balance%>1000 && placeholder:%vault_eco_balance%<5000 && chance:0.5%) || (placeholder:%vault_eco_balance%>=5000 && chance:0.1%)");
+        assertInstanceOf(OrLootCondition.class, condition);
+    }
+
 }
