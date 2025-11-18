@@ -40,6 +40,11 @@ public class ServerVariableLootItem implements TriggerableLootItem {
         VariablesManager variablesManager = plugin.getVariablesManager();
 
         Variable serverVariable = variablesManager.getVariable(this.variable);
+        if (serverVariable == null) {
+            RoseLoot.getInstance().getLogger().warning("Unknown ServerVariables variable: " + this.variable);
+            return;
+        }
+
         if (serverVariable.getValueType() == ValueType.LIST) {
             RoseLoot.getInstance().getLogger().warning("List variables from ServerVariables are not supported by RoseLoot. Unable to modify " + this.variable);
             return;
