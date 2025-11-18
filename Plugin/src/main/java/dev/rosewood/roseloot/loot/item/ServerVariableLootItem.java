@@ -1,5 +1,6 @@
 package dev.rosewood.roseloot.loot.item;
 
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
@@ -10,9 +11,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import svar.ajneb97.ServerVariables;
-import svar.ajneb97.managers.PlayerVariablesManager;
-import svar.ajneb97.managers.ServerVariablesManager;
+import svar.ajneb97.managers.VariablesManager;
 import svar.ajneb97.model.structure.ValueType;
+import svar.ajneb97.model.structure.Variable;
 import svar.ajneb97.model.structure.VariableType;
 
 public class ServerVariableLootItem implements TriggerableLootItem {
@@ -36,15 +37,21 @@ public class ServerVariableLootItem implements TriggerableLootItem {
     @Override
     public void trigger(LootContext context, Location location) {
         ServerVariables plugin = JavaPlugin.getPlugin(ServerVariables.class);
+        VariablesManager variablesManager = plugin.getVariablesManager();
+
+        Variable serverVariable = variablesManager.getVariable(this.variable);
+        if (serverVariable.getValueType() == ValueType.LIST) {
+            RoseLoot.getInstance().getLogger().warning("List variables from ServerVariables are not supported by RoseLoot. Unable to modify " + this.variable);
+            return;
+        }
 
         switch (this.variableType) {
             case GLOBAL -> {
-                ServerVariablesManager variablesManager = plugin.getServerVariablesManager();
                 switch (this.valueOperation) {
-                    case SET -> variablesManager.setVariable(this.variable, this.getValue(context));
-                    case ADD -> variablesManager.modifyVariable(this.variable, this.getValue(context), true);
-                    case REDUCE -> variablesManager.modifyVariable(this.variable, this.getValue(context), false);
-                    case RESET -> variablesManager.resetVariable(this.variable);
+                    case SET -> variablesManager.setVariableValue(null, this.variable, this.getValue(context));
+                    case ADD -> variablesManager.modifyVariable(null, this.variable, this.getValue(context), true);
+                    case REDUCE -> variablesManager.modifyVariable(null, this.variable, this.getValue(context), false);
+                    case RESET -> variablesManager.resetVariable(null, this.variable, false);
                 }
             }
             case PLAYER -> {
@@ -53,12 +60,11 @@ public class ServerVariableLootItem implements TriggerableLootItem {
                     return;
 
                 Player player = lootingPlayer.get();
-                PlayerVariablesManager variablesManager = plugin.getPlayerVariablesManager();
                 switch (this.valueOperation) {
-                    case SET -> variablesManager.setVariable(player.getName(), this.variable, this.getValue(context));
+                    case SET -> variablesManager.setVariableValue(player.getName(), this.variable, this.getValue(context));
                     case ADD -> variablesManager.modifyVariable(player.getName(), this.variable, this.getValue(context), true);
                     case REDUCE -> variablesManager.modifyVariable(player.getName(), this.variable, this.getValue(context), false);
-                    case RESET -> variablesManager.resetVariable(this.variable, player.getName(), false);
+                    case RESET -> variablesManager.resetVariable(player.getName(), this.variable, false);
                 }
             }
         }
@@ -69,6 +75,7 @@ public class ServerVariableLootItem implements TriggerableLootItem {
             case TEXT -> this.value.get(context);
             case INTEGER -> String.valueOf(this.amount.getInteger(context));
             case DOUBLE -> String.valueOf(this.amount.getDouble(context));
+            case LIST -> throw new IllegalStateException("List variables are not supported");
         };
     }
 
