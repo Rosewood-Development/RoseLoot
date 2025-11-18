@@ -1217,7 +1217,15 @@ public final class VanillaLootTableConverter {
                     writer.increaseIndentation();
 
                     String formula = trimNamespace(function.get("formula").getAsString());
-                    writer.write("formula: " + formula);
+                    writer.write("formula: " + switch (formula) {
+                        case "uniform_bonus_count" -> "uniform";
+                        case "binomial_with_bonus_count" -> "binomial";
+                        case "ore_drops" -> "ore_drops";
+                        default -> {
+                            RoseLoot.getInstance().getLogger().warning("minecraft:apply_bonus unhandled formula mapping: " + formula);
+                            yield "missing_formula";
+                        }
+                    });
                     writer.write("enchantment: " + trimNamespace(function.get("enchantment").getAsString()));
 
                     JsonElement parametersElement = function.get("parameters");
@@ -1225,16 +1233,16 @@ public final class VanillaLootTableConverter {
                         JsonObject parametersObject = parametersElement.getAsJsonObject();
                         switch (formula) {
                             case "uniform_bonus_count":
-                                writeNumberProvider("bonus", "bonusMultiplier", writer, parametersObject, 1.0);
+                                writeNumberProvider("bonus-per-level", "bonusMultiplier", writer, parametersObject, 1.0);
                                 break;
                             case "binomial_with_bonus_count":
-                                writeNumberProvider("bonus", "extra", writer, parametersObject, 1.0);
+                                writeNumberProvider("bonus-per-level", "extra", writer, parametersObject, 1.0);
                                 writeNumberProvider("probability", "probability", writer, parametersObject, 0.5);
                                 break;
                             case "ore_drops":
                                 break;
                             default:
-                                RoseLoot.getInstance().getLogger().warning("minecraft:apply_bonus unhandled formula: " + formula);
+                                RoseLoot.getInstance().getLogger().warning("minecraft:apply_bonus unhandled formula parameters: " + formula);
                                 break;
                         }
                     }
