@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -83,11 +84,19 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
             for (String key : this.removeEnchantments.getList(context)) {
                 Enchantment enchantment = VersionUtils.getEnchantment(key);
                 if (enchantment != null)
-                    itemMeta.removeEnchant(enchantment);
+                    itemMeta.removeStoredEnchant(enchantment);
             }
         }
 
         itemStack.setItemMeta(itemMeta);
+
+        if (itemMeta.getStoredEnchants().isEmpty()) {
+            if (NMSUtil.isPaper()) {
+                itemStack = itemStack.withType(Material.BOOK);
+            } else {
+                itemStack.setType(Material.BOOK);
+            }
+        }
 
         return itemStack;
     }
