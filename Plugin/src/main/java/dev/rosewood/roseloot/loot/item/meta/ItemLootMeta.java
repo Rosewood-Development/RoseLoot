@@ -2,13 +2,12 @@ package dev.rosewood.roseloot.loot.item.meta;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.ObjectArrays;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParams;
+import dev.rosewood.roseloot.loot.item.component.ComponentMappings;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
-import dev.rosewood.roseloot.loot.item.component.LootItemComponentProvider;
 import dev.rosewood.roseloot.nms.NMSAdapter;
 import dev.rosewood.roseloot.provider.NumberProvider;
 import dev.rosewood.roseloot.provider.StringProvider;
@@ -19,14 +18,12 @@ import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.tag.TagKey;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -34,7 +31,6 @@ import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
-import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -54,94 +50,6 @@ import org.bukkit.loot.Lootable;
 
 public class ItemLootMeta {
 
-    private static class MaterialMappings {
-        private static final Map<Material, Function<ConfigurationSection, ? extends ItemLootMeta>> CONSTRUCTORS;
-        private static final Map<Material, BiConsumer<ItemStack, StringBuilder>> PROPERTY_APPLIERS;
-        static {
-            CONSTRUCTORS = new HashMap<>();
-            PROPERTY_APPLIERS = new HashMap<>();
-
-            if (NMSUtil.getVersionNumber() > 21 || (NMSUtil.getVersionNumber() == 21 && NMSUtil.getMinorVersionNumber() >= 3))
-                mapMaterials(BundleItemLootMeta::new, BundleItemLootMeta::applyProperties, Tag.ITEMS_BUNDLES.getValues().toArray(Material[]::new));
-
-            mapMaterials(BookItemLootMeta::new, BookItemLootMeta::applyProperties, Material.WRITABLE_BOOK, Material.WRITTEN_BOOK);
-            mapMaterials(EnchantmentStorageItemLootMeta::new, EnchantmentStorageItemLootMeta::applyProperties, Material.ENCHANTED_BOOK);
-            mapMaterials(FireworkEffectItemLootMeta::new, FireworkEffectItemLootMeta::applyProperties, Material.FIREWORK_STAR);
-            mapMaterials(FireworkItemLootMeta::new, FireworkItemLootMeta::applyProperties, Material.FIREWORK_ROCKET);
-            mapMaterials(KnowledgeBookItemLootMeta::new, KnowledgeBookItemLootMeta::applyProperties, Material.KNOWLEDGE_BOOK);
-            mapMaterials(PotionItemLootMeta::new, PotionItemLootMeta::applyProperties, Material.POTION, Material.SPLASH_POTION, Material.LINGERING_POTION, Material.TIPPED_ARROW);
-            mapMaterials(SkullItemLootMeta::new, SkullItemLootMeta::applyProperties, Material.PLAYER_HEAD);
-            mapMaterials(SuspiciousStewItemLootMeta::new, SuspiciousStewItemLootMeta::applyProperties, Material.SUSPICIOUS_STEW);
-            mapMaterials(TropicalFishBucketItemLootMeta::new, TropicalFishBucketItemLootMeta::applyProperties, Material.TROPICAL_FISH_BUCKET);
-            mapMaterials(MapItemLootMeta::new, MapItemLootMeta::applyProperties, Material.MAP);
-
-            mapMaterials(BannerItemLootMeta::new, BannerItemLootMeta::applyProperties, Tag.ITEMS_BANNERS.getValues().toArray(Material[]::new));
-
-            if (NMSUtil.getVersionNumber() >= 17) {
-                mapMaterials(AxolotlBucketItemLootMeta::new, AxolotlBucketItemLootMeta::applyProperties, Material.AXOLOTL_BUCKET);
-                mapMaterials(BundleItemLootMeta::new, BundleItemLootMeta::applyProperties, Material.BUNDLE);
-            }
-
-            if (NMSUtil.getVersionNumber() >= 19)
-                mapMaterials(MusicInstrumentItemLootMeta::new, MusicInstrumentItemLootMeta::applyProperties, Material.GOAT_HORN);
-
-            Material[] leatherArmor = { Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS };
-            if (NMSUtil.getVersionNumber() >= 20) {
-                mapMaterials(ArmorItemLootMeta::new, ArmorItemLootMeta::applyProperties, Tag.ITEMS_TRIMMABLE_ARMOR.getValues().toArray(Material[]::new));
-                mapMaterials(ColorableArmorItemLootMeta::new, ColorableArmorItemLootMeta::applyProperties, leatherArmor); // overwrites the above
-            } else {
-                mapMaterials(LeatherArmorItemLootMeta::new, LeatherArmorItemLootMeta::applyProperties, ObjectArrays.concat(leatherArmor, Material.LEATHER_HORSE_ARMOR));
-            }
-
-            if (NMSUtil.getVersionNumber() >= 21)
-                mapMaterials(OminousBottleItemLootMeta::new, OminousBottleItemLootMeta::applyProperties, Material.OMINOUS_BOTTLE);
-        }
-
-        private static void mapMaterials(Function<ConfigurationSection, ? extends ItemLootMeta> constructor, BiConsumer<ItemStack, StringBuilder> propertyApplier, Material... materials) {
-            for (Material material : materials) {
-                CONSTRUCTORS.put(material, constructor);
-                PROPERTY_APPLIERS.put(material, propertyApplier);
-            }
-        }
-    }
-
-    private static class ComponentMappings {
-        private static final Map<String, Function<ConfigurationSection, ? extends LootItemComponent>> CONSTRUCTORS;
-        private static final Map<String, BiConsumer<ItemStack, StringBuilder>> PROPERTY_APPLIERS;
-        static {
-            CONSTRUCTORS = new HashMap<>();
-            PROPERTY_APPLIERS = new HashMap<>();
-
-            if (NMSUtil.isPaper()) {
-                try {
-                    String name = null;
-                    int major = NMSUtil.getVersionNumber();
-                    int minor = NMSUtil.getMinorVersionNumber();
-                    if (major == 21 && minor == 4) {
-                        name = "v1_21_3";
-                    } else if (major == 21 && minor == 5) {
-                        name = "v1_21_4";
-                    } else if (major == 21 && (minor == 6 || minor == 7 || minor == 8)) {
-                        name = "v1_21_5";
-                    } else if (major == 21 && (minor == 9 || minor == 10)) {
-                        name = "v1_21_6";
-                    }
-
-                    if (name != null) {
-                        LootItemComponentProvider provider = (LootItemComponentProvider) Class.forName("dev.rosewood.roseloot.loot.item.component." + name + ".LootItemComponentProviderImpl").getConstructor().newInstance();
-                        CONSTRUCTORS.putAll(provider.provideLootItemComponentConstructors());
-                        PROPERTY_APPLIERS.putAll(provider.provideLootItemComponentPropertyApplicators());
-
-                        if (!CONSTRUCTORS.keySet().equals(PROPERTY_APPLIERS.keySet()))
-                            throw new IllegalStateException("Mismatch between LootItemComponentProvider values: " + name);
-
-                        RoseLoot.getInstance().getLogger().info("Loaded " + CONSTRUCTORS.size() + " loot item components");
-                    }
-                } catch (Exception ignored) { }
-            }
-        }
-    }
-
     private final StringProvider displayName;
     private final StringProvider lore;
     private final NumberProvider customModelData;
@@ -153,6 +61,7 @@ public class ItemLootMeta {
     private List<ItemFlag> hideFlags;
     protected StringProvider randomEnchantments;
     protected NumberProvider randomEnchantmentsAmount;
+    protected StringProvider removeEnchantments;
     protected List<EnchantmentData> enchantments;
     private List<AttributeData> attributes;
     private final boolean copyBlockState;
@@ -199,6 +108,7 @@ public class ItemLootMeta {
 
         this.randomEnchantments = StringProvider.fromSection(section, "random-enchantments", null);
         this.randomEnchantmentsAmount = NumberProvider.fromSection(section, "random-enchantments-amount", 1);
+        this.removeEnchantments = StringProvider.fromSection(section, "remove-enchantments", null);
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
         if (enchantmentsSection != null) {
@@ -361,6 +271,14 @@ public class ItemLootMeta {
                     int level = enchantmentData.level().getInteger(context);
                     if (level > 0)
                         itemMeta.addEnchant(enchantmentData.enchantment(), level, true);
+                }
+            }
+
+            if (this.removeEnchantments != null) {
+                for (String key : this.removeEnchantments.getList(context)) {
+                    Enchantment enchantment = VersionUtils.getEnchantment(key);
+                    if (enchantment != null)
+                        itemMeta.removeEnchant(enchantment);
                 }
             }
         }

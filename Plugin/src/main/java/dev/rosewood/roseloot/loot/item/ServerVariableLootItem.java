@@ -80,7 +80,7 @@ public class ServerVariableLootItem implements TriggerableLootItem {
             case TEXT -> this.value.get(context);
             case INTEGER -> String.valueOf(this.amount.getInteger(context));
             case DOUBLE -> String.valueOf(this.amount.getDouble(context));
-            case LIST -> throw new IllegalStateException("List variables are not supported");
+            default -> throw new IllegalStateException("Unsupported ServerVariables variable value type: " + this.valueType);
         };
     }
 

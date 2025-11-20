@@ -79,6 +79,14 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
             }
         }
 
+        if (this.removeEnchantments != null) {
+            for (String key : this.removeEnchantments.getList(context)) {
+                Enchantment enchantment = VersionUtils.getEnchantment(key);
+                if (enchantment != null)
+                    itemMeta.removeEnchant(enchantment);
+            }
+        }
+
         itemStack.setItemMeta(itemMeta);
 
         return itemStack;
