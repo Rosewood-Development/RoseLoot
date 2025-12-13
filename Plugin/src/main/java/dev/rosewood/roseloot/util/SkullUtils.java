@@ -3,6 +3,8 @@ package dev.rosewood.roseloot.util;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.RoseLoot;
+import dev.rosewood.roseloot.config.SettingKey;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -16,6 +18,7 @@ import org.bukkit.profile.PlayerTextures;
 
 public final class SkullUtils {
 
+    private static final UUID SHOP_GUI_PLUS_HEAD_UUID = UUID.fromString("f12a1300-d8e7-4b96-b14c-bb9ab2dfa17f");
     private static Method method_SkullMeta_setProfile;
     private static Field field_SkullMeta_profile;
 
@@ -34,7 +37,7 @@ public final class SkullUtils {
             return;
 
         if (NMSUtil.getVersionNumber() >= 18) { // No need to use NMS on 1.18.1+
-            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.nameUUIDFromBytes(texture.getBytes()));
+            PlayerProfile profile = Bukkit.createPlayerProfile(createSkullUUID(texture));
             PlayerTextures textures = profile.getTextures();
 
             String decodedTextureJson = new String(Base64.getDecoder().decode(texture));
@@ -49,7 +52,7 @@ public final class SkullUtils {
             return;
         }
 
-        GameProfile profile = new GameProfile(UUID.nameUUIDFromBytes(texture.getBytes()), "");
+        GameProfile profile = new GameProfile(createSkullUUID(texture), "");
         profile.getProperties().put("textures", new Property("textures", texture));
 
         try {
@@ -71,6 +74,12 @@ public final class SkullUtils {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
+    }
+
+    private static UUID createSkullUUID(String texture) {
+        if (RoseLoot.getInstance().getRoseConfig().get(SettingKey.HEADS_USE_SHOPGUIPLUS_UUID))
+            return SHOP_GUI_PLUS_HEAD_UUID;
+        return UUID.nameUUIDFromBytes(texture.getBytes());
     }
 
 }
