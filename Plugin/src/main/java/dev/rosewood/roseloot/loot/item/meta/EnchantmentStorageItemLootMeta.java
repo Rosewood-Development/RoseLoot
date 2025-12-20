@@ -9,6 +9,8 @@ import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.tag.TagKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -73,10 +75,24 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
         }
 
         if (this.enchantments != null) {
+            Map<Enchantment, Integer> enchantments = new HashMap<>();
             for (EnchantmentData enchantmentData : this.enchantments) {
                 int level = enchantmentData.level().getInteger(context);
                 if (level > 0)
-                    itemMeta.addStoredEnchant(enchantmentData.enchantment(), level, true);
+                    enchantments.put(enchantmentData.enchantment(), level);
+            }
+
+            if (this.enchantmentsAmount == null) {
+                enchantments.forEach((enchantment, level) -> itemMeta.addStoredEnchant(enchantment, level, true));
+            } else {
+                int enchantmentsAmount = this.enchantmentsAmount.getInteger(context);
+                List<Enchantment> keys = new ArrayList<>(enchantments.keySet());
+                Collections.shuffle(keys);
+                for (int i = 0; i < enchantmentsAmount && !keys.isEmpty(); i++) {
+                    Enchantment enchantment = keys.removeFirst();
+                    int level = enchantments.get(enchantment);
+                    itemMeta.addStoredEnchant(enchantment, level, true);
+                }
             }
         }
 

@@ -18,6 +18,8 @@ import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.tag.TagKey;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,6 +65,7 @@ public class ItemLootMeta {
     protected NumberProvider randomEnchantmentsAmount;
     protected StringProvider removeEnchantments;
     protected List<EnchantmentData> enchantments;
+    protected NumberProvider enchantmentsAmount;
     private List<AttributeData> attributes;
     private final boolean copyBlockState;
     private final boolean copyBlockData;
@@ -109,6 +112,7 @@ public class ItemLootMeta {
         this.randomEnchantments = StringProvider.fromSection(section, "random-enchantments", null);
         this.randomEnchantmentsAmount = NumberProvider.fromSection(section, "random-enchantments-amount", 1);
         this.removeEnchantments = StringProvider.fromSection(section, "remove-enchantments", null);
+        this.enchantmentsAmount = NumberProvider.fromSection(section, "enchantments-amount", null);
 
         ConfigurationSection enchantmentsSection = section.getConfigurationSection("enchantments");
         if (enchantmentsSection != null) {
@@ -267,10 +271,24 @@ public class ItemLootMeta {
             }
 
             if (this.enchantments != null) {
+                Map<Enchantment, Integer> enchantments = new HashMap<>();
                 for (EnchantmentData enchantmentData : this.enchantments) {
                     int level = enchantmentData.level().getInteger(context);
                     if (level > 0)
-                        itemMeta.addEnchant(enchantmentData.enchantment(), level, true);
+                        enchantments.put(enchantmentData.enchantment(), level);
+                }
+
+                if (this.enchantmentsAmount == null) {
+                    enchantments.forEach((enchantment, level) -> itemMeta.addEnchant(enchantment, level, true));
+                } else {
+                    int enchantmentsAmount = this.enchantmentsAmount.getInteger(context);
+                    List<Enchantment> keys = new ArrayList<>(enchantments.keySet());
+                    Collections.shuffle(keys);
+                    for (int i = 0; i < enchantmentsAmount && !keys.isEmpty(); i++) {
+                        Enchantment enchantment = keys.removeFirst();
+                        int level = enchantments.get(enchantment);
+                        itemMeta.addEnchant(enchantment, level, true);
+                    }
                 }
             }
 
