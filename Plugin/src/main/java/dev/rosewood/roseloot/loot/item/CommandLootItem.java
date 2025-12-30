@@ -34,7 +34,7 @@ public class CommandLootItem implements TriggerableLootItem {
     }
 
     private void dispatchCommand(CommandSender sender, String command) {
-        if (NMSUtil.isFolia()) {
+        if (NMSUtil.isFolia() || !Bukkit.isPrimaryThread()) {
             RoseLoot.getInstance().getScheduler().runTask(() -> Bukkit.dispatchCommand(sender, command));
         } else {
             Bukkit.dispatchCommand(sender, command);
