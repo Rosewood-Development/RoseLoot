@@ -35,8 +35,7 @@ public class SkullItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        SkullMeta itemMeta = (SkullMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof SkullMeta itemMeta))
             return itemStack;
 
         Optional<Player> lootedPlayer = context.get(LootContextParams.LOOTED_ENTITY).map(x -> x instanceof Player ? (Player) x : null);
@@ -65,8 +64,7 @@ public class SkullItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        SkullMeta itemMeta = (SkullMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof SkullMeta itemMeta))
             return;
 
         OfflinePlayer owner = itemMeta.getOwningPlayer();

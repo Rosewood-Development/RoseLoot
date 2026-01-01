@@ -39,8 +39,7 @@ public class BookItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        BookMeta itemMeta = (BookMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof BookMeta itemMeta))
             return itemStack;
 
         if (this.title != null) itemMeta.setTitle(this.title.get(context));
@@ -58,8 +57,7 @@ public class BookItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        BookMeta itemMeta = (BookMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof BookMeta itemMeta))
             return;
 
         if (itemMeta.hasTitle()) stringBuilder.append("title: ").append(LootUtils.decolorize(itemMeta.getTitle())).append('\n');

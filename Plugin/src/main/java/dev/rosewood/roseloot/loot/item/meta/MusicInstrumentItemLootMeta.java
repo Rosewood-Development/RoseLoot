@@ -23,8 +23,7 @@ public class MusicInstrumentItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        MusicInstrumentMeta itemMeta = (MusicInstrumentMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof MusicInstrumentMeta itemMeta))
             return itemStack;
 
         if (this.musicInstrument != null) {
@@ -39,8 +38,7 @@ public class MusicInstrumentItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        MusicInstrumentMeta itemMeta = (MusicInstrumentMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof MusicInstrumentMeta itemMeta))
             return;
 
         MusicInstrument instrument = itemMeta.getInstrument();

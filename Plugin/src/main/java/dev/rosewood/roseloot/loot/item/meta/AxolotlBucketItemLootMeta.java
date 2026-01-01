@@ -33,8 +33,7 @@ public class AxolotlBucketItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        AxolotlBucketMeta itemMeta = (AxolotlBucketMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof AxolotlBucketMeta itemMeta))
             return itemStack;
 
         Optional<Axolotl> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, Axolotl.class);
@@ -50,8 +49,7 @@ public class AxolotlBucketItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        AxolotlBucketMeta itemMeta = (AxolotlBucketMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof AxolotlBucketMeta itemMeta))
             return;
 
         if (itemMeta.hasVariant()) stringBuilder.append("variant: ").append(itemMeta.getVariant().name().toLowerCase()).append('\n');

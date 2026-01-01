@@ -55,8 +55,7 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        SuspiciousStewMeta itemMeta = (SuspiciousStewMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof SuspiciousStewMeta itemMeta))
             return itemStack;
 
         if (this.customEffects != null) {
@@ -75,8 +74,7 @@ public class SuspiciousStewItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        SuspiciousStewMeta itemMeta = (SuspiciousStewMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof SuspiciousStewMeta itemMeta))
             return;
 
         List<PotionEffect> effects = itemMeta.getCustomEffects();

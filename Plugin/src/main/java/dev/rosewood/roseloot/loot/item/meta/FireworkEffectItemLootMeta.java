@@ -66,8 +66,7 @@ public class FireworkEffectItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        FireworkEffectMeta itemMeta = (FireworkEffectMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof FireworkEffectMeta itemMeta))
             return itemStack;
 
         if (this.fireworkEffect != null) itemMeta.setEffect(this.fireworkEffect);
@@ -78,8 +77,7 @@ public class FireworkEffectItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        FireworkEffectMeta itemMeta = (FireworkEffectMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof FireworkEffectMeta itemMeta))
             return;
 
         FireworkEffect effect = itemMeta.getEffect();

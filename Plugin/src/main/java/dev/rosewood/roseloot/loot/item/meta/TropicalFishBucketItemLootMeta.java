@@ -56,8 +56,7 @@ public class TropicalFishBucketItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        TropicalFishBucketMeta itemMeta = (TropicalFishBucketMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof TropicalFishBucketMeta itemMeta))
             return itemStack;
 
         Optional<TropicalFish> lootedEntity = context.getAs(LootContextParams.LOOTED_ENTITY, TropicalFish.class);
@@ -78,8 +77,7 @@ public class TropicalFishBucketItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        TropicalFishBucketMeta itemMeta = (TropicalFishBucketMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof TropicalFishBucketMeta itemMeta))
             return;
 
         if (itemMeta.hasVariant()) {

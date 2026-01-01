@@ -48,8 +48,7 @@ public class BannerItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        BannerMeta itemMeta = (BannerMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof BannerMeta itemMeta))
             return itemStack;
 
         if (this.patterns != null && !this.patterns.isEmpty()) itemMeta.setPatterns(this.patterns);
@@ -60,8 +59,7 @@ public class BannerItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        BannerMeta itemMeta = (BannerMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof BannerMeta itemMeta))
             return;
 
         List<Pattern> patterns = itemMeta.getPatterns();

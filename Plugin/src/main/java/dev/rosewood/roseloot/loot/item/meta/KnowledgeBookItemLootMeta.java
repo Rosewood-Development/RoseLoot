@@ -40,8 +40,7 @@ public class KnowledgeBookItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        KnowledgeBookMeta itemMeta = (KnowledgeBookMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof KnowledgeBookMeta itemMeta))
             return itemStack;
 
         if (!this.recipes.isEmpty()) itemMeta.setRecipes(this.recipes);
@@ -52,8 +51,7 @@ public class KnowledgeBookItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        KnowledgeBookMeta itemMeta = (KnowledgeBookMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof KnowledgeBookMeta itemMeta))
             return;
 
         if (itemMeta.hasRecipes()) {

@@ -20,8 +20,7 @@ public class OminousBottleItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        OminousBottleMeta itemMeta = (OminousBottleMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof OminousBottleMeta itemMeta))
             return itemStack;
 
         if (this.amplifier != null) itemMeta.setAmplifier(this.amplifier.getInteger(context));
@@ -32,8 +31,7 @@ public class OminousBottleItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        OminousBottleMeta itemMeta = (OminousBottleMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof OminousBottleMeta itemMeta))
             return;
 
         stringBuilder.append("amplifier: ").append(itemMeta.getAmplifier()).append('\n');

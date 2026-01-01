@@ -70,8 +70,7 @@ public class PotionItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        PotionMeta itemMeta = (PotionMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof PotionMeta itemMeta))
             return itemStack;
 
         if (this.color != null) itemMeta.setColor(this.color);
@@ -84,8 +83,7 @@ public class PotionItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        PotionMeta itemMeta = (PotionMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof PotionMeta itemMeta))
             return;
 
         Color color = itemMeta.getColor();

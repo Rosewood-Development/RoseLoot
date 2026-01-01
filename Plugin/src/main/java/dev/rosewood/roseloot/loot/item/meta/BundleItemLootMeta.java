@@ -43,8 +43,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        BundleMeta itemMeta = (BundleMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof BundleMeta itemMeta))
             return itemStack;
 
         LootContents lootContents = new LootContents(context);
@@ -58,8 +57,7 @@ public class BundleItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        BundleMeta itemMeta = (BundleMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof BundleMeta itemMeta))
             return;
 
         List<ItemStack> contents = itemMeta.getItems();

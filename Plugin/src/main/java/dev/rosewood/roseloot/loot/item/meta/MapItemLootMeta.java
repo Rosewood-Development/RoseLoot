@@ -73,8 +73,7 @@ public class MapItemLootMeta extends ItemLootMeta {
         ItemStack explorerMap = null;
         try {
             explorerMap = Bukkit.createExplorerMap(world, origin.get(), this.destination, searchRadius, skipKnownStructures);
-            MapMeta itemMeta = (MapMeta) explorerMap.getItemMeta();
-            if (itemMeta != null) {
+            if (itemStack.getItemMeta() instanceof MapMeta itemMeta) {
                 MapView mapView = itemMeta.getMapView();
                 if (mapView != null) {
                     mapView.setScale(scale);

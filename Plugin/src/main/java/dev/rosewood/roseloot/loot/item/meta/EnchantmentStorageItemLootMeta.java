@@ -31,8 +31,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof EnchantmentStorageMeta itemMeta))
             return itemStack;
 
         if (this.randomEnchantments != null) {
@@ -118,8 +117,7 @@ public class EnchantmentStorageItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof EnchantmentStorageMeta itemMeta))
             return;
 
         if (!itemMeta.getStoredEnchants().isEmpty()) {

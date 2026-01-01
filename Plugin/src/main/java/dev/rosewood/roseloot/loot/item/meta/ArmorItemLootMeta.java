@@ -38,8 +38,7 @@ public class ArmorItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        ArmorMeta itemMeta = (ArmorMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof ArmorMeta itemMeta))
             return itemStack;
 
         if (this.armorTrim != null) itemMeta.setTrim(this.armorTrim);
@@ -50,8 +49,7 @@ public class ArmorItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        ArmorMeta itemMeta = (ArmorMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof ArmorMeta itemMeta))
             return;
 
         ArmorTrim armorTrim = itemMeta.getTrim();

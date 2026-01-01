@@ -81,8 +81,7 @@ public class FireworkItemLootMeta extends ItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        FireworkMeta itemMeta = (FireworkMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof FireworkMeta itemMeta))
             return itemStack;
 
         if (this.power != null) itemMeta.setPower(LootUtils.clamp(this.power.getInteger(context), 0, 127));
@@ -94,8 +93,7 @@ public class FireworkItemLootMeta extends ItemLootMeta {
     }
 
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
-        FireworkMeta itemMeta = (FireworkMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof FireworkMeta itemMeta))
             return;
 
         stringBuilder.append("power: ").append(itemMeta.getPower()).append('\n');

@@ -29,8 +29,7 @@ public class ColorableArmorItemLootMeta extends ArmorItemLootMeta {
     public ItemStack apply(ItemStack itemStack, LootContext context) {
         itemStack = super.apply(itemStack, context);
 
-        LeatherArmorMeta itemMeta = (LeatherArmorMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof LeatherArmorMeta itemMeta))
             return itemStack;
 
         if (this.color != null) itemMeta.setColor(this.color);
@@ -43,8 +42,7 @@ public class ColorableArmorItemLootMeta extends ArmorItemLootMeta {
     public static void applyProperties(ItemStack itemStack, StringBuilder stringBuilder) {
         ArmorItemLootMeta.applyProperties(itemStack, stringBuilder);
 
-        LeatherArmorMeta itemMeta = (LeatherArmorMeta) itemStack.getItemMeta();
-        if (itemMeta == null)
+        if (!(itemStack.getItemMeta() instanceof LeatherArmorMeta itemMeta))
             return;
 
         Color color = itemMeta.getColor();
