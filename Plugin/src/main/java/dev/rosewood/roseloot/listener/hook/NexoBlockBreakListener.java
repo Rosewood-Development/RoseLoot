@@ -1,7 +1,7 @@
 package dev.rosewood.roseloot.listener.hook;
 
-import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
-import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockBreakEvent;
+import com.nexomc.nexo.api.events.custom_block.NexoBlockBreakEvent;
+import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.config.RoseConfig;
 import dev.rosewood.rosegarden.utils.EntitySpawnUtil;
@@ -41,13 +41,14 @@ public class NexoBlockBreakListener extends LazyLootTableListener {
     }
 
     @EventHandler
-    public void onNexoStringBlockBreak(NexoStringBlockBreakEvent event) {
+    public void onNexoBlockBreak(NexoBlockBreakEvent event) {
         this.handleNexoBlockBreak(event.getPlayer(), event.getBlock(), event.getMechanic().getItemID());
     }
 
     @EventHandler
-    public void onNexoNoteBlockBreak(NexoNoteBlockBreakEvent event) {
-        this.handleNexoBlockBreak(event.getPlayer(), event.getBlock(), event.getMechanic().getItemID());
+    public void onNexoFurnitureBlockBreak(NexoFurnitureBreakEvent event) {
+        Block block = event.getBaseEntity().getLocation().getBlock();
+        this.handleNexoBlockBreak(event.getPlayer(), block, event.getMechanic().getItemID());
     }
 
     private void handleNexoBlockBreak(Player player, Block block, String itemId) {
