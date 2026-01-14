@@ -14,13 +14,14 @@ import dev.rosewood.roseloot.manager.LootTableManager;
 import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.block.Container;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.LootGenerateEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class LootGenerateListener extends LazyLootTableListener {
 
@@ -30,8 +31,9 @@ public class LootGenerateListener extends LazyLootTableListener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLootGenerate(LootGenerateEvent event) {
-        if (event.getInventoryHolder() instanceof Container container) {
-            Block block = container.getBlock();
+        InventoryHolder holder = event.getInventoryHolder();
+        if (holder instanceof BlockState state) {
+            Block block = state.getBlock();
             if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
                 return;
 
@@ -66,7 +68,7 @@ public class LootGenerateListener extends LazyLootTableListener {
             }
 
             lootContents.triggerExtras(block.getLocation());
-        } else if (event.getInventoryHolder() instanceof Entity entity) {
+        } else if (holder instanceof Entity entity) {
             if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(entity.getWorld().getName())))
                 return;
 
