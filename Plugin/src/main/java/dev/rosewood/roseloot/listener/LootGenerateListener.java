@@ -15,8 +15,6 @@ import dev.rosewood.roseloot.util.LootUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
-import org.bukkit.block.DecoratedPot;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
@@ -34,8 +32,8 @@ public class LootGenerateListener extends LazyLootTableListener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLootGenerate(LootGenerateEvent event) {
         InventoryHolder holder = event.getInventoryHolder();
-        if (holder instanceof Container || holder instanceof DecoratedPot) {
-            Block block = ((BlockState) holder).getBlock();
+        if (holder instanceof BlockState state) {
+            Block block = state.getBlock();
             if (this.rosePlugin.getRoseConfig().get(SettingKey.DISABLED_WORLDS).stream().anyMatch(x -> x.equalsIgnoreCase(block.getWorld().getName())))
                 return;
 
