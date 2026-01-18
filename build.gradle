@@ -54,6 +54,7 @@ dependencies {
     implementation project(':Component:v1_21_4')
     implementation project(':Component:v1_21_5')
     implementation project(':Component:v1_21_6')
+    implementation project(':Component:v1_21_7')
     implementation project(':NMS:Wrapper')
     implementation project(':NMS:v1_16_R3')
     implementation project(path: ':NMS:v1_17_R1', configuration: 'reobf')
@@ -67,6 +68,7 @@ dependencies {
     implementation project(path: ':NMS:v1_21_R4', configuration: 'reobf')
     implementation project(path: ':NMS:v1_21_R5', configuration: 'reobf')
     implementation project(path: ':NMS:v1_21_R6', configuration: 'reobf')
+    implementation project(path: ':NMS:v1_21_R7', configuration: 'reobf')
 }
 
 shadowJar {

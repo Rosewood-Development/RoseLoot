@@ -14,6 +14,7 @@ include(
         'Component:v1_21_4',
         'Component:v1_21_5',
         'Component:v1_21_6',
+        'Component:v1_21_7',
         'NMS:Wrapper',
         'NMS:v1_16_R3',
         'NMS:v1_17_R1',
@@ -26,5 +27,6 @@ include(
         'NMS:v1_21_R3',
         'NMS:v1_21_R4',
         'NMS:v1_21_R5',
-        'NMS:v1_21_R6'
+        'NMS:v1_21_R6',
+        'NMS:v1_21_R7',
 )
