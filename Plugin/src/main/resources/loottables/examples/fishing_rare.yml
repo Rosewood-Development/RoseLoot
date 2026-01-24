@@ -1,0 +1,18 @@
+# Add a 0.01% chance to get a heavy_core when fishing
+# Overwrites the vanilla drops so you don't fish up two items at once
+type: FISHING
+overwrite-existing: item
+conditions:
+  - 'chance:0.01%'
+  - 'open-water'
+pools:
+  0:
+    conditions: []
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: heavy_core
+            amount: 1

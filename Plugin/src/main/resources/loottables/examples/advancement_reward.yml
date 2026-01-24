@@ -1,0 +1,15 @@
+# Drops the player a nametag when getting the tame_an_animal advancement
+type: ADVANCEMENT
+conditions:
+  - 'advancement:husbandry/tame_an_animal'
+pools:
+  0:
+    conditions: []
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: name_tag
+            amount: 1

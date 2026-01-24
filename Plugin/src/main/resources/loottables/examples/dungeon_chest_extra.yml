@@ -1,0 +1,16 @@
+# Adds the lava chicken music disc to a dungeon chest at a 2% chance
+type: CONTAINER
+overwrite-existing: none
+conditions:
+  - 'vanilla-loot-table:chests/simple_dungeon'
+  - 'chance:2%'
+pools:
+  0:
+    conditions: []
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: music_disc_lava_chicken

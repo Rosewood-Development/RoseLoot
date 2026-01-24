@@ -1,0 +1,18 @@
+# Add a 2% chance drop to coal_ore and deepslate_coal_ore blocks to drop a coal_block while keeping vanilla drops
+type: BLOCK
+overwrite-existing: none
+conditions:
+  - 'block-type:#coal_ores'
+pools:
+  0:
+    conditions:
+      - '!enchantment:silk_touch'
+      - 'chance:2%'
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: coal_block
+            amount: 1

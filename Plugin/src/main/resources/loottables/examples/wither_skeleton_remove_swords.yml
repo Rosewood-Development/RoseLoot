@@ -1,0 +1,57 @@
+# This is a copy of the wither skeleton loot table, but with the entity equipment drops removed
+type: ENTITY
+overwrite-existing: items
+conditions:
+  - 'entity-type:wither_skeleton'
+pools:
+  0:
+    conditions: []
+    rolls: 1
+    bonus-rolls: 0
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: coal
+            amount:
+              min: -1
+              max: 1
+            enchantment-bonus:
+              enchantment: looting
+              bonus-per-level:
+                min: 0
+                max: 1
+  1:
+    conditions: []
+    rolls: 1
+    bonus-rolls: 0
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: bone
+            amount:
+              min: 0
+              max: 2
+            enchantment-bonus:
+              enchantment: looting
+              bonus-per-level:
+                min: 0
+                max: 1
+  2:
+    conditions:
+      - 'killed-by:player'
+      - 'enchantment-chance:2.5%,looting,1%'
+    rolls: 1
+    bonus-rolls: 0
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: wither_skeleton_skull

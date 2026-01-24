@@ -148,6 +148,17 @@ import org.jetbrains.annotations.ApiStatus;
 public class LootTableManager extends DelayedManager implements Listener {
 
     private static final List<String> RESERVED_COMPONENT_KEYS = List.of("type", "conditions", "rolls", "bonus-rolls", "weight", "quality", "children-strategy", "items");
+    private static final Set<String> EXAMPLE_FILES = Set.of(
+            "advancement_reward.yml",
+            "chicken_diamond.yml",
+            "coal_ore_bonus.yml",
+            "custom_archaeology.yml",
+            "dungeon_chest_extra.yml",
+            "entity_payments.yml",
+            "fishing_rare.yml",
+            "piglin_barter_nether_star.yml",
+            "wither_skeleton_remove_swords.yml"
+    );
 
     private final BiMap<String, LootTableType> lootTableTypes;
     private final Multimap<LootTableType, LootTable> lootTables;
@@ -189,6 +200,12 @@ public class LootTableManager extends DelayedManager implements Listener {
         File examplesDirectory = new File(this.directory, "examples");
         if (!examplesDirectory.exists())
             examplesDirectory.mkdirs();
+
+        for (String exampleFile : EXAMPLE_FILES) {
+            File file = new File(examplesDirectory, exampleFile);
+            if (!file.exists())
+                this.rosePlugin.saveResource("loottables/examples/" + exampleFile, false);
+        }
 
         // Copy README.txt file if it doesn't already exist
         File readme = new File(this.directory, "README.txt");

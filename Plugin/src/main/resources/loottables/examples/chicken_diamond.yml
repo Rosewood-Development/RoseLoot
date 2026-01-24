@@ -1,0 +1,17 @@
+# Gives a chicken a 1% chance to lay a diamond instead of an egg
+type: ENTITY_DROP_ITEM
+overwrite-existing: items
+conditions:
+  - 'entity-type:chicken'
+  - 'chance:1%'
+pools:
+  0:
+    conditions: []
+    entries:
+      0:
+        conditions: []
+        items:
+          0:
+            type: item
+            item: diamond
+            amount: 1
