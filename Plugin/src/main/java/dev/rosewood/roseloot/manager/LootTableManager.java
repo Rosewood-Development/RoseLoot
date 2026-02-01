@@ -516,6 +516,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("required-tool", RequiredToolCondition::new);
         event.registerLootCondition("required-tool-type", RequiredToolTypeCondition::new);
         event.registerLootCondition("replaced-block-type", ReplacedBlockTypeCondition::new);
+        this.registerStrings(event, "scoreboard-tag", (context, values) -> context.get(LootContextParams.LOOTED_ENTITY).map(Entity::getScoreboardTags).filter(x -> values.stream().anyMatch(x::contains)).isPresent());
         this.registerBoolean(event, "sitting", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Sittable.class).filter(Sittable::isSitting).isPresent());
         this.registerBoolean(event, "sleeping", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(LivingEntity::isSleeping).isPresent());
         this.registerBoolean(event, "sneaking", context -> context.getLootingPlayer().filter(Player::isSneaking).isPresent());
