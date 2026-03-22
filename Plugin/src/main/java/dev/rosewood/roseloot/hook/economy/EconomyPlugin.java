@@ -10,7 +10,7 @@ public enum EconomyPlugin implements EconomyProvider {
     TREASURY(TreasuryEconomyProvider::new),
     PLAYERPOINTS(PlayerPointsEconomyProvider::new),
     TOKENMANAGER(TokenManagerEconomyProvider::new),
-    COINSENGINE(CoinsEngineEconomyProvider::new);
+    EXCELLENTECONOMY(ExcellentEconomyProvider::new);
 
     private final Lazy<EconomyProvider> economyProvider;
 

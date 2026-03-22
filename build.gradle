@@ -38,6 +38,7 @@ allprojects {
         maven { url = 'https://repo.momirealms.net/releases/' }
         maven { url = 'https://repo.crazycrew.us/releases' }
         maven { url = 'https://repo.groupez.dev/releases' }
+        maven { url = 'https://repo.nightexpressdev.com/releases'}
         maven { url = 'https://libraries.minecraft.net/' }
         maven { url = 'https://jitpack.io/' }
     }

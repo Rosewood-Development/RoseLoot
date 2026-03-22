@@ -50,6 +50,8 @@ softdepend:
   - BlockTracker
   - CraftEngine
   - AuraSkills
+  - CoinsEngine
+  - ExcellentEconomy
 permissions:
   roseloot.basecommand:
     description: Allows using the RoseLoot commands
