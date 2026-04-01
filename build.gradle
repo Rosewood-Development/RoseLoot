@@ -41,6 +41,7 @@ allprojects {
         maven { url = 'https://repo.nightexpressdev.com/releases'}
         maven { url = 'https://libraries.minecraft.net/' }
         maven { url = 'https://jitpack.io/' }
+        maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
         maven { url = 'https://maven.lauriichan.me/release' }
     }
 
