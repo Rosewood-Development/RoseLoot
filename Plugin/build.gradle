@@ -60,6 +60,7 @@ dependencies {
     }
     compileOnly 'net.momirealms:craft-engine-core:0.0.56'
     compileOnly 'net.momirealms:craft-engine-bukkit:0.0.56'
+    compileOnly 'me.lauriichan.spigot.justlootit:justlootit-core:2.17.0:shaded'
 
     api "dev.rosewood:rosegarden:$rosegardenVersion"
     api "dev.rosewood:rosegarden-compatibility:$rosegardenVersion"

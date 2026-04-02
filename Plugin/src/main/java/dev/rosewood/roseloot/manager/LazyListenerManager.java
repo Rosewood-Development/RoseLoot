@@ -4,6 +4,7 @@ import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.hook.CraftEngineHook;
 import dev.rosewood.roseloot.hook.ItemsAdderHook;
+import dev.rosewood.roseloot.hook.JustLootItHook;
 import dev.rosewood.roseloot.hook.NexoHook;
 import dev.rosewood.roseloot.hook.OraxenHook;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
@@ -20,6 +21,7 @@ import dev.rosewood.roseloot.listener.VaultListener;
 import dev.rosewood.roseloot.listener.helper.LazyListener;
 import dev.rosewood.roseloot.listener.hook.CraftEngineBlockBreakListener;
 import dev.rosewood.roseloot.listener.hook.ItemsAdderBlockBreakListener;
+import dev.rosewood.roseloot.listener.hook.JustLootItLootGenerateListener;
 import dev.rosewood.roseloot.listener.hook.NexoBlockBreakListener;
 import dev.rosewood.roseloot.listener.hook.OraxenBlockBreakListener;
 import dev.rosewood.roseloot.listener.hook.RoseStackerEntityDeathListener;
@@ -67,6 +69,8 @@ public class LazyListenerManager extends DelayedManager {
             this.lazyListeners.add(new NexoBlockBreakListener(rosePlugin));
         if (CraftEngineHook.isEnabled())
             this.lazyListeners.add(new CraftEngineBlockBreakListener(rosePlugin));
+        if (JustLootItHook.isEnabled())
+            this.lazyListeners.add(new JustLootItLootGenerateListener(rosePlugin));
 
         try {
             // PiglinBarterEvent was added to the 1.16.5 API right before 1.17 was released,
