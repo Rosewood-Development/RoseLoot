@@ -1,15 +1,13 @@
-package dev.rosewood.roseloot.loot.item.component.common.stable;
+package dev.rosewood.roseloot.loot.item.component.v1_21_7;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
-import dev.rosewood.roseloot.loot.item.component.common.ParsingUtils;
 import dev.rosewood.roseloot.provider.StringProvider;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.DamageResistant;
 import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.TypedKey;
-import io.papermc.paper.registry.set.RegistryKeySet;
-import io.papermc.paper.registry.tag.Tag;
+import io.papermc.paper.registry.tag.TagKey;
+import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.damage.DamageType;
 import org.bukkit.inventory.ItemStack;
@@ -30,8 +28,8 @@ public class DamageResistantComponent implements LootItemComponent {
     @Override
     public void apply(ItemStack itemStack, LootContext context) {
         if (this.types != null) {
-            RegistryKeySet<DamageType> keySet = ParsingUtils.parseRegistryTags(this.types, RegistryKey.DAMAGE_TYPE, context);
-            itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(keySet));
+            TagKey<DamageType> tagKey = TagKey.create(RegistryKey.DAMAGE_TYPE, Key.key(this.types.get(context).toLowerCase()));
+            itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(tagKey));
         }
     }
 
@@ -39,20 +37,9 @@ public class DamageResistantComponent implements LootItemComponent {
         if (!itemStack.isDataOverridden(DataComponentTypes.DAMAGE_RESISTANT))
             return;
 
-        RegistryKeySet<DamageType> keySet = itemStack.getData(DataComponentTypes.DAMAGE_RESISTANT).types();
-        if (!keySet.isEmpty()) {
-            stringBuilder.append("damage-resistant:\n");
-            stringBuilder.append("  bypassed-by:\n");
-            if (keySet instanceof Tag<?> tag) {
-                String name = tag.tagKey().key().asMinimalString();
-                stringBuilder.append("    - '#").append(name).append("'\n");
-            } else {
-                for (TypedKey<DamageType> typedKey : keySet.values()) {
-                    String name = typedKey.key().asMinimalString();
-                    stringBuilder.append("    - '").append(name).append("'\n");
-                }
-            }
-        }
+        DamageResistant damageResistant = itemStack.getData(DataComponentTypes.DAMAGE_RESISTANT);
+        stringBuilder.append("damage-resistant:\n");
+        stringBuilder.append("  types: '").append(damageResistant.types().key().asMinimalString()).append("'\n");
     }
 
 } 

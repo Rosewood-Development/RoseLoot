@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.loot.item.component.common.stable;
+package dev.rosewood.roseloot.loot.item.component.v1_21_7;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
@@ -94,7 +94,7 @@ public class BlocksAttacksComponent implements LootItemComponent {
             builder.itemDamage(this.itemDamage.toItemDamageFunction(context));
 
         if (this.bypassedBy != null)
-            builder.bypassedBy(ParsingUtils.parseRegistryTags(this.bypassedBy, RegistryKey.DAMAGE_TYPE, context));
+            builder.bypassedBy(ParsingUtils.parseRegistryTag(this.bypassedBy, RegistryKey.DAMAGE_TYPE, context));
 
         if (this.blockSound != null)
             builder.blockSound(Key.key(this.blockSound.get(context)));
@@ -140,20 +140,7 @@ public class BlocksAttacksComponent implements LootItemComponent {
         stringBuilder.append("    base: ").append(itemDamageFunction.base()).append('\n');
         stringBuilder.append("    factor: ").append(itemDamageFunction.factor()).append('\n');
 
-        RegistryKeySet<DamageType> bypassedBy = blocksAttacks.bypassedBy();
-        if (!bypassedBy.isEmpty()) {
-            stringBuilder.append("bypassed-by:\n");
-            if (bypassedBy instanceof Tag<?> tag) {
-                String name = tag.tagKey().key().asMinimalString();
-                stringBuilder.append("  - '#").append(name).append("'\n");
-            } else {
-                for (TypedKey<DamageType> typedKey : bypassedBy.values()) {
-                    String name = typedKey.key().asMinimalString();
-                    stringBuilder.append("  - '").append(name).append("'\n");
-                }
-            }
-        }
-
+        stringBuilder.append("  bypassed-by: '#").append(blocksAttacks.bypassedBy().key().asMinimalString()).append("'\n");
         stringBuilder.append("  block-sound: '").append(blocksAttacks.blockSound().asMinimalString()).append("'\n");
         stringBuilder.append("  disabled-sound: '").append(blocksAttacks.disableSound().asMinimalString()).append("'\n");
     }

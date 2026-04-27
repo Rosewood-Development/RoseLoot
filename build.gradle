@@ -12,7 +12,7 @@ allprojects {
     java {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
         disableAutoTargetJvm()
     }
 
@@ -58,20 +58,22 @@ dependencies {
     implementation project(':Component:v1_21_5')
     implementation project(':Component:v1_21_6')
     implementation project(':Component:v1_21_7')
+    implementation project(':Component:v26_1_1')
     implementation project(':NMS:Wrapper')
     implementation project(':NMS:v1_16_R3')
-    implementation project(path: ':NMS:v1_17_R1', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_18_R2', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_19_R3', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_20_R3', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_20_R4', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R1', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R2', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R3', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R4', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R5', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R6', configuration: 'reobf')
-    implementation project(path: ':NMS:v1_21_R7', configuration: 'reobf')
+    implementation project(path: ':NMS:v1_17_R1', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_18_R2', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_19_R3', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_20_R3', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_20_R4', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R1', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R2', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R3', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R4', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R5', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R6', configuration: 'remapped')
+    implementation project(path: ':NMS:v1_21_R7', configuration: 'remapped')
+    implementation project(path: ':NMS:v26_1_R1')
 }
 
 shadowJar {

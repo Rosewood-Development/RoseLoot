@@ -2,11 +2,14 @@ package dev.rosewood.roseloot.loot.item.component.common.stable;
 
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
+import dev.rosewood.roseloot.loot.item.component.common.ParsingUtils;
 import dev.rosewood.roseloot.provider.StringProvider;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.tag.TagKey;
-import net.kyori.adventure.key.Key;
+import io.papermc.paper.registry.TypedKey;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import io.papermc.paper.registry.tag.Tag;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,11 +24,8 @@ public class ProvidesBannerPatternsComponent implements LootItemComponent {
     @Override
     public void apply(ItemStack itemStack, LootContext context) {
         if (this.value != null) {
-            String keyValue = this.value.get(context).toLowerCase();
-            if (keyValue.startsWith("#"))
-                keyValue = keyValue.substring(1);
-            Key key = Key.key(keyValue);
-            itemStack.setData(DataComponentTypes.PROVIDES_BANNER_PATTERNS, TagKey.create(RegistryKey.BANNER_PATTERN, key));
+            RegistryKeySet<PatternType> keySet = ParsingUtils.parseRegistryTags(this.value, RegistryKey.BANNER_PATTERN, context);
+            itemStack.setData(DataComponentTypes.PROVIDES_BANNER_PATTERNS, keySet);
         }
     }
 
@@ -33,7 +33,19 @@ public class ProvidesBannerPatternsComponent implements LootItemComponent {
         if (!itemStack.isDataOverridden(DataComponentTypes.PROVIDES_BANNER_PATTERNS))
             return;
 
-        stringBuilder.append("provides-banner-patterns: '#").append(itemStack.getData(DataComponentTypes.PROVIDES_BANNER_PATTERNS).key().asMinimalString()).append("'\n");
+        RegistryKeySet<PatternType> keySet = itemStack.getData(DataComponentTypes.PROVIDES_BANNER_PATTERNS);
+        if (!keySet.isEmpty()) {
+            stringBuilder.append("provides-banner-patterns:\n");
+            if (keySet instanceof Tag<?> tag) {
+                String name = tag.tagKey().key().asMinimalString();
+                stringBuilder.append("  - '#").append(name).append("'\n");
+            } else {
+                for (TypedKey<PatternType> typedKey : keySet.values()) {
+                    String name = typedKey.key().asMinimalString();
+                    stringBuilder.append("  - '").append(name).append("'\n");
+                }
+            }
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.nms.v1_21_R4;
+package dev.rosewood.roseloot.nms.v26_1_R1;
 
 import dev.rosewood.rosegarden.utils.NMSUtil;
 import dev.rosewood.roseloot.nms.NMSHandler;
@@ -8,8 +8,8 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.EnchantmentTags;
@@ -23,8 +23,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_21_R4.CraftWorld;
-import org.bukkit.craftbukkit.v1_21_R4.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R7.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R7.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class NMSHandlerImpl implements NMSHandler {
@@ -51,8 +51,8 @@ public class NMSHandlerImpl implements NMSHandler {
     public boolean isWithinStructure(Location location, NamespacedKey structureKey) {
         ServerLevel serverLevel = ((CraftWorld) location.getWorld()).getHandle();
         Registry<Structure> registry = MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE);
-        ResourceLocation resourceLocation = ResourceLocation.parse(structureKey.toString());
-        ResourceKey<Structure> structureResourceKey = ResourceKey.create(Registries.STRUCTURE, resourceLocation);
+        Identifier identifier = Identifier.parse(structureKey.toString());
+        ResourceKey<Structure> structureResourceKey = ResourceKey.create(Registries.STRUCTURE, identifier);
         Structure structure = registry.getOrThrow(structureResourceKey).value();
         StructureManager structureManager = serverLevel.structureManager();
         BlockPos blockPos = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());

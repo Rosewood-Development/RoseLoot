@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.loot.item.component.v1_21_7;
+package dev.rosewood.roseloot.loot.item.component.v26_1_1;
 
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponentProvider;
@@ -6,6 +6,7 @@ import dev.rosewood.roseloot.loot.item.component.common.stable.AttackRangeCompon
 import dev.rosewood.roseloot.loot.item.component.common.stable.AttributeModifiersComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.BannerPatternsComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.BaseColorComponent;
+import dev.rosewood.roseloot.loot.item.component.common.stable.BlocksAttacksComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.BreakSoundComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.BundleContentsComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.CanBreakComponent;
@@ -17,6 +18,7 @@ import dev.rosewood.roseloot.loot.item.component.common.stable.ContainerLootComp
 import dev.rosewood.roseloot.loot.item.component.common.stable.CustomModelDataComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.CustomNameComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.DamageComponent;
+import dev.rosewood.roseloot.loot.item.component.common.stable.DamageResistantComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.DamageTypeComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.DeathProtectionComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.DyedColorComponent;
@@ -49,6 +51,7 @@ import dev.rosewood.roseloot.loot.item.component.common.stable.PotDecorationsCom
 import dev.rosewood.roseloot.loot.item.component.common.stable.PotionContentsComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.PotionDurationScaleComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.ProfileComponent;
+import dev.rosewood.roseloot.loot.item.component.common.stable.ProvidesBannerPatternsComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.ProvidesTrimMaterialComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.RarityComponent;
 import dev.rosewood.roseloot.loot.item.component.common.stable.RecipesComponent;

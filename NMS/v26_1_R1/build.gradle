@@ -1,0 +1,8 @@
+dependencies {
+    compileOnly project(':NMS:Wrapper')
+    compileOnly "dev.rosewood:rosegarden:$rosegardenVersion"
+    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
+    compileOnly 'org.spigotmc:spigot:26.1'
+    compileOnly 'com.mojang:datafixerupper:8.0.16'
+    compileOnly 'io.netty:netty-all:4.1.68.Final'
+}
