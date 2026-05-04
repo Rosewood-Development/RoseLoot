@@ -2,6 +2,7 @@ package dev.rosewood.roseloot.listener;
 
 import dev.rosewood.rosegarden.RosePlugin;
 import dev.rosewood.roseloot.config.SettingKey;
+import dev.rosewood.roseloot.event.PostLootTableGenerateEvent;
 import dev.rosewood.roseloot.hook.RoseStackerHook;
 import dev.rosewood.roseloot.listener.helper.LazyLootTableListener;
 import dev.rosewood.roseloot.loot.ExplosionType;
@@ -27,6 +28,14 @@ public class EntityListener extends LazyLootTableListener {
 
     public EntityListener(RosePlugin rosePlugin) {
         super(rosePlugin, LootTableTypes.ENTITY);
+    }
+
+    @EventHandler
+    public void onLootTableGenerate(PostLootTableGenerateEvent event) {
+        if (event.getLootTable().getType() != LootTableTypes.ENTITY)
+            return;
+
+        System.out.println("blargh");
     }
 
     @EventHandler(priority = EventPriority.LOW) // changing to LOW so worldguard flags detect changes properly

@@ -49,15 +49,14 @@ public class GenerateCommand extends BaseRoseCommand {
 
         lootContext.setCurrentLootTable(lootTable);
 
-        if (!lootTable.check(lootContext)) {
+        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
+        if (lootResult.hasFailedConditions()) {
             if (silent == null || !silent)
                 localeManager.sendMessage(sender, "command-generate-failed-conditions", StringPlaceholders.of("player", target.getName(), "loottable", lootTable.getName()));
             return;
         }
 
-        LootResult lootResult = this.rosePlugin.getManager(LootTableManager.class).getLoot(lootTable, lootContext);
         lootResult.getLootContents().dropForPlayer(target);
-
         if (silent == null || !silent)
             localeManager.sendMessage(sender, "command-generate-success", StringPlaceholders.of("player", target.getName(), "loottable", lootTable.getName()));
     }

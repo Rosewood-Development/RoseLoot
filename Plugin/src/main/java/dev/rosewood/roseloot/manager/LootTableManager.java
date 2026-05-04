@@ -15,6 +15,7 @@ import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.event.LootItemTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.LootTableTypeRegistrationEvent;
 import dev.rosewood.roseloot.event.PostLootGenerateEvent;
+import dev.rosewood.roseloot.event.PostLootTableGenerateEvent;
 import dev.rosewood.roseloot.loot.ExplosionType;
 import dev.rosewood.roseloot.loot.LootComponent;
 import dev.rosewood.roseloot.loot.LootContents;
@@ -593,18 +594,12 @@ public class LootTableManager extends DelayedManager implements Listener {
      * @return A LootResult containing all generated loot
      */
     public LootResult getLoot(LootTableType lootTableType, LootContext lootContext) {
-        LootContents lootContents = new LootContents(lootContext);
-        Set<OverwriteExisting> overwriteExisting = OverwriteExisting.none();
+        LootResult lootResult = new LootResult(lootContext, new LootContents(lootContext), OverwriteExisting.none(), false);
         for (LootTable lootTable : this.lootTables.get(lootTableType)) {
-            lootContext.setCurrentLootTable(lootTable);
-            if (!lootTable.check(lootContext))
-                continue;
-
-            lootTable.populate(lootContext, lootContents);
-            overwriteExisting.addAll(lootTable.getOverwriteExistingValues());
+            LootResult tableResult = this.generateLoot(lootTable, lootContext);
+            lootResult.append(tableResult);
         }
-
-        return this.callEvent(new LootResult(lootContext, lootContents, overwriteExisting));
+        return this.callEvent(lootResult);
     }
 
     /**
@@ -615,10 +610,38 @@ public class LootTableManager extends DelayedManager implements Listener {
      * @return A LootResult containing all generated loot
      */
     public LootResult getLoot(LootTable lootTable, LootContext lootContext) {
+        LootResult lootResult = this.generateLoot(lootTable, lootContext);
+        return this.callEvent(lootResult);
+    }
+
+    private LootResult generateLoot(LootTable lootTable, LootContext lootContext) {
         lootContext.setCurrentLootTable(lootTable);
+        if (!lootTable.check(lootContext))
+            return new LootResult(lootContext, new LootContents(lootContext), OverwriteExisting.none(), true);
+
+        Set<OverwriteExisting> overwriteExisting = lootTable.getOverwriteExistingValues();
         LootContents lootContents = new LootContents(lootContext);
         lootTable.populate(lootContext, lootContents);
-        return this.callEvent(new LootResult(lootContext, lootContents, OverwriteExisting.none()));
+
+        if (this.rosePlugin.getRoseConfig().get(SettingKey.CALL_POSTLOOTGENERATEEVENT)) {
+            PostLootTableGenerateEvent event = new PostLootTableGenerateEvent(lootContext, lootTable, lootContents, overwriteExisting);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return new LootResult(lootContext, new LootContents(lootContext), OverwriteExisting.none(), false);
+
+            if (!event.shouldDropItems())
+                lootContents.removeItems();
+
+            if (!event.shouldDropExperience())
+                lootContents.removeExperience();
+
+            if (!event.shouldTriggerExtras())
+                lootContents.removeExtraTriggers();
+
+            overwriteExisting = event.getOverwriteExistingValues();
+        }
+
+        return new LootResult(lootContext, lootContents, overwriteExisting, false);
     }
 
     /**
@@ -635,7 +658,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         PostLootGenerateEvent event = new PostLootGenerateEvent(lootResult);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())
-            return new LootResult(lootResult.getLootContext(), new LootContents(lootResult.getLootContext()), OverwriteExisting.none());
+            return new LootResult(lootResult.getLootContext(), new LootContents(lootResult.getLootContext()), OverwriteExisting.none(), false);
 
         if (!event.shouldDropItems())
             lootResult.getLootContents().removeItems();

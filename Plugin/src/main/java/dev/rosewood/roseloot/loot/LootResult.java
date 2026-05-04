@@ -10,11 +10,13 @@ public class LootResult {
     private final LootContext lootContext;
     private final LootContents lootContents;
     private Set<OverwriteExisting> overwriteExisting;
+    private boolean failedConditions;
 
-    public LootResult(LootContext lootContext, LootContents lootContents, Set<OverwriteExisting> overwriteExisting) {
+    public LootResult(LootContext lootContext, LootContents lootContents, Set<OverwriteExisting> overwriteExisting, boolean failedConditions) {
         this.lootContext = lootContext;
         this.lootContents = lootContents;
         this.overwriteExisting = overwriteExisting;
+        this.failedConditions = failedConditions;
     }
 
     public boolean isEmpty() {
@@ -57,6 +59,23 @@ public class LootResult {
      */
     public boolean doesOverwriteExisting(OverwriteExisting type) {
         return this.overwriteExisting.contains(type);
+    }
+
+    /**
+     * @return true if the loot generation failed at any point due to top-level conditions not being met
+     */
+    public boolean hasFailedConditions() {
+        return this.failedConditions;
+    }
+
+    /**
+     * Merges another LootResult into this LootResult
+     * @param lootResults The other LootResult to merge into this one
+     */
+    public void append(LootResult lootResults) {
+        this.lootContents.add(lootResults.lootContents.getContents());
+        this.overwriteExisting.addAll(lootResults.overwriteExisting);
+        this.failedConditions |= lootResults.failedConditions;
     }
 
 }
