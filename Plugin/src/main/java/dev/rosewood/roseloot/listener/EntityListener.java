@@ -30,14 +30,6 @@ public class EntityListener extends LazyLootTableListener {
         super(rosePlugin, LootTableTypes.ENTITY);
     }
 
-    @EventHandler
-    public void onLootTableGenerate(PostLootTableGenerateEvent event) {
-        if (event.getLootTable().getType() != LootTableTypes.ENTITY)
-            return;
-
-        System.out.println("blargh");
-    }
-
     @EventHandler(priority = EventPriority.LOW) // changing to LOW so worldguard flags detect changes properly
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
