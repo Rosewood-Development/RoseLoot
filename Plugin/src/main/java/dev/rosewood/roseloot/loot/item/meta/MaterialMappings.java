@@ -24,7 +24,7 @@ public class MaterialMappings {
             mapMaterials(BundleItemLootMeta::new, BundleItemLootMeta::applyProperties, Tag.ITEMS_BUNDLES.getValues().toArray(Material[]::new));
 
         mapMaterials(BookItemLootMeta::new, BookItemLootMeta::applyProperties, Material.WRITABLE_BOOK, Material.WRITTEN_BOOK);
-        mapMaterials(EnchantmentStorageItemLootMeta::new, EnchantmentStorageItemLootMeta::applyProperties, Material.ENCHANTED_BOOK);
+        mapMaterials(EnchantmentStorageItemLootMeta::new, EnchantmentStorageItemLootMeta::applyProperties, Material.ENCHANTED_BOOK, Material.BOOK);
         mapMaterials(FireworkEffectItemLootMeta::new, FireworkEffectItemLootMeta::applyProperties, Material.FIREWORK_STAR);
         mapMaterials(FireworkItemLootMeta::new, FireworkItemLootMeta::applyProperties, Material.FIREWORK_ROCKET);
         mapMaterials(KnowledgeBookItemLootMeta::new, KnowledgeBookItemLootMeta::applyProperties, Material.KNOWLEDGE_BOOK);
