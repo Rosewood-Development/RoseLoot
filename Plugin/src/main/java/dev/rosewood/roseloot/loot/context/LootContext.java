@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -129,7 +130,7 @@ public class LootContext {
     }
 
     /**
-     * @return the BlockInfo associated with the looted block
+     * @return the BlockInfo associated with the looted block (or loot origin location)
      */
     @NotNull
     public Optional<BlockInfo> getLootedBlockInfo() {
@@ -138,7 +139,9 @@ public class LootContext {
             if (blockInfo.isPresent())
                 return blockInfo;
         }
-        return Optional.empty();
+
+        Optional<Location> origin = this.get(LootContextParams.ORIGIN);
+        return origin.map(location -> BlockInfo.of(location.getBlock()));
     }
 
     /**
