@@ -2,10 +2,12 @@ package dev.rosewood.roseloot.loot.condition;
 
 import dev.rosewood.rosegarden.compatibility.CompatibilityAdapter;
 import dev.rosewood.rosegarden.utils.NMSUtil;
+import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
 import dev.rosewood.roseloot.util.LootUtils;
+import io.papermc.paper.world.WeatheringCopperState;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +32,8 @@ import org.bukkit.entity.Bogged;
 import org.bukkit.entity.Camel;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Chicken;
+import org.bukkit.entity.CopperGolem;
+import org.bukkit.entity.CopperGolem.Oxidizing;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderDragon;
@@ -40,6 +44,7 @@ import org.bukkit.entity.Fox;
 import org.bukkit.entity.Frog;
 import org.bukkit.entity.GlowSquid;
 import org.bukkit.entity.Goat;
+import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Hoglin;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Husk;
@@ -48,6 +53,7 @@ import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Llama;
 import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.MushroomCow;
+import org.bukkit.entity.Nautilus;
 import org.bukkit.entity.Panda;
 import org.bukkit.entity.Parrot;
 import org.bukkit.entity.Phantom;
@@ -69,7 +75,9 @@ import org.bukkit.entity.Vex;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
+import org.bukkit.entity.ZombieNautilus;
 import org.bukkit.entity.ZombieVillager;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class EntityPropertyConditions {
@@ -83,22 +91,44 @@ public class EntityPropertyConditions {
 
         // Register conditions for specific entities
         if (NMSUtil.getVersionNumber() >= 21) {
-            if (NMSUtil.getMinorVersionNumber() >= 4) {
+            if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 4) {
                 registerBoolean(Bogged.class, "sheared", Bogged::isSheared);
             }
 
-            if (NMSUtil.getMinorVersionNumber() >= 5) {
+            if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 5) {
                 registerEnum(Chicken.class, "variant", Chicken::getVariant, Chicken.Variant.class);
                 // hot garbage served right up courtesy of spigot 1.21.5 commodore rewrites, what's a cow, anyway?
                 registerEnum(Cow.class, "org.bukkit.entity.Cow", "variant", x -> getReturnValueReflectively(Cow.class, "org.bukkit.entity.Cow", x, Cow.Variant.class, "getVariant"), Cow.Variant.class);
                 registerEnum(Pig.class, "variant", Pig::getVariant, Pig.Variant.class);
+            }
+
+            if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 6) {
+                registerEnum(HappyGhast.class, "harness-item", x -> x.getEquipment().getItem(EquipmentSlot.BODY).getType(), Material.class);
+            }
+
+            if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 9) {
+                if (NMSUtil.isPaper()) { // Spigot API differs for these, just ignore them
+                    registerEnum(CopperGolem.class, "weathering-state", CopperGolem::getWeatheringState, WeatheringCopperState.class);
+                    registerBoolean(CopperGolem.class, "waxed", x -> x.getOxidizing().equals(Oxidizing.waxed()));
+                }
+            }
+
+            if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 11) {
+                registerEnum(Nautilus.class, "armor-item", x -> {
+                    ItemStack item = x.getInventory().getArmor();
+                    return item == null ? null : item.getType();
+                }, Material.class);
+                registerEnum(ZombieNautilus.class, "armor-item", x -> {
+                    ItemStack item = x.getInventory().getArmor();
+                    return item == null ? null : item.getType();
+                }, Material.class);
             }
         }
 
         if (NMSUtil.getVersionNumber() >= 20) {
             registerEnum(Sniffer.class, "state", Sniffer::getState, Sniffer.State.class);
 
-            if (NMSUtil.getVersionNumber() > 20 || NMSUtil.getMinorVersionNumber() == 6) {
+            if (NMSUtil.getVersionNumber() > 20 || NMSUtil.getMinorVersionNumber() >= 6) {
                 registerEnum(Wolf.class, "variant", Wolf::getVariant, Wolf.Variant.class);
             }
         }
@@ -343,6 +373,7 @@ public class EntityPropertyConditions {
     }
 
     private enum HorseArmorType {
+        NETHERITE("NETHERITE_HORSE_ARMOR"),
         DIAMOND("DIAMOND_HORSE_ARMOR"),
         GOLD("GOLDEN_HORSE_ARMOR"),
         IRON("IRON_HORSE_ARMOR"),
