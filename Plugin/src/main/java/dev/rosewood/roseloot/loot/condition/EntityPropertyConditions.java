@@ -2,7 +2,6 @@ package dev.rosewood.roseloot.loot.condition;
 
 import dev.rosewood.rosegarden.compatibility.CompatibilityAdapter;
 import dev.rosewood.rosegarden.utils.NMSUtil;
-import dev.rosewood.roseloot.RoseLoot;
 import dev.rosewood.roseloot.event.LootConditionRegistrationEvent;
 import dev.rosewood.roseloot.loot.context.LootContext;
 import dev.rosewood.roseloot.loot.context.LootContextParam;
@@ -30,6 +29,7 @@ import org.bukkit.entity.Bat;
 import org.bukkit.entity.Bee;
 import org.bukkit.entity.Bogged;
 import org.bukkit.entity.Camel;
+import org.bukkit.entity.CamelHusk;
 import org.bukkit.entity.Cat;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.CopperGolem;
@@ -108,12 +108,13 @@ public class EntityPropertyConditions {
 
             if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 9) {
                 if (NMSUtil.isPaper()) { // Spigot API differs for these, just ignore them
-                    registerEnum(CopperGolem.class, "weathering-state", CopperGolem::getWeatheringState, WeatheringCopperState.class);
                     registerBoolean(CopperGolem.class, "waxed", x -> x.getOxidizing().equals(Oxidizing.waxed()));
+                    registerEnum(CopperGolem.class, "weathering-state", CopperGolem::getWeatheringState, WeatheringCopperState.class);
                 }
             }
 
             if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 11) {
+                registerBoolean(CamelHusk.class, "dashing", CamelHusk::isDashing);
                 registerEnum(Nautilus.class, "armor-item", x -> {
                     ItemStack item = x.getInventory().getArmor();
                     return item == null ? null : item.getType();
