@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -69,6 +70,7 @@ import org.bukkit.entity.Slime;
 import org.bukkit.entity.Sniffer;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Strider;
+import org.bukkit.entity.SulfurCube;
 import org.bukkit.entity.TraderLlama;
 import org.bukkit.entity.TropicalFish;
 import org.bukkit.entity.Vex;
@@ -90,6 +92,12 @@ public class EntityPropertyConditions {
         KEYED_VALUE_METHOD_LOOKUP_MAP = new HashMap<>();
 
         // Register conditions for specific entities
+        if (NMSUtil.getVersionNumber() >= 26) {
+            if (NMSUtil.getVersionNumber() > 26 || NMSUtil.getMinorVersionNumber() >= 2) {
+                registerInt(SulfurCube.class, "size", SulfurCube::getSize);
+            }
+        }
+
         if (NMSUtil.getVersionNumber() >= 21) {
             if (NMSUtil.getVersionNumber() > 21 || NMSUtil.getMinorVersionNumber() >= 4) {
                 registerBoolean(Bogged.class, "sheared", Bogged::isSheared);
@@ -191,7 +199,7 @@ public class EntityPropertyConditions {
         registerEnum(Rabbit.class, "type", Rabbit::getRabbitType, Rabbit.Type.class);
         registerBoolean(Sheep.class, "sheared", CompatibilityAdapter.getShearedHandler()::isSheared);
         registerEnum(Sheep.class, "color", Sheep::getColor, DyeColor.class);
-        registerInt(Slime.class, "size", Slime::getSize);
+        registerInt(Slime.class, "org.bukkit.entity.Slime", "size", Slime::getSize); // More Commodore rewrites
         registerBoolean(Snowman.class, "no-pumpkin", Snowman::isDerp);
         registerBoolean(Strider.class, "shivering", Strider::isShivering);
         registerMaterial(TraderLlama.class, "decor", x -> x.getInventory().getDecor() == null ? null : x.getInventory().getDecor().getType(), true, true);
@@ -218,8 +226,8 @@ public class EntityPropertyConditions {
         ENTITY_PROPERTIES.add(new EntityProperties<>(entityClass, name, predicate, valuesValidator, allowEmptyValues));
     }
 
-    private static <T extends Entity> void registerBoolean(Class<T> entityClass, String name, Function<T, Boolean> supplier) {
-        register(entityClass, name, (entity, values) -> supplier.apply(entity), null, false);
+    private static <T extends Entity> void registerBoolean(Class<T> entityClass, String name, Predicate<T> supplier) {
+        register(entityClass, name, (entity, values) -> supplier.test(entity), null, false);
     }
 
     private static <T extends Entity> void registerMaterial(Class<T> entityClass, String name, Function<T, Material> supplier, boolean onlyBlocks, boolean allowEmptyValues) {
@@ -299,6 +307,15 @@ public class EntityPropertyConditions {
             }
             return intValues;
         }, false);
+    }
+
+    private static <T extends Entity> void registerInt(Class<T> entityClass0, String className, String name, Function<T, Integer> supplier) {
+        try {
+            Class<T> clazz = (Class<T>) Class.forName(className);
+            registerInt(clazz, name, supplier);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static <T extends Entity, V> boolean availableOrContains(T entity, Collection<V> values, Function<T, V> supplier, boolean allowEmptyValues) {

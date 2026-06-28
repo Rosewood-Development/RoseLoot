@@ -59,6 +59,7 @@ dependencies {
     implementation project(':Component:v1_21_6')
     implementation project(':Component:v1_21_7')
     implementation project(':Component:v26_1_1')
+    implementation project(':Component:v26_2_1')
     implementation project(':NMS:Wrapper')
     implementation project(':NMS:v1_16_R3')
     implementation project(path: ':NMS:v1_17_R1', configuration: 'remapped')
@@ -74,6 +75,7 @@ dependencies {
     implementation project(path: ':NMS:v1_21_R6', configuration: 'remapped')
     implementation project(path: ':NMS:v1_21_R7', configuration: 'remapped')
     implementation project(path: ':NMS:v26_1_R1')
+    implementation project(path: ':NMS:v26_2_R1')
 }
 
 shadowJar {
