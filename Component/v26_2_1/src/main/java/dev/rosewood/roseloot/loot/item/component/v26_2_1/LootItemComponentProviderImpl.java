@@ -1,4 +1,4 @@
-package dev.rosewood.roseloot.loot.item.component.v26_1_1;
+package dev.rosewood.roseloot.loot.item.component.v26_2_1;
 
 import dev.rosewood.roseloot.loot.item.component.LootItemComponent;
 import dev.rosewood.roseloot.loot.item.component.LootItemComponentProvider;

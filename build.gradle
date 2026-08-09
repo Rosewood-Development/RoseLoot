@@ -31,7 +31,6 @@ allprojects {
         maven { url = 'https://repo.codemc.org/repository/maven-public/' }
         maven { url = 'https://maven.devs.beer/' }
         maven { url = 'https://repo.auxilor.io/repository/maven-public/' }
-        maven { url = 'https://erethon.de/repo/' }
         maven { url = 'https://maven.playpro.com/' }
         maven { url = 'https://nexus.phoenixdevt.fr/repository/maven-public/' }
         maven { url = 'https://r.irepo.space/maven/' }

@@ -22,7 +22,6 @@ public enum CustomItemPlugin {
     EXECUTABLEITEMS(ExecutableItemProvider::new),
     EXECUTABLEBLOCKS(ExecutableBlockProvider::new),
     ITEMSADDER(ItemsAdderItemProvider::new),
-    ITEMSXL(ItemsXLItemProvider::new),
     ORAXEN(OraxenItemProvider::new),
     KNOKKOCUSTOMITEMS(KnokkoCustomItemProvider::new),
     ITEMEDIT(ItemEditItemProvider::new),

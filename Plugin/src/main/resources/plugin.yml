@@ -26,7 +26,6 @@ softdepend:
   - ExecutableBlocks
   - SCore
   - ItemsAdder
-  - ItemsXL
   - Oraxen
   - CustomItems
   - ItemEdit
