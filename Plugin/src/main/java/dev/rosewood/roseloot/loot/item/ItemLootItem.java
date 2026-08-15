@@ -83,7 +83,7 @@ public class ItemLootItem implements ItemGenerativeLootItem {
     private Optional<ItemStack> getCreationItem(LootContext context) {
         return this.resolveItem(context).map(item -> {
             Optional<LivingEntity> lootedEntity = context.get(LootContextParams.LOOTED_ENTITY);
-            if (this.smeltIfBurning && lootedEntity.isPresent() && lootedEntity.get().getFireTicks() > 0) {
+            if (this.smeltIfBurning && lootedEntity.isPresent() && (lootedEntity.get().getFireTicks() > 0 || context.getEnchantmentLevel(Enchantment.FIRE_ASPECT) > 0)) {
                 Iterator<Recipe> recipesIterator = Bukkit.recipeIterator();
                 while (recipesIterator.hasNext()) {
                     Recipe recipe = recipesIterator.next();

@@ -129,6 +129,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Breedable;
 import org.bukkit.entity.ChestedHorse;
@@ -470,7 +471,7 @@ public class LootTableManager extends DelayedManager implements Listener {
         event.registerLootCondition("biome", BiomeCondition::new);
         event.registerLootCondition("block-data", BlockDataCondition::new);
         event.registerLootCondition("block-type", BlockTypeCondition::new);
-        this.registerBoolean(event, "burning", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> x.getFireTicks() > 0).isPresent());
+        this.registerBoolean(event, "burning", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> (x.getFireTicks() > 0 || context.getEnchantmentLevel(Enchantment.FIRE_ASPECT) > 0)).isPresent());
         this.registerBoolean(event, "can-breed", context -> context.getAs(LootContextParams.LOOTED_ENTITY, Breedable.class).filter(Breedable::canBreed).isPresent());
         this.registerBoolean(event, "can-join-raid", context -> context.get(LootContextParams.LOOTED_ENTITY).filter(x -> x instanceof Raider raider && raider.isCanJoinRaid()).isPresent());
         event.registerLootCondition("chance", ChanceCondition::new);
